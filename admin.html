@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ziada Analysis - لوحة تحكم الإدارة والصلاحيات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- مكتبات فايربيس -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 16px; }
+
+    .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 16px; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 22px; border-radius: 12px; border: 1px solid var(--border-color); }
+    .brand-title { font-size: 1.3rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    .features-control-box { background: var(--card-bg); border: 2px solid #38bdf844; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 5px; }
+    .feature-card { background: #070b12; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .feature-info h4 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .feature-info p { font-size: 11.5px; color: var(--text-muted); }
+
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .3s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--success); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    .stats-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
+    .stat-info h4 { font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
+    .stat-info span { font-size: 24px; font-weight: 800; }
+    .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+
+    .table-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; overflow-x: auto; }
+    .users-table { width: 100%; border-collapse: collapse; text-align: right; }
+    .users-table th { background: #070b12; padding: 12px 14px; font-size: 12.5px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+    .users-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); }
+
+    .btn-action-mini { padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .btn-status-toggle { background: #1e293b; color: #10b981; border: 1px solid #10b981; }
+    .btn-status-toggle:hover { background: #10b981; color: #fff; }
+    .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
+    .btn-del:hover { background: #ef4444; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header class="top-nav">
+      <div class="brand-title">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>لوحة تحكم المدير العام وإدارة الصلاحيات</span>
+      </div>
+      <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> العودة للمنصة الرئيسية</a>
+    </header>
+
+    <section class="features-control-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-sliders"></i> التحكم في تشغيل وغلق الميزات للمستخدمين:</h3>
+        <small style="color: var(--text-muted);">التغييرات تُحفظ وتُطبق فوراً على كل المشتركين</small>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> تصدير تقرير الفردي (PDF)</h4>
+            <p>السماح للمستخدم بتصدير تقرير اللاعب</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleIndReport" onchange="updateFeatureSetting('indReport', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-palette" style="color: #ec4899;"></i> استوديو الرسومات التكتيكية</h4>
+            <p>فتح أدوات الرسم الـ 12 والوقفة التحليلية</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleTacticalStudio" onchange="updateFeatureSetting('tacticalStudio', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i> قسم التحليل اللايف</h4>
+            <p>السماح بفتح واستخدام التحليل المباشر</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleLiveAnalysis" onchange="updateFeatureSetting('liveAnalysis', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-overview-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>إجمالي المشتركين</h4>
+          <span id="statTotalUsers" style="color: var(--primary);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>حسابات الإدارة (Admin)</h4>
+          <span id="statAdminUsers" style="color: var(--accent);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>المدربين (Coach)</h4>
+          <span id="statCoachUsers" style="color: #cbd5e1;">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>في الانتظار (Pending)</h4>
+          <span id="statPendingUsers" style="color: var(--danger);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h3 style="color: #fff; font-size: 15px; margin-bottom: 14px;"><i class="fa-solid fa-list-check"></i> قائمة المشتركين وإدارة الحسابات:</h3>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم المدرب</th>
+            <th>البريد الإلكتروني</th>
+            <th>الصلاحية</th>
+            <th>حالة الحساب</th>
+            <th>إجراءات الإدارة</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // بيانات الربط بالفايربيس الخاصة بك
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
+      authDomain: "ziada-analysis-82e34.firebaseapp.com",
+      projectId: "ziada-analysis-82e34",
+      storageBucket: "ziada-analysis-82e34.firebasestorage.app",
+      messagingSenderId: "763163562341",
+      appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // فحص الصلاحية للتأكد إن اللي فاتح الصفحة هو الأدمن
+    const currentUser = JSON.parse(localStorage.getItem('ziada_active_user') || '{}');
+    if (currentUser.role !== 'admin') {
+      alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!');
+      window.location.href = 'index.html';
+    }
+
+    // جلب المستخدمين لايف من Firestore بدون شروط الترتيب لتفادي المشاكل
+    function loadUsers() {
+      db.collection('users').onSnapshot(snapshot => {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        
+        let total = 0, admins = 0, coaches = 0, pendings = 0;
+
+        snapshot.forEach((doc, index) => {
+          const u = doc.data();
+          total++;
+          if (u.role === 'admin') admins++;
+          if (u.role === 'coach') coaches++;
+          if (u.status === 'pending') pendings++;
+
+          const isPending = u.status === 'pending';
+          const isApproved = u.status === 'approved';
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${u.name || 'غير محدد'}</td>
+              <td><code>${u.email || 'غير محدد'}</code></td>
+              <td>${u.role === 'admin' ? '<b style="color:#f59e0b">مدير فني</b>' : 'مدرب مساعد'}</td>
+              <td><b style="color:${isPending ? '#fbbf24' : '#4ade80'}">${isPending ? 'قيد المراجعة' : 'مفعل'}</b></td>
+              <td>
+                ${u.role !== 'admin' ? `
+                  ${isPending ? `<button onclick="approveUser('${doc.id}')" class="btn-action-mini btn-status-toggle">موافقة وتفعيل</button>` : ''}
+                  <button onclick="deleteUser('${doc.id}', '${u.name}')" class="btn-action-mini btn-del">حذف الحساب</button>
+                ` : '<span style="color:#94a3b8; font-size: 11px;">صلاحيات كاملة</span>'}
+              </td>
+            </tr>
+          `;
+        });
+
+        // تحديث أرقام الإحصائيات
+        document.getElementById('statTotalUsers').innerText = total;
+        document.getElementById('statAdminUsers').innerText = admins;
+        document.getElementById('statCoachUsers').innerText = coaches;
+        document.getElementById('statPendingUsers').innerText = pendings;
+      }, error => {
+        console.error("Error fetching users:", error);
+        alert("تعذر جلب البيانات، تأكد من اتصال الإنترنت وصلاحيات قاعدة البيانات.");
+      });
+    }
+
+    // الموافقة على حساب مدرب
+    async function approveUser(uid) {
+      try {
+        await db.collection('users').doc(uid).update({ status: 'approved' });
+        alert('تمت الموافقة وتفعيل الحساب بنجاح! ✅');
+      } catch (error) {
+        alert('حدث خطأ أثناء الموافقة: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    // حذف حساب مدرب
+    async function deleteUser(uid, name) {
+      if (confirm(`هل أنت متأكد من حذف حساب الكابتن "${name}"؟ (لن يتمكن من الدخول مرة أخرى)`)) {
+        try {
+          await db.collection('users').doc(uid).delete();
+          alert('تم حذف الحساب بنجاح.');
+        } catch (error) {
+          alert('حدث خطأ أثناء الحذف: ' + error.message);
+          console.error(error);
+        }
+      }
+    }
+
+    // ربط زراير التحكم (الميزات) بالفايربيس عشان تسمّع عند كل الناس
+    function loadFeatures() {
+      db.collection('settings').doc('features').onSnapshot(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('toggleIndReport').checked = data.indReport || false;
+          document.getElementById('toggleTacticalStudio').checked = data.tacticalStudio || false;
+          document.getElementById('toggleLiveAnalysis').checked = data.liveAnalysis || false;
+        }
+      });
+    }
+
+    async function updateFeatureSetting(featureName, isChecked) {
+      try {
+        await db.collection('settings').doc('features').set({
+          [featureName]: isChecked
+        }, { merge: true });
+      } catch (error) {
+        console.error("Error updating feature:", error);
+      }
+    }
+
+    // تشغيل الدوال عند فتح الصفحة
+    loadUsers();
+    loadFeatures();
+  </script>
+</body>
+</html>
