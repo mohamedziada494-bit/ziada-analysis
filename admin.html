@@ -61,6 +61,10 @@
     .btn-action-mini { padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
     .btn-status-toggle { background: #1e293b; color: #10b981; border: 1px solid #10b981; }
     .btn-status-toggle:hover { background: #10b981; color: #fff; }
+    
+    .btn-edit-sub { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
+    .btn-edit-sub:hover { background: #38bdf8; color: #070b12; }
+
     .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
     .btn-del:hover { background: #ef4444; color: #fff; }
   </style>
@@ -167,8 +171,36 @@
     </div>
   </div>
 
+  <!-- نافذة تفعيل وإدارة الاشتراك (Popup) -->
+  <div id="activationModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:var(--card-bg); padding:24px; border-radius:12px; width:350px; border:1px solid var(--border-color);">
+      <h3 id="modalTitle" style="color:var(--success); margin-bottom:16px;"><i class="fa-solid fa-check-circle"></i> إدارة اشتراك المدرب</h3>
+      
+      <div class="form-group" style="margin-bottom:14px;">
+        <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ بداية الاشتراك (من):</label>
+        <input type="date" id="startDate" style="width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ انتهاء الاشتراك (إلى):</label>
+        <input type="date" id="expireDate" style="width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
+      </div>
+      
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="color:#fff; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="multiDevice" style="width:16px; height:16px;">
+          السماح بالدخول من أكثر من جهاز
+        </label>
+      </div>
+      
+      <div style="display:flex; gap:10px;">
+        <button onclick="confirmActivation()" style="flex:1; background:var(--success); color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">حفظ والتفعيل</button>
+        <button onclick="closeModal()" style="flex:1; background:#374151; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer;">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // بيانات الربط بالفايربيس الخاصة بك
     const firebaseConfig = {
       apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
       authDomain: "ziada-analysis-82e34.firebaseapp.com",
@@ -183,22 +215,23 @@
     }
     const db = firebase.firestore();
 
-    // فحص الصلاحية للتأكد إن اللي فاتح الصفحة هو الأدمن
     const currentUser = JSON.parse(localStorage.getItem('ziada_active_user') || '{}');
     if (currentUser.role !== 'admin') {
       alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!');
       window.location.href = 'index.html';
     }
 
-    // جلب المستخدمين لايف من Firestore بدون شروط الترتيب لتفادي المشاكل
+    let currentUserIdToActivate = null;
+
     function loadUsers() {
       db.collection('users').onSnapshot(snapshot => {
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '';
         
         let total = 0, admins = 0, coaches = 0, pendings = 0;
+        let rowCounter = 1; // العداد السليم للترقيم
 
-        snapshot.forEach((doc, index) => {
+        snapshot.forEach((doc) => {
           const u = doc.data();
           total++;
           if (u.role === 'admin') admins++;
@@ -206,18 +239,21 @@
           if (u.status === 'pending') pendings++;
 
           const isPending = u.status === 'pending';
-          const isApproved = u.status === 'approved';
 
           tbody.innerHTML += `
             <tr>
-              <td>${index + 1}</td>
+              <td>${rowCounter++}</td>
               <td>${u.name || 'غير محدد'}</td>
               <td><code>${u.email || 'غير محدد'}</code></td>
               <td>${u.role === 'admin' ? '<b style="color:#f59e0b">مدير فني</b>' : 'مدرب مساعد'}</td>
               <td><b style="color:${isPending ? '#fbbf24' : '#4ade80'}">${isPending ? 'قيد المراجعة' : 'مفعل'}</b></td>
               <td>
                 ${u.role !== 'admin' ? `
-                  ${isPending ? `<button onclick="approveUser('${doc.id}')" class="btn-action-mini btn-status-toggle">موافقة وتفعيل</button>` : ''}
+                  ${isPending ? 
+                    `<button onclick="openActivationModal('${doc.id}', '', '', false)" class="btn-action-mini btn-status-toggle">تحديد الاشتراك وتفعيل</button>` 
+                    : 
+                    `<button onclick="openActivationModal('${doc.id}', '${u.subscriptionStartDate || ''}', '${u.subscriptionEnd || ''}', ${u.allowMultiDevice || false})" class="btn-action-mini btn-edit-sub">تعديل الاشتراك</button>`
+                  }
                   <button onclick="deleteUser('${doc.id}', '${u.name}')" class="btn-action-mini btn-del">حذف الحساب</button>
                 ` : '<span style="color:#94a3b8; font-size: 11px;">صلاحيات كاملة</span>'}
               </td>
@@ -225,7 +261,6 @@
           `;
         });
 
-        // تحديث أرقام الإحصائيات
         document.getElementById('statTotalUsers').innerText = total;
         document.getElementById('statAdminUsers').innerText = admins;
         document.getElementById('statCoachUsers').innerText = coaches;
@@ -236,18 +271,57 @@
       });
     }
 
-    // الموافقة على حساب مدرب
-    async function approveUser(uid) {
+    function openActivationModal(uid, currentStart = '', currentEnd = '', currentMultiDevice = false) {
+      currentUserIdToActivate = uid;
+      
+      const today = new Date().toISOString().split('T')[0];
+      
+      // تعبئة البيانات لو موجودة (للمدربين القدام)، أو بتاريخ اليوم (للجداد)
+      document.getElementById('startDate').value = currentStart || today;
+      document.getElementById('expireDate').value = currentEnd || ''; 
+      document.getElementById('multiDevice').checked = currentMultiDevice; 
+      
+      document.getElementById('activationModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('activationModal').style.display = 'none';
+      currentUserIdToActivate = null;
+    }
+
+    async function confirmActivation() {
+      const startDate = document.getElementById('startDate').value;
+      const expireDate = document.getElementById('expireDate').value;
+      const multiDevice = document.getElementById('multiDevice').checked;
+
+      if (!startDate || !expireDate) {
+        alert('يجب تحديد تاريخ البداية والنهاية!');
+        return;
+      }
+
+      if (new Date(expireDate) <= new Date(startDate)) {
+        alert('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية!');
+        return;
+      }
+
       try {
-        await db.collection('users').doc(uid).update({ status: 'approved' });
-        alert('تمت الموافقة وتفعيل الحساب بنجاح! ✅');
+        await db.collection('users').doc(currentUserIdToActivate).update({
+          status: 'approved',
+          subscriptionStartServer: firebase.firestore.FieldValue.serverTimestamp(),
+          subscriptionStartDate: startDate,
+          subscriptionEnd: expireDate,
+          allowMultiDevice: multiDevice,
+          currentDeviceId: '' // ده هيفيدنا جداً، لو عدلت أكونت قديم هيعمله تسجيل خروج من جهازه عشان يطبق الشروط الجديدة
+        });
+        
+        alert('تم حفظ بيانات الاشتراك وتفعيل الحساب بنجاح! ✅');
+        closeModal();
       } catch (error) {
-        alert('حدث خطأ أثناء الموافقة: ' + error.message);
+        alert('حدث خطأ أثناء حفظ البيانات: ' + error.message);
         console.error(error);
       }
     }
 
-    // حذف حساب مدرب
     async function deleteUser(uid, name) {
       if (confirm(`هل أنت متأكد من حذف حساب الكابتن "${name}"؟ (لن يتمكن من الدخول مرة أخرى)`)) {
         try {
@@ -260,7 +334,6 @@
       }
     }
 
-    // ربط زراير التحكم (الميزات) بالفايربيس عشان تسمّع عند كل الناس
     function loadFeatures() {
       db.collection('settings').doc('features').onSnapshot(doc => {
         if (doc.exists) {
@@ -282,7 +355,6 @@
       }
     }
 
-    // تشغيل الدوال عند فتح الصفحة
     loadUsers();
     loadFeatures();
   </script>
