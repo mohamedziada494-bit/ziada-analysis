@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ziada Analysis - منصة التحليل التكتيكي</title>
-  
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   
-  <!-- مكتبات Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -22,27 +20,21 @@
     .header .logo svg { width: 36px; height: 36px; fill: #ffffff; }
     .header h1 { font-size: 1.65rem; font-weight: 800; color: #f8fafc; }
     .header p { font-size: 0.9rem; color: #94a3b8; margin-top: 0.35rem; }
-    
     .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background-color: #0f172a; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid #334155; }
-    .download-strip a, .download-strip button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem; font-size: 0.8rem; font-weight: 600; text-decoration: none; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-win { background-color: #1e293b; color: #38bdf8; border: 1px solid #0284c7; }
+    .download-strip a, .download-strip button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem; font-size: 0.9rem; font-weight: 700; text-decoration: none; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; }
     .btn-mob { background-color: #1e293b; color: #4ade80; border: 1px solid #16a34a; }
-    
+    .btn-mob:hover { background-color: #16a34a; color: #ffffff; }
     .tabs { display: flex; background-color: #0f172a; padding: 0.25rem; border-radius: 0.5rem; margin-bottom: 1.5rem; }
     .tab-btn { flex: 1; padding: 0.65rem; border: none; background: transparent; color: #94a3b8; font-size: 0.9rem; font-weight: 600; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; }
     .tab-btn.active { background-color: #2563eb; color: #ffffff; }
-    
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem; }
     .form-group input { width: 100%; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #f8fafc; text-align: left;}
-    
     .submit-btn { width: 100%; padding: 0.8rem; background-color: #2563eb; color: #ffffff; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; }
     .btn-register-style { background-color: #10b981; }
-    
     .alert { padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1.25rem; display: none; text-align: center; }
     .alert.error { background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; }
     .alert.success { background-color: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; }
-    
     .dashboard-panel { display: none; }
     .coach-welcome { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #334155; }
     .coach-welcome h2 { font-size: 1.3rem; color: #38bdf8; }
@@ -60,19 +52,14 @@
 
   <div class="main-card">
     <div class="header">
-      <div class="logo">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/>
-          <path d="M12 2a10 10 0 0 1 10 10M12 12l7-7M12 12l-7 7M12 12l7 7M12 12l-7-7" stroke="white" stroke-width="2"/>
-        </svg>
-      </div>
+      <div class="logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/><path d="M12 2a10 10 0 0 1 10 10M12 12l7-7M12 12l-7 7M12 12l7 7M12 12l-7-7" stroke="white" stroke-width="2"/></svg></div>
       <h1>Ziada Analysis</h1>
       <p>منصة التحليل الفني والتكتيكي للمباريات</p>
     </div>
 
+    <!-- تم التعديل هنا: زر تحميل تطبيق الموبايل فقط -->
     <div class="download-strip">
-      <a href="Ziada-Analysis.exe" class="btn-win" download>💻 نسخة الويندوز</a>
-      <button class="btn-mob">📱 تطبيق الموبايل</button>
+      <a href="Ziada-Analysis.apk" class="btn-mob" download>📱 تنزيل تطبيق الموبايل (Android)</a>
     </div>
 
     <div id="auth-panel">
@@ -83,42 +70,22 @@
 
       <div id="alert-box" class="alert"></div>
 
-      <!-- الدخول -->
       <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>البريد الإلكتروني</label>
-          <input type="email" id="login-email" required dir="ltr">
-        </div>
-        <div class="form-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="login-password" required dir="ltr">
-        </div>
+        <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="login-email" required dir="ltr"></div>
+        <div class="form-group"><label>كلمة المرور</label><input type="password" id="login-password" required dir="ltr"></div>
         <button type="submit" class="submit-btn" id="login-btn-text">دخول للمنصة</button>
       </form>
 
-      <!-- التسجيل -->
       <form id="register-form" style="display: none;" onsubmit="handleRegister(event)">
-        <div class="form-group">
-          <label>اسم المدرب الكامل</label>
-          <input type="text" id="reg-name" required>
-        </div>
-        <div class="form-group">
-          <label>البريد الإلكتروني</label>
-          <input type="email" id="reg-email" required dir="ltr">
-        </div>
-        <div class="form-group">
-          <label>كلمة المرور (6 حروف أو أرقام)</label>
-          <input type="password" id="reg-password" required minlength="6" dir="ltr">
-        </div>
+        <div class="form-group"><label>اسم المدرب الكامل</label><input type="text" id="reg-name" required></div>
+        <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" required dir="ltr"></div>
+        <div class="form-group"><label>كلمة المرور (6 حروف أو أرقام)</label><input type="password" id="reg-password" required minlength="6" dir="ltr"></div>
         <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
       </form>
     </div>
 
     <div id="dashboard-panel" class="dashboard-panel">
-      <div class="coach-welcome">
-        <h2 id="welcome-name">أهلاً بك</h2>
-        <p>اختر أداة التحليل:</p>
-      </div>
+      <div class="coach-welcome"><h2 id="welcome-name">أهلاً بك</h2><p>اختر أداة التحليل:</p></div>
       <div class="analysis-grid">
         <a href="tactical.html" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
         <a href="individual.html" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي</h3></div></a>
@@ -138,66 +105,46 @@
       messagingSenderId: "763163562341",
       appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
     };
-    
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth(); const db = firebase.firestore();
 
-    // 1. توليد أو جلب بصمة الجهاز الحالية (Device ID)
     function getDeviceFingerprint() {
       let deviceId = localStorage.getItem('ziada_device_id');
-      if (!deviceId) {
-        deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        localStorage.setItem('ziada_device_id', deviceId);
-      }
+      if (!deviceId) { deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(); localStorage.setItem('ziada_device_id', deviceId); }
       return deviceId;
     }
 
-    // 2. الفلترة المجمعة (التحقق من كل شروط الحماية)
+    async function getGlobalInternetDate() {
+      try {
+        const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
+        const data = await response.json();
+        return data.datetime.split('T')[0];
+      } catch (error) {
+        return new Date().toISOString().split('T')[0];
+      }
+    }
+
     async function validateUserAccess(user, userData) {
-      // أ. التحقق من تفعيل الإيميل (الإدارة مستثناة من الشروط لتفادي القفل العرضي)
-      if (userData.role !== 'admin' && !user.emailVerified) {
-        showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error');
-        return false;
-      }
+      if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
+      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error'); return false; }
 
-      // ب. التحقق من موافقة الإدارة
-      if (userData.status === 'pending' && userData.role !== 'admin') {
-        showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error');
-        return false;
-      }
-
-      // ج. التحقق من مدة الاشتراك
-      if (userData.role !== 'admin' && userData.subscriptionEnd) {
-        const today = new Date().toISOString().split('T')[0];
-        if (today > userData.subscriptionEnd) {
-          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error');
-          return false;
+      // لو الاشتراك مش مفتوح، نفحص التاريخ
+      if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
+        const trueToday = await getGlobalInternetDate();
+        if (trueToday > userData.subscriptionEnd) {
+          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false;
         }
       }
 
-      // د. التحقق من الأجهزة المتعددة (بصمة الجهاز)
-      if (userData.role !== 'admin' && userData.status === 'approved') {
+      if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
-        
-        // لو المدرب مسموحله جهاز واحد بس
-        if (!userData.allowMultiDevice) {
-          // لو لسه أول مرة يفتح بعد التفعيل، هنسجل جهازه في الداتا بيز
-          if (!userData.currentDeviceId) {
-            await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
-          } 
-          // لو متسجل جهاز تاني، نمنعه
-          else if (userData.currentDeviceId !== currentLocalDevice) {
-            showAlert('عفواً، غير مسموح لك بتسجيل الدخول من أكثر من جهاز في نفس الوقت.', 'error');
-            return false;
-          }
+        if (!userData.currentDeviceId) {
+          await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
+        } else if (userData.currentDeviceId !== currentLocalDevice) {
+          showAlert('عفواً، غير مسموح لك بتسجيل الدخول من أكثر من جهاز في نفس الوقت.', 'error'); return false;
         }
       }
-
-      return true; // لو عدى من كل ده يبقى سليم
+      return true;
     }
 
     auth.onAuthStateChanged(async (user) => {
@@ -206,28 +153,12 @@
           const userDoc = await db.collection('users').doc(user.uid).get();
           if (userDoc.exists) {
             const userData = userDoc.data();
-            
-            // تشغيل الفلترة قبل الدخول
             const isValid = await validateUserAccess(user, userData);
-            
-            if (isValid) {
-               localStorage.setItem('ziada_active_user', JSON.stringify(userData));
-               showDashboard(userData);
-            } else {
-               await auth.signOut();
-               showAuthPanel();
-            }
-
-          } else {
-             await auth.signOut();
-             showAuthPanel();
-          }
-        } catch (error) {
-          showAlert('حدث خطأ أثناء جلب البيانات.', 'error');
-        }
-      } else {
-        showAuthPanel();
-      }
+            if (isValid) { localStorage.setItem('ziada_active_user', JSON.stringify(userData)); showDashboard(userData); } 
+            else { await auth.signOut(); showAuthPanel(); }
+          } else { await auth.signOut(); showAuthPanel(); }
+        } catch (error) { showAlert('حدث خطأ أثناء جلب البيانات.', 'error'); }
+      } else { showAuthPanel(); }
     });
 
     function showAuthPanel() { document.getElementById('auth-panel').style.display = 'block'; document.getElementById('dashboard-panel').style.display = 'none'; }
@@ -236,51 +167,35 @@
     function showAlert(message, type) { const box = document.getElementById('alert-box'); box.textContent = message; box.className = `alert ${type}`; box.style.display = 'block'; setTimeout(() => box.style.display = 'none', 5000); }
     function switchTab(type) { const isLogin = type === 'login'; document.getElementById('login-form').style.display = isLogin ? 'block' : 'none'; document.getElementById('register-form').style.display = isLogin ? 'none' : 'block'; document.getElementById('tab-login').classList.toggle('active', isLogin); document.getElementById('tab-register').classList.toggle('active', !isLogin); document.getElementById('alert-box').style.display = 'none'; }
 
-    // 3. تعديل تسجيل الدخول لإظهار الرسائل بشكل أوضح
     async function handleLogin(e) {
       e.preventDefault();
-      const btn = document.getElementById('login-btn-text');
-      btn.textContent = 'جاري التحقق...';
-      try {
-        await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value);
-      } catch (error) {
-        showAlert('البريد أو كلمة المرور غير صحيحة.', 'error');
-      } finally { btn.textContent = 'دخول للمنصة'; }
+      const btn = document.getElementById('login-btn-text'); btn.textContent = 'جاري التحقق...';
+      try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } 
+      catch (error) { showAlert('البريد أو كلمة المرور غير صحيحة.', 'error'); } 
+      finally { btn.textContent = 'دخول للمنصة'; }
     }
 
-    // 4. إرسال رابط التفعيل عند التسجيل
     async function handleRegister(e) {
       e.preventDefault();
-      const btn = document.getElementById('reg-btn-text');
-      btn.textContent = 'جاري إنشاء الحساب...';
+      const btn = document.getElementById('reg-btn-text'); btn.textContent = 'جاري إنشاء الحساب...';
       try {
         const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
         
-        // إرسال إيميل التفعيل
-        await cred.user.sendEmailVerification();
-
         await db.collection('users').doc(cred.user.uid).set({
-          uid: cred.user.uid, 
-          name: document.getElementById('reg-name').value, 
-          email: document.getElementById('reg-email').value,
-          role: 'coach', 
-          status: 'pending', 
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          uid: cred.user.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
+          role: 'coach', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        // رسالة التنبيه الجديدة
+        await cred.user.sendEmailVerification();
+        
         showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل أولاً.', 'success');
         document.getElementById('register-form').reset();
         await auth.signOut();
         setTimeout(() => switchTab('login'), 4000);
       } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          showAlert('هذا البريد مستخدم بالفعل.', 'error');
-        } else if (error.code === 'auth/weak-password') {
-          showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
-        } else {
-          showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
-        }
+        if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
+        else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
+        else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
       } finally { btn.textContent = 'إنشاء الحساب الآن'; }
     }
   </script>

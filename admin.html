@@ -6,65 +6,44 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- مكتبات فايربيس -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <style>
-    :root {
-      --bg-dark: #070b12;
-      --card-bg: #111827;
-      --border-color: #1f2937;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --danger: #ef4444;
-      --success: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-
+    :root { --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937; --primary: #38bdf8; --accent: #f59e0b; --danger: #ef4444; --success: #10b981; --text: #f8fafc; --text-muted: #94a3b8; }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text); padding: 16px; }
-
     .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 16px; }
-
     .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 22px; border-radius: 12px; border: 1px solid var(--border-color); }
     .brand-title { font-size: 1.3rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
     .btn-top:hover { background: var(--primary); color: #070b12; }
-
     .features-control-box { background: var(--card-bg); border: 2px solid #38bdf844; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 5px; }
     .feature-card { background: #070b12; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
     .feature-info h4 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
     .feature-info p { font-size: 11.5px; color: var(--text-muted); }
-
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .3s; border-radius: 26px; }
     .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--success); }
     input:checked + .slider:before { transform: translateX(24px); }
-
     .stats-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
     .stat-info h4 { font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
     .stat-info span { font-size: 24px; font-weight: 800; }
     .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-
     .table-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; overflow-x: auto; }
     .users-table { width: 100%; border-collapse: collapse; text-align: right; }
     .users-table th { background: #070b12; padding: 12px 14px; font-size: 12.5px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
     .users-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); }
-
     .btn-action-mini { padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
     .btn-status-toggle { background: #1e293b; color: #10b981; border: 1px solid #10b981; }
     .btn-status-toggle:hover { background: #10b981; color: #fff; }
-    
     .btn-edit-sub { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
     .btn-edit-sub:hover { background: #38bdf8; color: #070b12; }
-
     .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
     .btn-del:hover { background: #ef4444; color: #fff; }
   </style>
@@ -73,10 +52,7 @@
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <div class="brand-title">
-        <i class="fa-solid fa-user-shield"></i>
-        <span>لوحة تحكم المدير العام وإدارة الصلاحيات</span>
-      </div>
+      <div class="brand-title"><i class="fa-solid fa-user-shield"></i><span>لوحة تحكم المدير العام وإدارة الصلاحيات</span></div>
       <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> العودة للمنصة الرئيسية</a>
     </header>
 
@@ -85,72 +61,27 @@
         <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-sliders"></i> التحكم في تشغيل وغلق الميزات للمستخدمين:</h3>
         <small style="color: var(--text-muted);">التغييرات تُحفظ وتُطبق فوراً على كل المشتركين</small>
       </div>
-
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-info">
-            <h4><i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> تصدير تقرير الفردي (PDF)</h4>
-            <p>السماح للمستخدم بتصدير تقرير اللاعب</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="toggleIndReport" onchange="updateFeatureSetting('indReport', this.checked)">
-            <span class="slider"></span>
-          </label>
+          <div class="feature-info"><h4><i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> تصدير تقرير الفردي (PDF)</h4></div>
+          <label class="switch"><input type="checkbox" id="toggleIndReport" onchange="updateFeatureSetting('indReport', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-card">
-          <div class="feature-info">
-            <h4><i class="fa-solid fa-palette" style="color: #ec4899;"></i> استوديو الرسومات التكتيكية</h4>
-            <p>فتح أدوات الرسم الـ 12 والوقفة التحليلية</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="toggleTacticalStudio" onchange="updateFeatureSetting('tacticalStudio', this.checked)">
-            <span class="slider"></span>
-          </label>
+          <div class="feature-info"><h4><i class="fa-solid fa-palette" style="color: #ec4899;"></i> استوديو الرسومات التكتيكية</h4></div>
+          <label class="switch"><input type="checkbox" id="toggleTacticalStudio" onchange="updateFeatureSetting('tacticalStudio', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-card">
-          <div class="feature-info">
-            <h4><i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i> قسم التحليل اللايف</h4>
-            <p>السماح بفتح واستخدام التحليل المباشر</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="toggleLiveAnalysis" onchange="updateFeatureSetting('liveAnalysis', this.checked)">
-            <span class="slider"></span>
-          </label>
+          <div class="feature-info"><h4><i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i> قسم التحليل اللايف</h4></div>
+          <label class="switch"><input type="checkbox" id="toggleLiveAnalysis" onchange="updateFeatureSetting('liveAnalysis', this.checked)"><span class="slider"></span></label>
         </div>
       </div>
     </section>
 
     <div class="stats-overview-grid">
-      <div class="stat-card">
-        <div class="stat-info">
-          <h4>إجمالي المشتركين</h4>
-          <span id="statTotalUsers" style="color: var(--primary);">0</span>
-        </div>
-        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h4>حسابات الإدارة (Admin)</h4>
-          <span id="statAdminUsers" style="color: var(--accent);">0</span>
-        </div>
-        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h4>المدربين (Coach)</h4>
-          <span id="statCoachUsers" style="color: #cbd5e1;">0</span>
-        </div>
-        <div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h4>في الانتظار (Pending)</h4>
-          <span id="statPendingUsers" style="color: var(--danger);">0</span>
-        </div>
-        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div>
-      </div>
+      <div class="stat-card"><div class="stat-info"><h4>إجمالي المشتركين</h4><span id="statTotalUsers" style="color: var(--primary);">0</span></div><div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>حسابات الإدارة (Admin)</h4><span id="statAdminUsers" style="color: var(--accent);">0</span></div><div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>المدربين (Coach)</h4><span id="statCoachUsers" style="color: #cbd5e1;">0</span></div><div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>في الانتظار (Pending)</h4><span id="statPendingUsers" style="color: var(--danger);">0</span></div><div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div></div>
     </div>
 
     <div class="table-container">
@@ -163,6 +94,7 @@
             <th>البريد الإلكتروني</th>
             <th>الصلاحية</th>
             <th>حالة الحساب</th>
+            <th>المدة المتبقية</th>
             <th>إجراءات الإدارة</th>
           </tr>
         </thead>
@@ -171,28 +103,28 @@
     </div>
   </div>
 
-  <!-- نافذة تفعيل وإدارة الاشتراك (Popup) -->
   <div id="activationModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
     <div style="background:var(--card-bg); padding:24px; border-radius:12px; width:350px; border:1px solid var(--border-color);">
       <h3 id="modalTitle" style="color:var(--success); margin-bottom:16px;"><i class="fa-solid fa-check-circle"></i> إدارة اشتراك المدرب</h3>
-      
       <div class="form-group" style="margin-bottom:14px;">
         <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ بداية الاشتراك (من):</label>
         <input type="date" id="startDate" style="width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
       </div>
-
       <div class="form-group" style="margin-bottom:14px;">
         <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ انتهاء الاشتراك (إلى):</label>
-        <input type="date" id="expireDate" style="width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <input type="date" id="expireDate" style="flex:1; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
+          <label style="color:#fff; font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <input type="checkbox" id="unlimitedSub" onchange="toggleExpireDate()">
+            مفتوح
+          </label>
+        </div>
       </div>
-      
       <div class="form-group" style="margin-bottom:20px;">
         <label style="color:#fff; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer;">
-          <input type="checkbox" id="multiDevice" style="width:16px; height:16px;">
-          السماح بالدخول من أكثر من جهاز
+          <input type="checkbox" id="multiDevice" style="width:16px; height:16px;"> السماح بالدخول من أكثر من جهاز
         </label>
       </div>
-      
       <div style="display:flex; gap:10px;">
         <button onclick="confirmActivation()" style="flex:1; background:var(--success); color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">حفظ والتفعيل</button>
         <button onclick="closeModal()" style="flex:1; background:#374151; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer;">إلغاء</button>
@@ -209,17 +141,11 @@
       messagingSenderId: "763163562341",
       appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
     };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     const currentUser = JSON.parse(localStorage.getItem('ziada_active_user') || '{}');
-    if (currentUser.role !== 'admin') {
-      alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!');
-      window.location.href = 'index.html';
-    }
+    if (currentUser.role !== 'admin') { alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!'); window.location.href = 'index.html'; }
 
     let currentUserIdToActivate = null;
 
@@ -227,9 +153,8 @@
       db.collection('users').onSnapshot(snapshot => {
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '';
-        
         let total = 0, admins = 0, coaches = 0, pendings = 0;
-        let rowCounter = 1; // العداد السليم للترقيم
+        let rowCounter = 1;
 
         snapshot.forEach((doc) => {
           const u = doc.data();
@@ -239,6 +164,28 @@
           if (u.status === 'pending') pendings++;
 
           const isPending = u.status === 'pending';
+          const isApproved = u.status === 'approved';
+
+          // حساب الأيام المتبقية
+          let remainingText = '-';
+          if (u.role !== 'admin' && isApproved) {
+            if (u.subscriptionEnd === 'unlimited') {
+              remainingText = '<span style="color: #38bdf8; font-weight:bold;">مفتوح (مدى الحياة)</span>';
+            } else if (u.subscriptionEnd) {
+              const today = new Date();
+              today.setHours(0,0,0,0);
+              const end = new Date(u.subscriptionEnd);
+              end.setHours(0,0,0,0);
+              const diffTime = end - today;
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              
+              if (diffDays < 0) remainingText = `<span style="color: #ef4444; font-weight:bold;">منتهي منذ ${Math.abs(diffDays)} يوم</span>`;
+              else if (diffDays === 0) remainingText = `<span style="color: #fbbf24; font-weight:bold;">ينتهي اليوم</span>`;
+              else remainingText = `<span style="color: #10b981; font-weight:bold;">متبقي ${diffDays} يوم</span>`;
+            } else {
+              remainingText = '<span style="color: #94a3b8;">غير محدد</span>';
+            }
+          }
 
           tbody.innerHTML += `
             <tr>
@@ -247,6 +194,7 @@
               <td><code>${u.email || 'غير محدد'}</code></td>
               <td>${u.role === 'admin' ? '<b style="color:#f59e0b">مدير فني</b>' : 'مدرب مساعد'}</td>
               <td><b style="color:${isPending ? '#fbbf24' : '#4ade80'}">${isPending ? 'قيد المراجعة' : 'مفعل'}</b></td>
+              <td>${remainingText}</td>
               <td>
                 ${u.role !== 'admin' ? `
                   ${isPending ? 
@@ -260,77 +208,67 @@
             </tr>
           `;
         });
-
         document.getElementById('statTotalUsers').innerText = total;
         document.getElementById('statAdminUsers').innerText = admins;
         document.getElementById('statCoachUsers').innerText = coaches;
         document.getElementById('statPendingUsers').innerText = pendings;
-      }, error => {
-        console.error("Error fetching users:", error);
-        alert("تعذر جلب البيانات، تأكد من اتصال الإنترنت وصلاحيات قاعدة البيانات.");
       });
+    }
+
+    function toggleExpireDate() {
+      const isUnlimited = document.getElementById('unlimitedSub').checked;
+      const expireInput = document.getElementById('expireDate');
+      expireInput.disabled = isUnlimited;
+      if (isUnlimited) expireInput.value = '';
     }
 
     function openActivationModal(uid, currentStart = '', currentEnd = '', currentMultiDevice = false) {
       currentUserIdToActivate = uid;
-      
       const today = new Date().toISOString().split('T')[0];
-      
-      // تعبئة البيانات لو موجودة (للمدربين القدام)، أو بتاريخ اليوم (للجداد)
       document.getElementById('startDate').value = currentStart || today;
-      document.getElementById('expireDate').value = currentEnd || ''; 
-      document.getElementById('multiDevice').checked = currentMultiDevice; 
       
+      if (currentEnd === 'unlimited') {
+        document.getElementById('expireDate').value = '';
+        document.getElementById('unlimitedSub').checked = true;
+        document.getElementById('expireDate').disabled = true;
+      } else {
+        document.getElementById('expireDate').value = currentEnd || ''; 
+        document.getElementById('unlimitedSub').checked = false;
+        document.getElementById('expireDate').disabled = false;
+      }
+      
+      document.getElementById('multiDevice').checked = currentMultiDevice; 
       document.getElementById('activationModal').style.display = 'flex';
     }
 
-    function closeModal() {
-      document.getElementById('activationModal').style.display = 'none';
-      currentUserIdToActivate = null;
-    }
+    function closeModal() { document.getElementById('activationModal').style.display = 'none'; currentUserIdToActivate = null; }
 
     async function confirmActivation() {
       const startDate = document.getElementById('startDate').value;
-      const expireDate = document.getElementById('expireDate').value;
+      const isUnlimited = document.getElementById('unlimitedSub').checked;
+      let expireDate = document.getElementById('expireDate').value;
       const multiDevice = document.getElementById('multiDevice').checked;
+      
+      if (!startDate) return alert('يجب تحديد تاريخ البداية!');
+      if (!isUnlimited && !expireDate) return alert('يجب تحديد تاريخ الانتهاء أو اختيار اشتراك مفتوح!');
+      if (!isUnlimited && new Date(expireDate) <= new Date(startDate)) return alert('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية!');
 
-      if (!startDate || !expireDate) {
-        alert('يجب تحديد تاريخ البداية والنهاية!');
-        return;
-      }
-
-      if (new Date(expireDate) <= new Date(startDate)) {
-        alert('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية!');
-        return;
-      }
+      if (isUnlimited) expireDate = 'unlimited';
 
       try {
         await db.collection('users').doc(currentUserIdToActivate).update({
-          status: 'approved',
-          subscriptionStartServer: firebase.firestore.FieldValue.serverTimestamp(),
-          subscriptionStartDate: startDate,
-          subscriptionEnd: expireDate,
-          allowMultiDevice: multiDevice,
-          currentDeviceId: '' // ده هيفيدنا جداً، لو عدلت أكونت قديم هيعمله تسجيل خروج من جهازه عشان يطبق الشروط الجديدة
+          status: 'approved', subscriptionStartServer: firebase.firestore.FieldValue.serverTimestamp(),
+          subscriptionStartDate: startDate, subscriptionEnd: expireDate,
+          allowMultiDevice: multiDevice, currentDeviceId: ''
         });
-        
         alert('تم حفظ بيانات الاشتراك وتفعيل الحساب بنجاح! ✅');
         closeModal();
-      } catch (error) {
-        alert('حدث خطأ أثناء حفظ البيانات: ' + error.message);
-        console.error(error);
-      }
+      } catch (error) { alert('حدث خطأ أثناء حفظ البيانات: ' + error.message); }
     }
 
     async function deleteUser(uid, name) {
       if (confirm(`هل أنت متأكد من حذف حساب الكابتن "${name}"؟ (لن يتمكن من الدخول مرة أخرى)`)) {
-        try {
-          await db.collection('users').doc(uid).delete();
-          alert('تم حذف الحساب بنجاح.');
-        } catch (error) {
-          alert('حدث خطأ أثناء الحذف: ' + error.message);
-          console.error(error);
-        }
+        try { await db.collection('users').doc(uid).delete(); alert('تم حذف الحساب بنجاح.'); } catch (error) { alert('حدث خطأ أثناء الحذف.'); }
       }
     }
 
@@ -344,19 +282,8 @@
         }
       });
     }
-
-    async function updateFeatureSetting(featureName, isChecked) {
-      try {
-        await db.collection('settings').doc('features').set({
-          [featureName]: isChecked
-        }, { merge: true });
-      } catch (error) {
-        console.error("Error updating feature:", error);
-      }
-    }
-
-    loadUsers();
-    loadFeatures();
+    async function updateFeatureSetting(featureName, isChecked) { await db.collection('settings').doc('features').set({ [featureName]: isChecked }, { merge: true }); }
+    loadUsers(); loadFeatures();
   </script>
 </body>
 </html>
