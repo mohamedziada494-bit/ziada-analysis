@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ziada Analysis - المنصة الرئيسية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { 
+      background-color: var(--bg-dark); 
+      color: var(--text); 
+      padding: 20px; 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+    }
+
+    .app-screen { display: none; width: 100%; max-width: 950px; }
+    .app-screen.active { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+
+    /* شاشة تسجيل الدخول */
+    .login-box { 
+      background: var(--card-bg); 
+      border: 1.5px solid var(--border-color); 
+      border-radius: 16px; 
+      padding: 35px; 
+      width: 100%; 
+      max-width: 420px;
+      display: flex; 
+      flex-direction: column; 
+      gap: 20px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+    }
+    .login-logo { 
+      font-size: 2rem; 
+      font-weight: 800; 
+      color: var(--primary); 
+      text-align: center; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 10px; 
+    }
+    .login-input { 
+      width: 100%; 
+      padding: 12px 14px; 
+      border-radius: 8px; 
+      border: 1px solid var(--border-color); 
+      background: #070b12; 
+      color: #fff; 
+      font-size: 14px; 
+      outline: none;
+    }
+    .login-input:focus { border-color: var(--primary); }
+    .btn-main { 
+      width: 100%; 
+      background: linear-gradient(135deg, #0284c7, #2563eb); 
+      color: #fff; 
+      border: none; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-weight: 800; 
+      font-size: 15px; 
+      cursor: pointer; 
+      transition: 0.2s; 
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); 
+    }
+    .btn-main:hover { filter: brightness(1.15); }
+    .login-footer { 
+      display: flex; 
+      justify-content: space-between; 
+      font-size: 12px; 
+      color: var(--text-muted); 
+    }
+    .login-footer a { 
+      color: var(--primary); 
+      text-decoration: none; 
+      font-weight: 700; 
+      cursor: pointer; 
+    }
+
+    /* الشاشة الرئيسية */
+    .home-title { 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      color: var(--primary); 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      text-align: center; 
+    }
+
+    /* شريط تحميل وتحديث البرنامج داخل الشاشة الرئيسية */
+    .desktop-download-box {
+      width: 100%;
+      background: linear-gradient(90deg, #111827, #1e293b);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+    .download-app-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+    .download-app-btn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+    }
+
+    /* بطاقات الأقسام الثلاثة */
+    .home-cards-grid { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 20px; 
+      width: 100%; 
+      margin-top: 10px; 
+    }
+    @media (max-width: 768px) {
+      .home-cards-grid { grid-template-columns: 1fr; }
+    }
+    .home-card { 
+      background: var(--card-bg); 
+      border: 2px solid var(--border-color); 
+      border-radius: 14px; 
+      padding: 30px 20px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 15px; 
+      cursor: pointer; 
+      transition: all 0.25s; 
+      text-decoration: none; 
+      color: inherit; 
+    }
+    .home-card:hover { 
+      transform: translateY(-5px); 
+      border-color: var(--primary); 
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.25); 
+      background: #162032; 
+    }
+    .home-card i { font-size: 45px; color: var(--primary); }
+    .home-card h3 { font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .home-card p { font-size: 12px; color: var(--text-muted); text-align: center; }
+
+    /* أزرار الأدمن وتسجيل الخروج */
+    .btn-admin-panel { 
+      background: linear-gradient(135deg, #f59e0b, #d97706); 
+      color: #000; 
+      padding: 11px 24px; 
+      border-radius: 8px; 
+      font-weight: 800; 
+      text-decoration: none; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); 
+      transition: 0.2s; 
+    }
+    .btn-admin-panel:hover { filter: brightness(1.15); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+  <!-- 1. شاشة تسجيل الدخول -->
+  <div class="app-screen active" id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Ziada Analysis</span>
+      </div>
+      <p style="text-align: center; font-size: 13px; color: var(--text-muted);" id="loginSubtitle">
+        منصة التحليل التكتيكي المتقدم للمباريات
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="text" id="usernameInput" class="login-input" placeholder="اسم المستخدم" value="admin">
+        <input type="password" id="passwordInput" class="login-input" placeholder="كلمة المرور" value="admin123">
+        <button class="btn-main" id="loginActionBtn" onclick="handleLoginSubmit()">تسجيل الدخول</button>
+        
+        <div class="login-footer">
+          <span id="loginToggleText">ليس لديك حساب؟</span>
+          <a onclick="toggleRegisterMode()" id="loginToggleBtn">طلب تسجيل جديد</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. الشاشة الرئيسية وبها زر التحميل للكمبيوتر والأقسام الثلاثة -->
+  <div class="app-screen" id="homeScreen">
+    <div class="home-title">
+      <i class="fa-solid fa-futbol"></i>
+      <span>منصة Ziada Analysis التكتيكية</span>
+    </div>
+
+    <!-- شريط تحميل وتحديث البرنامج داخل القائمة الرئيسية -->
+    <div class="desktop-download-box">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-desktop" style="font-size: 20px; color: var(--primary);"></i>
+        <div>
+          <div style="font-weight: 800; font-size: 14px; color: #fff;">برنامج الكمبيوتر للويندوز</div>
+          <div style="font-size: 11px; color: var(--text-muted);">حمّل أحدث نسخة مثبتة مباشرة (.exe) بدون إنترنت للمباريات</div>
+        </div>
+      </div>
+      <button onclick="downloadAppInstaller()" class="download-app-btn">
+        <i class="fa-solid fa-cloud-arrow-down"></i>
+        <span>تحميل البرنامج للكمبيوتر</span>
+      </button>
+    </div>
+
+    <p style="color: var(--text-muted); font-size: 14px; align-self: flex-start; margin-top: 5px;">
+      اختر قسم التحليل المطلوب للبدء فوراً:
+    </p>
+    
+    <div class="home-cards-grid">
+      <!-- تحليل فردي -->
+      <a href="individual.html" class="home-card">
+        <i class="fa-solid fa-user-ninja"></i>
+        <h3>تحليل فردي</h3>
+        <p>دراسة وتقييم أداء اللاعبين الفردي وتحليل المهارات والحركات الخاصة</p>
+      </a>
+
+      <!-- تحليل جماعي -->
+      <a href="tactical.html" class="home-card">
+        <i class="fa-solid fa-people-group"></i>
+        <h3>تحليل جماعي</h3>
+        <p>استوديو تقطيع الحالات، الرسومات التكتيكية الـ 12، والتصدير والمونتاج</p>
+      </a>
+
+      <!-- تحليل لايف -->
+      <a href="live.html" class="home-card" style="border-color: #38bdf8;">
+        <i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i>
+        <h3 style="color: #38bdf8;">تحليل لايف</h3>
+        <p>البث المباشر، ربط كاميرا أو روابط السوشيال، والتقطيع الفوري 5ث قبل وبعد</p>
+      </a>
+    </div>
+
+    <!-- زر لوحة تحكم الأدمن -->
+    <div id="adminBadgeBox" style="display: none; margin-top: 15px;">
+      <a href="admin.html" class="btn-admin-panel">
+        <i class="fa-solid fa-user-shield"></i> فتح لوحة تحكم الأدمن (إدارة المشتركين)
+      </a>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <button onclick="logoutUser()" style="background: #1f2937; color: var(--danger); border: 1px solid var(--danger); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let isRegisterMode = false;
+
+    // دالة التنزيل المباشر
+    function downloadAppInstaller() {
+      // 1. إذا كان البرنامج يعمل داخل بيئة Electron
+      if (typeof window !== 'undefined' && window.process && window.process.type) {
+        try {
+          const { shell } = require('electron');
+          const path = require('path');
+          const filePath = path.join(__dirname, 'downloads', 'ZiadaAnalysis-Setup.exe');
+          shell.openPath(filePath).then(err => {
+            if (err) {
+              shell.showItemInFolder(filePath);
+            }
+          });
+          return;
+        } catch (e) {
+          console.log("Electron bridge unavailable, fallback to browser link.");
+        }
+      }
+
+      // 2. إذا كان يعمل كصفحة ويب عادية في المتصفح
+      const link = document.createElement('a');
+      link.href = 'downloads/ZiadaAnalysis-Setup.exe';
+      link.setAttribute('download', 'ZiadaAnalysis-Setup.exe');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function initDatabase() {
+      if (!localStorage.getItem('ziada_users_db')) {
+        const initialUsers = [
+          { username: 'coach1', password: '123', tier: 'free', active: true },
+          { username: 'captain', password: '123', tier: 'pro', active: true }
+        ];
+        localStorage.setItem('ziada_users_db', JSON.stringify(initialUsers));
+      }
+    }
+    initDatabase();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('home') === 'true' || localStorage.getItem('ziada_logged_in') === 'true') {
+        showHomeScreen();
+      }
+    });
+
+    function toggleRegisterMode() {
+      isRegisterMode = !isRegisterMode;
+      const sub = document.getElementById('loginSubtitle');
+      const btn = document.getElementById('loginActionBtn');
+      const toggleTxt = document.getElementById('loginToggleText');
+      const toggleBtn = document.getElementById('loginToggleBtn');
+
+      if (isRegisterMode) {
+        sub.innerText = 'طلب إنشاء حساب جديد للمدرب / المحلِل';
+        btn.innerText = 'إرسال طلب التسجيل';
+        toggleTxt.innerText = 'لديك حساب مسجل بالفعل؟';
+        toggleBtn.innerText = 'تسجيل الدخول';
+      } else {
+        sub.innerText = 'منصة التحليل التكتيكي المتقدم للمباريات';
+        btn.innerText = 'تسجيل الدخول';
+        toggleTxt.innerText = 'ليس لديك حساب؟';
+        toggleBtn.innerText = 'طلب تسجيل جديد';
+      }
+    }
+
+    function handleLoginSubmit() {
+      const user = document.getElementById('usernameInput').value.trim();
+      const pass = document.getElementById('passwordInput').value.trim();
+      if (!user || !pass) return alert("يرجى إدخال اسم المستخدم وكلمة المرور!");
+
+      // 1. الدخول كمدير عام (الأدمن)
+      if (user.toLowerCase() === 'admin' && pass === 'admin123') {
+        localStorage.setItem('ziada_logged_in', 'true');
+        localStorage.setItem('ziada_current_role', 'admin');
+        showHomeScreen();
+        return;
+      }
+
+      let db = JSON.parse(localStorage.getItem('ziada_users_db') || '[]');
+
+      // 2. تسجيل جديد
+      if (isRegisterMode) {
+        if (db.find(u => u.username.toLowerCase() === user.toLowerCase())) {
+          return alert("اسم المستخدم مسجل مسبقاً! يرجى اختيار اسم آخر.");
+        }
+        db.push({ username: user, password: pass, tier: 'free', active: false });
+        localStorage.setItem('ziada_users_db', JSON.stringify(db));
+        alert("تم إرسال طلب تسجيل الحساب بنجاح!\nالحساب غير مفعّل حالياً، يرجى التواصل مع الإدارة للموافقة وتفعيل الدخول.");
+        toggleRegisterMode();
+        return;
+      }
+
+      // 3. التحقق من الحساب
+      const account = db.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
+
+      if (!account) {
+        return alert("خطأ! اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير مسجل.");
+      }
+
+      if (!account.active) {
+        return alert("عذراً، هذا الحساب غير مفعّل حالياً من قِبل الإدارة أو تم إيقافه!");
+      }
+
+      localStorage.setItem('ziada_logged_in', 'true');
+      localStorage.setItem('ziada_current_role', account.tier);
+      localStorage.setItem('ziada_current_user', account.username);
+      showHomeScreen();
+    }
+
+    function showHomeScreen() {
+      document.getElementById('loginScreen').classList.remove('active');
+      document.getElementById('homeScreen').classList.add('active');
+
+      const role = localStorage.getItem('ziada_current_role');
+      const adminBox = document.getElementById('adminBadgeBox');
+      if (adminBox) {
+        adminBox.style.display = (role === 'admin') ? 'block' : 'none';
+      }
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('ziada_logged_in');
+      localStorage.removeItem('ziada_current_role');
+      localStorage.removeItem('ziada_current_user');
+      document.getElementById('homeScreen').classList.remove('active');
+      document.getElementById('loginScreen').classList.add('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ziada Analysis - لوحة تحكم الإدارة والصلاحيات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 16px; }
+
+    .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 16px; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 22px; border-radius: 12px; border: 1px solid var(--border-color); }
+    .brand-title { font-size: 1.3rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    /* كروت التحكم في الميزات العامة */
+    .features-control-box { background: var(--card-bg); border: 2px solid #38bdf844; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 5px; }
+    .feature-card { background: #070b12; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .feature-info h4 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .feature-info p { font-size: 11.5px; color: var(--text-muted); }
+
+    /* مفتاح التبديل Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .3s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--success); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    /* كروت الإحصائيات */
+    .stats-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
+    .stat-info h4 { font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
+    .stat-info span { font-size: 24px; font-weight: 800; }
+    .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+
+    /* جدول إدارة المشتركين */
+    .table-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; overflow-x: auto; }
+    .users-table { width: 100%; border-collapse: collapse; text-align: right; }
+    .users-table th { background: #070b12; padding: 12px 14px; font-size: 12.5px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+    .users-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); }
+
+    .badge-tier { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; }
+    .badge-free { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #475569; }
+    .badge-pro { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
+
+    .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; }
+    .status-active { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
+    .status-disabled { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
+
+    .btn-action-mini { padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .btn-tier-toggle { background: #1e293b; color: #f59e0b; border: 1px solid #f59e0b; }
+    .btn-tier-toggle:hover { background: #f59e0b; color: #000; }
+    .btn-status-toggle { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
+    .btn-status-toggle:hover { background: #38bdf8; color: #000; }
+    .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
+    .btn-del:hover { background: #ef4444; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header class="top-nav">
+      <div class="brand-title">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>لوحة تحكم المدير العام وإدارة الصلاحيات</span>
+      </div>
+      <a href="index.html?home=true" class="btn-top"><i class="fa-solid fa-house"></i> العودة للمنصة الرئيسية</a>
+    </header>
+
+    <!-- لوحة غلق وفتح الميزات الثلاث المحددة -->
+    <section class="features-control-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-sliders"></i> التحكم في تشغيل وغلق الميزات للمستخدمين:</h3>
+        <small style="color: var(--text-muted);">التغييرات تُحفظ وتُطبق فوراً على كل المشتركين</small>
+      </div>
+
+      <div class="features-grid">
+        <!-- 1. ميزة التقرير في التحليل الفردي -->
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> تصدير تقرير الفردي (PDF)</h4>
+            <p>السماح للمستخدم بتصدير تقرير اللاعب</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleIndReport" onchange="updateFeatureSetting('indReport', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 2. ميزة الرسومات في التحليل الجماعي -->
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-palette" style="color: #ec4899;"></i> استوديو الرسومات التكتيكية</h4>
+            <p>فتح أدوات الرسم الـ 12 والوقفة التحليلية</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleTacticalStudio" onchange="updateFeatureSetting('tacticalStudio', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 3. ميزة التحليل اللايف بالكامل -->
+        <div class="feature-card">
+          <div class="feature-info">
+            <h4><i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i> قسم التحليل اللايف</h4>
+            <p>السماح بفتح واستخدام التحليل المباشر</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleLiveAnalysis" onchange="updateFeatureSetting('liveAnalysis', this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- إحصائيات سريعة -->
+    <div class="stats-overview-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>إجمالي المشتركين</h4>
+          <span id="statTotalUsers" style="color: var(--primary);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>الاشتراكات المدفوعة (Pro)</h4>
+          <span id="statProUsers" style="color: var(--accent);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>الاشتراكات المجانية (Free)</h4>
+          <span id="statFreeUsers" style="color: #cbd5e1;">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-user"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>الحسابات المعطلة</h4>
+          <span id="statDisabledUsers" style="color: var(--danger);">0</span>
+        </div>
+        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-user-slash"></i></div>
+      </div>
+    </div>
+
+    <!-- جدول المشتركين -->
+    <div class="table-container">
+      <h3 style="color: #fff; font-size: 15px; margin-bottom: 14px;"><i class="fa-solid fa-list-check"></i> قائمة المشتركين وإدارة الحسابات:</h3>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم المستخدم</th>
+            <th>كلمة المرور</th>
+            <th>نوع الباقة</th>
+            <th>حالة الحساب</th>
+            <th>إجراءات الإدارة</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // 1. نظام إعدادات الصلاحيات العامة
+    function getFeatureSettings() {
+      const saved = localStorage.getItem('ziada_features_permissions');
+      if (!saved) {
+        // الإعدادات الافتراضية
+        const defaults = { indReport: true, tacticalStudio: true, liveAnalysis: true };
+        localStorage.setItem('ziada_features_permissions', JSON.stringify(defaults));
+        return defaults;
+      }
+      return JSON.parse(saved);
+    }
+
+    function loadFeatureSwitches() {
+      const cfg = getFeatureSettings();
+      document.getElementById('toggleIndReport').checked = !!cfg.indReport;
+      document.getElementById('toggleTacticalStudio').checked = !!cfg.tacticalStudio;
+      document.getElementById('toggleLiveAnalysis').checked = !!cfg.liveAnalysis;
+    }
+
+    function updateFeatureSetting(key, val) {
+      const cfg = getFeatureSettings();
+      cfg[key] = val;
+      localStorage.setItem('ziada_features_permissions', JSON.stringify(cfg));
+    }
+
+    // 2. إدارة المستخدمين
+    function getUsers() {
+      const data = localStorage.getItem('ziada_users_db');
+      if (!data) return [];
+      return JSON.parse(data);
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('ziada_users_db', JSON.stringify(users));
+      renderUsersTable();
+    }
+
+    function renderUsersTable() {
+      const users = getUsers();
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+
+      let proCount = 0, freeCount = 0, disabledCount = 0;
+
+      users.forEach((u, idx) => {
+        if (u.tier === 'pro') proCount++; else freeCount++;
+        if (!u.active) disabledCount++;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><b>${u.username}</b></td>
+          <td style="font-family: monospace; color: var(--text-muted);">${u.password}</td>
+          <td>
+            <span class="badge-tier ${u.tier === 'pro' ? 'badge-pro' : 'badge-free'}">
+              ${u.tier === 'pro' ? 'مدفوع Pro ⭐' : 'مجاني Free'}
+            </span>
+          </td>
+          <td>
+            <span class="badge-status ${u.active ? 'status-active' : 'status-disabled'}">
+              ${u.active ? 'مفعل نشط' : 'معطل'}
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-action-mini btn-tier-toggle" onclick="toggleUserTier('${u.username}')">
+                <i class="fa-solid fa-arrows-rotate"></i> ${u.tier === 'pro' ? 'تحويل لمجاني' : 'ترقية لـ Pro'}
+              </button>
+              <button class="btn-action-mini btn-status-toggle" onclick="toggleUserStatus('${u.username}')">
+                <i class="fa-solid fa-power-off"></i> ${u.active ? 'تعطيل' : 'تفعيل'}
+              </button>
+              <button class="btn-action-mini btn-del" onclick="deleteUser('${u.username}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('statTotalUsers').innerText = users.length;
+      document.getElementById('statProUsers').innerText = proCount;
+      document.getElementById('statFreeUsers').innerText = freeCount;
+      document.getElementById('statDisabledUsers').innerText = disabledCount;
+    }
+
+    function toggleUserTier(username) {
+      const users = getUsers();
+      const user = users.find(u => u.username === username);
+      if (user) {
+        user.tier = user.tier === 'pro' ? 'free' : 'pro';
+        saveUsers(users);
+      }
+    }
+
+    function toggleUserStatus(username) {
+      const users = getUsers();
+      const user = users.find(u => u.username === username);
+      if (user) {
+        user.active = !user.active;
+        saveUsers(users);
+      }
+    }
+
+    function deleteUser(username) {
+      if (!confirm(`هل أنت متأكد من حذف الحساب (${username})؟`)) return;
+      let users = getUsers();
+      users = users.filter(u => u.username !== username);
+      saveUsers(users);
+    }
+
+    window.onload = () => {
+      loadFeatureSwitches();
+      renderUsersTable();
+    };
+  </script>
+</body>
+</html>
