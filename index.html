@@ -57,7 +57,6 @@
       <p>منصة التحليل الفني والتكتيكي للمباريات</p>
     </div>
 
-    <!-- تم التعديل هنا: زر تحميل تطبيق الموبايل فقط -->
     <div class="download-strip">
       <a href="Ziada-Analysis.apk" class="btn-mob" download>📱 تنزيل تطبيق الموبايل (Android)</a>
     </div>
@@ -108,6 +107,9 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(); const db = firebase.firestore();
 
+    // 🔴 المتغير ده هو اللي بيحل مشكلة التداخل (Race Condition) 🔴
+    let isRegistering = false; 
+
     function getDeviceFingerprint() {
       let deviceId = localStorage.getItem('ziada_device_id');
       if (!deviceId) { deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(); localStorage.setItem('ziada_device_id', deviceId); }
@@ -128,7 +130,6 @@
       if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
       if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error'); return false; }
 
-      // لو الاشتراك مش مفتوح، نفحص التاريخ
       if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
         if (trueToday > userData.subscriptionEnd) {
@@ -148,6 +149,9 @@
     }
 
     auth.onAuthStateChanged(async (user) => {
+      // 🔴 لو النظام بيسجل مدرب جديد حالاً، بنقول لكود الحماية يقف وميتدخلش 🔴
+      if (isRegistering) return; 
+
       if (user) {
         try {
           const userDoc = await db.collection('users').doc(user.uid).get();
@@ -177,26 +181,45 @@
 
     async function handleRegister(e) {
       e.preventDefault();
-      const btn = document.getElementById('reg-btn-text'); btn.textContent = 'جاري إنشاء الحساب...';
+      const btn = document.getElementById('reg-btn-text'); 
+      btn.textContent = 'جاري إنشاء الحساب...';
+      isRegistering = true; // 🔴 تفعيل حاجز المرور
+      let createdUser = null; 
+
       try {
         const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
+        createdUser = cred.user;
         
-        await db.collection('users').doc(cred.user.uid).set({
-          uid: cred.user.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
+        await db.collection('users').doc(createdUser.uid).set({
+          uid: createdUser.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
           role: 'coach', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        await cred.user.sendEmailVerification();
+        await createdUser.sendEmailVerification();
         
         showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل أولاً.', 'success');
         document.getElementById('register-form').reset();
         await auth.signOut();
         setTimeout(() => switchTab('login'), 4000);
+
       } catch (error) {
-        if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
-        else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
-        else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
-      } finally { btn.textContent = 'إنشاء الحساب الآن'; }
+        // نظام الحذف التلقائي للحسابات الوهمية أو في حالة الخطأ
+        if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
+          try { await createdUser.delete(); } catch(e) { }
+        }
+
+        if (error.code === 'auth/email-already-in-use') {
+          showAlert('هذا البريد مستخدم بالفعل.', 'error');
+        } else if (error.code === 'auth/weak-password') {
+          showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
+        } else {
+          showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
+        }
+        await auth.signOut();
+      } finally { 
+        isRegistering = false; // 🔴 رفع حاجز المرور بعد الانتهاء
+        btn.textContent = 'إنشاء الحساب الآن'; 
+      }
     }
   </script>
 </body>
