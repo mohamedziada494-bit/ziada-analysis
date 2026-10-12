@@ -12,34 +12,76 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-    body { background-color: #0b1120; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; }
-    .main-card { width: 100%; max-width: 520px; background-color: #1e293b; border: 1px solid #334155; border-radius: 1.25rem; padding: 2.25rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); }
+    :root { --primary: #38bdf8; --accent: #f59e0b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+    
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      
+      /* 🔴 الصورة تملى الشاشة كلها كخلفية 🔴 */
+      background-image: url('logo-bg.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    /* 🔴 طبقة تغميق شفافة فوق الصورة عشان كلام الكارد يوضح 🔴 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 8, 15, 0.75);
+      z-index: 0;
+    }
+
+    .main-card {
+      position: relative;
+      z-index: 1;
+      width: 100%; max-width: 500px;
+      background-color: rgba(15, 23, 42, 0.88); /* خلفية الكارد شفافة وأنيقة */
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      border-radius: 1.25rem; padding: 2.25rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
     .header { text-align: center; margin-bottom: 1.75rem; }
-    .header .logo { width: 68px; height: 68px; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.85rem; }
-    .header .logo svg { width: 36px; height: 36px; fill: #ffffff; }
-    .header h1 { font-size: 1.65rem; font-weight: 800; color: #f8fafc; }
+    .header .logo-text { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
+    .header .logo-text span { color: var(--accent); }
     .header p { font-size: 0.9rem; color: #94a3b8; margin-top: 0.35rem; }
-    .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background-color: #0f172a; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid #334155; }
-    .download-strip a, .download-strip button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem; font-size: 0.9rem; font-weight: 700; text-decoration: none; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-mob { background-color: #1e293b; color: #4ade80; border: 1px solid #16a34a; }
-    .btn-mob:hover { background-color: #16a34a; color: #ffffff; }
-    .tabs { display: flex; background-color: #0f172a; padding: 0.25rem; border-radius: 0.5rem; margin-bottom: 1.5rem; }
+
+    .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background-color: rgba(15, 23, 42, 0.9); padding: 0.6rem; border-radius: 0.75rem; border: 1px solid #334155; }
+    .download-strip button { 
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
+      padding: 0.6rem; font-size: 0.85rem; font-weight: 700; 
+      border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.75;
+      background-color: #1e293b; color: #4ade80; 
+    }
+
+    .tabs { display: flex; background-color: rgba(15, 23, 42, 0.9); padding: 0.25rem; border-radius: 0.5rem; margin-bottom: 1.5rem; }
     .tab-btn { flex: 1; padding: 0.65rem; border: none; background: transparent; color: #94a3b8; font-size: 0.9rem; font-weight: 600; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; }
     .tab-btn.active { background-color: #2563eb; color: #ffffff; }
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem; }
-    .form-group input { width: 100%; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #f8fafc; text-align: left;}
+    .form-group input { width: 100%; padding: 0.75rem; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #334155; border-radius: 0.5rem; color: #f8fafc; text-align: left;}
     .submit-btn { width: 100%; padding: 0.8rem; background-color: #2563eb; color: #ffffff; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; }
     .btn-register-style { background-color: #10b981; }
     .alert { padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1.25rem; display: none; text-align: center; }
     .alert.error { background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; }
     .alert.success { background-color: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; }
+    
     .dashboard-panel { display: none; }
     .coach-welcome { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #334155; }
     .coach-welcome h2 { font-size: 1.3rem; color: #38bdf8; }
     .analysis-grid { display: flex; flex-direction: column; gap: 1rem; }
-    .analysis-card { display: flex; align-items: center; gap: 1rem; padding: 1.1rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; }
+    .analysis-card { display: flex; align-items: center; gap: 1rem; padding: 1.1rem; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #334155; border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; transition: 0.2s; }
+    .analysis-card:hover { background-color: #1e293b; border-color: #475569; }
     .analysis-card .icon-box { width: 48px; height: 48px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .tactical-icon { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
     .individual-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
@@ -52,13 +94,12 @@
 
   <div class="main-card">
     <div class="header">
-      <div class="logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/><path d="M12 2a10 10 0 0 1 10 10M12 12l7-7M12 12l-7 7M12 12l7 7M12 12l-7-7" stroke="white" stroke-width="2"/></svg></div>
-      <h1>Ziada Analysis</h1>
+      <div class="logo-text">Ziada <span>Analysis</span></div>
       <p>منصة التحليل الفني والتكتيكي للمباريات</p>
     </div>
 
     <div class="download-strip">
-      <a href="Ziada-Analysis.apk" class="btn-mob" download>📱 تنزيل تطبيق الموبايل (Android)</a>
+      <button disabled>📱 تطبيق الموبايل (قريباً... SOOON)</button>
     </div>
 
     <div id="auth-panel">
@@ -107,7 +148,6 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(); const db = firebase.firestore();
 
-    // 🔴 المتغير ده هو اللي بيحل مشكلة التداخل (Race Condition) 🔴
     let isRegistering = false; 
 
     function getDeviceFingerprint() {
@@ -127,16 +167,15 @@
     }
 
     async function validateUserAccess(user, userData) {
+      if (isRegistering) return; 
       if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
       if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error'); return false; }
-
       if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
         if (trueToday > userData.subscriptionEnd) {
           showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false;
         }
       }
-
       if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
         if (!userData.currentDeviceId) {
@@ -149,9 +188,7 @@
     }
 
     auth.onAuthStateChanged(async (user) => {
-      // 🔴 لو النظام بيسجل مدرب جديد حالاً، بنقول لكود الحماية يقف وميتدخلش 🔴
       if (isRegistering) return; 
-
       if (user) {
         try {
           const userDoc = await db.collection('users').doc(user.uid).get();
@@ -183,41 +220,31 @@
       e.preventDefault();
       const btn = document.getElementById('reg-btn-text'); 
       btn.textContent = 'جاري إنشاء الحساب...';
-      isRegistering = true; // 🔴 تفعيل حاجز المرور
+      isRegistering = true; 
       let createdUser = null; 
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
         createdUser = cred.user;
-        
         await db.collection('users').doc(createdUser.uid).set({
           uid: createdUser.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
           role: 'coach', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
         await createdUser.sendEmailVerification();
-        
         showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل أولاً.', 'success');
         document.getElementById('register-form').reset();
         await auth.signOut();
         setTimeout(() => switchTab('login'), 4000);
-
       } catch (error) {
-        // نظام الحذف التلقائي للحسابات الوهمية أو في حالة الخطأ
         if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
           try { await createdUser.delete(); } catch(e) { }
         }
-
-        if (error.code === 'auth/email-already-in-use') {
-          showAlert('هذا البريد مستخدم بالفعل.', 'error');
-        } else if (error.code === 'auth/weak-password') {
-          showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
-        } else {
-          showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
-        }
+        if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
+        else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
+        else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
         await auth.signOut();
       } finally { 
-        isRegistering = false; // 🔴 رفع حاجز المرور بعد الانتهاء
+        isRegistering = false; 
         btn.textContent = 'إنشاء الحساب الآن'; 
       }
     }
