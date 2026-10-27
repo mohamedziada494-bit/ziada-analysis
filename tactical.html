@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المستقر</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 12px; }
+
+    .main-wrapper { max-width: 1580px; margin: auto; display: flex; flex-direction: column; gap: 12px; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
+    .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    .workspace-grid { display: grid; grid-template-columns: 310px 1fr 310px; gap: 14px; }
+
+    .tagging-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 7px; }
+    
+    .mode-switch-card { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 4px; display: flex; flex-direction: column; gap: 8px; }
+    .mode-switch-title { font-size: 12px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+    .mode-buttons-row { display: flex; gap: 6px; }
+    .btn-mode { flex: 1; padding: 8px 4px; border-radius: 6px; border: 1px solid var(--border-color); background: #1f2937; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .btn-mode.active { background: #0284c7; color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+
+    .panel-heading { font-size: 13px; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+
+    .btn-tag { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; color: #fff; background: #1f2937; }
+    .btn-tag:hover { transform: translateX(-4px); filter: brightness(1.15); }
+    .btn-tag.recording-active { background: #b91c1c !important; border-color: #ef4444 !important; animation: pulseRecord 1.2s infinite; }
+    @keyframes pulseRecord { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+    .tag-att { border-right: 4px solid #3b82f6; }
+    .tag-ind { border-right: 4px solid #8b5cf6; }
+    .tag-def { border-right: 4px solid #ef4444; }
+    .tag-goal { border-right: 4px solid #f59e0b; }
+    .tag-set-att { border-right: 4px solid #06b6d4; }
+    .tag-set-def { border-right: 4px solid #f97316; }
+    .tag-buildup { border-right: 4px solid #10b981; }
+    .tag-press { border-right: 4px solid #ec4899; }
+    .tag-opp-trick { border-right: 4px solid #eab308; }
+
+    .video-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .video-viewport { position: relative; width: 100%; height: 56vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    video { width: 100%; height: 100%; object-fit: contain; }
+
+    .video-controls-row { display: flex; align-items: center; justify-content: space-between; background: #070b12; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 12px; }
+    .time-txt { font-size: 13px; font-weight: 800; color: var(--primary); direction: ltr; min-width: 95px; text-align: center; }
+    
+    .seek-bar { 
+      flex: 1; 
+      -webkit-appearance: none; 
+      height: 8px; 
+      background: #374151; 
+      border-radius: 5px; 
+      outline: none; 
+      cursor: pointer; 
+    }
+    .seek-bar::-webkit-slider-thumb { 
+      -webkit-appearance: none; 
+      width: 17px; 
+      height: 17px; 
+      border-radius: 50%; 
+      background: var(--primary); 
+      cursor: pointer; 
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    .btn-ctrl { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .btn-ctrl:hover { background: #374151; }
+
+    .studio-launch-bar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #6366f1; padding: 12px 20px; border-radius: 10px; margin-top: 5px; }
+    .btn-open-studio { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
+    .btn-open-studio:hover { transform: scale(1.03); }
+
+    /* لوحة التصدير الجانبية */
+    .export-side-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .export-box-title { font-size: 13.5px; font-weight: 800; color: #10b981; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+    .export-step-box { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .export-step-label { font-size: 11px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+
+    .export-radio-group { display: flex; flex-direction: column; gap: 6px; }
+    .export-radio-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #cbd5e1; padding: 6px; border-radius: 6px; background: #111827; border: 1px solid transparent; transition: 0.2s; }
+    .export-radio-item:hover, .export-radio-item.selected { border-color: var(--primary); background: #1e293b; color: #fff; }
+    .export-radio-item input { accent-color: var(--primary); }
+
+    .btn-export-action { width: 100%; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: 0.2s; }
+    .btn-export-action:hover { filter: brightness(1.15); transform: translateY(-2px); }
+    .btn-export-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .export-progress-wrap { display: none; flex-direction: column; gap: 6px; background: #070b12; border: 1px solid #10b981; border-radius: 8px; padding: 10px; }
+    .progress-bar-bg { width: 100%; height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #10b981); transition: width 0.15s; }
+    .progress-status-txt { font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; }
+
+    /* مكتبة الحالات المسجلة مع كروت التعديل */
+    .clips-library-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-top: 10px; }
+    .clips-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px; }
+    .clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; max-height: 270px; overflow-y: auto; }
+    .clip-card { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .clip-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .clip-card-actions { display: flex; gap: 6px; margin-top: 4px; }
+    .btn-clip-mini { flex: 1; padding: 5px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .btn-clip-play { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
+    .btn-clip-edit { background: #854d0e; color: #fef08a; }
+    .btn-clip-del { background: #991b1b; color: #fee2e2; }
+
+    /* نافذة تعديل بيانات وتوقيتات اللقطة */
+    .modal-clip-editor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .modal-clip-editor.active { display: flex; }
+    .clip-editor-box { background: var(--card-bg); border: 1.5px solid var(--primary); border-radius: 12px; width: 440px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    .editor-field-row { display: flex; flex-direction: column; gap: 6px; }
+    .editor-time-actions { display: flex; gap: 6px; }
+    .btn-time-sync { background: #1f2937; color: var(--primary); border: 1px solid var(--border-color); border-radius: 5px; padding: 5px 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
+    .btn-time-sync:hover { background: var(--primary); color: #000; }
+
+    /* استوديو الرسم التكتيكي */
+    .studio-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 7, 18, 0.98); z-index: 1000; flex-direction: column; padding: 12px; backdrop-filter: blur(8px); }
+    .studio-modal-overlay.active { display: flex; }
+
+    .studio-header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; }
+    .studio-layout-grid { flex: 1; display: grid; grid-template-columns: 280px 1fr 265px; gap: 12px; overflow: hidden; }
+
+    .studio-clips-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    .studio-clip-item { background: #070b12; border: 1.5px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
+    .studio-clip-item.active-selected { border-color: #ec4899; background: #1e1b4b; }
+
+    .studio-player-center { display: flex; flex-direction: column; gap: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; position: relative; }
+    .studio-video-viewport { position: relative; flex: 1; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    #studioPlayerVideo { width: 100%; height: 100%; object-fit: contain; }
+    #studioInteractiveCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; z-index: 10; }
+
+    .freeze-countdown-badge {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 30px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 60;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+      border: 2px solid #fff;
+    }
+
+    .shape-floating-toolbar {
+      position: absolute;
+      display: none;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid var(--primary);
+      border-radius: 30px;
+      padding: 5px 12px;
+      gap: 8px;
+      align-items: center;
+      z-index: 50;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.4);
+      transform: translate(-50%, -120%);
+    }
+    .shape-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .shape-btn:hover { transform: scale(1.15); }
+    .btn-shape-ok { background: #10b981; color: #fff; }
+    .btn-shape-scale-up { background: #3b82f6; color: #fff; }
+    .btn-shape-scale-down { background: #475569; color: #fff; }
+    .btn-shape-edit { background: #f59e0b; color: #fff; }
+    .btn-shape-move { background: #0284c7; color: #fff; }
+    .btn-shape-move.active { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+    .btn-shape-track { background: #8b5cf6; color: #fff; }
+    .btn-shape-track.active { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
+    .btn-shape-del { background: #ef4444; color: #fff; }
+
+    .studio-tools-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+    .tool-btn { width: 100%; background: #0f172a; border: 1px solid var(--border-color); color: #e2e8f0; padding: 8px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .tool-btn:hover { background: #1e293b; color: #fff; }
+    .tool-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+
+    .input-field { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; font-family: inherit; }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header class="top-nav">
+      <div class="brand-title">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Ziada Analysis | استوديو تقطيع الحالات والتعديل والرسم والتصدير</span>
+      </div>
+      <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية</a>
+    </header>
+
+    <div class="workspace-grid">
+      <!-- 1. لوحة أزرار التقطيع -->
+      <aside class="tagging-panel">
+        <div class="mode-switch-card">
+          <div class="mode-switch-title">
+            <i class="fa-solid fa-sliders"></i>
+            <span>نمط تسجيل وتقطيع الحالات:</span>
+          </div>
+          <div class="mode-buttons-row">
+            <button class="btn-mode active" id="modeAutoBtn" onclick="setCaptureMode('auto')">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>تلقائي (5ث قبل / 5ث بعد)</span>
+            </button>
+            <button class="btn-mode" id="modeManualBtn" onclick="setCaptureMode('manual')">
+              <i class="fa-solid fa-stopwatch"></i>
+              <span>يدوي (بدء / إنهاء)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-heading">
+          <span><i class="fa-solid fa-scissors"></i> أزرار الحالات التكتيكية (9)</span>
+          <small id="currentModeLabel" style="color: var(--primary);">تلقائي 5ث قبل/بعد</small>
+        </div>
+
+        <button class="btn-tag tag-att" id="btn_att" onclick="handleTagClick('حالات هجومية', 'tag-att', this)"><span>حالات هجومية</span> <i class="fa-solid fa-angles-left"></i></button>
+        <button class="btn-tag tag-ind" id="btn_ind" onclick="handleTagClick('حالات فردية', 'tag-ind', this)"><span>حالات فردية</span> <i class="fa-solid fa-user-ninja"></i></button>
+        <button class="btn-tag tag-def" id="btn_def" onclick="handleTagClick('حالات دفاعية', 'tag-def', this)"><span>حالات دفاعية</span> <i class="fa-solid fa-shield-halved"></i></button>
+        <button class="btn-tag tag-goal" id="btn_goal" onclick="handleTagClick('أهداف', 'tag-goal', this)"><span>أهداف ⚽</span> <i class="fa-solid fa-fire"></i></button>
+        <button class="btn-tag tag-set-att" id="btn_set_att" onclick="handleTagClick('كرات ثابتة هجومية', 'tag-set-att', this)"><span>كرات ثابتة هجومية</span> <i class="fa-solid fa-flag"></i></button>
+        <button class="btn-tag tag-set-def" id="btn_set_def" onclick="handleTagClick('كرات ثابتة دفاعية', 'tag-set-def', this)"><span>كرات ثابتة دفاعية</span> <i class="fa-solid fa-hand-fist"></i></button>
+        <button class="btn-tag tag-buildup" id="btn_buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة (Build-up)</span> <i class="fa-solid fa-cubes"></i></button>
+        <button class="btn-tag tag-press" id="btn_press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي (High Press)</span> <i class="fa-solid fa-gauge-high"></i></button>
+        <button class="btn-tag tag-opp-trick" id="btn_opp_trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم (تركاية)</span> <i class="fa-solid fa-lightbulb"></i></button>
+
+        <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
+          <input type="file" id="videoFile" accept="video/*" class="input-field" onchange="loadMatchVideo(event)">
+        </div>
+      </aside>
+
+      <!-- 2. مشغل الفيديو الرئيسي -->
+      <main class="video-box">
+        <div class="video-viewport">
+          <video id="matchVideo" playsinline></video>
+        </div>
+        <div class="video-controls-row">
+          <span class="time-txt" id="currentTimeDisp">00:00 / 00:00</span>
+          <button class="btn-ctrl" onclick="seekRelative(-5)"><i class="fa-solid fa-backward"></i> -5ث</button>
+          <input type="range" id="seekSlider" class="seek-bar" min="0" max="100" value="0" step="0.05">
+          <button class="btn-ctrl" onclick="seekRelative(5)">+5ث <i class="fa-solid fa-forward"></i></button>
+          <button class="btn-ctrl" id="mainPlayBtn" onclick="togglePlay()"><i class="fa-solid fa-play"></i> تشغيل</button>
+        </div>
+
+        <div class="studio-launch-bar">
+          <div>
+            <b style="color: #fff; font-size: 14px;"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f472b6;"></i> استوديو الرسم التكتيكي</b>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">تعديل اللقطات وإضافة الرسومات التكتيكية مع وقفة الـ 4 ثوانٍ</p>
+          </div>
+          <button class="btn-open-studio" onclick="openStudioFullscreen()">
+            <span>فتح استوديو الرسم التكتيكي</span>
+            <i class="fa-solid fa-palette"></i>
+          </button>
+        </div>
+      </main>
+
+      <!-- 3. لوحة التصدير الذكية والمونتاج التلقائي -->
+      <aside class="export-side-panel">
+        <div class="export-box-title">
+          <i class="fa-solid fa-film"></i>
+          <span>تصدير الحالات والمونتاج التلقائي</span>
+        </div>
+
+        <div class="export-step-box">
+          <div class="export-step-label">
+            <i class="fa-solid fa-palette"></i>
+            <span>1. نمط الفيديو المُصدر:</span>
+          </div>
+          <div class="export-radio-group">
+            <label class="export-radio-item selected" id="lblOverlayYes">
+              <input type="radio" name="exportOverlayMode" value="with_overlay" checked onchange="updateExportUI()">
+              <span>تصدير بالرسم (وقفة 4ث للتحليل)</span>
+            </label>
+            <label class="export-radio-item" id="lblOverlayNo">
+              <input type="radio" name="exportOverlayMode" value="no_overlay" onchange="updateExportUI()">
+              <span>تصدير فيديو خام (بدون رسم)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="export-step-box">
+          <div class="export-step-label">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>2. نوع ملف التصدير:</span>
+          </div>
+          <div class="export-radio-group">
+            <label class="export-radio-item selected" id="lblTypeMerged">
+              <input type="radio" name="exportTypeMode" value="merged_full" checked onchange="updateExportUI()">
+              <span>فيديو كامل مجمّع (مع فواصل الحالات القادمة)</span>
+            </label>
+            <label class="export-radio-item" id="lblTypeCategory">
+              <input type="radio" name="exportTypeMode" value="category_separate" onchange="updateExportUI()">
+              <span>تصدير حسب التصنيف (أو الجميع)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="export-step-box" id="categorySelectBox" style="display: none;">
+          <div class="export-step-label">
+            <i class="fa-solid fa-filter"></i>
+            <span>اختر التصنيف المراد تصديره:</span>
+          </div>
+          <select id="exportCategorySelect" class="input-field"></select>
+        </div>
+
+        <button class="btn-export-action" id="startExportBtn" onclick="runExportEngine()">
+          <i class="fa-solid fa-download"></i>
+          <span>تصدير وحفظ الفيديو في الجهاز</span>
+        </button>
+
+        <div class="export-progress-wrap" id="exportProgressWrap">
+          <div class="progress-status-txt">
+            <span id="exportStatusMsg">جاري التجهيز...</span>
+            <b id="exportPercentTxt" style="color: #10b981;">0%</b>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="exportProgressFill"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- شبكة استعراض الحالات مع إمكانية التعديل والحذف لكل لقطة -->
+    <section class="clips-library-section">
+      <div class="clips-header">
+        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-folder-open"></i> الحالات المسجلة (إمكانية التعديل والقص المباشر)</h3>
+      </div>
+      <div class="clips-grid" id="clipsGrid"></div>
+    </section>
+  </div>
+
+  <!-- نافذة تعديل بيانات وتوقيتات اللقطة المقطوعة -->
+  <div class="modal-clip-editor" id="modalClipEditor">
+    <div class="clip-editor-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <b style="color: var(--primary); font-size: 14px;"><i class="fa-solid fa-pen-to-square"></i> تعديل توقيت وتصنيف اللقطة</b>
+        <button onclick="closeClipEditor()" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="editor-field-row">
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">تصنيف الحالة:</label>
+        <select id="editClipCategory" class="input-field">
+          <option value="حالات هجومية">حالات هجومية</option>
+          <option value="حالات فردية">حالات فردية</option>
+          <option value="حالات دفاعية">حالات دفاعية</option>
+          <option value="أهداف">أهداف ⚽</option>
+          <option value="كرات ثابتة هجومية">كرات ثابتة هجومية</option>
+          <option value="كرات ثابتة دفاعية">كرات ثابتة دفاعية</option>
+          <option value="بناء الهجمة">بناء الهجمة (Build-up)</option>
+          <option value="الضغط العالي">الضغط العالي (High Press)</option>
+          <option value="طريقة لعب الخصم (تركاية في الملعب)">طريقة لعب الخصم (تركاية)</option>
+        </select>
+      </div>
+
+      <div class="editor-field-row">
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">وقت بداية اللقطة (بالثواني):</label>
+        <input type="number" id="editClipStart" step="0.1" class="input-field">
+        <div class="editor-time-actions">
+          <button class="btn-time-sync" onclick="syncEditorTime('start')"><i class="fa-solid fa-location-crosshairs"></i> اضبط من موقع الفيديو الحالي</button>
+        </div>
+      </div>
+
+      <div class="editor-field-row">
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">وقت نهاية اللقطة (بالثواني):</label>
+        <input type="number" id="editClipEnd" step="0.1" class="input-field">
+        <div class="editor-time-actions">
+          <button class="btn-time-sync" onclick="syncEditorTime('end')"><i class="fa-solid fa-location-crosshairs"></i> اضبط من موقع الفيديو الحالي</button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <button class="btn-export-action" style="flex: 1;" onclick="saveEditedClip()"><i class="fa-solid fa-check"></i> حفظ التعديلات</button>
+        <button class="btn-top" onclick="closeClipEditor()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الاستوديو التكتيكي -->
+  <div class="studio-modal-overlay" id="studioModal">
+    <header class="studio-header">
+      <div class="studio-title">
+        <i class="fa-solid fa-palette" style="color: #ec4899;"></i>
+        <span>استوديو التحليل التكتيكي | الحالة: <b id="studioActiveTitle" style="color:#fff;">اختر فيديو</b></span>
+      </div>
+      <button class="btn-top" onclick="closeStudioFullscreen()"><i class="fa-solid fa-xmark"></i> إغلاق والعودة</button>
+    </header>
+
+    <div class="studio-layout-grid">
+      <aside class="studio-clips-sidebar">
+        <div style="font-size: 13px; font-weight: 800; color: var(--primary);">الفيديوهات المقطوعة:</div>
+        <div id="studioClipsVerticalList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </aside>
+
+      <main class="studio-player-center">
+        <div class="studio-video-viewport" id="studioViewport">
+          <video id="studioPlayerVideo" playsinline></video>
+          <canvas id="studioInteractiveCanvas"></canvas>
+          
+          <div class="freeze-countdown-badge" id="freezeBadge">
+            <i class="fa-solid fa-hand-holding-hand"></i>
+            <span>وقفة تحليلية: <b id="freezeTimerText">4</b> ثوانٍ</span>
+          </div>
+
+          <div class="shape-floating-toolbar" id="shapeFloatingToolbar">
+            <button class="shape-btn btn-shape-ok" title="تثبيت واعتماد الرسمة (صح)" onclick="confirmShape()">
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="shape-btn btn-shape-scale-up" title="تكبير / تطويل (+)" onclick="scaleActiveShape(1.15)">
+              <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </button>
+            <button class="shape-btn btn-shape-scale-down" title="تصغير / تقصير (-)" onclick="scaleActiveShape(0.85)">
+              <i class="fa-solid fa-magnifying-glass-minus"></i>
+            </button>
+            <button class="shape-btn btn-shape-edit" id="btnShapeEdit" title="تعديل الملاحظة أو أرقام وأسماء اللاعبين" onclick="editShapeLabel()">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="shape-btn btn-shape-move" id="btnShapeMove" title="تحريك وتعديل مكان العنصر" onclick="toggleMoveMode()">
+              <i class="fa-solid fa-arrows-up-down-left-right"></i>
+            </button>
+            <button class="shape-btn btn-shape-track" id="btnShapeTrack" title="تتبع اللاعب مع حركة الفيديو" onclick="toggleTrackMode()">
+              <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <button class="shape-btn btn-shape-del" title="حذف هذه الرسمة" onclick="deleteActiveShape()">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="video-controls-row">
+          <span class="time-txt" id="studioTimeDisp">00:00 / 00:00</span>
+          <button class="btn-ctrl" onclick="seekStudioRelative(-3)"><i class="fa-solid fa-backward"></i> -3ث</button>
+          <input type="range" id="studioSeekSlider" class="seek-bar" min="0" max="100" value="0" step="0.05">
+          <button class="btn-ctrl" onclick="seekStudioRelative(3)">+3ث <i class="fa-solid fa-forward"></i></button>
+          <button class="btn-ctrl" id="studioPlayBtn" onclick="toggleStudioPlay()"><i class="fa-solid fa-play"></i> تشغيل</button>
+        </div>
+      </main>
+
+      <aside class="studio-tools-sidebar">
+        <div style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 3px;">🎨 الأدوات التكتيكية الأوروبية:</div>
+        <button class="tool-btn active" id="tool_spotlight" onclick="setStudioTool('spotlight')">
+          <i class="fa-solid fa-lightbulb" style="color:#ffffff;"></i> ضوء تسليط مخروطي أبيض
+        </button>
+        <button class="tool-btn" id="tool_player_ring" onclick="setStudioTool('player_ring')">
+          <i class="fa-solid fa-circle-dot" style="color:#38bdf8;"></i> حلقة إبراز اللاعب (3D Ring)
+        </button>
+        <button class="tool-btn" id="tool_arrow_pass" onclick="setStudioTool('arrow_pass')">
+          <i class="fa-solid fa-arrow-left-long" style="color:#38bdf8;"></i> سهم تمرير أرضي نيون
+        </button>
+        <button class="tool-btn" id="tool_arrow_curve" onclick="setStudioTool('arrow_curve')">
+          <i class="fa-solid fa-route" style="color:#ec4899;"></i> سهم انطلاق وتحرك مقوّس
+        </button>
+        <button class="tool-btn" id="tool_teleport" onclick="setStudioTool('teleport')">
+          <i class="fa-solid fa-person-walking-arrow-right" style="color:#a855f7;"></i> نقل لاعب (تمركز بديل Ghost)
+        </button>
+        <button class="tool-btn" id="tool_chain_formation" onclick="setStudioTool('chain_formation')">
+          <i class="fa-solid fa-diagram-project" style="color:#ef4444;"></i> منطقة تشكيل لاعبين (Chain)
+        </button>
+        <button class="tool-btn" id="tool_vision_cone" onclick="setStudioTool('vision_cone')">
+          <i class="fa-solid fa-eye" style="color:#10b981;"></i> مجال رؤية اللاعب (Vision Cone)
+        </button>
+        <button class="tool-btn" id="tool_space_zone" onclick="setStudioTool('space_zone')">
+          <i class="fa-solid fa-vector-square" style="color:#f59e0b;"></i> تسليط على مساحة تكتيكية 🔲
+        </button>
+        <button class="tool-btn" id="tool_distance_line" onclick="setStudioTool('distance_line')">
+          <i class="fa-solid fa-ruler-horizontal" style="color:#06b6d4;"></i> مقياس المسافة بين اللاعبين 📏
+        </button>
+        <button class="tool-btn" id="tool_ball_trajectory" onclick="setStudioTool('ball_trajectory')">
+          <i class="fa-solid fa-volleyball" style="color:#fbbf24;"></i> مسار كرة ساقطة في الهواء 🌈
+        </button>
+        <button class="tool-btn" id="tool_passing_blocker" onclick="setStudioTool('passing_blocker')">
+          <i class="fa-solid fa-ban" style="color:#f43f5e;"></i> حائط حظر زاوية التمرير 🚫
+        </button>
+        <button class="tool-btn" id="tool_offside_barrier" onclick="setStudioTool('offside_barrier')">
+          <i class="fa-solid fa-grip-lines-vertical" style="color:#eab308;"></i> خط التسلل والعمق الدفاعي 🧱
+        </button>
+        <button class="tool-btn" id="tool_magnifier_zoom" onclick="setStudioTool('magnifier_zoom')">
+          <i class="fa-solid fa-magnifying-glass" style="color:#a855f7;"></i> عدسة تكبير تفصيلية 🔍
+        </button>
+      </aside>
+    </div>
+  </div>
+
+  <canvas id="exportRenderCanvas" style="display: none;"></canvas>
+
+  <script>
+    const video = document.getElementById('matchVideo');
+    const studioVideo = document.getElementById('studioPlayerVideo');
+    const sCanvas = document.getElementById('studioInteractiveCanvas');
+    const sCtx = sCanvas.getContext('2d');
+    
+    const floatingToolbar = document.getElementById('shapeFloatingToolbar');
+    const btnShapeMove = document.getElementById('btnShapeMove');
+    const btnShapeTrack = document.getElementById('btnShapeTrack');
+    const btnShapeEdit = document.getElementById('btnShapeEdit');
+    const freezeBadge = document.getElementById('freezeBadge');
+    const freezeTimerText = document.getElementById('freezeTimerText');
+
+    const seekSlider = document.getElementById('seekSlider');
+    const timeDisp = document.getElementById('currentTimeDisp');
+    const mainPlayBtn = document.getElementById('mainPlayBtn');
+
+    const studioSeekSlider = document.getElementById('studioSeekSlider');
+    const studioTimeDisp = document.getElementById('studioTimeDisp');
+    const studioPlayBtn = document.getElementById('studioPlayBtn');
+
+    const clipsGrid = document.getElementById('clipsGrid');
+    const studioClipsList = document.getElementById('studioClipsVerticalList');
+
+    let isSeekingMain = false;
+    let isSeekingStudio = false;
+
+    let captureMode = 'auto';
+    let activeManualRecording = null;
+    let clips = [];
+    let currentStudioClip = null;
+    let activeStudioTool = 'spotlight';
+
+    let isDrawing = false;
+    let isMoving = false;
+    let isResizing = false;
+    let dragStartX = 0, dragStartY = 0;
+    let activeShape = null;
+    let mouseHoverX = 0, mouseHoverY = 0;
+
+    let isFreezeActive = false;
+    let freezeTimer = null;
+    let activeFreezingTime = null;
+    let lastCheckedTime = 0;
+
+    let editingClipTarget = null;
+
+    function loadMatchVideo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      studioVideo.src = url;
+      video.onloadedmetadata = updateTimeDisplay;
+    }
+
+    function formatTime(s) {
+      if (isNaN(s) || !isFinite(s)) return "00:00";
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimeDisplay() {
+      timeDisp.innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration || 0)}`;
+      if (!isSeekingMain && video.duration) {
+        seekSlider.value = (video.currentTime / video.duration) * 100;
+      }
+    }
+
+    video.addEventListener('timeupdate', updateTimeDisplay);
+
+    seekSlider.addEventListener('mousedown', () => { isSeekingMain = true; });
+    seekSlider.addEventListener('touchstart', () => { isSeekingMain = true; });
+
+    seekSlider.addEventListener('input', () => {
+      isSeekingMain = true;
+      if (video.duration) {
+        const targetTime = (seekSlider.value / 100) * video.duration;
+        timeDisp.innerText = `${formatTime(targetTime)} / ${formatTime(video.duration)}`;
+      }
+    });
+
+    seekSlider.addEventListener('change', () => {
+      if (video.duration) {
+        video.currentTime = (seekSlider.value / 100) * video.duration;
+      }
+      isSeekingMain = false;
+    });
+
+    seekSlider.addEventListener('mouseup', () => { isSeekingMain = false; });
+    seekSlider.addEventListener('touchend', () => { isSeekingMain = false; });
+
+    function seekRelative(sec) {
+      if (!video.duration) return;
+      video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + sec));
+    }
+
+    function togglePlay() {
+      if (video.paused) {
+        video.play();
+        mainPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+      } else {
+        video.pause();
+        mainPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+      }
+    }
+
+    video.addEventListener('play', () => { mainPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; });
+    video.addEventListener('pause', () => { mainPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; });
+
+    function setCaptureMode(mode) {
+      if (activeManualRecording) stopManualRecording();
+      captureMode = mode;
+      document.getElementById('modeAutoBtn').classList.toggle('active', mode === 'auto');
+      document.getElementById('modeManualBtn').classList.toggle('active', mode === 'manual');
+      document.getElementById('currentModeLabel').innerText = mode === 'auto' ? "تلقائي 5ث قبل/بعد" : "يدوي: اضغط للبدء ثم للإنهاء";
+    }
+
+    function handleTagClick(catName, badgeClass, btnEl) {
+      if (!video.src) return alert("يرجى اختيار فيديو المباراة أولاً!");
+      if (captureMode === 'auto') {
+        const cur = video.currentTime;
+        saveNewClip(catName, badgeClass, Math.max(0, cur - 5), Math.min(video.duration || cur + 5, cur + 5));
+      } else {
+        if (activeManualRecording && activeManualRecording.category === catName) {
+          stopManualRecording();
+        } else {
+          if (activeManualRecording) stopManualRecording();
+          startManualRecording(catName, badgeClass, btnEl);
+        }
+      }
+    }
+
+    function startManualRecording(catName, badgeClass, btnEl) {
+      activeManualRecording = { category: catName, badgeClass: badgeClass, btn: btnEl, originalHtml: btnEl.innerHTML, startTime: video.currentTime };
+      btnEl.classList.add('recording-active');
+      btnEl.innerHTML = `<span><i class="fa-solid fa-circle-dot"></i> جاري التسجيل...</span> <i class="fa-solid fa-stop"></i>`;
+    }
+
+    function stopManualRecording() {
+      if (!activeManualRecording) return;
+      const end = video.currentTime;
+      const start = activeManualRecording.startTime;
+      activeManualRecording.btn.classList.remove('recording-active');
+      activeManualRecording.btn.innerHTML = activeManualRecording.originalHtml;
+      saveNewClip(activeManualRecording.category, activeManualRecording.badgeClass, Math.min(start, end), Math.max(start, end));
+      activeManualRecording = null;
+    }
+
+    function saveNewClip(catName, badgeClass, start, end) {
+      clips.push({
+        id: 'c_' + Date.now(),
+        category: catName,
+        badgeClass: badgeClass,
+        start: parseFloat(start.toFixed(2)),
+        end: parseFloat(end.toFixed(2)),
+        shapes: []
+      });
+      renderClipsList();
+      populateExportCategories();
+    }
+
+    function renderClipsList() {
+      clipsGrid.innerHTML = '';
+      clips.forEach((c, idx) => {
+        const card = document.createElement('div');
+        card.className = 'clip-card';
+        card.innerHTML = `
+          <div class="clip-card-header">
+            <b style="color:#fff; font-size:12.5px;">#${idx + 1} - ${c.category}</b>
+            <small style="color:var(--text-muted);">${formatTime(c.start)} - ${formatTime(c.end)}</small>
+          </div>
+          <div style="font-size:11px; color:#94a3b8;">المدة: ${(c.end - c.start).toFixed(1)} ثانية | رسومات: ${c.shapes ? c.shapes.length : 0}</div>
+          <div class="clip-card-actions">
+            <button class="btn-clip-mini btn-clip-play" onclick="previewClip(${idx})"><i class="fa-solid fa-play"></i> تشغيل</button>
+            <button class="btn-clip-mini btn-clip-edit" onclick="openClipEditor('${c.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+            <button class="btn-clip-mini btn-clip-del" onclick="deleteClip('${c.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          </div>
+        `;
+        clipsGrid.appendChild(card);
+      });
+    }
+
+    function previewClip(idx) {
+      const c = clips[idx];
+      if (!c) return;
+      video.currentTime = c.start;
+      video.play();
+    }
+
+    function openClipEditor(clipId) {
+      const c = clips.find(x => x.id === clipId);
+      if (!c) return;
+      editingClipTarget = c;
+      document.getElementById('editClipCategory').value = c.category;
+      document.getElementById('editClipStart').value = c.start;
+      document.getElementById('editClipEnd').value = c.end;
+      document.getElementById('modalClipEditor').classList.add('active');
+    }
+
+    function closeClipEditor() {
+      editingClipTarget = null;
+      document.getElementById('modalClipEditor').classList.remove('active');
+    }
+
+    function syncEditorTime(type) {
+      const cur = parseFloat(video.currentTime.toFixed(2));
+      if (type === 'start') {
+        document.getElementById('editClipStart').value = cur;
+      } else {
+        document.getElementById('editClipEnd').value = cur;
+      }
+    }
+
+    function saveEditedClip() {
+      if (!editingClipTarget) return;
+      const newCat = document.getElementById('editClipCategory').value;
+      const newStart = parseFloat(document.getElementById('editClipStart').value);
+      const newEnd = parseFloat(document.getElementById('editClipEnd').value);
+
+      if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) {
+        return alert("يرجى التأكد من أن وقت البداية أقل من وقت النهاية!");
+      }
+
+      editingClipTarget.category = newCat;
+      editingClipTarget.start = newStart;
+      editingClipTarget.end = newEnd;
+
+      closeClipEditor();
+      renderClipsList();
+      populateExportCategories();
+      if (document.getElementById('studioModal').classList.contains('active')) {
+        renderStudioSidebarClips();
+      }
+      alert("تم تحديث توقيت وتصنيف اللقطة بنجاح!");
+    }
+
+    function deleteClip(clipId) {
+      if (!confirm("هل أنت متأكد من حذف هذه اللقطة؟")) return;
+      clips = clips.filter(x => x.id !== clipId);
+      renderClipsList();
+      populateExportCategories();
+      if (document.getElementById('studioModal').classList.contains('active')) {
+        renderStudioSidebarClips();
+      }
+    }
+
+    function openStudioFullscreen() {
+      if (clips.length === 0) return alert("لا توجد حالات مقطوعة حتى الآن!");
+      video.pause();
+      document.getElementById('studioModal').classList.add('active');
+
+      setTimeout(() => {
+        resizeStudioCanvas();
+        renderStudioSidebarClips();
+        selectClipInStudio(clips[0].id);
+      }, 100);
+    }
+
+    function closeStudioFullscreen() {
+      studioVideo.pause();
+      resetFreezeState();
+      hideFloatingToolbar();
+      document.getElementById('studioModal').classList.remove('active');
+    }
+
+    function resizeStudioCanvas() {
+      sCanvas.width = sCanvas.parentElement.clientWidth;
+      sCanvas.height = sCanvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', () => {
+      if (document.getElementById('studioModal').classList.contains('active')) resizeStudioCanvas();
+    });
+
+    function renderStudioSidebarClips() {
+      studioClipsList.innerHTML = '';
+      clips.forEach((c, idx) => {
+        const item = document.createElement('div');
+        item.className = `studio-clip-item ${currentStudioClip && currentStudioClip.id === c.id ? 'active-selected' : ''}`;
+        item.onclick = () => selectClipInStudio(c.id);
+        item.innerHTML = `
+          <b style="color:#fff;">فيديو #${idx + 1} - ${c.category}</b>
+          <small style="color:var(--text-muted);">${formatTime(c.start)} - ${formatTime(c.end)}</small>
+        `;
+        studioClipsList.appendChild(item);
+      });
+    }
+
+    function selectClipInStudio(clipId) {
+      const c = clips.find(x => x.id === clipId);
+      if (!c) return;
+      currentStudioClip = c;
+      resetFreezeState();
+      hideFloatingToolbar();
+
+      document.getElementById('studioActiveTitle').innerText = `${c.category}`;
+      renderStudioSidebarClips();
+
+      studioVideo.currentTime = c.start;
+      lastCheckedTime = c.start;
+      studioVideo.play();
+      studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+    }
+
+    studioVideo.addEventListener('timeupdate', () => {
+      if (!currentStudioClip) return;
+
+      if (isFreezeActive && activeFreezingTime !== null) {
+        if (!studioVideo.paused) studioVideo.pause();
+        drawAllShapesForTime(activeFreezingTime);
+        return;
+      }
+
+      if (studioVideo.currentTime >= currentStudioClip.end) {
+        studioVideo.pause();
+        studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+        studioVideo.currentTime = currentStudioClip.start;
+        lastCheckedTime = currentStudioClip.start;
+      }
+
+      const clipDuration = currentStudioClip.end - currentStudioClip.start;
+      const currentOffset = studioVideo.currentTime - currentStudioClip.start;
+      
+      if (!isSeekingStudio && clipDuration > 0) {
+        studioSeekSlider.value = (currentOffset / clipDuration) * 100;
+      }
+      studioTimeDisp.innerText = `${formatTime(studioVideo.currentTime)} / ${formatTime(currentStudioClip.end)}`;
+
+      checkTriggerPoint();
+      lastCheckedTime = studioVideo.currentTime;
+    });
+
+    function checkTriggerPoint() {
+      if (isFreezeActive || !currentStudioClip) return;
+      const cur = studioVideo.currentTime;
+
+      const matchedShape = currentStudioClip.shapes.find(s => 
+        (lastCheckedTime <= s.triggerTime && cur >= s.triggerTime) || (Math.abs(cur - s.triggerTime) < 0.22)
+      );
+
+      if (matchedShape) {
+        execute4SecondFreeze(matchedShape.triggerTime);
+      }
+    }
+
+    function execute4SecondFreeze(triggerTime) {
+      isFreezeActive = true;
+      activeFreezingTime = triggerTime;
+
+      studioVideo.currentTime = triggerTime;
+      studioVideo.pause();
+      studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+
+      drawAllShapesForTime(triggerTime);
+
+      let timeLeft = 4;
+      freezeBadge.style.display = 'flex';
+      freezeTimerText.innerText = timeLeft;
+
+      if (freezeTimer) clearInterval(freezeTimer);
+
+      freezeTimer = setInterval(() => {
+        timeLeft--;
+        freezeTimerText.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(freezeTimer);
+          freezeTimer = null;
+          freezeBadge.style.display = 'none';
+
+          sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+          isFreezeActive = false;
+          activeFreezingTime = null;
+
+          studioVideo.currentTime += 0.25;
+          lastCheckedTime = studioVideo.currentTime;
+          studioVideo.play();
+          studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+        }
+      }, 1000);
+    }
+
+    function resetFreezeState() {
+      isFreezeActive = false;
+      activeFreezingTime = null;
+      if (freezeTimer) {
+        clearInterval(freezeTimer);
+        freezeTimer = null;
+      }
+      freezeBadge.style.display = 'none';
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+    }
+
+    studioSeekSlider.addEventListener('mousedown', () => { isSeekingStudio = true; resetFreezeState(); });
+    studioSeekSlider.addEventListener('touchstart', () => { isSeekingStudio = true; resetFreezeState(); });
+
+    studioSeekSlider.addEventListener('input', () => {
+      isSeekingStudio = true;
+      if (currentStudioClip) {
+        const clipDuration = currentStudioClip.end - currentStudioClip.start;
+        const target = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
+        studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
+      }
+    });
+
+    studioSeekSlider.addEventListener('change', () => {
+      if (currentStudioClip) {
+        const clipDuration = currentStudioClip.end - currentStudioClip.start;
+        studioVideo.currentTime = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
+        lastCheckedTime = studioVideo.currentTime;
+      }
+      isSeekingStudio = false;
+      drawAllShapesForTime(studioVideo.currentTime);
+    });
+
+    studioSeekSlider.addEventListener('mouseup', () => { isSeekingStudio = false; });
+    studioSeekSlider.addEventListener('touchend', () => { isSeekingStudio = false; });
+
+    function seekStudioRelative(sec) {
+      if (!currentStudioClip) return;
+      resetFreezeState();
+      studioVideo.currentTime = Math.max(currentStudioClip.start, Math.min(currentStudioClip.end, studioVideo.currentTime + sec));
+      lastCheckedTime = studioVideo.currentTime;
+      drawAllShapesForTime(studioVideo.currentTime);
+    }
+
+    function toggleStudioPlay() {
+      if (isFreezeActive) return;
+      if (studioVideo.paused) {
+        studioVideo.play();
+        studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+        hideFloatingToolbar();
+      } else {
+        studioVideo.pause();
+        studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+        drawAllShapesForTime(studioVideo.currentTime);
+      }
+    }
+
+    const allToolBtnIds = [
+      'tool_spotlight', 'tool_player_ring', 'tool_arrow_pass', 'tool_arrow_curve',
+      'tool_teleport', 'tool_chain_formation', 'tool_vision_cone', 'tool_space_zone',
+      'tool_distance_line', 'tool_ball_trajectory', 'tool_passing_blocker',
+      'tool_offside_barrier', 'tool_magnifier_zoom'
+    ];
+
+    function setStudioTool(tool) {
+      activeStudioTool = tool;
+      allToolBtnIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('active', id === `tool_${tool}`);
+      });
+    }
+
+    function isNearResizeHandle(shape, mouseX, mouseY) {
+      if (!shape) return false;
+      let hX = 0, hY = 0;
+      if (shape.type === 'spotlight_cone') {
+        hX = shape.bottomX + shape.radiusX; hY = shape.bottomY;
+      } else if (shape.type === 'player_ring') {
+        hX = shape.x + shape.radiusX; hY = shape.y;
+      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
+        hX = shape.x2; hY = shape.y2;
+      } else if (shape.type === 'offside_barrier') {
+        hX = shape.x2; hY = shape.y1;
+      } else if (shape.type === 'teleport') {
+        hX = shape.x2 + (shape.radiusX || 28); hY = shape.y2;
+      } else if (shape.type === 'chain_formation') {
+        if (!shape.players || shape.players.length === 0) return false;
+        const lastP = shape.players[shape.players.length - 1];
+        hX = lastP.x + (shape.ringRadius || 24); hY = lastP.y;
+      } else if (shape.type === 'vision_cone') {
+        hX = shape.targetX; hY = shape.targetY;
+      } else if (shape.type === 'magnifier_zoom') {
+        hX = shape.x + shape.radius; hY = shape.y;
+      }
+      return Math.hypot(mouseX - hX, mouseY - hY) < 16;
+    }
+
+    /* ========================================================
+       الرسم التفاعلي المباشر (المعاينة اللحظية الفورية)
+       ======================================================== */
+    sCanvas.addEventListener('mousedown', (e) => {
+      if (!currentStudioClip || isFreezeActive) return;
+
+      const rect = sCanvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      if (activeShape && isNearResizeHandle(activeShape, mouseX, mouseY)) {
+        isResizing = true;
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+        return;
+      }
+
+      if (isMoving && activeShape) {
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+        return;
+      }
+
+      if (activeStudioTool === 'chain_formation') {
+        studioVideo.pause();
+        studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+
+        if (!activeShape || activeShape.type !== 'chain_formation') {
+          activeShape = {
+            type: 'chain_formation',
+            players: [{ x: mouseX, y: mouseY, label: '1' }],
+            ringRadius: 24,
+            triggerTime: studioVideo.currentTime,
+            tracked: false
+          };
+        } else {
+          const nextNum = activeShape.players.length + 1;
+          activeShape.players.push({ x: mouseX, y: mouseY, label: String(nextNum) });
+        }
+
+        renderLiveScene();
+        showFloatingToolbar(activeShape);
+        return;
+      }
+
+      studioVideo.pause();
+      studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+      hideFloatingToolbar();
+
+      isDrawing = true;
+      startX = mouseX;
+      startY = mouseY;
+
+      const curT = studioVideo.currentTime;
+
+      if (activeStudioTool === 'spotlight') {
+        activeShape = { type: 'spotlight_cone', bottomX: startX, bottomY: startY, topX: startX, topY: Math.max(20, startY - 220), radiusX: 35, radiusY: 14, triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'player_ring') {
+        activeShape = { type: 'player_ring', x: startX, y: startY, radiusX: 32, radiusY: 13, label: '10', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'arrow_pass') {
+        activeShape = { type: 'arrow_pass', x1: startX, y1: startY, x2: startX + 15, y2: startY + 15, triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'arrow_curve') {
+        activeShape = { type: 'arrow_curve', x1: startX, y1: startY, x2: startX + 15, y2: startY + 15, curveHeight: -40, triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'teleport') {
+        activeShape = { type: 'teleport', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, radiusX: 28, radiusY: 12, label: 'تمركز صحيح', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'vision_cone') {
+        activeShape = { type: 'vision_cone', originX: startX, originY: startY, targetX: startX + 20, targetY: startY - 45, fovAngle: 68 * (Math.PI / 180), label: 'مجال الرؤية', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'space_zone') {
+        activeShape = { type: 'space_zone', x1: startX, y1: startY, x2: startX + 30, y2: startY + 30, label: 'مساحة مستهدفة', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'distance_line') {
+        activeShape = { type: 'distance_line', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'ball_trajectory') {
+        activeShape = { type: 'ball_trajectory', x1: startX, y1: startY, x2: startX + 30, y2: startY + 30, arcHeight: 80, triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'passing_blocker') {
+        activeShape = { type: 'passing_blocker', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, label: 'زاوية مغلقة', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'offside_barrier') {
+        activeShape = { type: 'offside_barrier', x1: startX, y1: startY, x2: startX + 50, y2: startY, label: 'خط التسلل', triggerTime: curT, tracked: false };
+      } else if (activeStudioTool === 'magnifier_zoom') {
+        activeShape = { type: 'magnifier_zoom', x: startX, y: startY, radius: 45, zoomScale: 1.6, triggerTime: curT, tracked: false };
+      }
+
+      renderLiveScene();
+    });
+
+    sCanvas.addEventListener('mousemove', (e) => {
+      const rect = sCanvas.getBoundingClientRect();
+      const curX = e.clientX - rect.left;
+      const curY = e.clientY - rect.top;
+
+      mouseHoverX = curX;
+      mouseHoverY = curY;
+
+      if (activeShape && !isDrawing && !isMoving && !isResizing) {
+        sCanvas.style.cursor = isNearResizeHandle(activeShape, curX, curY) ? 'pointer' : (isMoving ? 'move' : 'crosshair');
+      }
+
+      if (isResizing && activeShape) {
+        if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
+          const centerRefX = (activeShape.type === 'spotlight_cone') ? activeShape.bottomX : activeShape.x;
+          const newRadius = Math.max(18, Math.min(180, Math.abs(curX - centerRefX)));
+          activeShape.radiusX = newRadius;
+          activeShape.radiusY = newRadius * 0.40;
+        } else if (['arrow_pass', 'arrow_curve', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker'].includes(activeShape.type)) {
+          activeShape.x2 = curX; activeShape.y2 = curY;
+        } else if (activeShape.type === 'offside_barrier') {
+          activeShape.x2 = curX;
+        } else if (activeShape.type === 'teleport') {
+          const newRad = Math.max(18, Math.min(120, Math.abs(curX - activeShape.x2)));
+          activeShape.radiusX = newRad; activeShape.radiusY = newRad * 0.42;
+        } else if (activeShape.type === 'chain_formation') {
+          const lastP = activeShape.players[activeShape.players.length - 1];
+          activeShape.ringRadius = Math.max(16, Math.min(60, Math.abs(curX - lastP.x)));
+        } else if (activeShape.type === 'vision_cone') {
+          activeShape.targetX = curX; activeShape.targetY = curY;
+        } else if (activeShape.type === 'magnifier_zoom') {
+          activeShape.radius = Math.max(25, Math.min(110, Math.hypot(curX - activeShape.x, curY - activeShape.y)));
+        }
+
+        renderLiveScene();
+        positionFloatingToolbar(activeShape);
+        return;
+      }
+
+      if (isMoving && activeShape) {
+        const dx = curX - dragStartX;
+        const dy = curY - dragStartY;
+        if (activeShape.type === 'spotlight_cone') {
+          activeShape.bottomX += dx; activeShape.bottomY += dy;
+          activeShape.topX += dx; activeShape.topY += dy;
+        } else if (activeShape.type === 'player_ring' || activeShape.type === 'magnifier_zoom') {
+          activeShape.x += dx; activeShape.y += dy;
+        } else if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker', 'offside_barrier'].includes(activeShape.type)) {
+          activeShape.x1 += dx; activeShape.y1 += dy;
+          activeShape.x2 += dx; activeShape.y2 += dy;
+        } else if (activeShape.type === 'chain_formation') {
+          activeShape.players.forEach(p => { p.x += dx; p.y += dy; });
+        } else if (activeShape.type === 'vision_cone') {
+          activeShape.originX += dx; activeShape.originY += dy;
+          activeShape.targetX += dx; activeShape.targetY += dy;
+        }
+        dragStartX = curX;
+        dragStartY = curY;
+
+        renderLiveScene();
+        positionFloatingToolbar(activeShape);
+        return;
+      }
+
+      if (isDrawing && activeShape) {
+        if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
+          const rad = Math.hypot(curX - startX, curY - startY);
+          activeShape.radiusX = Math.max(20, Math.min(160, rad));
+          activeShape.radiusY = activeShape.radiusX * 0.40;
+        } else if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker'].includes(activeShape.type)) {
+          activeShape.x2 = curX;
+          activeShape.y2 = curY;
+        } else if (activeShape.type === 'offside_barrier') {
+          activeShape.x2 = curX;
+        } else if (activeShape.type === 'vision_cone') {
+          activeShape.targetX = curX;
+          activeShape.targetY = curY;
+        } else if (activeShape.type === 'magnifier_zoom') {
+          activeShape.radius = Math.max(25, Math.min(110, Math.hypot(curX - startX, curY - startY)));
+        }
+
+        renderLiveScene();
+      }
+
+      if (activeStudioTool === 'chain_formation' && activeShape && activeShape.type === 'chain_formation') {
+        renderLiveScene();
+      }
+    });
+
+    sCanvas.addEventListener('mouseup', () => {
+      if (isResizing) { isResizing = false; return; }
+      if (isMoving) return;
+      if (activeStudioTool === 'chain_formation') return;
+      if (!isDrawing || !activeShape) return;
+      
+      isDrawing = false;
+      showFloatingToolbar(activeShape);
+      renderLiveScene();
+    });
+
+    function scaleActiveShape(factor) {
+      if (!activeShape) return;
+      if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
+        activeShape.radiusX = Math.max(18, Math.min(180, activeShape.radiusX * factor));
+        activeShape.radiusY = activeShape.radiusX * 0.40;
+      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(activeShape.type)) {
+        const dx = activeShape.x2 - activeShape.x1;
+        const dy = activeShape.y2 - activeShape.y1;
+        activeShape.x2 = activeShape.x1 + (dx * factor);
+        activeShape.y2 = activeShape.y1 + (dy * factor);
+      } else if (activeShape.type === 'offside_barrier') {
+        const dx = activeShape.x2 - activeShape.x1;
+        activeShape.x2 = activeShape.x1 + (dx * factor);
+      } else if (activeShape.type === 'teleport') {
+        activeShape.radiusX = Math.max(18, Math.min(120, (activeShape.radiusX || 28) * factor));
+        activeShape.radiusY = activeShape.radiusX * 0.42;
+      } else if (activeShape.type === 'chain_formation') {
+        activeShape.ringRadius = Math.max(16, Math.min(60, (activeShape.ringRadius || 24) * factor));
+      } else if (activeShape.type === 'vision_cone') {
+        const dx = activeShape.targetX - activeShape.originX;
+        const dy = activeShape.targetY - activeShape.originY;
+        activeShape.targetX = activeShape.originX + (dx * factor);
+        activeShape.targetY = activeShape.originY + (dy * factor);
+      } else if (activeShape.type === 'magnifier_zoom') {
+        activeShape.radius = Math.max(25, Math.min(110, activeShape.radius * factor));
+      }
+      renderLiveScene();
+      positionFloatingToolbar(activeShape);
+    }
+
+    function renderLiveScene() {
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      if (!currentStudioClip) return;
+
+      const cur = studioVideo.currentTime;
+
+      currentStudioClip.shapes.forEach(shape => {
+        if (Math.abs(shape.triggerTime - cur) < 0.45) {
+          drawSingleShape(shape);
+        }
+      });
+
+      if (activeShape) {
+        drawSingleShape(activeShape);
+        drawResizeHandle(activeShape);
+
+        if (activeShape.type === 'chain_formation' && activeShape.players.length > 0) {
+          const lastP = activeShape.players[activeShape.players.length - 1];
+          sCtx.save();
+          sCtx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+          sCtx.lineWidth = 2.5;
+          sCtx.setLineDash([5, 5]);
+          sCtx.beginPath();
+          sCtx.moveTo(lastP.x, lastP.y);
+          sCtx.lineTo(mouseHoverX, mouseHoverY);
+          sCtx.stroke();
+          sCtx.restore();
+        }
+      }
+    }
+
+    function drawAllShapesForTime(time) {
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      if (!currentStudioClip) return;
+
+      currentStudioClip.shapes.forEach(shape => {
+        if (Math.abs(shape.triggerTime - time) < 0.45) {
+          drawSingleShape(shape);
+        }
+      });
+    }
+
+    function drawSingleShape(shape) {
+      if (shape.type === 'spotlight_cone') drawWhiteConicalSpotlight(sCtx, shape);
+      else if (shape.type === 'player_ring') drawPlayer3DRing(sCtx, shape);
+      else if (shape.type === 'arrow_pass') drawNeonPassingArrow(sCtx, shape);
+      else if (shape.type === 'arrow_curve') drawNeonCurvedArrow(sCtx, shape);
+      else if (shape.type === 'teleport') drawGhostTeleportClean(sCtx, shape);
+      else if (shape.type === 'chain_formation') drawChainFormation(sCtx, shape);
+      else if (shape.type === 'vision_cone') drawPlayerVisionCone(sCtx, shape);
+      else if (shape.type === 'space_zone') drawSpaceZone(sCtx, shape);
+      else if (shape.type === 'distance_line') drawDistanceLine(sCtx, shape);
+      else if (shape.type === 'ball_trajectory') drawBallTrajectory(sCtx, shape);
+      else if (shape.type === 'passing_blocker') drawPassingBlocker(sCtx, shape);
+      else if (shape.type === 'offside_barrier') drawOffsideBarrier(sCtx, shape);
+      else if (shape.type === 'magnifier_zoom') drawMagnifierZoom(sCtx, shape);
+    }
+
+    function drawResizeHandle(shape) {
+      let hX = 0, hY = 0;
+      if (shape.type === 'spotlight_cone') {
+        hX = shape.bottomX + shape.radiusX; hY = shape.bottomY;
+      } else if (shape.type === 'player_ring') {
+        hX = shape.x + shape.radiusX; hY = shape.y;
+      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
+        hX = shape.x2; hY = shape.y2;
+      } else if (shape.type === 'offside_barrier') {
+        hX = shape.x2; hY = shape.y1;
+      } else if (shape.type === 'teleport') {
+        hX = shape.x2 + (shape.radiusX || 28); hY = shape.y2;
+      } else if (shape.type === 'chain_formation') {
+        if (!shape.players || shape.players.length === 0) return;
+        const lastP = shape.players[shape.players.length - 1];
+        hX = lastP.x + (shape.ringRadius || 24); hY = lastP.y;
+      } else if (shape.type === 'vision_cone') {
+        hX = shape.targetX; hY = shape.targetY;
+      } else if (shape.type === 'magnifier_zoom') {
+        hX = shape.x + shape.radius; hY = shape.y;
+      }
+
+      sCtx.save();
+      sCtx.fillStyle = '#f59e0b';
+      sCtx.strokeStyle = '#ffffff';
+      sCtx.lineWidth = 2;
+      sCtx.shadowColor = '#f59e0b';
+      sCtx.shadowBlur = 8;
+      sCtx.beginPath();
+      sCtx.arc(hX, hY, 6.5, 0, Math.PI * 2);
+      sCtx.fill();
+      sCtx.stroke();
+      sCtx.restore();
+    }
+
+    /* ========================================================
+       دوال رسم الأدوات الـ 12
+       ======================================================== */
+    function drawWhiteConicalSpotlight(ctx, shape) {
+      ctx.save();
+      const topX = shape.topX, topY = shape.topY, bX = shape.bottomX, bY = shape.bottomY, rx = shape.radiusX, ry = shape.radiusY;
+      const beamGrad = ctx.createLinearGradient(topX, topY, bX, bY);
+      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
+      beamGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.35)');
+      beamGrad.addColorStop(0.8, 'rgba(255, 255, 255, 0.20)');
+      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0.40)');
+
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(topX, topY);
+      ctx.lineTo(bX - rx, bY);
+      ctx.lineTo(bX + rx, bY);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 18;
+      ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+
+      if (shape.tracked) {
+        ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 10;
+        ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.ellipse(bX, bY, rx + 6, ry + 4, 0, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawPlayer3DRing(ctx, shape) {
+      ctx.save();
+      const x = shape.x, y = shape.y, rx = shape.radiusX, ry = shape.radiusY;
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)'; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.ellipse(x, y, rx * 0.75, ry * 0.75, 0, 0, Math.PI * 2); ctx.stroke();
+
+      const pointerHeight = 75;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - pointerHeight); ctx.stroke(); ctx.setLineDash([]);
+
+      if (shape.label) {
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 10;
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x, y - pointerHeight, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, x, y - pointerHeight);
+      }
+      if (shape.tracked) {
+        ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 8;
+        ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.ellipse(x, y, rx + 6, ry + 4, 0, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawNeonPassingArrow(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      drawArrowHeadNeon(ctx, x2, y2, angle, '#38bdf8');
+      ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(x1, y1, 4.5, 0, Math.PI * 2); ctx.fill();
+      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
+      ctx.restore();
+    }
+
+    function drawNeonCurvedArrow(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2 + (shape.curveHeight || -45);
+      ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke();
+
+      const tangentAngle = Math.atan2(y2 - midY, x2 - midX);
+      drawArrowHeadNeon(ctx, x2, y2, tangentAngle, '#ec4899');
+      ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(x1, y1, 4.5, 0, Math.PI * 2); ctx.fill();
+      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
+      ctx.restore();
+    }
+
+    function drawGhostTeleportClean(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2, rx = shape.radiusX || 28, ry = shape.radiusY || 12;
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.ellipse(x1, y1, rx * 0.75, ry * 0.75, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+
+      ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 12;
+      ctx.setLineDash([7, 6]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      drawArrowHeadNeon(ctx, (x1 + x2) / 2, (y1 + y2) / 2, angle, '#c084fc');
+
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.35)'; ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 3.5; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+
+      const pointerH = 45;
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2, y2 - pointerH); ctx.stroke();
+
+      const labelText = shape.label || 'تمركز صحيح';
+      ctx.font = 'bold 12px Cairo'; const textW = ctx.measureText(labelText).width;
+      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.roundRect(x2 - (textW / 2) - 8, y2 - pointerH - 22, textW + 16, 22, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, x2, y2 - pointerH - 11);
+
+      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
+      ctx.restore();
+    }
+
+    function drawChainFormation(ctx, shape) {
+      if (!shape.players || shape.players.length === 0) return;
+      ctx.save();
+      const pts = shape.players, rx = shape.ringRadius || 24, ry = rx * 0.40;
+
+      if (pts.length >= 3) {
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.16)'; ctx.beginPath();
+        pts.forEach((p, idx) => { if (idx === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+        ctx.closePath(); ctx.fill();
+      }
+
+      if (pts.length >= 2) {
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 12;
+        ctx.beginPath();
+        for (let i = 0; i < pts.length - 1; i++) { ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i + 1].x, pts[i + 1].y); }
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.lineWidth = 1.5; ctx.beginPath();
+        for (let i = 0; i < pts.length - 1; i++) { ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i + 1].x, pts[i + 1].y); }
+        ctx.stroke();
+      }
+
+      pts.forEach((p, idx) => {
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.28)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 15;
+        ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2); ctx.fill();
+
+        const pointerH = 65;
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.65)'; ctx.lineWidth = 1.8; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - pointerH); ctx.stroke(); ctx.setLineDash([]);
+
+        const labelText = p.label || String(idx + 1);
+        ctx.font = 'bold 11px Cairo'; const txtWidth = ctx.measureText(labelText).width;
+        const badgeW = Math.max(24, txtWidth + 12), badgeH = 20;
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 1.8; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 6;
+        ctx.beginPath(); ctx.roundRect(p.x - (badgeW / 2), p.y - pointerH - (badgeH / 2), badgeW, badgeH, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, p.x, p.y - pointerH);
+      });
+
+      if (shape.tracked) pts.forEach(p => drawTrackGlowBadge(ctx, p.x, p.y));
+      ctx.restore();
+    }
+
+    function drawPlayerVisionCone(ctx, shape) {
+      ctx.save();
+      const ox = shape.originX, oy = shape.originY, tx = shape.targetX, ty = shape.targetY;
+      const dist = Math.hypot(tx - ox, ty - oy) || 120, baseAngle = Math.atan2(ty - oy, tx - ox);
+      const halfFov = (shape.fovAngle || (68 * Math.PI / 180)) / 2;
+      const leftAngle = baseAngle - halfFov, rightAngle = baseAngle + halfFov;
+      const p1x = ox + dist * Math.cos(leftAngle), p1y = oy + dist * Math.sin(leftAngle);
+      const p2x = ox + dist * Math.cos(rightAngle), p2y = oy + dist * Math.sin(rightAngle);
+
+      const coneGrad = ctx.createRadialGradient(ox, oy, 10, ox, oy, dist);
+      coneGrad.addColorStop(0, 'rgba(16, 185, 129, 0.55)');
+      coneGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.25)');
+      coneGrad.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+
+      ctx.fillStyle = coneGrad; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p1x, p1y);
+      ctx.arc(ox, oy, dist, leftAngle, rightAngle); ctx.closePath(); ctx.fill();
+
+      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2.5; ctx.shadowColor = '#10b981'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p1x, p1y); ctx.moveTo(ox, oy); ctx.lineTo(p2x, p2y); ctx.stroke();
+      ctx.strokeStyle = '#34d399'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(ox, oy, dist, leftAngle, rightAngle); ctx.stroke();
+
+      ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(ox, oy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(ox, oy, 2.5, 0, Math.PI * 2); ctx.fill();
+
+      if (shape.label) {
+        ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(shape.label).width;
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(tx - (txtW / 2) - 8, ty - 24, txtW + 16, 20, 5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, tx, ty - 14);
+      }
+      if (shape.tracked) drawTrackGlowBadge(ctx, ox, oy);
+      ctx.restore();
+    }
+
+    function drawSpaceZone(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      const minX = Math.min(x1, x2), maxX = Math.max(x1, x2), minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+      const skew = (maxX - minX) * 0.15;
+
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+      ctx.beginPath();
+      ctx.moveTo(minX + skew, minY); ctx.lineTo(maxX, minY);
+      ctx.lineTo(maxX - skew, maxY); ctx.lineTo(minX, maxY);
+      ctx.closePath(); ctx.fill();
+
+      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.moveTo(minX + skew, minY); ctx.lineTo(maxX, minY);
+      ctx.lineTo(maxX - skew, maxY); ctx.lineTo(minX, maxY);
+      ctx.closePath(); ctx.stroke();
+
+      if (shape.label) {
+        const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+        ctx.font = 'bold 12px Cairo'; const txtW = ctx.measureText(shape.label).width;
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.roundRect(cx - (txtW / 2) - 8, cy - 12, txtW + 16, 24, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, cx, cy);
+      }
+      ctx.restore();
+    }
+
+    function drawDistanceLine(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 3.5; ctx.shadowColor = '#06b6d4'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+
+      ctx.fillStyle = '#06b6d4'; ctx.beginPath(); ctx.arc(x1, y1, 6, 0, Math.PI * 2); ctx.arc(x2, y2, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x1, y1, 2.5, 0, Math.PI * 2); ctx.arc(x2, y2, 2.5, 0, Math.PI * 2); ctx.fill();
+
+      const pxDist = Math.hypot(x2 - x1, y2 - y1);
+      const meters = (pxDist * 0.08).toFixed(1);
+      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
+      const distText = shape.label ? `${shape.label} (${meters}m)` : `${meters}m`;
+
+      ctx.font = 'bold 11.5px Cairo'; const txtW = ctx.measureText(distText).width;
+      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 7, midY - 11, txtW + 14, 22, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(distText, midX, midY);
+      ctx.restore();
+    }
+
+    function drawBallTrajectory(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2 - (shape.arcHeight || 80);
+
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 14;
+      ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke(); ctx.setLineDash([]);
+
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.35)'; ctx.beginPath(); ctx.ellipse(x2, y2, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(x2, y2, 18, 8, 0, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(midX, midY, 6.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#000000'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPassingBlocker(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 6; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+
+      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
+      ctx.fillStyle = '#881337'; ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(midX, midY, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(midX - 7, midY - 7); ctx.lineTo(midX + 7, midY + 7);
+      ctx.moveTo(midX + 7, midY - 7); ctx.lineTo(midX - 7, midY + 7);
+      ctx.stroke();
+
+      if (shape.label) {
+        ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(shape.label).width;
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 6, midY + 18, txtW + 12, 19, 5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, midX, midY + 27);
+      }
+      ctx.restore();
+    }
+
+    function drawOffsideBarrier(ctx, shape) {
+      ctx.save();
+      const y = shape.y1, x1 = Math.min(shape.x1, shape.x2), x2 = Math.max(shape.x1, shape.x2);
+      ctx.strokeStyle = '#eab308'; ctx.lineWidth = 4; ctx.shadowColor = '#eab308'; ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
+      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]);
+
+      const midX = (x1 + x2) / 2;
+      const labelText = shape.label || 'خط التسلل';
+      ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(labelText).width;
+      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#eab308'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 8, y - 24, txtW + 16, 20, 5); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, midX, y - 14);
+      ctx.restore();
+    }
+
+    function drawMagnifierZoom(ctx, shape) {
+      ctx.save();
+      const x = shape.x, y = shape.y, r = shape.radius || 45, scale = shape.zoomScale || 1.6;
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.clip();
+      ctx.translate(x, y); ctx.scale(scale, scale); ctx.translate(-x, -y);
+      ctx.drawImage(studioVideo, 0, 0, sCanvas.width, sCanvas.height);
+      ctx.restore();
+
+      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 4; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 18;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(x + r - 6, y + r - 6, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(`${scale}x`, x + r - 6, y + r - 6);
+      ctx.restore();
+    }
+
+    function drawArrowHeadNeon(ctx, x, y, angle, color) {
+      const headLen = 16;
+      ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - headLen * Math.cos(angle - Math.PI / 6), y - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x - (headLen * 0.6) * Math.cos(angle), y - (headLen * 0.6) * Math.sin(angle));
+      ctx.lineTo(x - headLen * Math.cos(angle + Math.PI / 6), y - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawTrackGlowBadge(ctx, x, y) {
+      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    function showFloatingToolbar(shape) {
+      positionFloatingToolbar(shape);
+      floatingToolbar.style.display = 'flex';
+      btnShapeMove.classList.remove('active');
+      btnShapeTrack.classList.toggle('active', !!shape.tracked);
+      const textEditable = ['player_ring', 'teleport', 'chain_formation', 'vision_cone', 'space_zone', 'distance_line', 'passing_blocker', 'offside_barrier'].includes(shape.type);
+      btnShapeEdit.style.display = textEditable ? 'flex' : 'none';
+    }
+
+    function positionFloatingToolbar(shape) {
+      let posX = 0, posY = 0;
+      if (shape.type === 'spotlight_cone') {
+        posX = shape.bottomX; posY = shape.bottomY - 60;
+      } else if (shape.type === 'player_ring' || shape.type === 'magnifier_zoom') {
+        posX = shape.x; posY = shape.y - 70;
+      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
+        posX = (shape.x1 + shape.x2) / 2; posY = Math.min(shape.y1, shape.y2) - 55;
+      } else if (shape.type === 'offside_barrier') {
+        posX = (shape.x1 + shape.x2) / 2; posY = shape.y1 - 60;
+      } else if (shape.type === 'teleport') {
+        posX = shape.x2; posY = shape.y2 - 70;
+      } else if (shape.type === 'chain_formation') {
+        if (!shape.players || shape.players.length === 0) return;
+        const lastP = shape.players[shape.players.length - 1];
+        posX = lastP.x; posY = lastP.y - 85;
+      } else if (shape.type === 'vision_cone') {
+        posX = shape.targetX; posY = shape.targetY - 50;
+      }
+      floatingToolbar.style.left = `${posX}px`;
+      floatingToolbar.style.top = `${posY}px`;
+    }
+
+    function hideFloatingToolbar() {
+      floatingToolbar.style.display = 'none';
+      isMoving = false;
+      isResizing = false;
+    }
+
+    function editShapeLabel() {
+      if (!activeShape) return;
+      if (activeShape.type === 'player_ring') {
+        const newLabel = prompt("أدخل رقم أو اسم اللاعب:", activeShape.label || "");
+        if (newLabel !== null && newLabel.trim() !== "") { activeShape.label = newLabel.trim(); renderLiveScene(); }
+      } else if (activeShape.type === 'chain_formation') {
+        const currentLabels = activeShape.players.map(p => p.label).join(', ');
+        const input = prompt("أدخل أرقام أو أسماء اللاعبين بالترتيب مفصولة بفواصل:", currentLabels);
+        if (input !== null && input.trim() !== "") {
+          const parts = input.split(',').map(s => s.trim()).filter(Boolean);
+          parts.forEach((val, idx) => { if (activeShape.players[idx]) activeShape.players[idx].label = val; });
+          renderLiveScene();
+        }
+      } else {
+        const newLabel = prompt("أدخل نص التوجيه أو الملاحظة التكتيكية:", activeShape.label || "");
+        if (newLabel !== null && newLabel.trim() !== "") { activeShape.label = newLabel.trim(); renderLiveScene(); }
+      }
+    }
+
+    function confirmShape() {
+      if (!currentStudioClip || !activeShape) return;
+      activeShape.triggerTime = studioVideo.currentTime;
+
+      if (!currentStudioClip.shapes.includes(activeShape)) {
+        currentStudioClip.shapes.push(activeShape);
+      }
+
+      hideFloatingToolbar();
+      activeShape = null;
+      renderLiveScene();
+    }
+
+    function toggleMoveMode() {
+      isMoving = !isMoving;
+      btnShapeMove.classList.toggle('active', isMoving);
+    }
+
+    function toggleTrackMode() {
+      if (!activeShape) return;
+      activeShape.tracked = !activeShape.tracked;
+      btnShapeTrack.classList.toggle('active', activeShape.tracked);
+      renderLiveScene();
+    }
+
+    function deleteActiveShape() {
+      if (!currentStudioClip || !activeShape) return;
+      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape);
+      activeShape = null;
+      hideFloatingToolbar();
+      renderLiveScene();
+    }
+
+    /* ========================================================
+       محرك التصدير الصارم المصلح جذرياً (Sequential Frame-by-Frame)
+       ======================================================== */
+    function updateExportUI() {
+      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
+      const catBox = document.getElementById('categorySelectBox');
+      
+      document.getElementById('lblTypeMerged').classList.toggle('selected', typeMode === 'merged_full');
+      document.getElementById('lblTypeCategory').classList.toggle('selected', typeMode === 'category_separate');
+      
+      const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
+      document.getElementById('lblOverlayYes').classList.toggle('selected', overlayMode === 'with_overlay');
+      document.getElementById('lblOverlayNo').classList.toggle('selected', overlayMode === 'no_overlay');
+
+      catBox.style.display = (typeMode === 'category_separate') ? 'flex' : 'none';
+    }
+
+    function populateExportCategories() {
+      const sel = document.getElementById('exportCategorySelect');
+      const cats = [...new Set(clips.map(c => c.category))];
+      sel.innerHTML = '';
+
+      const allOpt = document.createElement('option');
+      allOpt.value = 'ALL';
+      allOpt.innerText = '⭐ كل الحالات (الجميع)';
+      sel.appendChild(allOpt);
+
+      cats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = cat;
+        sel.appendChild(opt);
+      });
+    }
+
+    async function runExportEngine() {
+      if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها! يرجى تقطيع بعض الحالات أولاً.");
+      if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
+
+      const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
+      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
+      const selectedCategory = document.getElementById('exportCategorySelect').value;
+
+      let exportClips = [];
+      if (typeMode === 'category_separate' && selectedCategory !== 'ALL') {
+        exportClips = clips.filter(c => c.category === selectedCategory);
+        if (exportClips.length === 0) return alert("لا توجد حالات مسجلة لهذا التصنيف!");
+      } else {
+        exportClips = [...clips].sort((a, b) => a.category.localeCompare(b.category));
+      }
+
+      let suggestedName = "تقرير_تكتيكي_شامل.webm";
+      if (typeMode === 'category_separate' && selectedCategory !== 'ALL') {
+        suggestedName = `حالات_${selectedCategory}.webm`;
+      }
+
+      let fileHandle = null;
+      if ('showSaveFilePicker' in window) {
+        try {
+          fileHandle = await window.showSaveFilePicker({
+            suggestedName: suggestedName,
+            types: [{
+              description: 'فيديو تكتيكي WebM/MP4',
+              accept: { 'video/webm': ['.webm'] }
+            }]
+          });
+        } catch (err) {
+          return;
+        }
+      }
+
+      const exportBtn = document.getElementById('startExportBtn');
+      const progressWrap = document.getElementById('exportProgressWrap');
+      const progressFill = document.getElementById('exportProgressFill');
+      const percentTxt = document.getElementById('exportPercentTxt');
+      const statusMsg = document.getElementById('exportStatusMsg');
+
+      exportBtn.disabled = true;
+      progressWrap.style.display = 'flex';
+      progressFill.style.width = '0%';
+      percentTxt.innerText = '0%';
+      statusMsg.innerText = 'بدء رندرة وتصدير اللقطات بدقة...';
+
+      const eCanvas = document.getElementById('exportRenderCanvas');
+      eCanvas.width = video.videoWidth || 1280;
+      eCanvas.height = video.videoHeight || 720;
+      const eCtx = eCanvas.getContext('2d');
+
+      const stream = eCanvas.captureStream(30);
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 8000000 });
+      } catch (err) {
+        recorder = new MediaRecorder(stream);
+      }
+
+      const recordedChunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+
+      const exportStartTime = performance.now();
+      recorder.start(100);
+
+      const renderVideo = document.createElement('video');
+      renderVideo.src = video.src;
+      renderVideo.muted = true;
+      renderVideo.playsInline = true;
+      await new Promise(r => { renderVideo.onloadedmetadata = r; });
+
+      let currentCategory = "";
+      const totalClips = exportClips.length;
+
+      for (let i = 0; i < totalClips; i++) {
+        const c = exportClips[i];
+
+        if ((typeMode === 'merged_full' || selectedCategory === 'ALL') && c.category !== currentCategory) {
+          currentCategory = c.category;
+          statusMsg.innerText = `إنشاء فاصل: ${currentCategory}`;
+          await renderTransitionCardPrecise(eCtx, eCanvas.width, eCanvas.height, currentCategory, 2.0);
+        }
+
+        statusMsg.innerText = `رندرة لقطة #${i + 1} (${c.category})`;
+        await renderClipSegmentPrecise(renderVideo, eCtx, eCanvas, c, overlayMode === 'with_overlay');
+
+        const pct = Math.round(((i + 1) / totalClips) * 100);
+        progressFill.style.width = `${pct}%`;
+        percentTxt.innerText = `${pct}%`;
+      }
+
+      statusMsg.innerText = 'جاري إنهاء الملف وضبط شريط التقديم والترجيع...';
+
+      recorder.onstop = async () => {
+        const rawBlob = new Blob(recordedChunks, { type: 'video/webm' });
+        const totalDurationMs = Math.round(performance.now() - exportStartTime);
+
+        let finalBlob = rawBlob;
+        if (typeof ysFixWebmDuration !== 'undefined') {
+          try {
+            finalBlob = await new Promise((resolve) => {
+              ysFixWebmDuration(rawBlob, totalDurationMs, (fixed) => resolve(fixed));
+            });
+          } catch (fixErr) {
+            finalBlob = rawBlob;
+          }
+        }
+
+        if (fileHandle) {
+          try {
+            const writable = await fileHandle.createWritable();
+            await writable.write(finalBlob);
+            await writable.close();
+            statusMsg.innerText = 'تم حفظ الفيديو بنجاح! يقبل التقديم والترجيع ⚽';
+          } catch (writeErr) {
+            fallbackDownload(finalBlob, suggestedName);
+          }
+        } else {
+          fallbackDownload(finalBlob, suggestedName);
+        }
+
+        exportBtn.disabled = false;
+      };
+
+      recorder.stop();
+    }
+
+    function fallbackDownload(blob, fileName) {
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = fileName;
+      a.click();
+      document.getElementById('exportStatusMsg').innerText = 'تم تنزيل الفيديو بنجاح! يقبل التقديم والترجيع ⚽';
+    }
+
+    function renderTransitionCardPrecise(ctx, w, h, categoryName, seconds) {
+      return new Promise((resolve) => {
+        const fps = 30;
+        const totalFrames = Math.round(seconds * fps);
+        let frameCount = 0;
+
+        function step() {
+          frameCount++;
+          ctx.fillStyle = '#070b12';
+          ctx.fillRect(0, 0, w, h);
+
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(w / 2, h / 2, 140, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(w / 2 - 250, h / 2 + 50);
+          ctx.lineTo(w / 2 + 250, h / 2 + 50);
+          ctx.stroke();
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = 'bold 24px Cairo';
+          ctx.textAlign = 'center';
+          ctx.fillText('الحالات التكتيكية القادمة', w / 2, h / 2 - 40);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 44px Cairo';
+          ctx.fillText(categoryName, w / 2, h / 2 + 25);
+
+          if (frameCount >= totalFrames) {
+            resolve();
+          } else {
+            setTimeout(step, 1000 / fps);
+          }
+        }
+        step();
+      });
+    }
+
+    // رندرة اللقطة بدقة متناهية فريم بفريم بدون أي إطارات متكررة أو تداخل
+    function renderClipSegmentPrecise(rVideo, ctx, canvas, clip, enableOverlay) {
+      return new Promise(async (resolve) => {
+        const fps = 30;
+        const frameInterval = 1000 / fps;
+        let curT = clip.start;
+
+        rVideo.currentTime = curT;
+        await new Promise(r => { rVideo.onseeked = r; });
+
+        let hasFrozen = false;
+
+        function nextFrame() {
+          if (curT > clip.end) {
+            resolve();
+            return;
+          }
+
+          rVideo.currentTime = curT;
+          
+          rVideo.onseeked = async () => {
+            ctx.drawImage(rVideo, 0, 0, canvas.width, canvas.height);
+
+            const shapesAtTime = (clip.shapes || []).filter(s => Math.abs(s.triggerTime - curT) < 0.25);
+
+            if (enableOverlay && shapesAtTime.length > 0 && !hasFrozen) {
+              hasFrozen = true;
+              // وقفة الـ 4 ثوانٍ الإجبارية الفريم بفريم
+              const freezeFrames = 4 * fps;
+              for (let frz = 0; frz < freezeFrames; frz++) {
+                ctx.drawImage(rVideo, 0, 0, canvas.width, canvas.height);
+                shapesAtTime.forEach(s => { drawSingleShapeScaled(ctx, s, canvas.width, canvas.height); });
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.roundRect(canvas.width - 240, 30, 200, 42, 8);
+                ctx.fill(); ctx.stroke();
+
+                const remainingSec = Math.max(1, Math.ceil((freezeFrames - frz) / fps));
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 18px Cairo';
+                ctx.textAlign = 'center';
+                ctx.fillText(`وقفة تحليلية: ${remainingSec}ث`, canvas.width - 140, 58);
+
+                await new Promise(r => setTimeout(r, frameInterval));
+              }
+            } else {
+              if (enableOverlay) {
+                shapesAtTime.forEach(s => { drawSingleShapeScaled(ctx, s, canvas.width, canvas.height); });
+              }
+            }
+
+            curT += 1 / fps;
+            setTimeout(nextFrame, frameInterval);
+          };
+        }
+
+        nextFrame();
+      });
+    }
+
+    function drawSingleShapeScaled(ctx, shape, cw, ch) {
+      const sw = sCanvas.width || cw;
+      const sh = sCanvas.height || ch;
+      const scaleX = cw / sw;
+      const scaleY = ch / sh;
+
+      ctx.save();
+      ctx.scale(scaleX, scaleY);
+
+      if (shape.type === 'spotlight_cone') drawWhiteConicalSpotlight(ctx, shape);
+      else if (shape.type === 'player_ring') drawPlayer3DRing(ctx, shape);
+      else if (shape.type === 'arrow_pass') drawNeonPassingArrow(ctx, shape);
+      else if (shape.type === 'arrow_curve') drawNeonCurvedArrow(ctx, shape);
+      else if (shape.type === 'teleport') drawGhostTeleportClean(ctx, shape);
+      else if (shape.type === 'chain_formation') drawChainFormation(ctx, shape);
+      else if (shape.type === 'vision_cone') drawPlayerVisionCone(ctx, shape);
+      else if (shape.type === 'space_zone') drawSpaceZone(ctx, shape);
+      else if (shape.type === 'distance_line') drawDistanceLine(ctx, shape);
+      else if (shape.type === 'ball_trajectory') drawBallTrajectory(ctx, shape);
+      else if (shape.type === 'passing_blocker') drawPassingBlocker(ctx, shape);
+      else if (shape.type === 'offside_barrier') drawOffsideBarrier(ctx, shape);
+      else if (shape.type === 'magnifier_zoom') drawMagnifierZoom(ctx, shape);
+
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>

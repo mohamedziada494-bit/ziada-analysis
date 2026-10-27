@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ziada Analysis - نظام تحليل اللايف والتقطيع الفوري</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 14px; }
+
+    .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 14px; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
+    .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    /* شريط إدخال مصدر الفيديو / الكاميرا / اللينك */
+    .source-control-bar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .source-group { display: flex; gap: 8px; align-items: center; flex: 1; min-width: 300px; }
+    .input-field { flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; }
+    .btn-source { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+    .btn-source:hover { background: var(--primary); color: #000; }
+    .btn-camera { background: #0284c7; border-color: var(--primary); }
+
+    /* شاشة عرض الفيديو */
+    .live-viewport-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .video-container { position: relative; width: 100%; height: 60vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    video { width: 100%; height: 100%; object-fit: contain; }
+
+    /* أزرار الحالات الفورية تحت الفيديو */
+    .live-actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 5px; }
+    .btn-live-action { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1.5px solid var(--border-color); color: #fff; padding: 14px 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .btn-live-action:hover { transform: translateY(-3px); border-color: var(--primary); filter: brightness(1.2); }
+    .btn-live-action i { font-size: 18px; }
+
+    .action-att { border-color: #3b82f6; }
+    .action-ind { border-color: #8b5cf6; }
+    .action-set-att { border-color: #06b6d4; }
+    .action-set-def { border-color: #f97316; }
+    .action-replay { border-color: #10b981; }
+    .action-goal { border-color: #f59e0b; background: linear-gradient(135deg, #78350f, #451a03); }
+
+    /* مؤشر وحالة التصدير الفوري */
+    .live-status-banner { display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #10b981; padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header class="top-nav">
+      <div class="brand-title">
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span>Ziada Analysis | نظام بث وتحليل اللايف الفوري (5ث قبل / 5ث بعد)</span>
+      </div>
+<a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> القائمة الرئيسية</a>    </header>
+
+    <!-- شريط إدخال اللينك أو فتح الكاميرا -->
+    <div class="source-control-bar">
+      <div class="source-group">
+        <i class="fa-solid fa-link" style="color: var(--primary);"></i>
+        <input type="text" id="videoLinkInput" class="input-field" placeholder="الصق رابط فيديو أو بث مباشر (MP4, WebM, Stream URL)...">
+        <button class="btn-source" onclick="loadSourceLink()"><i class="fa-solid fa-play"></i> تشغيل الرابط</button>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-source btn-camera" onclick="openDeviceCamera()"><i class="fa-solid fa-video"></i> فتح كاميرا الجهاز</button>
+        <label class="btn-source" style="margin: 0; cursor: pointer;">
+          <i class="fa-solid fa-folder-open"></i> رفع فيديو محلي
+          <input type="file" id="localVideoFile" accept="video/*" style="display: none;" onchange="loadLocalVideo(event)">
+        </label>
+      </div>
+    </div>
+
+    <!-- شاشة عرض الفيديو الحية -->
+    <main class="live-viewport-box">
+      <div class="live-status-banner" id="liveStatusBanner">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <span id="liveStatusText">جاري قص وتصدير اللقطة (5ث قبل / 5ث بعد)...</span>
+      </div>
+
+      <div class="video-container">
+        <video id="liveVideo" controls playsinline></video>
+      </div>
+
+      <!-- أزرار التقطيع الفوري الحية -->
+      <div class="live-actions-grid">
+        <button class="btn-live-action action-att" onclick="triggerInstantExport('حالات هجومية')">
+          <i class="fa-solid fa-angles-left" style="color:#3b82f6;"></i>
+          <span>حالات هجومية</span>
+        </button>
+        <button class="btn-live-action action-ind" onclick="triggerInstantExport('حالات فردية')">
+          <i class="fa-solid fa-user-ninja" style="color:#8b5cf6;"></i>
+          <span>حالات فردية</span>
+        </button>
+        <button class="btn-live-action action-set-att" onclick="triggerInstantExport('كرات ثابتة هجومية')">
+          <i class="fa-solid fa-flag" style="color:#06b6d4;"></i>
+          <span>كور ثابتة هجومية</span>
+        </button>
+        <button class="btn-live-action action-set-def" onclick="triggerInstantExport('كرات ثابتة دفاعية')">
+          <i class="fa-solid fa-hand-fist" style="color:#f97316;"></i>
+          <span>كور ثابتة دفاعية</span>
+        </button>
+        <button class="btn-live-action action-replay" onclick="triggerInstantExport('تكرار لعبة')">
+          <i class="fa-solid fa-rotate-right" style="color:#10b981;"></i>
+          <span>تكرار لعبة</span>
+        </button>
+        <button class="btn-live-action action-goal" onclick="triggerInstantExport('هدف')">
+          <i class="fa-solid fa-fire" style="color:#f59e0b;"></i>
+          <span>هدف ⚽</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <canvas id="liveRenderCanvas" style="display: none;"></canvas>
+
+  <script>
+    const liveVideo = document.getElementById('liveVideo');
+    const statusBanner = document.getElementById('liveStatusBanner');
+    const statusText = document.getElementById('liveStatusText');
+
+    function loadSourceLink() {
+      const url = document.getElementById('videoLinkInput').value.trim();
+      if (!url) return alert("يرجى لصق رابط فيديو صحيح أولاً!");
+      liveVideo.src = url;
+      liveVideo.load();
+      liveVideo.play().catch(e => alert("تعذر تشغيل الرابط مباشرة؛ قد يتطلب أذونات متصفح أو صيغة مدعومة."));
+    }
+
+    function loadLocalVideo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      liveVideo.src = url;
+      liveVideo.play();
+    }
+
+    async function openDeviceCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        liveVideo.srcObject = stream;
+        liveVideo.play();
+      } catch (err) {
+        alert("تعذر الوصول لكاميرا الجهاز، يرجى التحقق من الأذونات.");
+      }
+    }
+
+    // محرك التصدير الفوري للقطة (5 ثوانٍ قبل و 5 ثوانٍ بعد الضغط)
+    async function triggerInstantExport(categoryName) {
+      if (!liveVideo.src && !liveVideo.srcObject) {
+        return alert("يرجى تشغيل فيديو لايف أو كاميرا أولاً!");
+      }
+
+      const currentTime = liveVideo.currentTime || 0;
+      const startTime = Math.max(0, currentTime - 5);
+      const endTime = Math.min(liveVideo.duration || (currentTime + 5), currentTime + 5);
+
+      statusBanner.style.display = 'flex';
+      statusText.innerText = `جاري استخراج وتصدير (${categoryName}) - 5ث قبل وبعد...`;
+
+      try {
+        // إذا كان المصدر كاميرا حية، نقوم بتسجيل 10 ثوانٍ مباشرة
+        if (liveVideo.srcObject) {
+          await recordLiveStreamSegment(categoryName, 10);
+          return;
+        }
+
+        // إذا كان فيديو مسجل أو لينك، نقوم برندرة المقطع بدقة
+        const canvas = document.getElementById('liveRenderCanvas');
+        canvas.width = liveVideo.videoWidth || 1280;
+        canvas.height = liveVideo.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+
+        const stream = canvas.captureStream(30);
+        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+        const startTimePerf = performance.now();
+        recorder.start();
+
+        liveVideo.currentTime = startTime;
+        await new Promise(r => { liveVideo.onseeked = r; });
+        await liveVideo.play();
+
+        const fps = 30;
+        const frameInterval = 1000 / fps;
+
+        function stepFrame() {
+          if (liveVideo.currentTime >= endTime || liveVideo.paused) {
+            liveVideo.pause();
+            recorder.stop();
+            return;
+          }
+          ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
+          setTimeout(stepFrame, frameInterval);
+        }
+        stepFrame();
+
+        recorder.onstop = async () => {
+          const rawBlob = new Blob(chunks, { type: 'video/webm' });
+          const durationMs = Math.round(performance.now() - startTimePerf);
+          
+          let finalBlob = rawBlob;
+          if (typeof ysFixWebmDuration !== 'undefined') {
+            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, durationMs, res));
+          }
+
+          const url = URL.createObjectURL(finalBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `لايف_${categoryName}_${Date.now()}.webm`;
+          a.click();
+
+          statusText.innerText = `تم تصدير وحفظ (${categoryName}) بنجاح! ⚽`;
+          setTimeout(() => { statusBanner.style.display = 'none'; }, 3000);
+        };
+
+      } catch (err) {
+        statusBanner.style.display = 'none';
+        alert("حدث خطأ أثناء تصدير اللقطة الحية.");
+      }
+    }
+
+    async function recordLiveStreamSegment(categoryName, seconds) {
+      const stream = liveVideo.srcObject;
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+      recorder.start();
+      await new Promise(r => setTimeout(r, seconds * 1000));
+      recorder.stop();
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `كاميرا_لايف_${categoryName}_${Date.now()}.webm`;
+        a.click();
+
+        statusText.innerText = `تم تصدير وحفظ تسجيل الكاميرا (${categoryName}) بنجاح!`;
+        setTimeout(() => { statusBanner.style.display = 'none'; }, 3000);
+      };
+    }
+  </script>
+</body>
+</html>
