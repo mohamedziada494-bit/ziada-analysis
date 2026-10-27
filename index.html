@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ziada Analysis - منصة التحليل التكتيكي العالمي</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#020617">
+  
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root { 
+      --neon-blue: #0284c7; 
+      --neon-cyan: #38bdf8; 
+      --neon-gold: #f59e0b; 
+      --bg-dark: #020617;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-dark);
+      overflow-x: hidden;
+      position: relative;
+      padding: 2rem;
+    }
+
+    /* 🌐 خلفية خيال علمي تكتيكية مع شبكة رادار وملاعب مستقبلية */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.12) 0%, transparent 60%),
+        linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      z-index: 0;
+    }
+
+    /* دوائر رادار تكتيكية متحركة في الخلفية */
+    .radar-circle {
+      position: absolute;
+      width: 700px; height: 700px;
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      border-radius: 50%;
+      top: 50%; left: 30%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 50px rgba(14, 165, 233, 0.05);
+      animation: radarPulse 8s ease-in-out infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .radar-circle::after {
+      content: '';
+      position: absolute;
+      inset: 50px;
+      border: 1px dashed rgba(245, 158, 11, 0.15);
+      border-radius: 50%;
+    }
+    @keyframes radarPulse {
+      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.5; }
+      100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+    }
+
+    /* الحاوية الرئيسية للتصميم */
+    .epic-wrapper {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      width: 100%;
+      max-width: 1250px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+    }
+
+    /* 🦾 لوحة القيادة التكتيكية المستقبلية (اليسار) */
+    .tech-hud-display {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 2rem;
+      box-shadow: inset 0 0 30px rgba(56, 189, 248, 0.05), 0 20px 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(15px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tech-hud-display::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      animation: scanLine 3s linear infinite;
+    }
+    @keyframes scanLine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .hud-icon-glow {
+      font-size: 4.5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6));
+      animation: floatIcon 4s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hud-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    .hud-title span { color: var(--neon-gold); text-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+
+    .hud-desc {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      max-width: 450px;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+
+    .hud-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .stat-box {
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 1rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.1);
+    }
+    .stat-box .number {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      margin-bottom: 0.2rem;
+    }
+    .stat-box .label {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    /* 🛡️ كارد تسجيل الدخول الفاخر (اليمين) */
+    .main-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(11, 17, 32, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 1.75rem;
+      padding: 2.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(14, 165, 233, 0.15);
+      backdrop-filter: blur(20px);
+      position: relative;
+    }
+
+    .header { text-align: center; margin-bottom: 1.75rem; }
+    .header .logo-text { font-size: 1.9rem; font-weight: 900; color: #ffffff; }
+    .header .logo-text span { color: var(--neon-gold); }
+    .header p { font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; font-weight: 600; }
+
+    .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.95); padding: 0.6rem; border-radius: 0.75rem; border: 1px solid rgba(56, 189, 248, 0.2); }
+    .download-strip button { 
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
+      padding: 0.6rem; font-size: 0.8rem; font-weight: 700; 
+      border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.85;
+      background: linear-gradient(135deg, #1e293b, #0f172a); color: #4ade80; 
+    }
+
+    .tabs { display: flex; background: rgba(15, 23, 42, 0.9); padding: 0.25rem; border-radius: 0.6rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
+    .tab-btn { flex: 1; padding: 0.6rem; border: none; background: transparent; color: #94a3b8; font-size: 0.85rem; font-weight: 700; border-radius: 0.4rem; cursor: pointer; transition: all 0.3s; }
+    .tab-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+    
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.825rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.4rem; }
+    .form-group input { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: left; transition: all 0.3s;}
+    .form-group input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.95); }
+
+    .submit-btn { width: 100%; padding: 0.8rem; background: linear-gradient(135deg, #0284c7, #1d4ed8); color: #ffffff; border: none; border-radius: 0.6rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; margin-top: 0.5rem; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); transition: all 0.3s; }
+    .submit-btn:hover { background: linear-gradient(135deg, #0ea5e9, #2563eb); box-shadow: 0 6px 25px rgba(14, 165, 233, 0.6); }
+    .btn-register-style { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
+    .btn-register-style:hover { background: linear-gradient(135deg, #10b981, #34d399); box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6); }
+
+    .alert { padding: 0.75rem; border-radius: 0.5rem; font-size: 0.825rem; margin-bottom: 1.25rem; display: none; text-align: center; font-weight: 600; }
+    .alert.error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+    .alert.success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; }
+    
+    .dashboard-panel { display: none; }
+    .coach-welcome { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
+    .coach-welcome h2 { font-size: 1.25rem; color: var(--neon-cyan); font-weight: 800; }
+    .coach-welcome p { color: #94a3b8; font-size: 0.825rem; margin-top: 0.25rem; }
+
+    .analysis-grid { display: flex; flex-direction: column; gap: 0.85rem; }
+    .analysis-card { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; transition: all 0.3s; }
+    .analysis-card:hover { background: rgba(30, 41, 59, 0.95); border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); transform: translateX(-4px); }
+    .analysis-card .icon-box { width: 44px; height: 44px; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    .tactical-icon { background: rgba(14, 165, 233, 0.2); color: var(--neon-cyan); }
+    .individual-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .live-icon { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .admin-icon { background: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
+    .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
+
+    .logout-btn { width: 100%; padding: 0.65rem; background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; border-radius: 0.6rem; cursor: pointer; margin-top: 1.5rem; font-weight: 700; transition: all 0.3s; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+
+    @media (max-width: 900px) {
+      .epic-wrapper { flex-direction: column-reverse; gap: 2rem; }
+      .tech-hud-display { width: 100%; padding: 2rem 1rem; }
+      .main-card { max-width: 100%; }
+      body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="radar-circle"></div>
+
+  <div class="epic-wrapper">
+    <!-- 🔐 كارد تسجيل الدخول (اليمين) -->
+    <div class="main-card">
+      <div class="header">
+        <div class="logo-text">Ziada <span>Analysis</span></div>
+        <p>منصة التحليل الفني والتكتيكي المتقدم</p>
+      </div>
+
+      <div class="download-strip">
+        <button disabled>📱 تطبيق الموبايل (قريباً... SOOON)</button>
+      </div>
+
+      <div id="auth-panel">
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</button>
+          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">مدرب جديد</button>
+        </div>
+
+        <div id="alert-box" class="alert"></div>
+
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="login-email" required dir="ltr" placeholder="coach@ziada.com"></div>
+          <div class="form-group"><label>كلمة المرور</label><input type="password" id="login-password" required dir="ltr" placeholder="••••••••"></div>
+          <button type="submit" class="submit-btn" id="login-btn-text">دخول للمنصة</button>
+        </form>
+
+        <form id="register-form" style="display: none;" onsubmit="handleRegister(event)">
+          <div class="form-group"><label>اسم المدرب الكامل</label><input type="text" id="reg-name" required placeholder="الكابتن / اسمك"></div>
+          <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" required dir="ltr" placeholder="coach@ziada.com"></div>
+          <div class="form-group"><label>كلمة المرور (6 أحرف أو أرقام على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
+          <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
+        </form>
+      </div>
+
+      <div id="dashboard-panel" class="dashboard-panel">
+        <div class="coach-welcome">
+          <h2 id="welcome-name">أهلاً بك يا كوتش</h2>
+          <p>اختر أداة التحليل لبدء العمل:</p>
+        </div>
+        <div class="analysis-grid">
+          <a href="tactical.html" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
+          <a href="individual.html" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
+          <a href="live.html" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
+          <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة</h3></div></a>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
+      </div>
+    </div>
+
+    <!-- 🌐 لوحة القيادة التكتيكية المستقبلية (اليسار) -->
+    <div class="tech-hud-display">
+      <div class="hud-icon-glow">⚡⚽</div>
+      <h1 class="hud-title">Ziada <span>Analysis HUD</span></h1>
+      <p class="hud-desc">نظام القيادة والتحليل التكتيكي الذكي للجيل القادم. تتبع البيانات اللحظية، قراءة تحركات اللاعبين، ورسم الخطط الاستراتيجية بأعلى دقة تكنولوجية.</p>
+      
+      <div class="hud-stats-grid">
+        <div class="stat-box">
+          <div class="number">99.9%</div>
+          <div class="label">دقة التحليل</div>
+        </div>
+        <div class="stat-box">
+          <div class="number">LIVE</div>
+          <div class="label">تتبع لحظي</div>
+        </div>
+        <div class="stat-box">
+          <div class="number">PRO</div>
+          <div class="label">نسخة النخبة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
+      authDomain: "ziada-analysis-82e34.firebaseapp.com",
+      projectId: "ziada-analysis-82e34",
+      storageBucket: "ziada-analysis-82e34.firebasestorage.app",
+      messagingSenderId: "763163562341",
+      appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth(); const db = firebase.firestore();
+
+    let isRegistering = false; 
+
+    function getDeviceFingerprint() {
+      let deviceId = localStorage.getItem('ziada_device_id');
+      if (!deviceId) { deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(); localStorage.setItem('ziada_device_id', deviceId); }
+      return deviceId;
+    }
+
+    async function getGlobalInternetDate() {
+      try {
+        const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
+        const data = await response.json();
+        return data.datetime.split('T')[0];
+      } catch (error) {
+        return new Date().toISOString().split('T')[0];
+      }
+    }
+
+    async function validateUserAccess(user, userData) {
+      if (isRegistering) return; 
+      if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
+      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error'); return false; }
+      if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
+        const trueToday = await getGlobalInternetDate();
+        if (trueToday > userData.subscriptionEnd) {
+          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false;
+        }
+      }
+      if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
+        const currentLocalDevice = getDeviceFingerprint();
+        if (!userData.currentDeviceId) {
+          await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
+        } else if (userData.currentDeviceId !== currentLocalDevice) {
+          showAlert('عفواً، غير مسموح لك بتسجيل الدخول من أكثر من جهاز في نفس الوقت.', 'error'); return false;
+        }
+      }
+      return true;
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (isRegistering) return; 
+      if (user) {
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            const isValid = await validateUserAccess(user, userData);
+            if (isValid) { localStorage.setItem('ziada_active_user', JSON.stringify(userData)); showDashboard(userData); } 
+            else { await auth.signOut(); showAuthPanel(); }
+          } else { await auth.signOut(); showAuthPanel(); }
+        } catch (error) { showAlert('حدث خطأ أثناء جلب البيانات.', 'error'); }
+      } else { showAuthPanel(); }
+    });
+
+    function showAuthPanel() { document.getElementById('auth-panel').style.display = 'block'; document.getElementById('dashboard-panel').style.display = 'none'; }
+    function showDashboard(user) { document.getElementById('auth-panel').style.display = 'none'; document.getElementById('dashboard-panel').style.display = 'block'; document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name}`; document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none'; }
+    function handleLogout() { auth.signOut().then(() => { localStorage.removeItem('ziada_active_user'); showAuthPanel(); document.getElementById('login-form').reset(); }); }
+    function showAlert(message, type) { const box = document.getElementById('alert-box'); box.textContent = message; box.className = `alert ${type}`; box.style.display = 'block'; setTimeout(() => box.style.display = 'none', 5000); }
+    function switchTab(type) { const isLogin = type === 'login'; document.getElementById('login-form').style.display = isLogin ? 'block' : 'none'; document.getElementById('register-form').style.display = isLogin ? 'none' : 'block'; document.getElementById('tab-login').classList.toggle('active', isLogin); document.getElementById('tab-register').classList.toggle('active', !isLogin); document.getElementById('alert-box').style.display = 'none'; }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn-text'); btn.textContent = 'جاري التحقق الأمني...';
+      try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } 
+      catch (error) { showAlert('البريد أو كلمة المرور غير صحيحة.', 'error'); } 
+      finally { btn.textContent = 'دخول للمنصة'; }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('reg-btn-text'); 
+      btn.textContent = 'جاري إنشاء البروفايل التكتيكي...';
+      isRegistering = true; 
+      let createdUser = null; 
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
+        createdUser = cred.user;
+        await db.collection('users').doc(createdUser.uid).set({
+          uid: createdUser.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
+          role: 'coach', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await createdUser.sendEmailVerification();
+        showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
+        document.getElementById('register-form').reset();
+        await auth.signOut();
+      } catch (error) {
+        if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
+          try { await createdUser.delete(); } catch(e) { }
+        }
+        if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
+        else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
+        else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
+        await auth.signOut();
+      } finally { 
+        isRegistering = false; 
+        btn.textContent = 'إنشاء الحساب الآن'; 
+      }
+    }
+  </script>
+</body>
+</html>
