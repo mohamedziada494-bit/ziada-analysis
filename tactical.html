@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المتقدم</title>
+  <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المتقدم الشامل</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -29,7 +29,7 @@
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
     .btn-top:hover { background: var(--primary); color: #070b12; }
 
-    .workspace-grid { display: grid; grid-template-columns: 310px 1fr 310px; gap: 14px; }
+    .workspace-grid { display: grid; grid-template-columns: 325px 1fr 310px; gap: 14px; }
 
     .tagging-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 7px; max-height: 85vh; overflow-y: auto; }
     
@@ -57,7 +57,11 @@
     .tag-opp-trick { border-right: 4px solid #eab308; }
     .tag-first-ball { border-right: 4px solid #6366f1; }
     .tag-second-ball { border-right: 4px solid #14b8a6; }
-    
+    .tag-counter-press { border-right: 4px solid #f43f5e; }
+    .tag-counter-attack { border-right: 4px solid #0ea5e9; }
+    .tag-key-pass { border-right: 4px solid #84cc16; }
+    .tag-cross-box { border-right: 4px solid #e879f9; }
+
     .custom-action-row { display: flex; align-items: center; gap: 6px; width: 100%; }
     .tag-custom { border-right: 4px solid #d946ef; }
     .btn-del-custom { background: #991b1b; color: #fee2e2; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -224,7 +228,7 @@
     </header>
 
     <div class="workspace-grid">
-      <!-- 1. لوحة أزرار التقطيع -->
+      <!-- 1. لوحة أزرار التقطيع مع عدادات حية -->
       <aside class="tagging-panel">
         <div class="mode-switch-card">
           <div class="mode-switch-title">
@@ -248,33 +252,36 @@
           <small id="currentModeLabel" style="color: var(--primary);">تلقائي 5ث قبل/بعد</small>
         </div>
 
-        <button class="btn-tag tag-att" id="btn_att" onclick="handleTagClick('حالات هجومية', 'tag-att', this)"><span>حالات هجومية</span> <i class="fa-solid fa-angles-left"></i></button>
-        <button class="btn-tag tag-ind" id="btn_ind" onclick="handleTagClick('حالات فردية', 'tag-ind', this)"><span>حالات فردية</span> <i class="fa-solid fa-user-ninja"></i></button>
-        <button class="btn-tag tag-def" id="btn_def" onclick="handleTagClick('حالات دفاعية', 'tag-def', this)"><span>حالات دفاعية</span> <i class="fa-solid fa-shield-halved"></i></button>
-        <button class="btn-tag tag-goal" id="btn_goal" onclick="handleTagClick('أهداف', 'tag-goal', this)"><span>أهداف ⚽</span> <i class="fa-solid fa-fire"></i></button>
-        <button class="btn-tag tag-set-att" id="btn_set_att" onclick="handleTagClick('كرات ثابتة هجومية', 'tag-set-att', this)"><span>كرات ثابتة هجومية</span> <i class="fa-solid fa-flag"></i></button>
-        <button class="btn-tag tag-set-def" id="btn_set_def" onclick="handleTagClick('كرات ثابتة دفاعية', 'tag-set-def', this)"><span>كرات ثابتة دفاعية</span> <i class="fa-solid fa-hand-fist"></i></button>
-        <button class="btn-tag tag-buildup" id="btn_buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة (Build-up)</span> <i class="fa-solid fa-cubes"></i></button>
-        <button class="btn-tag tag-press" id="btn_press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي (High Press)</span> <i class="fa-solid fa-gauge-high"></i></button>
-        <button class="btn-tag tag-opp-trick" id="btn_opp_trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم (تركاية)</span> <i class="fa-solid fa-lightbulb"></i></button>
+        <button class="btn-tag tag-att" id="btn_att" onclick="handleTagClick('حالات هجومية', 'tag-att', this)"><span>حالات هجومية <b class="count-badge" data-cat="حالات هجومية">(0)</b></span> <i class="fa-solid fa-angles-left"></i></button>
+        <button class="btn-tag tag-ind" id="btn_ind" onclick="handleTagClick('حالات فردية', 'tag-ind', this)"><span>حالات فردية <b class="count-badge" data-cat="حالات فردية">(0)</b></span> <i class="fa-solid fa-user-ninja"></i></button>
+        <button class="btn-tag tag-def" id="btn_def" onclick="handleTagClick('حالات دفاعية', 'tag-def', this)"><span>حالات دفاعية <b class="count-badge" data-cat="حالات دفاعية">(0)</b></span> <i class="fa-solid fa-shield-halved"></i></button>
+        <button class="btn-tag tag-goal" id="btn_goal" onclick="handleTagClick('أهداف', 'tag-goal', this)"><span>أهداف ⚽ <b class="count-badge" data-cat="أهداف">(0)</b></span> <i class="fa-solid fa-fire"></i></button>
+        <button class="btn-tag tag-set-att" id="btn_set_att" onclick="handleTagClick('كرات ثابتة هجومية', 'tag-set-att', this)"><span>كرات ثابتة هجومية <b class="count-badge" data-cat="كرات ثابتة هجومية">(0)</b></span> <i class="fa-solid fa-flag"></i></button>
+        <button class="btn-tag tag-set-def" id="btn_set_def" onclick="handleTagClick('كرات ثابتة دفاعية', 'tag-set-def', this)"><span>كرات ثابتة دفاعية <b class="count-badge" data-cat="كرات ثابتة دفاعية">(0)</b></span> <i class="fa-solid fa-hand-fist"></i></button>
+        <button class="btn-tag tag-buildup" id="btn_buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة <b class="count-badge" data-cat="بناء الهجمة">(0)</b></span> <i class="fa-solid fa-cubes"></i></button>
+        <button class="btn-tag tag-press" id="btn_press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي <b class="count-badge" data-cat="الضغط العالي">(0)</b></span> <i class="fa-solid fa-gauge-high"></i></button>
+        <button class="btn-tag tag-opp-trick" id="btn_opp_trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم <b class="count-badge" data-cat="طريقة لعب الخصم (تركاية في الملعب)">(0)</b></span> <i class="fa-solid fa-lightbulb"></i></button>
         
-        <!-- أزرار الكرة الأولى والثانية الجديدة -->
-        <button class="btn-tag tag-first-ball" id="btn_first_ball" onclick="handleTagClick('الكرة الأولى (First Ball)', 'tag-first-ball', this)"><span>الكرة الأولى (First Ball) ✈️</span> <i class="fa-solid fa-plane-up"></i></button>
-        <button class="btn-tag tag-second-ball" id="btn_second_ball" onclick="handleTagClick('الكرة الثانية (Second Ball)', 'tag-second-ball', this)"><span>الكرة الثانية (Second Ball) 🎯</span> <i class="fa-solid fa-bullseye"></i></button>
+        <!-- الأزرار الجديدة الإضافية -->
+        <button class="btn-tag tag-first-ball" id="btn_first_ball" onclick="handleTagClick('الكرة الأولى (First Ball)', 'tag-first-ball', this)"><span>الكرة الأولى (First Ball) <b class="count-badge" data-cat="الكرة الأولى (First Ball)">(0)</b></span> <i class="fa-solid fa-plane-up"></i></button>
+        <button class="btn-tag tag-second-ball" id="btn_second_ball" onclick="handleTagClick('الكرة الثانية (Second Ball)', 'tag-second-ball', this)"><span>الكرة الثانية (Second Ball) <b class="count-badge" data-cat="الكرة الثانية (Second Ball)">(0)</b></span> <i class="fa-solid fa-bullseye"></i></button>
+        <button class="btn-tag tag-counter-press" id="btn_counter_press" onclick="handleTagClick('الضغط العكسي (Counter-Press)', 'tag-counter-press', this)"><span>الضغط العكسي <b class="count-badge" data-cat="الضغط العكسي (Counter-Press)">(0)</b></span> <i class="fa-solid fa-bolt"></i></button>
+        <button class="btn-tag tag-counter-attack" id="btn_counter_attack" onclick="handleTagClick('هجمة مرتدة (Counter-Attack)', 'tag-counter-attack', this)"><span>هجمة مرتدة <b class="count-badge" data-cat="هجمة مرتدة (Counter-Attack)">(0)</b></span> <i class="fa-solid fa-running"></i></button>
+        <button class="btn-tag tag-key-pass" id="btn_key_pass" onclick="handleTagClick('تمريرة مفتاحية (Key Pass)', 'tag-key-pass', this)"><span>تمريرة مفتاحية <b class="count-badge" data-cat="تمريرة مفتاحية (Key Pass)">(0)</b></span> <i class="fa-solid fa-key"></i></button>
+        <button class="btn-tag tag-cross-box" id="btn_cross_box" onclick="handleTagClick('عرضيات ودخول المنطقة (Cross & Box)', 'tag-cross-box', this)"><span>عُرضيات ودخول المنطقة <b class="count-badge" data-cat="عرضيات ودخول المنطقة (Cross & Box)">(0)</b></span> <i class="fa-solid fa-box-open"></i></button>
 
-        <!-- قسم إضافة إجراء مخصص للحساب الحالي فقط -->
+        <!-- قسم الإجراءات المخصصة للحساب الحالي -->
         <div style="margin-top: 10px; background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
           <div style="font-size: 11.5px; font-weight: 800; color: #d946ef; display: flex; align-items: center; gap: 5px;">
             <i class="fa-solid fa-user-gear"></i>
             <span>إجراء مخصص لحسابي فقط:</span>
           </div>
-          <input type="text" id="customActionInput" class="input-field" placeholder="اسم الإجراء (مثال: تمريرة بينية مفتاحية)">
+          <input type="text" id="customActionInput" class="input-field" placeholder="اسم الإجراء (مثال: افتكاك كرة ناجح)">
           <button class="btn-top" style="width: 100%; justify-content: center; background: #1e1b4b; border-color: #d946ef; color: #e879f9;" onclick="addNewCustomAction()">
             <i class="fa-solid fa-plus"></i> إضافة زر خاص بي
           </button>
         </div>
 
-        <!-- حاوية الأزرار المخصصة مع زر الحذف -->
         <div id="customActionsContainer" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;"></div>
 
         <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
@@ -307,7 +314,7 @@
         </div>
       </main>
 
-      <!-- 3. لوحة التصدير الذكية والمونتاج التلقائي -->
+      <!-- 3. لوحة التصدير الذكية مع خيار فصل كل إجراء لوحده -->
       <aside class="export-side-panel">
         <div class="export-box-title">
           <i class="fa-solid fa-film"></i>
@@ -339,11 +346,11 @@
           <div class="export-radio-group">
             <label class="export-radio-item selected" id="lblTypeMerged">
               <input type="radio" name="exportTypeMode" value="merged_full" checked onchange="updateExportUI()">
-              <span>فيديو كامل مجمّع (مع فواصل الحالات القادمة)</span>
+              <span>فيديو كامل مجمّع (مع فواصل الحالات)</span>
             </label>
             <label class="export-radio-item" id="lblTypeCategory">
               <input type="radio" name="exportTypeMode" value="category_separate" onchange="updateExportUI()">
-              <span>تصدير حسب التصنيف (أو الجميع)</span>
+              <span>تصدير كل إجراء لوحده (أو تصنيف محدد)</span>
             </label>
           </div>
         </div>
@@ -351,7 +358,7 @@
         <div class="export-step-box" id="categorySelectBox" style="display: none;">
           <div class="export-step-label">
             <i class="fa-solid fa-filter"></i>
-            <span>اختر التصنيف المراد تصديره:</span>
+            <span>اختر الإجراء المراد تصديره بمفرده:</span>
           </div>
           <select id="exportCategorySelect" class="input-field"></select>
         </div>
@@ -373,7 +380,7 @@
       </aside>
     </div>
 
-    <!-- شبكة استعراض الحالات مع إمكانية التعديل والحذف لكل لقطة -->
+    <!-- شبكة استعراض الحالات -->
     <section class="clips-library-section">
       <div class="clips-header">
         <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-folder-open"></i> الحالات المسجلة (إمكانية التعديل والقص المباشر)</h3>
@@ -382,7 +389,7 @@
     </section>
   </div>
 
-  <!-- نافذة تعديل بيانات وتوقيتات اللقطة المقطوعة -->
+  <!-- نافذة تعديل بيانات وتوقيتات اللقطة -->
   <div class="modal-clip-editor" id="modalClipEditor">
     <div class="clip-editor-box">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
@@ -399,11 +406,15 @@
           <option value="أهداف">أهداف ⚽</option>
           <option value="كرات ثابتة هجومية">كرات ثابتة هجومية</option>
           <option value="كرات ثابتة دفاعية">كرات ثابتة دفاعية</option>
-          <option value="بناء الهجمة">بناء الهجمة (Build-up)</option>
-          <option value="الضغط العالي">الضغط العالي (High Press)</option>
+          <option value="بناء الهجمة">بناء الهجمة</option>
+          <option value="الضغط العالي">الضغط العالي</option>
           <option value="طريقة لعب الخصم (تركاية في الملعب)">طريقة لعب الخصم (تركاية)</option>
           <option value="الكرة الأولى (First Ball)">الكرة الأولى (First Ball)</option>
           <option value="الكرة الثانية (Second Ball)">الكرة الثانية (Second Ball)</option>
+          <option value="الضغط العكسي (Counter-Press)">الضغط العكسي (Counter-Press)</option>
+          <option value="هجمة مرتدة (Counter-Attack)">هجمة مرتدة (Counter-Attack)</option>
+          <option value="تمريرة مفتاحية (Key Pass)">تمريرة مفتاحية (Key Pass)</option>
+          <option value="عرضيات ودخول المنطقة (Cross & Box)">عُرضيات ودخول المنطقة</option>
         </select>
       </div>
 
@@ -492,52 +503,25 @@
 
       <aside class="studio-tools-sidebar">
         <div style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 3px;">🎨 الأدوات التكتيكية الأوروبية:</div>
-        <button class="tool-btn active" id="tool_spotlight" onclick="setStudioTool('spotlight')">
-          <i class="fa-solid fa-lightbulb" style="color:#ffffff;"></i> ضوء تسليط مخروطي أبيض
-        </button>
-        <button class="tool-btn" id="tool_player_ring" onclick="setStudioTool('player_ring')">
-          <i class="fa-solid fa-circle-dot" style="color:#38bdf8;"></i> حلقة إبراز اللاعب (3D Ring)
-        </button>
-        <button class="tool-btn" id="tool_arrow_pass" onclick="setStudioTool('arrow_pass')">
-          <i class="fa-solid fa-arrow-left-long" style="color:#38bdf8;"></i> سهم تمرير أرضي نيون
-        </button>
-        <button class="tool-btn" id="tool_arrow_curve" onclick="setStudioTool('arrow_curve')">
-          <i class="fa-solid fa-route" style="color:#ec4899;"></i> سهم انطلاق وتحرك مقوّس
-        </button>
-        <button class="tool-btn" id="tool_teleport" onclick="setStudioTool('teleport')">
-          <i class="fa-solid fa-person-walking-arrow-right" style="color:#a855f7;"></i> نقل لاعب (تمركز بديل Ghost)
-        </button>
-        <button class="tool-btn" id="tool_chain_formation" onclick="setStudioTool('chain_formation')">
-          <i class="fa-solid fa-diagram-project" style="color:#ef4444;"></i> منطقة تشكيل لاعبين (Chain)
-        </button>
-        <button class="tool-btn" id="tool_vision_cone" onclick="setStudioTool('vision_cone')">
-          <i class="fa-solid fa-eye" style="color:#10b981;"></i> مجال رؤية اللاعب (Vision Cone)
-        </button>
-        <button class="tool-btn" id="tool_space_zone" onclick="setStudioTool('space_zone')">
-          <i class="fa-solid fa-vector-square" style="color:#f59e0b;"></i> تسليط على مساحة تكتيكية 🔲
-        </button>
-        <button class="tool-btn" id="tool_distance_line" onclick="setStudioTool('distance_line')">
-          <i class="fa-solid fa-ruler-horizontal" style="color:#06b6d4;"></i> مقياس المسافة بين اللاعبين 📏
-        </button>
-        <button class="tool-btn" id="tool_ball_trajectory" onclick="setStudioTool('ball_trajectory')">
-          <i class="fa-solid fa-volleyball" style="color:#fbbf24;"></i> مسار كرة ساقطة في الهواء 🌈
-        </button>
-        <button class="tool-btn" id="tool_passing_blocker" onclick="setStudioTool('passing_blocker')">
-          <i class="fa-solid fa-ban" style="color:#f43f5e;"></i> حائط حظر زاوية التمرير 🚫
-        </button>
-        <button class="tool-btn" id="tool_offside_barrier" onclick="setStudioTool('offside_barrier')">
-          <i class="fa-solid fa-grip-lines-vertical" style="color:#eab308;"></i> خط التسلل والعمق الدفاعي 🧱
-        </button>
-        <button class="tool-btn" id="tool_magnifier_zoom" onclick="setStudioTool('magnifier_zoom')">
-          <i class="fa-solid fa-magnifying-glass" style="color:#a855f7;"></i> عدسة تكبير تفصيلية 🔍
-        </button>
+        <button class="tool-btn active" id="tool_spotlight" onclick="setStudioTool('spotlight')"><i class="fa-solid fa-lightbulb" style="color:#ffffff;"></i> ضوء تسليط مخروطي أبيض</button>
+        <button class="tool-btn" id="tool_player_ring" onclick="setStudioTool('player_ring')"><i class="fa-solid fa-circle-dot" style="color:#38bdf8;"></i> حلقة إبراز اللاعب (3D Ring)</button>
+        <button class="tool-btn" id="tool_arrow_pass" onclick="setStudioTool('arrow_pass')"><i class="fa-solid fa-arrow-left-long" style="color:#38bdf8;"></i> سهم تمرير أرضي نيون</button>
+        <button class="tool-btn" id="tool_arrow_curve" onclick="setStudioTool('arrow_curve')"><i class="fa-solid fa-route" style="color:#ec4899;"></i> سهم انطلاق وتحرك مقوّس</button>
+        <button class="tool-btn" id="tool_teleport" onclick="setStudioTool('teleport')"><i class="fa-solid fa-person-walking-arrow-right" style="color:#a855f7;"></i> نقل لاعب (تمركز بديل Ghost)</button>
+        <button class="tool-btn" id="tool_chain_formation" onclick="setStudioTool('chain_formation')"><i class="fa-solid fa-diagram-project" style="color:#ef4444;"></i> منطقة تشكيل لاعبين (Chain)</button>
+        <button class="tool-btn" id="tool_vision_cone" onclick="setStudioTool('vision_cone')"><i class="fa-solid fa-eye" style="color:#10b981;"></i> مجال رؤية اللاعب (Vision Cone)</button>
+        <button class="tool-btn" id="tool_space_zone" onclick="setStudioTool('space_zone')"><i class="fa-solid fa-vector-square" style="color:#f59e0b;"></i> تسليط على مساحة تكتيكية 🔲</button>
+        <button class="tool-btn" id="tool_distance_line" onclick="setStudioTool('distance_line')"><i class="fa-solid fa-ruler-horizontal" style="color:#06b6d4;"></i> مقياس المسافة بين اللاعبين 📏</button>
+        <button class="tool-btn" id="tool_ball_trajectory" onclick="setStudioTool('ball_trajectory')"><i class="fa-solid fa-volleyball" style="color:#fbbf24;"></i> مسار كرة ساقطة في الهواء 🌈</button>
+        <button class="tool-btn" id="tool_passing_blocker" onclick="setStudioTool('passing_blocker')"><i class="fa-solid fa-ban" style="color:#f43f5e;"></i> حائط حظر زاوية التمرير 🚫</button>
+        <button class="tool-btn" id="tool_offside_barrier" onclick="setStudioTool('offside_barrier')"><i class="fa-solid fa-grip-lines-vertical" style="color:#eab308;"></i> خط التسلل والعمق الدفاعي 🧱</button>
+        <button class="tool-btn" id="tool_magnifier_zoom" onclick="setStudioTool('magnifier_zoom')"><i class="fa-solid fa-magnifying-glass" style="color:#a855f7;"></i> عدسة تكبير تفصيلية 🔍</button>
       </aside>
     </div>
   </div>
 
   <canvas id="exportRenderCanvas" style="display: none;"></canvas>
 
-  <!-- Firebase SDKs with Custom Actions Deletion Support -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -628,7 +612,7 @@
         row.className = 'custom-action-row';
         row.innerHTML = `
           <button class="btn-tag tag-custom" onclick="handleTagClick('${act.name}', 'tag-custom', this)">
-            <span>${act.name}</span> <i class="fa-solid fa-star"></i>
+            <span>${act.name} <b class="count-badge" data-cat="${act.name}">(0)</b></span> <i class="fa-solid fa-star"></i>
           </button>
           <button class="btn-del-custom" title="حذف هذا الإجراء" onclick="deleteCustomAction('${act.id}')">
             <i class="fa-solid fa-trash-can"></i>
@@ -636,6 +620,7 @@
         `;
         container.appendChild(row);
       });
+      updateCounters();
     }
   </script>
 
@@ -800,6 +785,18 @@
       });
       renderClipsList();
       populateExportCategories();
+      updateCounters();
+    }
+
+    function updateCounters() {
+      const counts = {};
+      clips.forEach(c => {
+        counts[c.category] = (counts[c.category] || 0) + 1;
+      });
+      document.querySelectorAll('.count-badge').forEach(badge => {
+        const cat = badge.getAttribute('data-cat');
+        badge.innerText = `(${counts[cat] || 0})`;
+      });
     }
 
     function renderClipsList() {
@@ -871,6 +868,7 @@
       closeClipEditor();
       renderClipsList();
       populateExportCategories();
+      updateCounters();
       if (document.getElementById('studioModal').classList.contains('active')) {
         renderStudioSidebarClips();
       }
@@ -882,6 +880,7 @@
       clips = clips.filter(x => x.id !== clipId);
       renderClipsList();
       populateExportCategories();
+      updateCounters();
       if (document.getElementById('studioModal').classList.contains('active')) {
         renderStudioSidebarClips();
       }
@@ -1346,9 +1345,43 @@
 
     function drawResizeHandle(shape) {}
 
-    function drawWhiteConicalSpotlight(ctx, shape) {}
-    function drawPlayer3DRing(ctx, shape) {}
-    function drawNeonPassingArrow(ctx, shape) {}
+    function drawWhiteConicalSpotlight(ctx, shape) {
+      ctx.save();
+      const topX = shape.topX, topY = shape.topY, bX = shape.bottomX, bY = shape.bottomY, rx = shape.radiusX, ry = shape.radiusY;
+      const beamGrad = ctx.createLinearGradient(topX, topY, bX, bY);
+      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
+      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0.40)');
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(topX, topY);
+      ctx.lineTo(bX - rx, bY);
+      ctx.lineTo(bX + rx, bY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 18;
+      ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+    function drawPlayer3DRing(ctx, shape) {
+      ctx.save();
+      const x = shape.x, y = shape.y, rx = shape.radiusX, ry = shape.radiusY;
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)'; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      if (shape.label) {
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x, y - 75, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, x, y - 75);
+      }
+      ctx.restore();
+    }
+    function drawNeonPassingArrow(ctx, shape) {
+      ctx.save();
+      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.restore();
+    }
     function drawNeonCurvedArrow(ctx, shape) {}
     function drawGhostTeleportClean(ctx, shape) {}
     function drawChainFormation(ctx, shape) {}
@@ -1398,14 +1431,21 @@
     window.toggleTrackMode = function() { if (!activeShape) return; activeShape.tracked = !activeShape.tracked; btnShapeTrack.classList.toggle('active', activeShape.tracked); renderLiveScene(); };
     window.deleteActiveShape = function() { if (!currentStudioClip || !activeShape) return; currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); activeShape = null; hideFloatingToolbar(); renderLiveScene(); };
 
-    window.updateExportUI = function() {};
+    window.updateExportUI = function() {
+      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
+      const catBox = document.getElementById('categorySelectBox');
+      document.getElementById('lblTypeMerged').classList.toggle('selected', typeMode === 'merged_full');
+      document.getElementById('lblTypeCategory').classList.toggle('selected', typeMode === 'category_separate');
+      catBox.style.display = (typeMode === 'category_separate') ? 'flex' : 'none';
+    };
+
     function populateExportCategories() {
       const sel = document.getElementById('exportCategorySelect');
       const cats = [...new Set(clips.map(c => c.category))];
       sel.innerHTML = '';
       const allOpt = document.createElement('option');
       allOpt.value = 'ALL';
-      allOpt.innerText = '⭐ كل الحالات (الجميع)';
+      allOpt.innerText = '⭐ تصدير كل الإجراءات منفصلة (لكل إجراء ملف)';
       sel.appendChild(allOpt);
       cats.forEach(cat => {
         const opt = document.createElement('option');
@@ -1415,7 +1455,112 @@
       });
     }
 
-    window.runExportEngine = async function() {};
+    window.runExportEngine = async function() {
+      if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها!");
+      if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
+      
+      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
+      const selectedCat = document.getElementById('exportCategorySelect').value;
+      const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
+
+      let exportGroups = [];
+      if (typeMode === 'category_separate' && selectedCat === 'ALL') {
+        const cats = [...new Set(clips.map(c => c.category))];
+        cats.forEach(cat => {
+          exportGroups.push({ groupName: cat, clips: clips.filter(c => c.category === cat) });
+        });
+      } else if (typeMode === 'category_separate') {
+        exportGroups.push({ groupName: selectedCat, clips: clips.filter(c => c.category === selectedCat) });
+      } else {
+        exportGroups.push({ groupName: "تقرير_تكتيكي_شامل", clips: [...clips] });
+      }
+
+      for (let g = 0; g < exportGroups.length; g++) {
+        const group = exportGroups[g];
+        if (group.clips.length === 0) continue;
+
+        let suggestedName = `${group.groupName.replace(/[\s()]/g, '_')}.webm`;
+        let fileHandle = null;
+        if ('showSaveFilePicker' in window) {
+          try {
+            fileHandle = await window.showSaveFilePicker({
+              suggestedName: suggestedName,
+              types: [{ description: 'فيديو تكتيكي', accept: { 'video/webm': ['.webm'] } }]
+            });
+          } catch(err) { continue; }
+        }
+
+        const progressWrap = document.getElementById('exportProgressWrap');
+        const progressFill = document.getElementById('exportProgressFill');
+        const percentTxt = document.getElementById('exportPercentTxt');
+        const statusMsg = document.getElementById('exportStatusMsg');
+
+        progressWrap.style.display = 'flex';
+        const eCanvas = document.getElementById('exportRenderCanvas');
+        eCanvas.width = video.videoWidth || 1280;
+        eCanvas.height = video.videoHeight || 720;
+        const eCtx = eCanvas.getContext('2d');
+
+        const stream = eCanvas.captureStream(30);
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 8000000 });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        
+        const exportStart = performance.now();
+        recorder.start(100);
+
+        const rVideo = document.createElement('video');
+        rVideo.src = video.src; rVideo.muted = true; rVideo.playsInline = true;
+        await new Promise(r => { rVideo.onloadedmetadata = r; });
+
+        for (let i = 0; i < group.clips.length; i++) {
+          const c = group.clips[i];
+          statusMsg.innerText = `جاري رندرة الإجراء: ${group.groupName} (${i+1}/${group.clips.length})`;
+          
+          let curT = c.start;
+          rVideo.currentTime = curT;
+          await new Promise(r => { rVideo.onseeked = r; });
+
+          while (curT <= c.end) {
+            rVideo.currentTime = curT;
+            await new Promise(r => { rVideo.onseeked = r; });
+            eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
+            
+            if (overlayMode === 'with_overlay') {
+              (c.shapes || []).forEach(s => {
+                if (Math.abs(s.triggerTime - curT) < 0.3) {
+                  eCtx.save();
+                  eCtx.scale(eCanvas.width / sCanvas.width, eCanvas.height / sCanvas.height);
+                  drawSingleShape(eCtx, s);
+                  eCtx.restore();
+                }
+              });
+            }
+            curT += 1/30;
+            await new Promise(r => setTimeout(r, 1000/30));
+          }
+          let pct = Math.round(((i+1)/group.clips.length)*100);
+          progressFill.style.width = `${pct}%`;
+          percentTxt.innerText = `${pct}%`;
+        }
+
+        recorder.onstop = async () => {
+          const blob = new Blob(chunks, { type: 'video/webm' });
+          if (fileHandle) {
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+          } else {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = suggestedName;
+            a.click();
+          }
+          statusMsg.innerText = 'تم التصدير بنجاح!';
+        };
+        recorder.stop();
+      }
+    };
   </script>
 </body>
 </html>
