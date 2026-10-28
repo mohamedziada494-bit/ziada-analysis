@@ -29,7 +29,6 @@
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
     .btn-top:hover { background: var(--primary); color: #070b12; }
 
-    /* شريط إدخال مصدر الفيديو / الكاميرا / اللينك */
     .source-control-bar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
     .source-group { display: flex; gap: 8px; align-items: center; flex: 1; min-width: 300px; }
     .input-field { flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; }
@@ -37,12 +36,10 @@
     .btn-source:hover { background: var(--primary); color: #000; }
     .btn-camera { background: #0284c7; border-color: var(--primary); }
 
-    /* شاشة عرض الفيديو */
     .live-viewport-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .video-container { position: relative; width: 100%; height: 60vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; object-fit: contain; }
 
-    /* أزرار الحالات الفورية تحت الفيديو */
     .live-actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 5px; }
     .btn-live-action { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1.5px solid var(--border-color); color: #fff; padding: 14px 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
     .btn-live-action:hover { transform: translateY(-3px); border-color: var(--primary); filter: brightness(1.2); }
@@ -55,7 +52,6 @@
     .action-replay { border-color: #10b981; }
     .action-goal { border-color: #f59e0b; background: linear-gradient(135deg, #78350f, #451a03); }
 
-    /* مؤشر وحالة التصدير الفوري */
     .live-status-banner { display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #10b981; padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; }
   </style>
 </head>
@@ -69,7 +65,6 @@
       </div>
 <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> القائمة الرئيسية</a>    </header>
 
-    <!-- شريط إدخال اللينك أو فتح الكاميرا -->
     <div class="source-control-bar">
       <div class="source-group">
         <i class="fa-solid fa-link" style="color: var(--primary);"></i>
@@ -85,7 +80,6 @@
       </div>
     </div>
 
-    <!-- شاشة عرض الفيديو الحية -->
     <main class="live-viewport-box">
       <div class="live-status-banner" id="liveStatusBanner">
         <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -96,7 +90,6 @@
         <video id="liveVideo" controls playsinline></video>
       </div>
 
-      <!-- أزرار التقطيع الفوري الحية -->
       <div class="live-actions-grid">
         <button class="btn-live-action action-att" onclick="triggerInstantExport('حالات هجومية')">
           <i class="fa-solid fa-angles-left" style="color:#3b82f6;"></i>
@@ -151,7 +144,11 @@
 
     async function openDeviceCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // تم إضافة facingMode: ideal: 'environment' لطلب الكاميرا الخلفية
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: { ideal: "environment" } }, 
+          audio: true 
+        });
         liveVideo.srcObject = stream;
         liveVideo.play();
       } catch (err) {
@@ -159,7 +156,6 @@
       }
     }
 
-    // محرك التصدير الفوري للقطة (5 ثوانٍ قبل و 5 ثوانٍ بعد الضغط)
     async function triggerInstantExport(categoryName) {
       if (!liveVideo.src && !liveVideo.srcObject) {
         return alert("يرجى تشغيل فيديو لايف أو كاميرا أولاً!");
@@ -173,13 +169,11 @@
       statusText.innerText = `جاري استخراج وتصدير (${categoryName}) - 5ث قبل وبعد...`;
 
       try {
-        // إذا كان المصدر كاميرا حية، نقوم بتسجيل 10 ثوانٍ مباشرة
         if (liveVideo.srcObject) {
           await recordLiveStreamSegment(categoryName, 10);
           return;
         }
 
-        // إذا كان فيديو مسجل أو لينك، نقوم برندرة المقطع بدقة
         const canvas = document.getElementById('liveRenderCanvas');
         canvas.width = liveVideo.videoWidth || 1280;
         canvas.height = liveVideo.videoHeight || 720;
