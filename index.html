@@ -11,6 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root { 
@@ -283,6 +284,25 @@
     }
     .btn-sub-close:hover { background: #0284c7; color: #fff; }
 
+    /* تنسيقات زرار الواتساب */
+    .whatsapp-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 10px; margin-top: 15px;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: white; text-decoration: none; border-radius: 0.6rem;
+      font-weight: 800; font-size: 14px; transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+    .whatsapp-btn:hover {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+      transform: translateY(-2px);
+    }
+    .contact-hint {
+      text-align: center; color: #94a3b8; font-size: 12.5px; 
+      font-weight: 700; margin-top: 20px; margin-bottom: 5px;
+    }
+
     @media (max-width: 900px) {
       .epic-wrapper { flex-direction: column-reverse; gap: 2rem; }
       .tech-hud-display { width: 100%; padding: 2rem 1rem; }
@@ -327,6 +347,12 @@
           <div class="form-group"><label>كلمة المرور (6 أحرف أو أرقام على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
           <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
         </form>
+
+        <!-- زرار التواصل عبر واتساب معدل بالرقم الجديد -->
+        <div class="contact-hint">للاشتراك، التجديد، أو الدعم الفني:</div>
+        <a href="https://wa.me/201027482686" target="_blank" class="whatsapp-btn">
+          <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> تواصل مع الإدارة عبر واتساب
+        </a>
       </div>
 
       <div id="dashboard-panel" class="dashboard-panel">
@@ -500,12 +526,10 @@
 
     // دالة فحص وحساب وقت الاشتراك المتبقي
     function checkSubscription(userData) {
-      // استثناء الأدمن أو الحسابات غير المحدودة
       if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) {
         return; 
       }
 
-      // تحويل تاريخ النهاية المسجل في الفايربيس وتحديد نهاية اليوم
       const expiryDate = new Date(userData.subscriptionEnd + "T23:59:59").getTime();
       const now = new Date().getTime();
       const distance = expiryDate - now;
