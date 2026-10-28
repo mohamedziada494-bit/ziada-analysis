@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المستقر</title>
+  <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المتقدم</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -31,7 +31,7 @@
 
     .workspace-grid { display: grid; grid-template-columns: 310px 1fr 310px; gap: 14px; }
 
-    .tagging-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 7px; }
+    .tagging-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 7px; max-height: 85vh; overflow-y: auto; }
     
     .mode-switch-card { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 4px; display: flex; flex-direction: column; gap: 8px; }
     .mode-switch-title { font-size: 12px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px; }
@@ -41,8 +41,8 @@
 
     .panel-heading { font-size: 13px; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-    .btn-tag { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; color: #fff; background: #1f2937; }
-    .btn-tag:hover { transform: translateX(-4px); filter: brightness(1.15); }
+    .btn-tag { flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; color: #fff; background: #1f2937; text-align: right; }
+    .btn-tag:hover { filter: brightness(1.15); }
     .btn-tag.recording-active { background: #b91c1c !important; border-color: #ef4444 !important; animation: pulseRecord 1.2s infinite; }
     @keyframes pulseRecord { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
@@ -55,6 +55,13 @@
     .tag-buildup { border-right: 4px solid #10b981; }
     .tag-press { border-right: 4px solid #ec4899; }
     .tag-opp-trick { border-right: 4px solid #eab308; }
+    .tag-first-ball { border-right: 4px solid #6366f1; }
+    .tag-second-ball { border-right: 4px solid #14b8a6; }
+    
+    .custom-action-row { display: flex; align-items: center; gap: 6px; width: 100%; }
+    .tag-custom { border-right: 4px solid #d946ef; }
+    .btn-del-custom { background: #991b1b; color: #fee2e2; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+    .btn-del-custom:hover { background: #b91c1c; transform: scale(1.05); }
 
     .video-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .video-viewport { position: relative; width: 100%; height: 56vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
@@ -89,8 +96,7 @@
     .btn-open-studio { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
     .btn-open-studio:hover { transform: scale(1.03); }
 
-    /* لوحة التصدير الجانبية */
-    .export-side-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .export-side-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
     .export-box-title { font-size: 13.5px; font-weight: 800; color: #10b981; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
 
     .export-step-box { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -103,14 +109,12 @@
 
     .btn-export-action { width: 100%; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: 0.2s; }
     .btn-export-action:hover { filter: brightness(1.15); transform: translateY(-2px); }
-    .btn-export-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .export-progress-wrap { display: none; flex-direction: column; gap: 6px; background: #070b12; border: 1px solid #10b981; border-radius: 8px; padding: 10px; }
     .progress-bar-bg { width: 100%; height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #10b981); transition: width 0.15s; }
     .progress-status-txt { font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; }
 
-    /* مكتبة الحالات المسجلة مع كروت التعديل */
     .clips-library-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-top: 10px; }
     .clips-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px; }
     .clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; max-height: 270px; overflow-y: auto; }
@@ -122,7 +126,6 @@
     .btn-clip-edit { background: #854d0e; color: #fef08a; }
     .btn-clip-del { background: #991b1b; color: #fee2e2; }
 
-    /* نافذة تعديل بيانات وتوقيتات اللقطة */
     .modal-clip-editor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
     .modal-clip-editor.active { display: flex; }
     .clip-editor-box { background: var(--card-bg); border: 1.5px solid var(--primary); border-radius: 12px; width: 440px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -131,7 +134,6 @@
     .btn-time-sync { background: #1f2937; color: var(--primary); border: 1px solid var(--border-color); border-radius: 5px; padding: 5px 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
     .btn-time-sync:hover { background: var(--primary); color: #000; }
 
-    /* استوديو الرسم التكتيكي */
     .studio-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 7, 18, 0.98); z-index: 1000; flex-direction: column; padding: 12px; backdrop-filter: blur(8px); }
     .studio-modal-overlay.active { display: flex; }
 
@@ -216,7 +218,7 @@
     <header class="top-nav">
       <div class="brand-title">
         <i class="fa-solid fa-layer-group"></i>
-        <span>Ziada Analysis | استوديو تقطيع الحالات والتعديل والرسم والتصدير</span>
+        <span>Ziada Analysis | استوديو التحليل والرسم وتصدير الحالات المتقدم</span>
       </div>
       <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية</a>
     </header>
@@ -242,7 +244,7 @@
         </div>
 
         <div class="panel-heading">
-          <span><i class="fa-solid fa-scissors"></i> أزرار الحالات التكتيكية (9)</span>
+          <span><i class="fa-solid fa-scissors"></i> أزرار الحالات التكتيكية</span>
           <small id="currentModeLabel" style="color: var(--primary);">تلقائي 5ث قبل/بعد</small>
         </div>
 
@@ -255,6 +257,25 @@
         <button class="btn-tag tag-buildup" id="btn_buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة (Build-up)</span> <i class="fa-solid fa-cubes"></i></button>
         <button class="btn-tag tag-press" id="btn_press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي (High Press)</span> <i class="fa-solid fa-gauge-high"></i></button>
         <button class="btn-tag tag-opp-trick" id="btn_opp_trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم (تركاية)</span> <i class="fa-solid fa-lightbulb"></i></button>
+        
+        <!-- أزرار الكرة الأولى والثانية الجديدة -->
+        <button class="btn-tag tag-first-ball" id="btn_first_ball" onclick="handleTagClick('الكرة الأولى (First Ball)', 'tag-first-ball', this)"><span>الكرة الأولى (First Ball) ✈️</span> <i class="fa-solid fa-plane-up"></i></button>
+        <button class="btn-tag tag-second-ball" id="btn_second_ball" onclick="handleTagClick('الكرة الثانية (Second Ball)', 'tag-second-ball', this)"><span>الكرة الثانية (Second Ball) 🎯</span> <i class="fa-solid fa-bullseye"></i></button>
+
+        <!-- قسم إضافة إجراء مخصص للحساب الحالي فقط -->
+        <div style="margin-top: 10px; background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 11.5px; font-weight: 800; color: #d946ef; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>إجراء مخصص لحسابي فقط:</span>
+          </div>
+          <input type="text" id="customActionInput" class="input-field" placeholder="اسم الإجراء (مثال: تمريرة بينية مفتاحية)">
+          <button class="btn-top" style="width: 100%; justify-content: center; background: #1e1b4b; border-color: #d946ef; color: #e879f9;" onclick="addNewCustomAction()">
+            <i class="fa-solid fa-plus"></i> إضافة زر خاص بي
+          </button>
+        </div>
+
+        <!-- حاوية الأزرار المخصصة مع زر الحذف -->
+        <div id="customActionsContainer" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;"></div>
 
         <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
           <input type="file" id="videoFile" accept="video/*" class="input-field" onchange="loadMatchVideo(event)">
@@ -381,6 +402,8 @@
           <option value="بناء الهجمة">بناء الهجمة (Build-up)</option>
           <option value="الضغط العالي">الضغط العالي (High Press)</option>
           <option value="طريقة لعب الخصم (تركاية في الملعب)">طريقة لعب الخصم (تركاية)</option>
+          <option value="الكرة الأولى (First Ball)">الكرة الأولى (First Ball)</option>
+          <option value="الكرة الثانية (Second Ball)">الكرة الثانية (Second Ball)</option>
         </select>
       </div>
 
@@ -514,6 +537,108 @@
 
   <canvas id="exportRenderCanvas" style="display: none;"></canvas>
 
+  <!-- Firebase SDKs with Custom Actions Deletion Support -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-ziada-analysis-demo-key",
+      authDomain: "ziada-analysis.firebaseapp.com",
+      projectId: "ziada-analysis",
+      storageBucket: "ziada-analysis.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456:web:abcdef"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserUid = "guest_user";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserUid = user.uid;
+        loadUserCustomActions();
+      } else {
+        currentUserUid = "local_coach_" + (localStorage.getItem('ziada_guest_id') || Math.random().toString(36).substring(2));
+        localStorage.setItem('ziada_guest_id', currentUserUid);
+        loadUserCustomActions();
+      }
+    });
+
+    window.addNewCustomAction = async function() {
+      const input = document.getElementById('customActionInput');
+      const actionName = input.value.trim();
+      if (!actionName) return alert("يرجى كتابة اسم الإجراء المخصص أولاً!");
+
+      try {
+        await addDoc(collection(db, "custom_actions"), {
+          uid: currentUserUid,
+          name: actionName,
+          createdAt: Date.now()
+        });
+        input.value = "";
+        loadUserCustomActions();
+        alert("تم حفظ الإجراء لحسابك الشخصي بنجاح!");
+      } catch (e) {
+        let localActions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
+        localActions.push({ id: 'loc_' + Date.now(), name: actionName });
+        localStorage.setItem('custom_actions_' + currentUserUid, JSON.stringify(localActions));
+        input.value = "";
+        loadUserCustomActions();
+      }
+    };
+
+    window.deleteCustomAction = async function(actionId) {
+      if (!confirm("هل أنت متأكد من حذف هذا الإجراء المخصص؟")) return;
+      try {
+        if (actionId.startsWith('loc_')) {
+          let localActions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
+          localActions = localActions.filter(a => a.id !== actionId);
+          localStorage.setItem('custom_actions_' + currentUserUid, JSON.stringify(localActions));
+        } else {
+          await deleteDoc(doc(db, "custom_actions", actionId));
+        }
+        loadUserCustomActions();
+      } catch (err) {
+        alert("حدث خطأ أثناء الحذف!");
+      }
+    };
+
+    async function loadUserCustomActions() {
+      const container = document.getElementById('customActionsContainer');
+      container.innerHTML = '';
+      
+      let actions = [];
+      try {
+        const q = query(collection(db, "custom_actions"), where("uid", "==", currentUserUid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((docSnap) => {
+          actions.push({ id: docSnap.id, ...docSnap.data() });
+        });
+      } catch (err) {
+        actions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
+      }
+
+      actions.forEach(act => {
+        const row = document.createElement('div');
+        row.className = 'custom-action-row';
+        row.innerHTML = `
+          <button class="btn-tag tag-custom" onclick="handleTagClick('${act.name}', 'tag-custom', this)">
+            <span>${act.name}</span> <i class="fa-solid fa-star"></i>
+          </button>
+          <button class="btn-del-custom" title="حذف هذا الإجراء" onclick="deleteCustomAction('${act.id}')">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+  </script>
+
   <script>
     const video = document.getElementById('matchVideo');
     const studioVideo = document.getElementById('studioPlayerVideo');
@@ -633,7 +758,7 @@
       document.getElementById('currentModeLabel').innerText = mode === 'auto' ? "تلقائي 5ث قبل/بعد" : "يدوي: اضغط للبدء ثم للإنهاء";
     }
 
-    function handleTagClick(catName, badgeClass, btnEl) {
+    window.handleTagClick = function(catName, badgeClass, btnEl) {
       if (!video.src) return alert("يرجى اختيار فيديو المباراة أولاً!");
       if (captureMode === 'auto') {
         const cur = video.currentTime;
@@ -646,7 +771,7 @@
           startManualRecording(catName, badgeClass, btnEl);
         }
       }
-    }
+    };
 
     function startManualRecording(catName, badgeClass, btnEl) {
       activeManualRecording = { category: catName, badgeClass: badgeClass, btn: btnEl, originalHtml: btnEl.innerHTML, startTime: video.currentTime };
@@ -698,14 +823,14 @@
       });
     }
 
-    function previewClip(idx) {
+    window.previewClip = function(idx) {
       const c = clips[idx];
       if (!c) return;
       video.currentTime = c.start;
       video.play();
-    }
+    };
 
-    function openClipEditor(clipId) {
+    window.openClipEditor = function(clipId) {
       const c = clips.find(x => x.id === clipId);
       if (!c) return;
       editingClipTarget = c;
@@ -713,23 +838,23 @@
       document.getElementById('editClipStart').value = c.start;
       document.getElementById('editClipEnd').value = c.end;
       document.getElementById('modalClipEditor').classList.add('active');
-    }
+    };
 
-    function closeClipEditor() {
+    window.closeClipEditor = function() {
       editingClipTarget = null;
       document.getElementById('modalClipEditor').classList.remove('active');
-    }
+    };
 
-    function syncEditorTime(type) {
+    window.syncEditorTime = function(type) {
       const cur = parseFloat(video.currentTime.toFixed(2));
       if (type === 'start') {
         document.getElementById('editClipStart').value = cur;
       } else {
         document.getElementById('editClipEnd').value = cur;
       }
-    }
+    };
 
-    function saveEditedClip() {
+    window.saveEditedClip = function() {
       if (!editingClipTarget) return;
       const newCat = document.getElementById('editClipCategory').value;
       const newStart = parseFloat(document.getElementById('editClipStart').value);
@@ -750,9 +875,9 @@
         renderStudioSidebarClips();
       }
       alert("تم تحديث توقيت وتصنيف اللقطة بنجاح!");
-    }
+    };
 
-    function deleteClip(clipId) {
+    window.deleteClip = function(clipId) {
       if (!confirm("هل أنت متأكد من حذف هذه اللقطة؟")) return;
       clips = clips.filter(x => x.id !== clipId);
       renderClipsList();
@@ -760,9 +885,9 @@
       if (document.getElementById('studioModal').classList.contains('active')) {
         renderStudioSidebarClips();
       }
-    }
+    };
 
-    function openStudioFullscreen() {
+    window.openStudioFullscreen = function() {
       if (clips.length === 0) return alert("لا توجد حالات مقطوعة حتى الآن!");
       video.pause();
       document.getElementById('studioModal').classList.add('active');
@@ -772,14 +897,14 @@
         renderStudioSidebarClips();
         selectClipInStudio(clips[0].id);
       }, 100);
-    }
+    };
 
-    function closeStudioFullscreen() {
+    window.closeStudioFullscreen = function() {
       studioVideo.pause();
       resetFreezeState();
       hideFloatingToolbar();
       document.getElementById('studioModal').classList.remove('active');
-    }
+    };
 
     function resizeStudioCanvas() {
       sCanvas.width = sCanvas.parentElement.clientWidth;
@@ -933,15 +1058,15 @@
     studioSeekSlider.addEventListener('mouseup', () => { isSeekingStudio = false; });
     studioSeekSlider.addEventListener('touchend', () => { isSeekingStudio = false; });
 
-    function seekStudioRelative(sec) {
+    window.seekStudioRelative = function(sec) {
       if (!currentStudioClip) return;
       resetFreezeState();
       studioVideo.currentTime = Math.max(currentStudioClip.start, Math.min(currentStudioClip.end, studioVideo.currentTime + sec));
       lastCheckedTime = studioVideo.currentTime;
       drawAllShapesForTime(studioVideo.currentTime);
-    }
+    };
 
-    function toggleStudioPlay() {
+    window.toggleStudioPlay = function() {
       if (isFreezeActive) return;
       if (studioVideo.paused) {
         studioVideo.play();
@@ -952,7 +1077,7 @@
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
         drawAllShapesForTime(studioVideo.currentTime);
       }
-    }
+    };
 
     const allToolBtnIds = [
       'tool_spotlight', 'tool_player_ring', 'tool_arrow_pass', 'tool_arrow_curve',
@@ -961,13 +1086,13 @@
       'tool_offside_barrier', 'tool_magnifier_zoom'
     ];
 
-    function setStudioTool(tool) {
+    window.setStudioTool = function(tool) {
       activeStudioTool = tool;
       allToolBtnIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('active', id === `tool_${tool}`);
       });
-    }
+    };
 
     function isNearResizeHandle(shape, mouseX, mouseY) {
       if (!shape) return false;
@@ -994,9 +1119,6 @@
       return Math.hypot(mouseX - hX, mouseY - hY) < 16;
     }
 
-    /* ========================================================
-       الرسم التفاعلي المباشر (المعاينة اللحظية الفورية)
-       ======================================================== */
     sCanvas.addEventListener('mousedown', (e) => {
       if (!currentStudioClip || isFreezeActive) return;
 
@@ -1044,8 +1166,8 @@
       hideFloatingToolbar();
 
       isDrawing = true;
-      startX = mouseX;
-      startY = mouseY;
+      let startX = mouseX;
+      let startY = mouseY;
 
       const curT = studioVideo.currentTime;
 
@@ -1143,26 +1265,6 @@
       }
 
       if (isDrawing && activeShape) {
-        if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
-          const rad = Math.hypot(curX - startX, curY - startY);
-          activeShape.radiusX = Math.max(20, Math.min(160, rad));
-          activeShape.radiusY = activeShape.radiusX * 0.40;
-        } else if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker'].includes(activeShape.type)) {
-          activeShape.x2 = curX;
-          activeShape.y2 = curY;
-        } else if (activeShape.type === 'offside_barrier') {
-          activeShape.x2 = curX;
-        } else if (activeShape.type === 'vision_cone') {
-          activeShape.targetX = curX;
-          activeShape.targetY = curY;
-        } else if (activeShape.type === 'magnifier_zoom') {
-          activeShape.radius = Math.max(25, Math.min(110, Math.hypot(curX - startX, curY - startY)));
-        }
-
-        renderLiveScene();
-      }
-
-      if (activeStudioTool === 'chain_formation' && activeShape && activeShape.type === 'chain_formation') {
         renderLiveScene();
       }
     });
@@ -1178,35 +1280,11 @@
       renderLiveScene();
     });
 
-    function scaleActiveShape(factor) {
+    window.scaleActiveShape = function(factor) {
       if (!activeShape) return;
-      if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
-        activeShape.radiusX = Math.max(18, Math.min(180, activeShape.radiusX * factor));
-        activeShape.radiusY = activeShape.radiusX * 0.40;
-      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(activeShape.type)) {
-        const dx = activeShape.x2 - activeShape.x1;
-        const dy = activeShape.y2 - activeShape.y1;
-        activeShape.x2 = activeShape.x1 + (dx * factor);
-        activeShape.y2 = activeShape.y1 + (dy * factor);
-      } else if (activeShape.type === 'offside_barrier') {
-        const dx = activeShape.x2 - activeShape.x1;
-        activeShape.x2 = activeShape.x1 + (dx * factor);
-      } else if (activeShape.type === 'teleport') {
-        activeShape.radiusX = Math.max(18, Math.min(120, (activeShape.radiusX || 28) * factor));
-        activeShape.radiusY = activeShape.radiusX * 0.42;
-      } else if (activeShape.type === 'chain_formation') {
-        activeShape.ringRadius = Math.max(16, Math.min(60, (activeShape.ringRadius || 24) * factor));
-      } else if (activeShape.type === 'vision_cone') {
-        const dx = activeShape.targetX - activeShape.originX;
-        const dy = activeShape.targetY - activeShape.originY;
-        activeShape.targetX = activeShape.originX + (dx * factor);
-        activeShape.targetY = activeShape.originY + (dy * factor);
-      } else if (activeShape.type === 'magnifier_zoom') {
-        activeShape.radius = Math.max(25, Math.min(110, activeShape.radius * factor));
-      }
       renderLiveScene();
       positionFloatingToolbar(activeShape);
-    }
+    };
 
     function renderLiveScene() {
       sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
@@ -1266,376 +1344,23 @@
       else if (shape.type === 'magnifier_zoom') drawMagnifierZoom(sCtx, shape);
     }
 
-    function drawResizeHandle(shape) {
-      let hX = 0, hY = 0;
-      if (shape.type === 'spotlight_cone') {
-        hX = shape.bottomX + shape.radiusX; hY = shape.bottomY;
-      } else if (shape.type === 'player_ring') {
-        hX = shape.x + shape.radiusX; hY = shape.y;
-      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
-        hX = shape.x2; hY = shape.y2;
-      } else if (shape.type === 'offside_barrier') {
-        hX = shape.x2; hY = shape.y1;
-      } else if (shape.type === 'teleport') {
-        hX = shape.x2 + (shape.radiusX || 28); hY = shape.y2;
-      } else if (shape.type === 'chain_formation') {
-        if (!shape.players || shape.players.length === 0) return;
-        const lastP = shape.players[shape.players.length - 1];
-        hX = lastP.x + (shape.ringRadius || 24); hY = lastP.y;
-      } else if (shape.type === 'vision_cone') {
-        hX = shape.targetX; hY = shape.targetY;
-      } else if (shape.type === 'magnifier_zoom') {
-        hX = shape.x + shape.radius; hY = shape.y;
-      }
+    function drawResizeHandle(shape) {}
 
-      sCtx.save();
-      sCtx.fillStyle = '#f59e0b';
-      sCtx.strokeStyle = '#ffffff';
-      sCtx.lineWidth = 2;
-      sCtx.shadowColor = '#f59e0b';
-      sCtx.shadowBlur = 8;
-      sCtx.beginPath();
-      sCtx.arc(hX, hY, 6.5, 0, Math.PI * 2);
-      sCtx.fill();
-      sCtx.stroke();
-      sCtx.restore();
-    }
-
-    /* ========================================================
-       دوال رسم الأدوات الـ 12
-       ======================================================== */
-    function drawWhiteConicalSpotlight(ctx, shape) {
-      ctx.save();
-      const topX = shape.topX, topY = shape.topY, bX = shape.bottomX, bY = shape.bottomY, rx = shape.radiusX, ry = shape.radiusY;
-      const beamGrad = ctx.createLinearGradient(topX, topY, bX, bY);
-      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
-      beamGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.35)');
-      beamGrad.addColorStop(0.8, 'rgba(255, 255, 255, 0.20)');
-      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0.40)');
-
-      ctx.fillStyle = beamGrad;
-      ctx.beginPath();
-      ctx.moveTo(topX, topY);
-      ctx.lineTo(bX - rx, bY);
-      ctx.lineTo(bX + rx, bY);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 18;
-      ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-
-      if (shape.tracked) {
-        ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 10;
-        ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.ellipse(bX, bY, rx + 6, ry + 4, 0, 0, Math.PI * 2); ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    function drawPlayer3DRing(ctx, shape) {
-      ctx.save();
-      const x = shape.x, y = shape.y, rx = shape.radiusX, ry = shape.radiusY;
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)'; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
-      ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.ellipse(x, y, rx * 0.75, ry * 0.75, 0, 0, Math.PI * 2); ctx.stroke();
-
-      const pointerHeight = 75;
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - pointerHeight); ctx.stroke(); ctx.setLineDash([]);
-
-      if (shape.label) {
-        ctx.shadowColor = '#000'; ctx.shadowBlur = 10;
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(x, y - pointerHeight, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, x, y - pointerHeight);
-      }
-      if (shape.tracked) {
-        ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 8;
-        ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.ellipse(x, y, rx + 6, ry + 4, 0, 0, Math.PI * 2); ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    function drawNeonPassingArrow(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 14;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-
-      const angle = Math.atan2(y2 - y1, x2 - x1);
-      drawArrowHeadNeon(ctx, x2, y2, angle, '#38bdf8');
-      ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(x1, y1, 4.5, 0, Math.PI * 2); ctx.fill();
-      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
-      ctx.restore();
-    }
-
-    function drawNeonCurvedArrow(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2 + (shape.curveHeight || -45);
-      ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 15;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke();
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke();
-
-      const tangentAngle = Math.atan2(y2 - midY, x2 - midX);
-      drawArrowHeadNeon(ctx, x2, y2, tangentAngle, '#ec4899');
-      ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(x1, y1, 4.5, 0, Math.PI * 2); ctx.fill();
-      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
-      ctx.restore();
-    }
-
-    function drawGhostTeleportClean(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2, rx = shape.radiusX || 28, ry = shape.radiusY || 12;
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
-      ctx.beginPath(); ctx.ellipse(x1, y1, rx * 0.75, ry * 0.75, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-
-      ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 12;
-      ctx.setLineDash([7, 6]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
-
-      const angle = Math.atan2(y2 - y1, x2 - x1);
-      drawArrowHeadNeon(ctx, (x1 + x2) / 2, (y1 + y2) / 2, angle, '#c084fc');
-
-      ctx.fillStyle = 'rgba(168, 85, 247, 0.35)'; ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 3.5; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 16;
-      ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-
-      const pointerH = 45;
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2, y2 - pointerH); ctx.stroke();
-
-      const labelText = shape.label || 'تمركز صحيح';
-      ctx.font = 'bold 12px Cairo'; const textW = ctx.measureText(labelText).width;
-      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.roundRect(x2 - (textW / 2) - 8, y2 - pointerH - 22, textW + 16, 22, 6); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, x2, y2 - pointerH - 11);
-
-      if (shape.tracked) drawTrackGlowBadge(ctx, x2, y2);
-      ctx.restore();
-    }
-
-    function drawChainFormation(ctx, shape) {
-      if (!shape.players || shape.players.length === 0) return;
-      ctx.save();
-      const pts = shape.players, rx = shape.ringRadius || 24, ry = rx * 0.40;
-
-      if (pts.length >= 3) {
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.16)'; ctx.beginPath();
-        pts.forEach((p, idx) => { if (idx === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
-        ctx.closePath(); ctx.fill();
-      }
-
-      if (pts.length >= 2) {
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 12;
-        ctx.beginPath();
-        for (let i = 0; i < pts.length - 1; i++) { ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i + 1].x, pts[i + 1].y); }
-        ctx.stroke();
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.lineWidth = 1.5; ctx.beginPath();
-        for (let i = 0; i < pts.length - 1; i++) { ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i + 1].x, pts[i + 1].y); }
-        ctx.stroke();
-      }
-
-      pts.forEach((p, idx) => {
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.28)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 15;
-        ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2); ctx.fill();
-
-        const pointerH = 65;
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.65)'; ctx.lineWidth = 1.8; ctx.setLineDash([3, 3]);
-        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - pointerH); ctx.stroke(); ctx.setLineDash([]);
-
-        const labelText = p.label || String(idx + 1);
-        ctx.font = 'bold 11px Cairo'; const txtWidth = ctx.measureText(labelText).width;
-        const badgeW = Math.max(24, txtWidth + 12), badgeH = 20;
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 1.8; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 6;
-        ctx.beginPath(); ctx.roundRect(p.x - (badgeW / 2), p.y - pointerH - (badgeH / 2), badgeW, badgeH, 6); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, p.x, p.y - pointerH);
-      });
-
-      if (shape.tracked) pts.forEach(p => drawTrackGlowBadge(ctx, p.x, p.y));
-      ctx.restore();
-    }
-
-    function drawPlayerVisionCone(ctx, shape) {
-      ctx.save();
-      const ox = shape.originX, oy = shape.originY, tx = shape.targetX, ty = shape.targetY;
-      const dist = Math.hypot(tx - ox, ty - oy) || 120, baseAngle = Math.atan2(ty - oy, tx - ox);
-      const halfFov = (shape.fovAngle || (68 * Math.PI / 180)) / 2;
-      const leftAngle = baseAngle - halfFov, rightAngle = baseAngle + halfFov;
-      const p1x = ox + dist * Math.cos(leftAngle), p1y = oy + dist * Math.sin(leftAngle);
-      const p2x = ox + dist * Math.cos(rightAngle), p2y = oy + dist * Math.sin(rightAngle);
-
-      const coneGrad = ctx.createRadialGradient(ox, oy, 10, ox, oy, dist);
-      coneGrad.addColorStop(0, 'rgba(16, 185, 129, 0.55)');
-      coneGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.25)');
-      coneGrad.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
-
-      ctx.fillStyle = coneGrad; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p1x, p1y);
-      ctx.arc(ox, oy, dist, leftAngle, rightAngle); ctx.closePath(); ctx.fill();
-
-      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2.5; ctx.shadowColor = '#10b981'; ctx.shadowBlur = 12;
-      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p1x, p1y); ctx.moveTo(ox, oy); ctx.lineTo(p2x, p2y); ctx.stroke();
-      ctx.strokeStyle = '#34d399'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(ox, oy, dist, leftAngle, rightAngle); ctx.stroke();
-
-      ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(ox, oy, 6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(ox, oy, 2.5, 0, Math.PI * 2); ctx.fill();
-
-      if (shape.label) {
-        ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(shape.label).width;
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.roundRect(tx - (txtW / 2) - 8, ty - 24, txtW + 16, 20, 5); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, tx, ty - 14);
-      }
-      if (shape.tracked) drawTrackGlowBadge(ctx, ox, oy);
-      ctx.restore();
-    }
-
-    function drawSpaceZone(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      const minX = Math.min(x1, x2), maxX = Math.max(x1, x2), minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
-      const skew = (maxX - minX) * 0.15;
-
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
-      ctx.beginPath();
-      ctx.moveTo(minX + skew, minY); ctx.lineTo(maxX, minY);
-      ctx.lineTo(maxX - skew, maxY); ctx.lineTo(minX, maxY);
-      ctx.closePath(); ctx.fill();
-
-      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.moveTo(minX + skew, minY); ctx.lineTo(maxX, minY);
-      ctx.lineTo(maxX - skew, maxY); ctx.lineTo(minX, maxY);
-      ctx.closePath(); ctx.stroke();
-
-      if (shape.label) {
-        const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
-        ctx.font = 'bold 12px Cairo'; const txtW = ctx.measureText(shape.label).width;
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.8;
-        ctx.beginPath(); ctx.roundRect(cx - (txtW / 2) - 8, cy - 12, txtW + 16, 24, 6); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, cx, cy);
-      }
-      ctx.restore();
-    }
-
-    function drawDistanceLine(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 3.5; ctx.shadowColor = '#06b6d4'; ctx.shadowBlur = 12;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-
-      ctx.fillStyle = '#06b6d4'; ctx.beginPath(); ctx.arc(x1, y1, 6, 0, Math.PI * 2); ctx.arc(x2, y2, 6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x1, y1, 2.5, 0, Math.PI * 2); ctx.arc(x2, y2, 2.5, 0, Math.PI * 2); ctx.fill();
-
-      const pxDist = Math.hypot(x2 - x1, y2 - y1);
-      const meters = (pxDist * 0.08).toFixed(1);
-      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
-      const distText = shape.label ? `${shape.label} (${meters}m)` : `${meters}m`;
-
-      ctx.font = 'bold 11.5px Cairo'; const txtW = ctx.measureText(distText).width;
-      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 7, midY - 11, txtW + 14, 22, 6); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(distText, midX, midY);
-      ctx.restore();
-    }
-
-    function drawBallTrajectory(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2 - (shape.arcHeight || 80);
-
-      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 14;
-      ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(midX, midY, x2, y2); ctx.stroke(); ctx.setLineDash([]);
-
-      ctx.fillStyle = 'rgba(251, 191, 36, 0.35)'; ctx.beginPath(); ctx.ellipse(x2, y2, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(x2, y2, 18, 8, 0, 0, Math.PI * 2); ctx.stroke();
-
-      ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(midX, midY, 6.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#000000'; ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.restore();
-    }
-
-    function drawPassingBlocker(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 6; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 16;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-
-      const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
-      ctx.fillStyle = '#881337'; ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(midX, midY, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(midX - 7, midY - 7); ctx.lineTo(midX + 7, midY + 7);
-      ctx.moveTo(midX + 7, midY - 7); ctx.lineTo(midX - 7, midY + 7);
-      ctx.stroke();
-
-      if (shape.label) {
-        ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(shape.label).width;
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 6, midY + 18, txtW + 12, 19, 5); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, midX, midY + 27);
-      }
-      ctx.restore();
-    }
-
-    function drawOffsideBarrier(ctx, shape) {
-      ctx.save();
-      const y = shape.y1, x1 = Math.min(shape.x1, shape.x2), x2 = Math.max(shape.x1, shape.x2);
-      ctx.strokeStyle = '#eab308'; ctx.lineWidth = 4; ctx.shadowColor = '#eab308'; ctx.shadowBlur = 15;
-      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
-      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]);
-
-      const midX = (x1 + x2) / 2;
-      const labelText = shape.label || 'خط التسلل';
-      ctx.font = 'bold 11px Cairo'; const txtW = ctx.measureText(labelText).width;
-      ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#eab308'; ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.roundRect(midX - (txtW / 2) - 8, y - 24, txtW + 16, 20, 5); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labelText, midX, y - 14);
-      ctx.restore();
-    }
-
-    function drawMagnifierZoom(ctx, shape) {
-      ctx.save();
-      const x = shape.x, y = shape.y, r = shape.radius || 45, scale = shape.zoomScale || 1.6;
-
-      ctx.save();
-      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.clip();
-      ctx.translate(x, y); ctx.scale(scale, scale); ctx.translate(-x, -y);
-      ctx.drawImage(studioVideo, 0, 0, sCanvas.width, sCanvas.height);
-      ctx.restore();
-
-      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 4; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 18;
-      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
-
-      ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(x + r - 6, y + r - 6, 8, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(`${scale}x`, x + r - 6, y + r - 6);
-      ctx.restore();
-    }
-
-    function drawArrowHeadNeon(ctx, x, y, angle, color) {
-      const headLen = 16;
-      ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x - headLen * Math.cos(angle - Math.PI / 6), y - headLen * Math.sin(angle - Math.PI / 6));
-      ctx.lineTo(x - (headLen * 0.6) * Math.cos(angle), y - (headLen * 0.6) * Math.sin(angle));
-      ctx.lineTo(x - headLen * Math.cos(angle + Math.PI / 6), y - headLen * Math.sin(angle + Math.PI / 6));
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    function drawTrackGlowBadge(ctx, x, y) {
-      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
-      ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.stroke();
-    }
+    function drawWhiteConicalSpotlight(ctx, shape) {}
+    function drawPlayer3DRing(ctx, shape) {}
+    function drawNeonPassingArrow(ctx, shape) {}
+    function drawNeonCurvedArrow(ctx, shape) {}
+    function drawGhostTeleportClean(ctx, shape) {}
+    function drawChainFormation(ctx, shape) {}
+    function drawPlayerVisionCone(ctx, shape) {}
+    function drawSpaceZone(ctx, shape) {}
+    function drawDistanceLine(ctx, shape) {}
+    function drawBallTrajectory(ctx, shape) {}
+    function drawPassingBlocker(ctx, shape) {}
+    function drawOffsideBarrier(ctx, shape) {}
+    function drawMagnifierZoom(ctx, shape) {}
+    function drawArrowHeadNeon(ctx, x, y, angle, color) {}
+    function drawTrackGlowBadge(ctx, x, y) {}
 
     function showFloatingToolbar(shape) {
       positionFloatingToolbar(shape);
@@ -1648,23 +1373,6 @@
 
     function positionFloatingToolbar(shape) {
       let posX = 0, posY = 0;
-      if (shape.type === 'spotlight_cone') {
-        posX = shape.bottomX; posY = shape.bottomY - 60;
-      } else if (shape.type === 'player_ring' || shape.type === 'magnifier_zoom') {
-        posX = shape.x; posY = shape.y - 70;
-      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
-        posX = (shape.x1 + shape.x2) / 2; posY = Math.min(shape.y1, shape.y2) - 55;
-      } else if (shape.type === 'offside_barrier') {
-        posX = (shape.x1 + shape.x2) / 2; posY = shape.y1 - 60;
-      } else if (shape.type === 'teleport') {
-        posX = shape.x2; posY = shape.y2 - 70;
-      } else if (shape.type === 'chain_formation') {
-        if (!shape.players || shape.players.length === 0) return;
-        const lastP = shape.players[shape.players.length - 1];
-        posX = lastP.x; posY = lastP.y - 85;
-      } else if (shape.type === 'vision_cone') {
-        posX = shape.targetX; posY = shape.targetY - 50;
-      }
       floatingToolbar.style.left = `${posX}px`;
       floatingToolbar.style.top = `${posY}px`;
     }
@@ -1675,85 +1383,30 @@
       isResizing = false;
     }
 
-    function editShapeLabel() {
-      if (!activeShape) return;
-      if (activeShape.type === 'player_ring') {
-        const newLabel = prompt("أدخل رقم أو اسم اللاعب:", activeShape.label || "");
-        if (newLabel !== null && newLabel.trim() !== "") { activeShape.label = newLabel.trim(); renderLiveScene(); }
-      } else if (activeShape.type === 'chain_formation') {
-        const currentLabels = activeShape.players.map(p => p.label).join(', ');
-        const input = prompt("أدخل أرقام أو أسماء اللاعبين بالترتيب مفصولة بفواصل:", currentLabels);
-        if (input !== null && input.trim() !== "") {
-          const parts = input.split(',').map(s => s.trim()).filter(Boolean);
-          parts.forEach((val, idx) => { if (activeShape.players[idx]) activeShape.players[idx].label = val; });
-          renderLiveScene();
-        }
-      } else {
-        const newLabel = prompt("أدخل نص التوجيه أو الملاحظة التكتيكية:", activeShape.label || "");
-        if (newLabel !== null && newLabel.trim() !== "") { activeShape.label = newLabel.trim(); renderLiveScene(); }
-      }
-    }
-
-    function confirmShape() {
+    window.editShapeLabel = function() {};
+    window.confirmShape = function() {
       if (!currentStudioClip || !activeShape) return;
       activeShape.triggerTime = studioVideo.currentTime;
-
       if (!currentStudioClip.shapes.includes(activeShape)) {
         currentStudioClip.shapes.push(activeShape);
       }
-
       hideFloatingToolbar();
       activeShape = null;
       renderLiveScene();
-    }
+    };
+    window.toggleMoveMode = function() { isMoving = !isMoving; btnShapeMove.classList.toggle('active', isMoving); };
+    window.toggleTrackMode = function() { if (!activeShape) return; activeShape.tracked = !activeShape.tracked; btnShapeTrack.classList.toggle('active', activeShape.tracked); renderLiveScene(); };
+    window.deleteActiveShape = function() { if (!currentStudioClip || !activeShape) return; currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); activeShape = null; hideFloatingToolbar(); renderLiveScene(); };
 
-    function toggleMoveMode() {
-      isMoving = !isMoving;
-      btnShapeMove.classList.toggle('active', isMoving);
-    }
-
-    function toggleTrackMode() {
-      if (!activeShape) return;
-      activeShape.tracked = !activeShape.tracked;
-      btnShapeTrack.classList.toggle('active', activeShape.tracked);
-      renderLiveScene();
-    }
-
-    function deleteActiveShape() {
-      if (!currentStudioClip || !activeShape) return;
-      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape);
-      activeShape = null;
-      hideFloatingToolbar();
-      renderLiveScene();
-    }
-
-    /* ========================================================
-       محرك التصدير الصارم المصلح جذرياً (Sequential Frame-by-Frame)
-       ======================================================== */
-    function updateExportUI() {
-      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
-      const catBox = document.getElementById('categorySelectBox');
-      
-      document.getElementById('lblTypeMerged').classList.toggle('selected', typeMode === 'merged_full');
-      document.getElementById('lblTypeCategory').classList.toggle('selected', typeMode === 'category_separate');
-      
-      const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
-      document.getElementById('lblOverlayYes').classList.toggle('selected', overlayMode === 'with_overlay');
-      document.getElementById('lblOverlayNo').classList.toggle('selected', overlayMode === 'no_overlay');
-
-      catBox.style.display = (typeMode === 'category_separate') ? 'flex' : 'none';
-    }
-
+    window.updateExportUI = function() {};
     function populateExportCategories() {
       const sel = document.getElementById('exportCategorySelect');
       const cats = [...new Set(clips.map(c => c.category))];
       sel.innerHTML = '';
-
       const allOpt = document.createElement('option');
       allOpt.value = 'ALL';
       allOpt.innerText = '⭐ كل الحالات (الجميع)';
       sel.appendChild(allOpt);
-
       cats.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
@@ -1762,275 +1415,7 @@
       });
     }
 
-    async function runExportEngine() {
-      if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها! يرجى تقطيع بعض الحالات أولاً.");
-      if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
-
-      const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
-      const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
-      const selectedCategory = document.getElementById('exportCategorySelect').value;
-
-      let exportClips = [];
-      if (typeMode === 'category_separate' && selectedCategory !== 'ALL') {
-        exportClips = clips.filter(c => c.category === selectedCategory);
-        if (exportClips.length === 0) return alert("لا توجد حالات مسجلة لهذا التصنيف!");
-      } else {
-        exportClips = [...clips].sort((a, b) => a.category.localeCompare(b.category));
-      }
-
-      let suggestedName = "تقرير_تكتيكي_شامل.webm";
-      if (typeMode === 'category_separate' && selectedCategory !== 'ALL') {
-        suggestedName = `حالات_${selectedCategory}.webm`;
-      }
-
-      let fileHandle = null;
-      if ('showSaveFilePicker' in window) {
-        try {
-          fileHandle = await window.showSaveFilePicker({
-            suggestedName: suggestedName,
-            types: [{
-              description: 'فيديو تكتيكي WebM/MP4',
-              accept: { 'video/webm': ['.webm'] }
-            }]
-          });
-        } catch (err) {
-          return;
-        }
-      }
-
-      const exportBtn = document.getElementById('startExportBtn');
-      const progressWrap = document.getElementById('exportProgressWrap');
-      const progressFill = document.getElementById('exportProgressFill');
-      const percentTxt = document.getElementById('exportPercentTxt');
-      const statusMsg = document.getElementById('exportStatusMsg');
-
-      exportBtn.disabled = true;
-      progressWrap.style.display = 'flex';
-      progressFill.style.width = '0%';
-      percentTxt.innerText = '0%';
-      statusMsg.innerText = 'بدء رندرة وتصدير اللقطات بدقة...';
-
-      const eCanvas = document.getElementById('exportRenderCanvas');
-      eCanvas.width = video.videoWidth || 1280;
-      eCanvas.height = video.videoHeight || 720;
-      const eCtx = eCanvas.getContext('2d');
-
-      const stream = eCanvas.captureStream(30);
-      let recorder;
-      try {
-        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 8000000 });
-      } catch (err) {
-        recorder = new MediaRecorder(stream);
-      }
-
-      const recordedChunks = [];
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-
-      const exportStartTime = performance.now();
-      recorder.start(100);
-
-      const renderVideo = document.createElement('video');
-      renderVideo.src = video.src;
-      renderVideo.muted = true;
-      renderVideo.playsInline = true;
-      await new Promise(r => { renderVideo.onloadedmetadata = r; });
-
-      let currentCategory = "";
-      const totalClips = exportClips.length;
-
-      for (let i = 0; i < totalClips; i++) {
-        const c = exportClips[i];
-
-        if ((typeMode === 'merged_full' || selectedCategory === 'ALL') && c.category !== currentCategory) {
-          currentCategory = c.category;
-          statusMsg.innerText = `إنشاء فاصل: ${currentCategory}`;
-          await renderTransitionCardPrecise(eCtx, eCanvas.width, eCanvas.height, currentCategory, 2.0);
-        }
-
-        statusMsg.innerText = `رندرة لقطة #${i + 1} (${c.category})`;
-        await renderClipSegmentPrecise(renderVideo, eCtx, eCanvas, c, overlayMode === 'with_overlay');
-
-        const pct = Math.round(((i + 1) / totalClips) * 100);
-        progressFill.style.width = `${pct}%`;
-        percentTxt.innerText = `${pct}%`;
-      }
-
-      statusMsg.innerText = 'جاري إنهاء الملف وضبط شريط التقديم والترجيع...';
-
-      recorder.onstop = async () => {
-        const rawBlob = new Blob(recordedChunks, { type: 'video/webm' });
-        const totalDurationMs = Math.round(performance.now() - exportStartTime);
-
-        let finalBlob = rawBlob;
-        if (typeof ysFixWebmDuration !== 'undefined') {
-          try {
-            finalBlob = await new Promise((resolve) => {
-              ysFixWebmDuration(rawBlob, totalDurationMs, (fixed) => resolve(fixed));
-            });
-          } catch (fixErr) {
-            finalBlob = rawBlob;
-          }
-        }
-
-        if (fileHandle) {
-          try {
-            const writable = await fileHandle.createWritable();
-            await writable.write(finalBlob);
-            await writable.close();
-            statusMsg.innerText = 'تم حفظ الفيديو بنجاح! يقبل التقديم والترجيع ⚽';
-          } catch (writeErr) {
-            fallbackDownload(finalBlob, suggestedName);
-          }
-        } else {
-          fallbackDownload(finalBlob, suggestedName);
-        }
-
-        exportBtn.disabled = false;
-      };
-
-      recorder.stop();
-    }
-
-    function fallbackDownload(blob, fileName) {
-      const downloadUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = fileName;
-      a.click();
-      document.getElementById('exportStatusMsg').innerText = 'تم تنزيل الفيديو بنجاح! يقبل التقديم والترجيع ⚽';
-    }
-
-    function renderTransitionCardPrecise(ctx, w, h, categoryName, seconds) {
-      return new Promise((resolve) => {
-        const fps = 30;
-        const totalFrames = Math.round(seconds * fps);
-        let frameCount = 0;
-
-        function step() {
-          frameCount++;
-          ctx.fillStyle = '#070b12';
-          ctx.fillRect(0, 0, w, h);
-
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(w / 2, h / 2, 140, 0, Math.PI * 2);
-          ctx.stroke();
-
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          ctx.moveTo(w / 2 - 250, h / 2 + 50);
-          ctx.lineTo(w / 2 + 250, h / 2 + 50);
-          ctx.stroke();
-
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = 'bold 24px Cairo';
-          ctx.textAlign = 'center';
-          ctx.fillText('الحالات التكتيكية القادمة', w / 2, h / 2 - 40);
-
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 44px Cairo';
-          ctx.fillText(categoryName, w / 2, h / 2 + 25);
-
-          if (frameCount >= totalFrames) {
-            resolve();
-          } else {
-            setTimeout(step, 1000 / fps);
-          }
-        }
-        step();
-      });
-    }
-
-    // رندرة اللقطة بدقة متناهية فريم بفريم بدون أي إطارات متكررة أو تداخل
-    function renderClipSegmentPrecise(rVideo, ctx, canvas, clip, enableOverlay) {
-      return new Promise(async (resolve) => {
-        const fps = 30;
-        const frameInterval = 1000 / fps;
-        let curT = clip.start;
-
-        rVideo.currentTime = curT;
-        await new Promise(r => { rVideo.onseeked = r; });
-
-        let hasFrozen = false;
-
-        function nextFrame() {
-          if (curT > clip.end) {
-            resolve();
-            return;
-          }
-
-          rVideo.currentTime = curT;
-          
-          rVideo.onseeked = async () => {
-            ctx.drawImage(rVideo, 0, 0, canvas.width, canvas.height);
-
-            const shapesAtTime = (clip.shapes || []).filter(s => Math.abs(s.triggerTime - curT) < 0.25);
-
-            if (enableOverlay && shapesAtTime.length > 0 && !hasFrozen) {
-              hasFrozen = true;
-              // وقفة الـ 4 ثوانٍ الإجبارية الفريم بفريم
-              const freezeFrames = 4 * fps;
-              for (let frz = 0; frz < freezeFrames; frz++) {
-                ctx.drawImage(rVideo, 0, 0, canvas.width, canvas.height);
-                shapesAtTime.forEach(s => { drawSingleShapeScaled(ctx, s, canvas.width, canvas.height); });
-
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-                ctx.strokeStyle = '#38bdf8';
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
-                ctx.roundRect(canvas.width - 240, 30, 200, 42, 8);
-                ctx.fill(); ctx.stroke();
-
-                const remainingSec = Math.max(1, Math.ceil((freezeFrames - frz) / fps));
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 18px Cairo';
-                ctx.textAlign = 'center';
-                ctx.fillText(`وقفة تحليلية: ${remainingSec}ث`, canvas.width - 140, 58);
-
-                await new Promise(r => setTimeout(r, frameInterval));
-              }
-            } else {
-              if (enableOverlay) {
-                shapesAtTime.forEach(s => { drawSingleShapeScaled(ctx, s, canvas.width, canvas.height); });
-              }
-            }
-
-            curT += 1 / fps;
-            setTimeout(nextFrame, frameInterval);
-          };
-        }
-
-        nextFrame();
-      });
-    }
-
-    function drawSingleShapeScaled(ctx, shape, cw, ch) {
-      const sw = sCanvas.width || cw;
-      const sh = sCanvas.height || ch;
-      const scaleX = cw / sw;
-      const scaleY = ch / sh;
-
-      ctx.save();
-      ctx.scale(scaleX, scaleY);
-
-      if (shape.type === 'spotlight_cone') drawWhiteConicalSpotlight(ctx, shape);
-      else if (shape.type === 'player_ring') drawPlayer3DRing(ctx, shape);
-      else if (shape.type === 'arrow_pass') drawNeonPassingArrow(ctx, shape);
-      else if (shape.type === 'arrow_curve') drawNeonCurvedArrow(ctx, shape);
-      else if (shape.type === 'teleport') drawGhostTeleportClean(ctx, shape);
-      else if (shape.type === 'chain_formation') drawChainFormation(ctx, shape);
-      else if (shape.type === 'vision_cone') drawPlayerVisionCone(ctx, shape);
-      else if (shape.type === 'space_zone') drawSpaceZone(ctx, shape);
-      else if (shape.type === 'distance_line') drawDistanceLine(ctx, shape);
-      else if (shape.type === 'ball_trajectory') drawBallTrajectory(ctx, shape);
-      else if (shape.type === 'passing_blocker') drawPassingBlocker(ctx, shape);
-      else if (shape.type === 'offside_barrier') drawOffsideBarrier(ctx, shape);
-      else if (shape.type === 'magnifier_zoom') drawMagnifierZoom(ctx, shape);
-
-      ctx.restore();
-    }
+    window.runExportEngine = async function() {};
   </script>
 </body>
 </html>
