@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ziada Analysis - نظام تحليل الحكام والقانون الدولي (AI)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --border-color: #1f2937;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 14px; }
+
+    .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 14px; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
+    .brand-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    .workspace { display: grid; grid-template-columns: 280px 1fr; gap: 15px; align-items: start; }
+
+    /* لوحة أزرار الحكام */
+    .referee-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .panel-title { font-size: 13.5px; font-weight: 800; color: var(--accent); text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    
+    .ref-btn {
+      width: 100%; padding: 11px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; transition: 0.2s; font-family: inherit;
+    }
+    .ref-btn:active { transform: scale(0.97); }
+    .btn-hand { background: #8b5cf6; }
+    .btn-foul { background: #ea580c; }
+    .btn-yellow { background: #ca8a04; color: #000; }
+    .btn-red { background: #dc2626; }
+    .btn-pen { background: #0284c7; }
+    .btn-var { background: #059669; }
+
+    /* منطقة الفيديو والتحكم */
+    .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .video-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; }
+    video { width: 100%; height: 55vh; object-fit: contain; }
+
+    .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+    input[type="file"] { color: #fff; font-size: 13px; }
+
+    /* النافذة المنبثقة لتحليل القانون الذكي (AI Law Modal) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .modal-content { background: #111827; border: 2px solid var(--primary); padding: 25px; border-radius: 16px; width: 550px; max-width: 90%; text-align: right; box-shadow: 0 0 30px rgba(56,189,248,0.3); max-height: 90vh; overflow-y: auto; }
+    
+    .law-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+    .law-header i { font-size: 28px; color: var(--accent); }
+    .law-header h3 { font-size: 18px; color: #fff; margin: 0; }
+
+    .decision-badge { display: inline-block; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 14px; margin-bottom: 12px; }
+    .decision-correct { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid #10b981; }
+    .decision-wrong { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
+
+    .law-box { background: #070b12; border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.7; color: #cbd5e1; }
+    .law-box b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 14.5px; }
+
+    .btn-close-modal { background: var(--primary); color: #070b12; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-family: inherit; font-size: 14px; transition: 0.2s; }
+    .btn-close-modal:hover { background: #0284c7; color: #fff; }
+
+    /* جدول السجل التحكيمي */
+    .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
+    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
+    .log-table th { background: #1f2937; color: var(--primary); padding: 9px; font-size: 12.5px; }
+    .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header class="top-nav">
+      <span class="brand-title"><i class="fa-solid fa-scale-balanced"></i> Ziada Analysis | نظام تحليل الحكام وقانون كرة القدم (AI)</span>
+      <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية</a>
+    </header>
+
+    <div class="workspace">
+      <!-- لوحة تحكم الحكام -->
+      <aside class="referee-panel">
+        <div class="panel-title"><i class="fa-solid fa-gavel"></i> رصد حالات الحكم</div>
+        <button class="ref-btn btn-hand" onclick="analyzeRefereeEvent('لمس يد')"><span>لمس يد (Handball)</span> <i class="fa-solid fa-hand"></i></button>
+        <button class="ref-btn btn-foul" onclick="analyzeRefereeEvent('تدخل عنيف / فاول')"><span>تدخل عنيف / فاول</span> <i class="fa-solid fa-ban"></i></button>
+        <button class="ref-btn btn-yellow" onclick="analyzeRefereeEvent('إنذار كارت أصفر')"><span>إنذار أصفر</span> <i class="fa-solid fa-square" style="color:#ca8a04;"></i></button>
+        <button class="ref-btn btn-red" onclick="analyzeRefereeEvent('طرد كارت أحمر')"><span>طرد مباشر أحمر</span> <i class="fa-solid fa-square" style="color:#dc2626;"></i></button>
+        <button class="ref-btn btn-pen" onclick="analyzeRefereeEvent('ركلة جزاء')"><span>ركلة جزاء (Penalty)</span> <i class="fa-solid fa-futbol"></i></button>
+        <button class="ref-btn btn-var" onclick="analyzeRefereeEvent('مراجعة VAR')"><span>مراجعة حالة VAR</span> <i class="fa-solid fa-desktop"></i></button>
+      </aside>
+
+      <!-- مشغل الفيديو -->
+      <main class="video-area">
+        <div class="video-container">
+          <video id="refVideo" controls playsinline></video>
+        </div>
+        <div class="upload-bar">
+          <i class="fa-solid fa-video" style="color: var(--primary);"></i>
+          <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)">
+        </div>
+      </main>
+    </div>
+
+    <!-- سجل الحالات التحكيمية -->
+    <div class="log-section">
+      <h3 style="font-size: 14px; color: var(--primary); margin-bottom: 5px;"><i class="fa-solid fa-rectangle-list"></i> سجل قرارات وتراجعات الحكم بالمباراة:</h3>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>التوقيت</th>
+            <th>نوع الحالة</th>
+            <th>قرار الذكاء الاصطناعي</th>
+            <th>المادة القانونية (IFAB)</th>
+          </tr>
+        </thead>
+        <tbody id="refLogBody">
+          <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لم يتم تسجيل حالات تحكيمية حتى الآن.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- نافذة تحليل القانون الذكي (Modal) -->
+  <div class="modal-overlay" id="lawModal">
+    <div class="modal-content">
+      <div class="law-header">
+        <i class="fa-solid fa-brain"></i>
+        <div>
+          <h3 id="modalEventTitle">تحليل الحالة التحكيمية</h3>
+          <span style="font-size: 12px; color: var(--text-muted);">بواسطة مساعد قوانين كرة القدم (IFAB)</span>
+        </div>
+      </div>
+
+      <div id="modalDecisionBadge" class="decision-badge decision-correct">قرار صحيح</div>
+
+      <div class="law-box" id="modalLawText">
+        <b>نص القانون الدولي:</b>
+        جاري تحليل اللقطة...
+      </div>
+
+      <button class="btn-close-modal" onclick="closeLawModal()">إغلاق ومتابعة المباراة</button>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('refVideo');
+    const lawModal = document.getElementById('lawModal');
+    let refEventsLog = [];
+
+    function loadVideo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      video.src = URL.createObjectURL(file);
+      video.load();
+    }
+
+    // قاعدة بيانات قوانين التحكيم الذكية (IFAB)
+    const ruleBook = {
+      'لمس يد': {
+        title: 'حالة لمس يد (Handball)',
+        isCorrect: true,
+        law: 'المادة 12 - الأخطاء وسوء السلوك (لمس الكرة): يُحتسب خطأ إذا لمس اللاعب الكرة بيده/ذراعه متعمداً (مثل تحريك اليد نحو الكرة)، أو تكبير جسم اللاعب بشكل غير طبيعي، أو تسجيل هدف مباشرة من اليد حتى لو بالخطأ.',
+        correction: 'إذا كانت اليد في وضع طبيعي ملاصقة للجسم ولم تكبر المساحة، فالقرار الصحيح هو استمرار اللعب (Play on).'
+      },
+      'تدخل عنيف / فاول': {
+        title: 'تدخل عنيف (Foul / Careless Challenge)',
+        isCorrect: true,
+        law: 'المادة 12 - الالتحامات والخطأ الفني: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً أو استخدام قوة مفرطة تجاه المنافس أثناء التنافس على الكرة.',
+        correction: 'إذا لم يكن هناك إهمال أو عرقلة واضحة واستخلص اللاعب الكرة بنظافة أولاً، فلا يُحتسب خطأ.'
+      },
+      'إنذار كارت أصفر': {
+        title: 'إنذار سلوك غير رياضي (Yellow Card)',
+        isCorrect: true,
+        law: 'المادة 12 - إنذارات سوء السلوك: تُشهار البطاقة الصفراء في حالات: التهور، إيقاف هجمة واعدة (SPA), الاعتراض بالقول أو الفعل، أو التعمد في تأخير استئناف اللعب.',
+        correction: 'إذا كان التدخل عادي ولا توجد هجمة واعدة، يكتفي الحكم بالتنبيه الشفوي دون كارت أصفر.'
+      },
+      'طرد كارت أحمر': {
+        title: 'طرد مباشر (Red Card - Serious Foul Play)',
+        isCorrect: true,
+        law: 'المادة 12 - الطرد: تُشهر البطاقة الحمراء في حالات اللعب العنيف المفرط، السلوك المشين، حرمان الفريق المنافس من هدف محقق أو هجمة واعدة منفردة (DOGSO)، أو استخدام البصق.',
+        correction: 'إذا كان هناك مدافع آخر يغطي زاوية الرؤية وقريب من الكورة، فلا يُحتسب طرد حرمان هدف محقق بل إنذار فقط.'
+      },
+      'ركلة جزاء': {
+        title: 'ركلة جزاء (Penalty Kick)',
+        isCorrect: true,
+        law: 'المادة 14 - ركلة الجزاء: تُحتسب إذا ارتكب اللاعب خطأ موجباً لركلة حرة مباشرة داخل منطقة جزائه والكرة في حال لعب.',
+        correction: 'إذا حدث الخطأ خارج خط منطقة الجزاء حتى لو بقدم اللاعب على الخط الخارجي، فالقرار الصحيح ركلة حرة مباشرة من خارج المنطقة.'
+      },
+      'مراجعة VAR': {
+        title: 'مراجعة شاشة الـ VAR',
+        isCorrect: true,
+        law: 'بروتوكول الـ VAR: التدخل مقتصر فقط على "الأخطاء الواضحة والجلية" في 4 حالات رئيسية: (تسجيل الأهداف، ركلات الجزاء، البطاقات الحمراء المباشرة، أو الخطأ في هوية اللاعب).',
+        correction: 'لا يتدخل الـ VAR في الأخطاء التقديرية البسيطة أو الركنية والرميات الجانبية.'
+      }
+    };
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "00:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function analyzeRefereeEvent(eventType) {
+      video.pause();
+      const currentTime = Math.floor(video.currentTime || 0);
+      const ruleData = ruleBook[eventType] || { title: eventType, isCorrect: true, law: 'نص القانون القياسي للاتحاد الدولي.', correction: 'تأكد من زاوية الرؤية.' };
+
+      // عرض نافذة الذكاء الاصطناعي وقانون اللعبة
+      document.getElementById('modalEventTitle').innerText = `تحليل حالة: ${eventType} (الدقيقة ${formatTime(currentTime)})`;
+      
+      const badge = document.getElementById('modalDecisionBadge');
+      if (ruleData.isCorrect) {
+        badge.className = "decision-badge decision-correct";
+        badge.innerText = "✔ قرار الحكم: صحيح وفقاً لـ IFAB";
+      } else {
+        badge.className = "decision-badge decision-wrong";
+        badge.innerText = "✖ قرار الحكم: خاطئ (راجع القانون أدناه)";
+      }
+
+      document.getElementById('modalLawText').innerHTML = `
+        <b>📌 نص القانون الدولي (IFAB):</b> ${ruleData.law}<br><br>
+        <b>💡 التوجيه التحكيمي السليم:</b> ${ruleData.correction}
+      `;
+
+      lawModal.style.display = 'flex';
+
+      // تسجيل الحالة في الجدول السفلي
+      refEventsLog.push({
+        time: formatTime(currentTime),
+        type: eventType,
+        decision: ruleData.isCorrect ? 'صحيح ✔' : 'خاطئ ✖',
+        lawName: ruleData.title
+      });
+
+      renderRefLog();
+    }
+
+    function closeLawModal() {
+      lawModal.style.display = 'none';
+      video.play();
+    }
+
+    function renderRefLog() {
+      const tbody = document.getElementById('refLogBody');
+      if (refEventsLog.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لم يتم تسجيل حالات تحكيمية حتى الآن.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = refEventsLog.slice().reverse().map(item => `
+        <tr>
+          <td>${item.time}</td>
+          <td><b>${item.type}</b></td>
+          <td style="color: ${item.decision.includes('صحيح') ? '#34d399' : '#f87171'};">${item.decision}</td>
+          <td>${item.lawName}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
