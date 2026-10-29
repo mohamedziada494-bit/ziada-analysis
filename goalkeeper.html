@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937;
@@ -36,6 +35,7 @@
     .training-workspace { display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; height: 70vh; }
     .tools-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; user-select: none; }
     .tools-title { color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid #374151; padding-bottom: 8px; margin-bottom: 5px; }
+    .tools-hint { font-size: 11px; text-align: center; color: var(--text-muted); margin-bottom: 10px; }
     
     .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .draggable-source { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px; border-radius: 8px; cursor: grab; font-weight: bold; font-size: 11px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; transition: 0.2s; text-align: center; }
@@ -64,7 +64,8 @@
     .drill-item:active { cursor: grabbing; }
     .drill-item .delete-btn { display: none; position: absolute; top: -15px; right: -15px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; text-align: center; line-height: 22px; cursor: pointer; border: 1px solid #fff; z-index: 20; }
     .drill-item:hover .delete-btn { display: block; }
-    
+    .drill-item.animating { transition: top 0.6s ease-in-out, left 0.6s ease-in-out; }
+
     .anim-bar { background: #111827; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 8px; display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
     .anim-btn { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
     .anim-btn:hover { background: #4b5563; }
@@ -115,16 +116,19 @@
     .btn-draw { background: #3b82f6; color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; margin-right: 5px; }
 
     /* =========================================
-       مودال الرسم والتحليل الذكي
+       مودال الرسم والتحليل الذكي (المعدل)
        ========================================= */
     .draw-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; flex-direction: column; padding: 20px; }
     .draw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .draw-header h2 { color: var(--primary); font-size: 18px; margin: 0; }
     .draw-close { background: transparent; border: none; color: var(--danger); font-size: 24px; cursor: pointer; }
     
-    .draw-toolbar { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-    .draw-tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 13px; }
+    .draw-toolbar { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    .draw-tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 13px; transition: 0.2s;}
     .draw-tool-btn:hover, .draw-tool-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+    
+    /* أزرار التحكم في الفيديو داخل الرسم */
+    .draw-video-controls { display: flex; gap: 5px; border-left: 2px solid #374151; padding-left: 15px; margin-left: 5px; }
     
     .draw-canvas-wrapper { position: relative; flex: 1; background: #000; border: 1px solid #374151; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     #drawVideoPlayer { position: absolute; max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -324,6 +328,14 @@
     </div>
     
     <div class="draw-toolbar">
+      <!-- أزرار تحكم الفيديو الجديدة -->
+      <div class="draw-video-controls">
+        <button class="draw-tool-btn" style="background: var(--accent); color: #000; border-color: var(--accent);" onclick="toggleDrawVideo()" title="تشغيل/إيقاف"><i class="fa-solid fa-play-pause"></i> تشغيل الفيديو</button>
+        <button class="draw-tool-btn" onclick="skipDrawVideo(-1)"><i class="fa-solid fa-backward-step"></i> 1ث</button>
+        <button class="draw-tool-btn" onclick="skipDrawVideo(1)">1ث <i class="fa-solid fa-forward-step"></i></button>
+      </div>
+      
+      <!-- أدوات الرسم -->
       <button class="draw-tool-btn active" onclick="setDrawTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر (تحديد وحذف)</button>
       <button class="draw-tool-btn" onclick="setDrawTool('gk-pos')"><i class="fa-solid fa-street-view"></i> تمركز الحارس</button>
       <button class="draw-tool-btn" onclick="setDrawTool('ball')"><i class="fa-solid fa-futbol"></i> مكان الكرة</button>
@@ -333,7 +345,7 @@
     </div>
 
     <div class="draw-canvas-wrapper" id="drawWrapper">
-      <video id="drawVideoPlayer" controls playsinline></video>
+      <video id="drawVideoPlayer" playsinline></video>
       <canvas id="drawCanvasOverlay"></canvas>
       
       <div id="shapeControlsDraw" class="shape-controls">
@@ -489,11 +501,11 @@
 
       document.querySelectorAll('.drill-item').forEach(item => item.style.transition = 'none');
       applyFrame(frames[0]);
-      await new Promise(r => setTimeout(r, 200)); // استقرار الـ DOM
+      await new Promise(r => setTimeout(r, 200)); 
 
       for (let i = 0; i < frames.length - 1; i++) {
         const frameA = frames[i]; const frameB = frames[i+1];
-        const steps = 10; // عدد اللقطات الانتقالية (معدل إطارات سلس)
+        const steps = 10; 
         const stepDelay = speedMs / steps;
         
         for(let s = 0; s <= steps; s++) {
@@ -510,11 +522,10 @@
           });
           const snap = await html2canvas(pitchArea, { backgroundColor: '#15803d', scale: 1 });
           vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
-          await new Promise(r => setTimeout(r, 10)); // تأخير بسيط للبروسيسور
+          await new Promise(r => setTimeout(r, 10)); 
         }
       }
       
-      // ثبات في النهاية
       for(let i=0; i<5; i++) {
         const snap = await html2canvas(pitchArea, { backgroundColor: '#15803d', scale: 1 });
         vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
@@ -545,7 +556,6 @@
     function skip(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    // التحكم في الزر حسب الـ Radio Button
     function handleTagClick(btn, eventType) {
       const mode = document.querySelector('input[name="clipMode"]:checked').value;
       if (mode === 'auto') {
@@ -568,7 +578,6 @@
       }
     }
 
-    // تقطيع أوتوماتيكي (10 ثواني: 5 قبل، 5 بعد)
     async function clipVideoAuto(eventType) {
       if (!video.src) return alert("الرجاء رفع أو تشغيل الفيديو أولاً!");
       video.pause();
@@ -616,7 +625,6 @@
       } catch(err) { statusBanner.style.display = 'none'; alert("خطأ في التقطيع الآلي."); }
     }
 
-    // تقطيع يدوي (من لحظة الضغط للحظة الإيقاف)
     function startManualClip() {
       if (!video.src) return alert("الرجاء تشغيل الفيديو أولاً!");
       manualStartTime = video.currentTime;
@@ -719,11 +727,25 @@
       redrawShapes();
     }
 
+    // أدوات التحكم في تشغيل الفيديو داخل نافذة الرسم
+    function toggleDrawVideo() {
+      if (drawVideo.paused) drawVideo.play();
+      else drawVideo.pause();
+    }
+    
+    function skipDrawVideo(sec) {
+      drawVideo.currentTime += sec;
+    }
+
     function setDrawTool(tool) {
       drawActiveTool = tool; drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
       document.querySelectorAll('.draw-tool-btn').forEach(btn => btn.classList.remove('active'));
       event.currentTarget.classList.add('active');
+      
+      // إيقاف الفيديو تلقائياً لو الكابتن اختار أداة رسم عشان يثبت اللقطة ويرسم
+      if(tool !== 'none') drawVideo.pause();
     }
+    
     function clearDrawings() { drawShapes = []; drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); }
 
     function getDPos(e) {
