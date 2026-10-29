@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - نظام تحليل الحكام بالذكاء الاصطناعي</title>
+  <title>Ziada Analysis - مساعد التحكيم الذكي (AI Chat)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
@@ -16,74 +16,96 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text); padding: 14px; }
     .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 14px; }
+    
     .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
     .brand-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; }
     
     .workspace { display: grid; grid-template-columns: 280px 1fr; gap: 15px; align-items: start; }
+    
     .referee-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; max-height: 75vh; overflow-y: auto; }
     .panel-title { font-size: 13.5px; font-weight: 800; color: var(--accent); text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
-    .ref-btn { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; background: #1f2937; border: 1px solid #374151; }
+    .ref-btn { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; background: #1f2937; border: 1px solid #374151; transition: 0.2s;}
+    .ref-btn:hover { border-color: var(--primary); background: #374151; }
     
     .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; position: relative; }
     .video-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 50vh; object-fit: contain; }
     .video-controls { display: flex; justify-content: center; gap: 15px; padding: 10px 0; }
     .control-btn { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .control-btn:hover { background: var(--primary); color: #000; }
     
-    .ai-scanning-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10; justify-content: center; align-items: center; flex-direction: column; gap: 10px; border-radius: 8px; }
-    .ai-scanning-overlay i { font-size: 40px; color: var(--primary); animation: spin 2s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+    input[type="file"] { color: #fff; font-size: 13px; }
+
+    .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
+
+    /* ستايل شات الذكاء الاصطناعي */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .modal-content { background: #111827; border: 2px solid var(--primary); border-radius: 12px; width: 650px; max-width: 95%; display: flex; flex-direction: column; height: 80vh; box-shadow: 0 0 30px rgba(56,189,248,0.3); overflow: hidden; }
     
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: #111827; border: 2px solid var(--primary); padding: 20px; border-radius: 12px; width: 600px; max-width: 95%; text-align: right; }
-    .law-box { background: #070b12; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-size: 13px; color: #cbd5e1; margin-bottom: 15px; }
+    .chat-header { background: #1f2937; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary); }
+    .chat-header h3 { font-size: 16px; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; }
+    .btn-close-chat { background: transparent; border: none; color: #ef4444; font-size: 20px; cursor: pointer; }
     
-    .pitch-container { position: relative; width: 100%; height: 200px; background: #15803d; border: 2px solid #fff; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
-    .pitch-container::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; transform: translateX(-50%); }
-    .pitch-container::after { content: ''; position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); }
-    .dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 5px #000; }
+    .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #070b12; }
     
+    .chat-msg { max-width: 85%; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; line-height: 1.6; position: relative; }
+    .msg-ai { background: #1f2937; color: #fff; align-self: flex-start; border-top-right-radius: 0; border: 1px solid #374151; }
+    .msg-ai b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 14.5px; }
+    .msg-ai .highlight { color: var(--accent); }
+    .msg-user { background: #0284c7; color: #fff; align-self: flex-end; border-top-left-radius: 0; }
+    
+    .typing-indicator { display: none; align-self: flex-start; padding: 10px 15px; background: #1f2937; border-radius: 10px; color: var(--primary); font-size: 13px; font-weight: bold; }
+
+    .chat-input-area { padding: 15px; background: #1f2937; border-top: 1px solid #374151; display: flex; gap: 10px; }
+    .chat-input-area input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #070b12; color: #fff; font-size: 13px; font-family: 'Cairo'; }
+    .chat-input-area input:focus { outline: none; border-color: var(--primary); }
+    .chat-input-area button { background: var(--primary); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+    .chat-input-area button:hover { background: #0284c7; color: #fff; }
+
+    /* الجدول */
     .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
     .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
     .log-table th { background: #1f2937; color: var(--primary); padding: 9px; font-size: 12.5px; }
     .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-    .btn-download { background: var(--success); color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; }
+    .btn-download { background: var(--success); color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-robot"></i> Ziada Analysis | المعلم الذكي (AI)</span>
+      <span class="brand-title"><i class="fa-solid fa-robot"></i> Ziada Analysis | المعلم ومحاكي التحكيم الذكي</span>
       <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
     <div class="workspace">
       <aside class="referee-panel">
-        <div class="panel-title">تحليل الحالات (IFAB)</div>
-        <button class="ref-btn" onclick="startAIAnalysis('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('تدخل متهور (فاول)')">تدخل متهور <i class="fa-solid fa-ban"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('حرمان من هدف')">حرمان من هدف محقق <i class="fa-solid fa-lock"></i></button>
-        <button class="ref-btn" onclick="startAIAnalysis('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
+        <div class="panel-title">تحليل الحالات (IFAB AI)</div>
+        <button class="ref-btn" onclick="startAIChat('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
+        <button class="ref-btn" onclick="startAIChat('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
+        <button class="ref-btn" onclick="startAIChat('تدخل متهور (فاول)')">تدخل متهور (Foul) <i class="fa-solid fa-ban"></i></button>
+        <button class="ref-btn" onclick="startAIChat('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
+        <button class="ref-btn" onclick="startAIChat('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
+        <button class="ref-btn" onclick="startAIChat('حرمان من هدف محقق')">حرمان من هدف <i class="fa-solid fa-lock"></i></button>
+        <button class="ref-btn" onclick="startAIChat('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
+        <button class="ref-btn" onclick="startAIChat('مراجعة VAR')">تدخل الـ VAR <i class="fa-solid fa-tv"></i></button>
       </aside>
 
       <main class="video-area">
+        <div class="live-status-banner" id="liveStatusBanner">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span id="liveStatusText">جاري التصدير...</span>
+        </div>
         <div class="video-container">
           <video id="refVideo" controls playsinline></video>
-          <div class="ai-scanning-overlay" id="aiScanner">
-            <i class="fa-solid fa-crosshairs"></i>
-            <span style="color: #fff; font-weight: bold;">الذكاء الاصطناعي يقوم بتحليل تمركز الحكم واللقطة...</span>
-          </div>
         </div>
         <div class="video-controls">
-          <button class="control-btn" onclick="seekVideo(-5)">رجوع 5ث</button>
-          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث</button>
+          <button class="control-btn" onclick="seekVideo(-5)"><i class="fa-solid fa-backward-step"></i> رجوع 5ث</button>
+          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث <i class="fa-solid fa-forward-step"></i></button>
         </div>
-        <div>
+        <div class="upload-bar">
           <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)" style="color:#fff;">
         </div>
       </main>
@@ -94,14 +116,12 @@
         <thead>
           <tr>
             <th>التوقيت</th>
-            <th>نوع الحالة</th>
-            <th>حكم الـ AI</th>
-            <th>المسافة (AI)</th>
-            <th>اللقطة (10ث)</th>
+            <th>نوع الحالة المقصوصة</th>
+            <th>مكتبة اللقطات (10ث)</th>
           </tr>
         </thead>
         <tbody id="refLogBody">
-          <tr><td colspan="5" style="text-align: center;">لم يتم تسجيل حالات.</td></tr>
+          <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم استخراج لقطات حتى الآن.</td></tr>
         </tbody>
       </table>
     </div>
@@ -109,134 +129,204 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
-  <div class="modal-overlay" id="analysisModal">
+  <!-- شاشة الدردشة مع الذكاء الاصطناعي -->
+  <div class="modal-overlay" id="aiChatModal">
     <div class="modal-content">
-      <div class="law-header" style="border-bottom: 1px solid #1f2937; padding-bottom:10px; margin-bottom:10px;">
-        <h3 id="modalTitle" style="color: var(--primary);">نتيجة فحص الذكاء الاصطناعي</h3>
+      <div class="chat-header">
+        <h3><i class="fa-solid fa-robot"></i> المعلم التحكيمي الذكي (AI)</h3>
+        <button class="btn-close-chat" onclick="closeChat()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
-      <h2 id="aiVerdict" style="text-align: center; margin-bottom: 10px;"></h2>
-      <div class="law-box" id="modalLawText"></div>
       
-      <div style="font-size: 13px; color: var(--primary); margin-bottom: 5px; text-align:center;">رصد الـ AI لتمركز الحكم (أصفر) والكرة (أحمر)</div>
-      <div class="pitch-container" id="pitchMap"></div>
-      <div id="aiDistance" style="text-align: center; font-weight: bold; margin-bottom: 15px; color:#cbd5e1;"></div>
+      <div class="chat-history" id="chatHistory">
+        <!-- الرسايل هتظهر هنا -->
+      </div>
+      <div class="typing-indicator" id="typingIndicator">المعلم يحلل اللقطة ويكتب الرد...</div>
 
-      <button style="width:100%; padding:10px; background:var(--primary); font-weight:bold; cursor:pointer; border:none; border-radius:5px;" onclick="closeModalAndClip()">حفظ النتيجة في السجل وقص اللقطة</button>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="تناقش مع المعلم حول اللقطة، أو اكتب استفسارك..." onkeypress="handleEnter(event)">
+        <button onclick="sendUserMessage()"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+      </div>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('refVideo');
-    const modal = document.getElementById('analysisModal');
-    const scanner = document.getElementById('aiScanner');
-    const pitchMap = document.getElementById('pitchMap');
+    const chatModal = document.getElementById('aiChatModal');
+    const chatHistory = document.getElementById('chatHistory');
+    const chatInput = document.getElementById('chatInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const statusBanner = document.getElementById('liveStatusBanner');
+    
     let currentEvent = '';
     let currentTime = 0;
     let refEventsLog = [];
 
-    const ruleBook = {
-      'تسلل (Offside)': 'المادة 11: يعتبر متسللاً إذا كان أقرب لخط المرمى من الكرة وثاني آخر منافس.',
-      'لمس يد': 'المادة 12: خطأ إذا تعمد لمس الكرة أو كبّر مساحة جسمه بشكل غير طبيعي.',
-      'تدخل متهور (فاول)': 'المادة 12: يحدث عند الإهمال أو التهور.',
-      'لعب خطر': 'المادة 12: تصرف يهدد بإصابة منافس دون احتكاك فعلي.',
-      'منع هجمة واعدة': 'المادة 12: يستوجب إنذار (كارت أصفر).',
-      'حرمان من هدف': 'المادة 12: يستوجب البطاقة الحمراء.',
-      'ركلة جزاء': 'تُحتسب لخطأ مباشر يرتكبه المدافع داخل منطقة جزائه.'
+    // قاموس قوانين التحكيم للإجابات التلقائية الأولية
+    const aiKnowledge = {
+      'تسلل (Offside)': 'المادة 11 من قانون IFAB: يعتبر اللاعب متسللاً إذا كان أقرب لخط المرمى من الكرة وثاني آخر منافس لحظة لعب الكرة إليه. الرؤية للحكم المساعد يجب أن تكون على خط واحد مع آخر مدافع لتكون دقيقة.',
+      'لمس يد': 'المادة 12 من قانون IFAB: لمسة اليد تُحتسب إذا تعمد اللاعب لمس الكرة بيده/ذراعه، أو كبّر مساحة جسمه بشكل غير طبيعي بوضع اليد بعيداً عن الجسم.',
+      'تدخل متهور (فاول)': 'المادة 12: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً أو استخدام قوة مفرطة. إذا استخلص الكرة بنظافة أولاً لا يُحتسب خطأ.',
+      'لعب خطر': 'المادة 12: اللعب الخطر هو أي تصرف يهدد بإصابة منافس دون حدوث احتكاك فعلي. العقوبة ركلة حرة غير مباشرة.',
+      'منع هجمة واعدة': 'المادة 12: إيقاف هجمة واعدة (SPA) يستوجب احتساب خطأ وتوجيه إنذار (كارت أصفر) للاعب المخالف.',
+      'حرمان من هدف محقق': 'المادة 12 (DOGSO): حرمان المنافس من فرصة محققة لتسجيل هدف خارج منطقة الجزاء يستوجب البطاقة الحمراء مباشرة.',
+      'ركلة جزاء': 'المادة 14: تُحتسب ركلة الجزاء لأي خطأ موجب لركلة حرة مباشرة يرتكبه المدافع داخل منطقة جزاء فريقه.',
+      'مراجعة VAR': 'بروتوكول الـ VAR: يتدخل الفار فقط في الأخطاء "الواضحة والجلية" (أهداف، ركلات جزاء، طرد مباشر، أو خطأ في تحديد الهوية).'
     };
 
     function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
     function seekVideo(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    function startAIAnalysis(eventType) {
-      if (!video.src) return alert("شغل الفيديو أولاً.");
+    // بدأ المحادثة والقص
+    async function startAIChat(eventType) {
+      if (!video.src) return alert("شغل الفيديو أو ارفع المباراة أولاً يا كوتش!");
       video.pause();
       currentEvent = eventType;
       currentTime = video.currentTime;
       
-      scanner.style.display = 'flex';
-      setTimeout(showAnalysisResult, 2000); // محاكاة المعالجة
-    }
+      // فتح الشات وتفريغه
+      chatHistory.innerHTML = '';
+      chatInput.value = '';
+      chatModal.style.display = 'flex';
+      
+      // إنشاء التقرير الأولي الذكي
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
+        const dist = Math.floor(Math.random() * 10) + 8; // مسافة عشوائية تقريبية (8 لـ 18 متر)
+        const initialMsg = `
+          <b>أهلاً بك يا كوتش. بناءً على تحليلي للقطة الـ (${eventType}) في الدقيقة ${formatTime(currentTime)}:</b><br>
+          <span class="highlight">القانون:</span> ${aiKnowledge[eventType] || 'هذه الحالة خاضعة لتقدير الحكم.'}<br><br>
+          <span class="highlight">رؤيتي لزاوية الحكم:</span> من خلال تتبع اللقطة، يبدو أن تمركز الحكم كان على بُعد تقريبي يبلغ <b>${dist} أمتار</b> عن موقع الكرة. زاوية الرؤية تبدو شبه واضحة ما لم يحجبها تمركز لاعبين آخرين في المسار القطري.<br><br>
+          هل ترى في اللقطة أي تفاصيل إضافية تحب أن نتناقش حولها؟
+        `;
+        appendMessage('ai', initialMsg);
+      }, 1500);
 
-    function showAnalysisResult() {
-      scanner.style.display = 'none';
-      const isCorrect = Math.random() > 0.4;
-      const verdictEl = document.getElementById('aiVerdict');
-      
-      verdictEl.innerText = isCorrect ? '✅ قرار الحكم في اللقطة سليم' : '❌ قرار الحكم في اللقطة خاطئ';
-      verdictEl.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
-      document.getElementById('modalLawText').innerHTML = `<b>توجيه IFAB:</b> ${ruleBook[currentEvent] || ''}`;
-
-      // محاكاة رصد التمركز
-      pitchMap.innerHTML = '';
-      const foulX = 20 + Math.random() * 60; const foulY = 20 + Math.random() * 60;
-      const refX = foulX + (Math.random() * 20 - 10); const refY = foulY + (Math.random() * 20 - 10);
-      
-      pitchMap.innerHTML += `<div class="dot" style="left:${foulX}%; top:${foulY}%; background:#ef4444;"></div>`;
-      pitchMap.innerHTML += `<div class="dot" style="left:${refX}%; top:${refY}%; background:#eab308;"></div>`;
-      
-      const dist = Math.floor(Math.random() * 15) + 5;
-      document.getElementById('aiDistance').innerText = `المسافة المقدرة: ${dist} متر`;
-      
-      modal.isCorrect = isCorrect;
-      modal.dist = dist;
-      modal.style.display = 'flex';
-    }
-
-    async function closeModalAndClip() {
-      modal.style.display = 'none';
+      // في الخلفية: قص اللقطة
       await generateClipBlob();
     }
 
+    function closeChat() {
+      chatModal.style.display = 'none';
+      if(video.paused) video.play();
+    }
+
+    // إضافة رسالة للشات
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `chat-msg msg-${sender}`;
+      msgDiv.innerHTML = text;
+      chatHistory.appendChild(msgDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function showTyping() { typingIndicator.style.display = 'block'; chatHistory.scrollTop = chatHistory.scrollHeight; }
+    function hideTyping() { typingIndicator.style.display = 'none'; }
+
+    function handleEnter(e) { if(e.key === 'Enter') sendUserMessage(); }
+
+    function sendUserMessage() {
+      const text = chatInput.value.trim();
+      if(!text) return;
+      
+      appendMessage('user', text);
+      chatInput.value = '';
+      showTyping();
+
+      // محرك الردود الذكي المعتمد على الكلمات المفتاحية
+      setTimeout(() => {
+        hideTyping();
+        let reply = '';
+        if (text.includes('رجله') || text.includes('قدمه') || text.includes('راسه') || text.includes('جسمه')) {
+          reply = 'نقطة تكتيكية ممتازة! حسب التعديلات الأخيرة لـ IFAB، إذا لعب اللاعب الكرة بقدمه أو رأسه وارتدت بشكل غير متوقع إلى يده، لا تعتبر مخالفة تعمد. إذا كان هذا ما حدث فعلاً، فالقرار الصحيح هو استمرار اللعب.';
+        } else if (text.includes('رؤية') || text.includes('زحمة') || text.includes('مقفولة')) {
+          reply = 'أتفق معك. وجود الكثافة العددية في منطقة العمليات (Traffic) يجعل تقدير الحالة بالغ الصعوبة على حكم الساحة. في هذه الحالة يجب الاعتماد على زاوية الحكم المساعد (الراية) أو تدخل الـ VAR إن كان الخطأ جسيماً.';
+        } else if (text.includes('احمر') || text.includes('طرد') || text.includes('عنيف')) {
+          reply = 'بالضبط يا كوتش. الفيصل في الكارت الأحمر هو "استخدام القوة المفرطة" التي تعرض سلامة المنافس للخطر، أو "منع هدف محقق". إذا لم يتوافر أحد الشرطين، فالإنذار الأصفر هو القرار الأنسب.';
+        } else if (text.includes('فار') || text.includes('var') || text.includes('VAR')) {
+          reply = 'حسب البروتوكول، الـ VAR لا يتدخل لمناقشة الحالات الجدلية البسيطة أو الفاولات خارج المنطقة، بل يتدخل فقط إذا ارتكب الحكم "خطأ واضحاً وجلياً" (Clear and Obvious Error).';
+        } else if (text.includes('بلنتي') || text.includes('جزاء')) {
+          reply = 'ركلات الجزاء تتطلب دقة عالية. هل الاحتكاك أثر فعلياً على توازن المهاجم أو منعه من لعب الكرة؟ قانونياً، ليس كل تلامس داخل المنطقة يعتبر ركلة جزاء.';
+        } else if (text.includes('صح') || text.includes('سليم') || text.includes('ممتاز')) {
+          reply = 'عظيم جداً. أتفق مع تقييمك يا كوتش. قرار الحكم هنا يتوافق مع روح القانون وتمركزه ساعده على اتخاذ القرار السليم.';
+        } else if (text.includes('غلط') || text.includes('مش صح') || text.includes('كارثة')) {
+          reply = 'كلامك يحترم. التقدير البشري يحتمل الخطأ، وفي هذه الحالة تحديداً التفاصيل الصغيرة هي التي تصنع الفارق. هل تريدني أن أسجل هذه الملاحظة الفنية في تقريرك؟';
+        } else {
+          reply = 'وجهة نظر فنية دقيقة يا كوتش. النقاش الفني يفيد في تحليل مستوى التحكيم. هل تود التركيز على شيء آخر في هذه اللقطة أم نعود للمباراة؟';
+        }
+        
+        appendMessage('ai', `<b>المعلم الذكي:</b> ${reply}`);
+      }, 2000); // تأخير ثانيتين لمحاكاة تفكير الذكاء الاصطناعي
+    }
+
+    // قص الفيديو 10 ثواني بدون تعطيل المحادثة
     async function generateClipBlob() {
       const startTime = Math.max(0, currentTime - 5);
       const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
       
-      const canvas = document.getElementById('liveRenderCanvas');
-      canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
-      const ctx = canvas.getContext('2d');
-      const stream = canvas.captureStream(30);
-      let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-      const chunks = [];
-      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-      
-      recorder.start();
-      video.currentTime = startTime;
-      await new Promise(r => { video.onseeked = r; });
-      await video.play();
+      statusBanner.style.display = 'flex';
+      document.getElementById('liveStatusText').innerText = `السيستم يقوم باقتطاع وتجهيز اللقطة (5ث قبل وبعد) في الخلفية...`;
 
-      function stepFrame() {
-        if (video.currentTime >= endTime || video.paused) { video.pause(); recorder.stop(); return; }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        setTimeout(stepFrame, 1000/30);
+      try {
+        const canvas = document.getElementById('liveRenderCanvas');
+        canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+        const stream = canvas.captureStream(30);
+        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        
+        recorder.start();
+        
+        // نحتفظ بوقت المشغل عشان نرجعه بعد القص
+        const originalTime = video.currentTime;
+        video.currentTime = startTime;
+        await new Promise(r => { video.onseeked = r; });
+        await video.play();
+
+        function stepFrame() {
+          if (video.currentTime >= endTime || video.paused) { 
+            video.pause(); 
+            recorder.stop(); 
+            video.currentTime = originalTime; // نرجع الفيديو مكانه
+            return; 
+          }
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          setTimeout(stepFrame, 1000/30);
+        }
+        stepFrame();
+
+        recorder.onstop = async () => {
+          const rawBlob = new Blob(chunks, { type: 'video/webm' });
+          let finalBlob = rawBlob;
+          if (typeof ysFixWebmDuration !== 'undefined') {
+            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
+          }
+          const url = URL.createObjectURL(finalBlob);
+          
+          refEventsLog.push({
+            time: formatTime(currentTime),
+            type: currentEvent,
+            blobUrl: url
+          });
+          
+          renderLog();
+          statusBanner.style.display = 'none';
+        };
+      } catch(err) {
+        statusBanner.style.display = 'none';
       }
-      stepFrame();
-
-      recorder.onstop = () => {
-        const rawBlob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(rawBlob);
-        
-        refEventsLog.push({
-          time: formatTime(currentTime),
-          type: currentEvent,
-          decision: modal.isCorrect ? 'سليم ✅' : 'خاطئ ❌',
-          dist: `${modal.dist} متر`,
-          blobUrl: url
-        });
-        
-        renderLog();
-      };
     }
 
     function renderLog() {
       const tbody = document.getElementById('refLogBody');
-      tbody.innerHTML = refEventsLog.slice().reverse().map((item, i) => `
+      if(refEventsLog.length === 0) return;
+      tbody.innerHTML = refEventsLog.slice().reverse().map(item => `
         <tr>
           <td>${item.time}</td>
-          <td>${item.type}</td>
-          <td style="color: ${item.decision.includes('سليم') ? '#34d399' : '#f87171'};">${item.decision}</td>
-          <td>${item.dist}</td>
-          <td><a href="${item.blobUrl}" download="لقطة_${item.type}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ للحاسوب</a></td>
+          <td><b>${item.type}</b></td>
+          <td><a href="${item.blobUrl}" download="لقطة_${item.type.replace(/ /g, '_')}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ اللقطة المقصوصة للكمبيوتر</a></td>
         </tr>
       `).join('');
     }
