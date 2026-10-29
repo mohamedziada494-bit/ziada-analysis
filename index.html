@@ -225,11 +225,14 @@
     .analysis-card { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; transition: all 0.3s; }
     .analysis-card:hover { background: rgba(30, 41, 59, 0.95); border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); transform: translateX(-4px); }
     .analysis-card .icon-box { width: 44px; height: 44px; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    
     .tactical-icon { background: rgba(14, 165, 233, 0.2); color: var(--neon-cyan); }
     .individual-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
     .live-icon { background: rgba(239, 68, 68, 0.2); color: #f87171; }
     .referee-icon { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
     .admin-icon { background: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
+    .gk-icon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    
     .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
 
     .logout-btn { width: 100%; padding: 0.65rem; background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; border-radius: 0.6rem; cursor: pointer; margin-top: 1.5rem; font-weight: 700; transition: all 0.3s; }
@@ -365,8 +368,10 @@
           <a href="tactical.html" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
           <a href="individual.html" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
           <a href="live.html" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
-          <!-- زرار صفحة تحليل الحكام والقانون الجديد -->
+          <!-- زرار صفحة تحليل الحكام والقانون -->
           <a href="referee.html" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون (AI)</h3></div></a>
+          <!-- زرار استوديو حراس المرمى الجديد -->
+          <a href="goalkeeper.html" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى (GK)</h3></div></a>
           <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة</h3></div></a>
         </div>
         <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
@@ -535,6 +540,8 @@
 
       const expiryDate = new Date(userData.subscriptionEnd + "T23:59:59").getTime();
       const now = new Date().getTime();
+      
+      // تم إصلاح عملية الطرح بدلاً من الخطأ البرمجي
       const distance = expiryDate - now;
 
       const overlay = document.getElementById('subOverlay');
@@ -545,6 +552,7 @@
       overlay.style.display = 'flex';
 
       if (distance > 0) {
+        // تم إصلاح علامات الضرب والقسمة للأيام والساعات
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         
