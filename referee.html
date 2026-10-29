@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - مكتبة التحكيم وغرفة الـ VAR</title>
+  <title>Ziada Analysis - استوديو التحكيم وغرفة الـ VAR (Pro)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
@@ -33,68 +33,85 @@
     video { width: 100%; height: 50vh; object-fit: contain; }
     .video-controls { display: flex; justify-content: center; gap: 15px; padding: 10px 0; }
     .control-btn { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-    .control-btn:hover { background: var(--primary); color: #000; }
     
-    .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
-    input[type="file"] { color: #fff; font-size: 13px; }
-    .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
+    .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); justify-content: space-between; }
+    .upload-bar input[type="file"] { color: #fff; font-size: 13px; }
 
     /* Modal - مكتبة التحكيم والرسم */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-    .modal-content { background: #070b12; border: 2px solid var(--primary); border-radius: 12px; width: 95vw; height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal-content { background: #070b12; border: 2px solid var(--primary); border-radius: 12px; width: 98vw; height: 95vh; display: flex; flex-direction: column; overflow: hidden; }
     
     .modal-header { background: #111827; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-    .modal-header h3 { color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; font-size: 18px; }
+    .modal-header h3 { color: var(--primary); margin: 0; font-size: 18px; }
     .btn-close-modal { background: transparent; border: none; color: #ef4444; font-size: 24px; cursor: pointer; }
 
     .modal-body { display: flex; flex: 1; overflow: hidden; }
     
     /* الجانب الأيمن: القانون */
-    .law-panel { width: 350px; background: #111827; border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
-    .law-title { color: var(--accent); font-size: 16px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid #374151; padding-bottom: 10px; }
-    .law-text { font-size: 14px; line-height: 1.8; color: #cbd5e1; }
-    .law-text ul { padding-right: 20px; margin-top: 10px; }
-    .law-text li { margin-bottom: 8px; }
-
-    /* الجانب الأيسر: الرسم والتحليل */
-    .drawing-panel { flex: 1; display: flex; flex-direction: column; background: #000; position: relative; padding: 10px; }
-    .toolbar { display: flex; justify-content: center; gap: 10px; padding-bottom: 10px; }
-    .tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 13px; transition: 0.2s; }
+    .law-panel { width: 300px; background: #111827; border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
+    .law-text { font-size: 13.5px; line-height: 1.8; color: #cbd5e1; }
+    
+    /* الجانب الأيسر: الرسم */
+    .drawing-panel { flex: 1; display: flex; flex-direction: column; background: #000; padding: 10px; position: relative; }
+    .toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-bottom: 10px; }
+    .tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 7px 10px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 12px; transition: 0.2s; }
     .tool-btn:hover, .tool-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
     
-    .canvas-wrapper { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid #374151; border-radius: 8px; background: #111827; cursor: crosshair; }
+    .canvas-wrapper { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; border: 1px solid #374151; border-radius: 8px; background: #111827; overflow: hidden; }
     #analysisCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
     
-    /* أزرار التحكم بالرسمة (تتحرك مع الرسمة) */
-    .shape-controls { position: absolute; display: none; background: rgba(17, 24, 39, 0.9); border: 1px solid var(--primary); padding: 5px; border-radius: 8px; gap: 5px; z-index: 100; flex-direction: row; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-    .shape-btn { background: #374151; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: 0.2s; }
-    .shape-btn.ok { color: #10b981; }
-    .shape-btn.del { color: #ef4444; }
-    .shape-btn:hover { background: var(--primary); color: #000; }
+    .shape-controls { position: absolute; display: none; background: rgba(17, 24, 39, 0.9); border: 1px solid var(--primary); padding: 5px; border-radius: 8px; gap: 5px; z-index: 100; flex-direction: row; }
+    .shape-btn { background: #374151; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+    .shape-btn.ok { color: #10b981; } .shape-btn.del { color: #ef4444; }
 
     .action-bar { padding-top: 10px; display: flex; justify-content: center; gap: 15px; }
-    .btn-save-analysis { background: var(--success); color: #fff; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .btn-save-analysis { background: var(--success); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-record-voice { background: #ef4444; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .btn-record-voice.recording { animation: pulse 1.5s infinite; background: #b91c1c; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-    /* الجدول والتنزيل */
-    .download-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
-    .dl-box { background: #111827; padding: 25px; border-radius: 12px; border: 1px solid var(--primary); text-align: center; width: 400px; }
-    .dl-options { display: flex; gap: 15px; justify-content: center; margin-top:20px; }
-    .dl-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .dl-img { background: #f59e0b; color: #000; }
-    .dl-vid { background: #38bdf8; color: #000; }
-    .btn-cancel-dl { background: transparent; color: #94a3b8; border: none; margin-top: 15px; cursor: pointer; font-family: 'Cairo'; }
+    /* Dashboard & Logs */
+    .dashboard { display: flex; gap: 15px; margin-bottom: 15px; }
+    .stat-card { flex: 1; background: #1f2937; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; text-align: center; }
+    .stat-card h4 { color: var(--text-muted); font-size: 13px; margin-bottom: 5px; }
+    .stat-card span { font-size: 24px; font-weight: bold; color: var(--primary); }
+
     .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
-    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
+    .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .btn-pdf { background: #ca8a04; color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; }
+    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; }
     .log-table th { background: #1f2937; color: var(--primary); padding: 9px; }
     .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-    .btn-download-action { background: #4f46e5; color: #fff; padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; }
+    
+    .dl-options { display: flex; gap: 5px; }
+    .btn-dl { background: #4f46e5; color: #fff; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; border: none; cursor: pointer; }
+
+    /* Print Styles for PDF Report */
+    @media print {
+      body * { visibility: hidden; }
+      .print-report, .print-report * { visibility: visible; }
+      .print-report { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 20px; direction: rtl; }
+      .print-report img { max-width: 300px; border: 1px solid #000; margin: 10px 0; }
+      .print-report th { background: #eee !important; color: #000 !important; }
+      .print-report td, .print-report th { border: 1px solid #000 !important; padding: 8px; color: #000 !important;}
+    }
   </style>
 </head>
 <body>
 
-  <div class="main-wrapper">
+  <!-- حاوية التقرير للطباعة فقط -->
+  <div id="printArea" class="print-report" style="display: none;">
+    <h1 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px;">تقرير التحكيم الفني المتقدم (Ziada Analysis)</h1>
+    <h3 id="printStats"></h3>
+    <table class="log-table" style="width: 100%; margin-top: 20px;">
+      <thead><tr><th>التوقيت</th><th>الحالة</th><th>القرار التحكيمي / الملاحظة</th><th>الصورة التحليلية</th></tr></thead>
+      <tbody id="printLogBody"></tbody>
+    </table>
+  </div>
+
+  <div class="main-wrapper" id="appUI">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-scale-balanced"></i> Ziada Analysis | مكتبة التحكيم وغرفة الـ VAR</span>
+      <span class="brand-title"><i class="fa-solid fa-video"></i> Ziada Analysis | استوديو التحكيم (Pro)</span>
       <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
@@ -104,49 +121,50 @@
         <button class="ref-btn" onclick="openVARRoom('ركلة البداية')">ركلة البداية <i class="fa-solid fa-play"></i></button>
         <button class="ref-btn" onclick="openVARRoom('رمية التماس')">رمية التماس <i class="fa-solid fa-hands"></i></button>
         <button class="ref-btn" onclick="openVARRoom('ركلة المرمى')">ركلة المرمى <i class="fa-solid fa-futbol"></i></button>
-        <button class="ref-btn" onclick="openVARRoom('إسقاط الكرة')">إسقاط الكرة <i class="fa-solid fa-arrow-down"></i></button>
         <button class="ref-btn" onclick="openVARRoom('ركلة حرة مباشرة')">ركلة حرة مباشرة <i class="fa-solid fa-bullseye"></i></button>
-        <button class="ref-btn" onclick="openVARRoom('ركلة حرة غير مباشرة')">ركلة حرة غير مباشرة <i class="fa-solid fa-share"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة حرة غير مباشرة')">ركلة غير مباشرة <i class="fa-solid fa-share"></i></button>
         <button class="ref-btn" onclick="openVARRoom('ركلة ركنية')">ركلة ركنية <i class="fa-solid fa-flag"></i></button>
         <hr style="border-color: #374151; margin: 5px 0;">
         <button class="ref-btn" onclick="openVARRoom('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
         <button class="ref-btn" onclick="openVARRoom('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
         <button class="ref-btn" onclick="openVARRoom('تدخل متهور (فاول)')">تدخل متهور (Foul) <i class="fa-solid fa-ban"></i></button>
-        <button class="ref-btn" onclick="openVARRoom('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
         <button class="ref-btn" onclick="openVARRoom('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
-        <button class="ref-btn" onclick="openVARRoom('حرمان من هدف محقق')">حرمان من هدف <i class="fa-solid fa-lock"></i></button>
         <button class="ref-btn" onclick="openVARRoom('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
       </aside>
 
       <main class="video-area">
-        <div class="live-status-banner" id="liveStatusBanner">
-          <i class="fa-solid fa-circle-notch fa-spin"></i>
-          <span id="liveStatusText">جاري التصدير...</span>
-        </div>
         <div class="video-container">
           <video id="refVideo" controls playsinline crossorigin="anonymous"></video>
         </div>
         <div class="video-controls">
-          <button class="control-btn" onclick="seekVideo(-5)"><i class="fa-solid fa-backward-step"></i> رجوع 5ث</button>
-          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث <i class="fa-solid fa-forward-step"></i></button>
+          <button class="control-btn" onclick="seekVideo(-5)">رجوع 5ث</button>
+          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث</button>
         </div>
         <div class="upload-bar">
-          <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)" style="color:#fff;">
+          <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)">
         </div>
       </main>
     </div>
 
     <div class="log-section">
+      <div class="log-header">
+        <h3 style="color: var(--primary);"><i class="fa-solid fa-chart-line"></i> تقييم الأداء التحكيمي</h3>
+        <button class="btn-pdf" onclick="generatePDFReport()"><i class="fa-solid fa-file-pdf"></i> طباعة التقرير الشامل (PDF)</button>
+      </div>
+      
+      <div class="dashboard">
+        <div class="stat-card"><h4>إجمالي الحالات</h4><span id="statTotal">0</span></div>
+        <div class="stat-card"><h4>حالات الفاول والتهور</h4><span id="statFouls">0</span></div>
+        <div class="stat-card"><h4>قرارات التسلل</h4><span id="statOffside">0</span></div>
+        <div class="stat-card"><h4>ركلات الجزاء</h4><span id="statPenalties">0</span></div>
+      </div>
+
       <table class="log-table">
         <thead>
-          <tr>
-            <th>التوقيت</th>
-            <th>نوع الحالة</th>
-            <th>مكتبة اللقطات (حفظ وتنزيل)</th>
-          </tr>
+          <tr><th>التوقيت</th><th>نوع الحالة</th><th>الملاحظات الفنية</th><th>الخيارات</th></tr>
         </thead>
         <tbody id="refLogBody">
-          <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم تحليل لقطات حتى الآن.</td></tr>
+          <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لم يتم تحليل لقطات حتى الآن.</td></tr>
         </tbody>
       </table>
     </div>
@@ -154,69 +172,62 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
+  <!-- غرفة الـ VAR -->
   <div class="modal-overlay" id="varModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-tv"></i> غرفة تقنية الفيديو (VAR) - تحليل الحالة والتمركز</h3>
+        <h3><i class="fa-solid fa-tv"></i> استوديو الـ VAR والمونتاج</h3>
         <button class="btn-close-modal" onclick="closeVARRoom()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
       
       <div class="modal-body">
         <div class="drawing-panel">
           <div class="toolbar">
-            <button class="tool-btn active" onclick="setTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر (تحريك وتعديل)</button>
-            <button class="tool-btn" onclick="setTool('referee')"><i class="fa-solid fa-user-tie"></i> تمركز الحكم</button>
-            <button class="tool-btn" onclick="setTool('ball')"><i class="fa-solid fa-futbol"></i> مكان الكرة</button>
-            <button class="tool-btn" onclick="setTool('distance')"><i class="fa-solid fa-ruler-horizontal"></i> مسافة الرؤية</button>
-            <button class="tool-btn" onclick="setTool('vision')"><i class="fa-solid fa-eye"></i> زاوية الرؤية (مخروط)</button>
-            <button class="tool-btn" onclick="setTool('zoom')"><i class="fa-solid fa-magnifying-glass"></i> عدسة تكبير</button>
+            <button class="tool-btn active" onclick="setTool('none')">مؤشر</button>
+            <button class="tool-btn" onclick="setTool('referee')">حكم</button>
+            <button class="tool-btn" onclick="setTool('ball')">كرة</button>
+            <button class="tool-btn" onclick="setTool('distance')">مسافة</button>
+            <button class="tool-btn" onclick="setTool('vision')">مخروط الرؤية</button>
+            <button class="tool-btn" onclick="setTool('zoom')">عدسة</button>
+            <button class="tool-btn" style="background:#0ea5e9;" onclick="setTool('offside')"><i class="fa-solid fa-ruler"></i> خط تسلل</button>
+            <button class="tool-btn" style="background:#0ea5e9;" onclick="setTool('arrow')"><i class="fa-solid fa-arrow-right"></i> سهم</button>
+            <button class="tool-btn" style="background:#0ea5e9;" onclick="setTool('text')"><i class="fa-solid fa-font"></i> نص</button>
+            <button class="tool-btn" style="background:#0ea5e9;" onclick="setTool('highlight')"><i class="fa-solid fa-highlighter"></i> تظليل</button>
             <button class="tool-btn" onclick="clearCanvas()" style="background:#dc2626;"><i class="fa-solid fa-trash"></i> مسح الكل</button>
           </div>
           
           <div class="canvas-wrapper" id="canvasContainer">
             <canvas id="analysisCanvas"></canvas>
-            
-            <!-- أزرار التحكم العائمة -->
             <div id="shapeControls" class="shape-controls">
-              <button class="shape-btn ok" onclick="confirmShape()" title="تأكيد"><i class="fa-solid fa-check"></i></button>
-              <button class="shape-btn del" onclick="deleteShape()" title="حذف"><i class="fa-solid fa-trash"></i></button>
-              <button class="shape-btn" onclick="scaleShape(1.2)" title="تكبير"><i class="fa-solid fa-plus"></i></button>
-              <button class="shape-btn" onclick="scaleShape(0.8)" title="تصغير"><i class="fa-solid fa-minus"></i></button>
+              <button class="shape-btn ok" onclick="confirmShape()"><i class="fa-solid fa-check"></i></button>
+              <button class="shape-btn del" onclick="deleteShape()"><i class="fa-solid fa-trash"></i></button>
+              <button class="shape-btn" onclick="scaleShape(1.1)"><i class="fa-solid fa-plus"></i></button>
+              <button class="shape-btn" onclick="scaleShape(0.9)"><i class="fa-solid fa-minus"></i></button>
             </div>
           </div>
           
           <div class="action-bar">
-            <button class="btn-save-analysis" onclick="saveVARAnalysis()"><i class="fa-solid fa-floppy-disk"></i> حفظ التحليل للجدول (صورة + فيديو)</button>
+            <button class="btn-record-voice" id="btnRecordAnalysis" onclick="toggleVoiceRecording()">
+              <i class="fa-solid fa-microphone"></i> <span>تسجيل تحليل صوتي (فيديو)</span>
+            </button>
+            <button class="btn-save-analysis" onclick="saveVARAnalysis()"><i class="fa-solid fa-floppy-disk"></i> حفظ للتقرير (صورة)</button>
           </div>
         </div>
 
         <div class="law-panel">
-          <div class="law-title" id="lawModalTitle">نصوص قانون IFAB</div>
+          <div class="law-title" id="lawModalTitle">القانون</div>
           <div class="law-text" id="lawModalContent"></div>
+          <textarea id="coachNotes" placeholder="اكتب ملاحظاتك الفنية هنا لتظهر في تقرير الـ PDF..." style="width:100%; height:100px; margin-top:15px; background:#1f2937; color:#fff; border:1px solid #374151; border-radius:8px; padding:10px; font-family:'Cairo';"></textarea>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="download-modal" id="downloadModal">
-    <div class="dl-box">
-      <h3 style="color:#fff;">خيارات الحفظ والتنزيل</h3>
-      <div class="dl-options">
-        <button class="dl-btn dl-img" onclick="downloadItem('image')"><i class="fa-solid fa-image" style="font-size:24px;"></i> تنزيل صورة التحليل</button>
-        <button class="dl-btn dl-vid" onclick="downloadItem('video')"><i class="fa-solid fa-video" style="font-size:24px;"></i> تنزيل لقطة الفيديو (10ث)</button>
-      </div>
-      <button class="btn-cancel-dl" onclick="closeDownloadModal()">إلغاء</button>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('refVideo');
     const varModal = document.getElementById('varModal');
-    const dlModal = document.getElementById('downloadModal');
-    const statusBanner = document.getElementById('liveStatusBanner');
     const shapeControls = document.getElementById('shapeControls');
     const canvasContainer = document.getElementById('canvasContainer');
-    
     const canvas = document.getElementById('analysisCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -224,50 +235,52 @@
     let currentTool = 'none';
     let isDrawing = false, isDragging = false;
     let startX = 0, startY = 0, dragOffsetX = 0, dragOffsetY = 0;
-    
     let drawings = []; 
     let selectedShapeIndex = -1;
 
     let currentEvent = '';
     let currentTime = 0;
-    let currentVideoBlobUrl = '';
     let refEventsLog = [];
-    let currentDownloadIndex = -1;
+    
+    // تسجيل الصوت والفيديو للمحاكي
+    let isRecordingVoice = false;
+    let analysisRecorder = null;
+    let analysisChunks = [];
+    let recordedAnalysisUrl = '';
 
     const fullLawDictionary = {
-      'ركلة البداية': `<ul><li><b>المادة 8:</b> تُلعب ركلة البداية عند بدء كل شوط، وبعد تسجيل هدف. جميع اللاعبين في نصف ملعبهم. يمكن تسجيل هدف مباشرة.</li></ul>`,
-      'رمية التماس': `<ul><li><b>المادة 15:</b> تُلعب باليدين من خلف ومن فوق الرأس، وجزء من كلتا القدمين على خط التماس أو خارجه. لا يمكن تسجيل هدف مباشرة.</li></ul>`,
-      'ركلة المرمى': `<ul><li><b>المادة 16:</b> تُركل من أي نقطة داخل منطقة المرمى. تصبح الكرة في اللعب بمجرد ركلها وتحركها.</li></ul>`,
-      'إسقاط الكرة': `<ul><li><b>المادة 8:</b> تُسقط للاعب واحد من الفريق الذي لمس الكرة لآخر مرة. يبتعد الآخرون 4 أمتار على الأقل.</li></ul>`,
-      'ركلة حرة مباشرة': `<ul><li><b>المادة 13:</b> تُمنح لمخالفات التعمد والعرقلة. يمكن تسجيل هدف مباشرة. يبتعد الخصم 9.15 متر.</li></ul>`,
-      'ركلة حرة غير مباشرة': `<ul><li><b>المادة 13:</b> تُمنح للعب الخطر. يشير الحكم برفع ذراعه. لا يمكن تسجيل هدف إلا إذا لمست لاعباً آخر.</li></ul>`,
-      'ركلة ركنية': `<ul><li><b>المادة 17:</b> توضع الكرة داخل قوس الركنية القريب. يمكن تسجيل هدف مباشرة ضد الخصم.</li></ul>`,
-      'لمس يد': `<ul><li><b>المادة 12:</b> خطأ إذا تعمد لمس الكرة، أو كبر مساحة جسمه بشكل غير طبيعي. لا يعتبر خطأ إذا كانت لدعم الجسم أثناء السقوط.</li></ul>`,
-      'تسلل (Offside)': `<ul><li><b>المادة 11:</b> يعاقب فقط إذا كان متداخلاً في اللعب أو متداخلاً مع منافس أو مستفيداً من موقعه (أقرب لخط المرمى من الكرة وثاني آخر منافس).</li></ul>`,
-      'تدخل متهور (فاول)': `<ul><li><b>المادة 12:</b> الإهمال (ركلة حرة)، التهور (إنذار أصفر)، القوة المفرطة (طرد أحمر).</li></ul>`,
-      'منع هجمة واعدة': `<ul><li><b>المادة 12 (SPA):</b> إيقاف هجمة مبشرة يستوجب إنذار (بطاقة صفراء).</li></ul>`,
-      'حرمان من هدف محقق': `<ul><li><b>المادة 12 (DOGSO):</b> يعاقب بالطرد. بناءً على: المسافة للمرمى، الاتجاه، السيطرة، وعدد المدافعين.</li></ul>`,
-      'ركلة جزاء': `<ul><li><b>المادة 14:</b> تُمنح لمخالفة تستوجب ركلة حرة مباشرة ارتكبها المدافع داخل منطقة جزائه.</li></ul>`,
-      'لعب خطر': `<ul><li><b>المادة 12:</b> تصرف يهدد بإصابة أي شخص دون احتكاك جسدي. (ركلة حرة غير مباشرة).</li></ul>`
+      'ركلة البداية': `المادة 8: تُلعب عند بدء الشوط وبعد الهدف. جميع اللاعبين في نصف ملعبهم. يمكن تسجيل هدف مباشرة.`,
+      'رمية التماس': `المادة 15: تُلعب باليدين من فوق الرأس. لا يمكن تسجيل هدف مباشرة.`,
+      'ركلة المرمى': `المادة 16: تُركل من منطقة المرمى. الكرة في اللعب بمجرد تحركها.`,
+      'ركلة حرة مباشرة': `المادة 13: لمخالفات التعمد والعرقلة. يمكن تسجيل هدف. يبتعد الخصم 9.15م.`,
+      'ركلة حرة غير مباشرة': `المادة 13: للعب الخطر. يشير الحكم برفع ذراعه. لا يمكن تسجيل هدف إلا إذا لمست لاعباً آخر.`,
+      'ركلة ركنية': `المادة 17: توضع الكرة داخل قوس الركنية. يمكن تسجيل هدف مباشرة ضد الخصم.`,
+      'تسلل (Offside)': `المادة 11: يعاقب إذا كان متداخلاً في اللعب أو مستفيداً وهو أقرب لخط المرمى من الكرة وثاني آخر منافس.`,
+      'لمس يد': `المادة 12: خطأ إذا تعمد أو كبر مساحة جسمه. لا يعتبر خطأ لو لدعم الجسم للسقوط.`,
+      'تدخل متهور (فاول)': `المادة 12: الإهمال (حرة)، التهور (أصفر)، القوة المفرطة (طرد).`,
+      'منع هجمة واعدة': `المادة 12 (SPA): إيقاف هجمة مبشرة يستوجب إنذار.`,
+      'ركلة جزاء': `المادة 14: لمخالفة مباشرة ارتكبها المدافع داخل منطقة جزائه.`
     };
 
     function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
     function seekVideo(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    async function openVARRoom(eventType) {
-      if (!video.src) return alert("الرجاء تشغيل فيديو المباراة أولاً!");
+    function openVARRoom(eventType) {
+      if (!video.src) return alert("شغل الفيديو أولاً!");
       video.pause(); currentEvent = eventType; currentTime = video.currentTime;
-      drawings = []; setTool('none'); hideControls();
+      drawings = []; setTool('none'); hideControls(); document.getElementById('coachNotes').value = '';
+      recordedAnalysisUrl = '';
       
       document.getElementById('lawModalTitle').innerText = `قانون: ${eventType}`;
       document.getElementById('lawModalContent').innerHTML = fullLawDictionary[eventType] || '';
 
       captureFrameToCanvas();
       varModal.style.display = 'flex';
-      await recordVideoClipInBackground();
+      
+      // التصدير الخلفي التلقائي الصامت 10ث (اختياري، بس هنعتمد أكتر على تسجيل المحلل)
     }
-    function closeVARRoom() { varModal.style.display = 'none'; if(video.paused) video.play(); }
+    function closeVARRoom() { varModal.style.display = 'none'; if(video.paused) video.play(); if(isRecordingVoice) toggleVoiceRecording(); }
 
     function captureFrameToCanvas() {
       canvas.width = video.videoWidth || 800; canvas.height = video.videoHeight || 450;
@@ -283,41 +296,35 @@
       document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
       event.currentTarget.classList.add('active');
     }
-
     function clearCanvas() { drawings = []; selectedShapeIndex = -1; hideControls(); redrawCanvas(); }
 
     function getMousePos(e) {
       const rect = canvas.getBoundingClientRect();
-      return {
-        x: (e.clientX - rect.left) * (canvas.width / rect.width),
-        y: (e.clientY - rect.top) * (canvas.height / rect.height),
-        rawX: e.clientX - rect.left,
-        rawY: e.clientY - rect.top
-      };
+      return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height), rawX: e.clientX - rect.left, rawY: e.clientY - rect.top };
     }
 
     canvas.addEventListener('mousedown', (e) => {
-      const pos = getMousePos(e);
-      startX = pos.x; startY = pos.y;
+      const pos = getMousePos(e); startX = pos.x; startY = pos.y;
       
+      if (currentTool === 'text') {
+        const t = prompt("اكتب النص المراد إضافته:");
+        if(t) { drawings.push({ type: 'text', x: pos.x, y: pos.y, text: t, scale: 1 }); redrawCanvas(); }
+        setTool('none'); return;
+      }
+
       if (currentTool === 'none') {
-        // تحديد شكل (Hit test)
         selectedShapeIndex = -1;
         for (let i = drawings.length - 1; i >= 0; i--) {
-          const d = drawings[i];
-          let isHit = false;
-          if (['referee', 'ball', 'zoom'].includes(d.type)) {
-            if (Math.hypot(pos.x - d.x, pos.y - d.y) < 40 * d.scale) isHit = true;
-          } else if (['distance', 'vision'].includes(d.type)) {
+          const d = drawings[i]; let isHit = false;
+          if (['referee', 'ball', 'zoom', 'text'].includes(d.type)) { if (Math.hypot(pos.x - d.x, pos.y - d.y) < 40 * d.scale) isHit = true; } 
+          else if (['distance', 'vision', 'arrow', 'offside', 'highlight'].includes(d.type)) {
             const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
-            if (Math.hypot(pos.x - midX, pos.y - midY) < 50) isHit = true;
+            if (Math.hypot(pos.x - midX, pos.y - midY) < 60) isHit = true;
           }
-          
           if (isHit) {
             selectedShapeIndex = i; isDragging = true;
             if(d.x) { dragOffsetX = pos.x - d.x; dragOffsetY = pos.y - d.y; }
-            positionControls(pos.rawX, pos.rawY);
-            break;
+            positionControls(pos.rawX, pos.rawY); break;
           }
         }
         if (selectedShapeIndex === -1) hideControls();
@@ -341,17 +348,27 @@
           d.startX += dx; d.startY += dy; d.endX += dx; d.endY += dy;
           startX = pos.x; startY = pos.y;
         }
-        positionControls(pos.rawX, pos.rawY);
-        redrawCanvas();
+        positionControls(pos.rawX, pos.rawY); redrawCanvas();
       } else if (isDrawing) {
-        redrawCanvas();
-        ctx.beginPath();
+        redrawCanvas(); ctx.beginPath();
         if (currentTool === 'distance') {
           ctx.setLineDash([5, 5]); ctx.moveTo(startX, startY); ctx.lineTo(pos.x, pos.y);
           ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]);
         } else if (currentTool === 'vision') {
           ctx.moveTo(startX, startY); ctx.lineTo(pos.x - 50, pos.y + 50); ctx.lineTo(pos.x + 50, pos.y + 50);
           ctx.closePath(); ctx.fillStyle = 'rgba(56, 189, 248, 0.3)'; ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.stroke();
+        } else if (currentTool === 'offside') {
+          ctx.moveTo(startX, startY); ctx.lineTo(pos.x, pos.y);
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(startX, startY + 20); ctx.lineTo(pos.x, pos.y + 20);
+          ctx.strokeStyle = '#3b82f6'; ctx.stroke();
+        } else if (currentTool === 'arrow') {
+          ctx.moveTo(startX, startY); ctx.lineTo(pos.x, pos.y);
+          ctx.strokeStyle = '#facc15'; ctx.lineWidth = 4; ctx.stroke();
+        } else if (currentTool === 'highlight') {
+          const radius = Math.hypot(pos.x - startX, pos.y - startY);
+          ctx.arc(startX, startY, radius, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(234, 179, 8, 0.4)'; ctx.fill();
         }
       }
     });
@@ -359,15 +376,13 @@
     canvas.addEventListener('mouseup', (e) => {
       isDragging = false;
       if (isDrawing) {
-        isDrawing = false;
-        const pos = getMousePos(e);
+        isDrawing = false; const pos = getMousePos(e);
         drawings.push({ type: currentTool, startX, startY, endX: pos.x, endY: pos.y, scale: 1 });
         selectedShapeIndex = drawings.length - 1;
         setTool('none'); positionControls(pos.rawX, pos.rawY); redrawCanvas();
       }
     });
 
-    // أدوات التحكم بالرسمة (HTML Overlay)
     function positionControls(x, y) {
       shapeControls.style.display = 'flex';
       shapeControls.style.left = `${Math.min(x + 10, canvasContainer.offsetWidth - 150)}px`;
@@ -384,90 +399,102 @@
       drawings.forEach((d, idx) => {
         const sc = d.scale || 1;
         ctx.save();
-        
-        // تمييز العنصر المحدد (إطار متوهج)
-        if (idx === selectedShapeIndex) {
-          ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
-        }
+        if (idx === selectedShapeIndex) { ctx.shadowColor = '#fff'; ctx.shadowBlur = 10; }
 
         if (d.type === 'referee') {
-          ctx.beginPath(); ctx.arc(d.x, d.y, 12 * sc, 0, Math.PI*2);
+          ctx.beginPath(); ctx.arc(d.x, d.y, 15 * sc, 0, Math.PI*2);
           ctx.fillStyle = '#eab308'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.stroke();
-          ctx.fillStyle = '#000'; ctx.font = `bold ${12*sc}px Cairo`; ctx.fillText('Ref', d.x-9*sc, d.y+4*sc);
-        }
-        else if (d.type === 'ball') {
-          ctx.beginPath(); ctx.arc(d.x, d.y, 10 * sc, 0, Math.PI*2);
+          ctx.fillStyle = '#000'; ctx.font = `bold ${14*sc}px Cairo`; ctx.fillText('Ref', d.x-11*sc, d.y+5*sc);
+        } else if (d.type === 'ball') {
+          ctx.beginPath(); ctx.arc(d.x, d.y, 12 * sc, 0, Math.PI*2);
           ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#ef4444'; ctx.stroke();
-        }
-        else if (d.type === 'distance') {
-          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
-          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY); // Scale from center
-          ctx.beginPath(); ctx.setLineDash([10, 5]);
-          ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY);
-          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4; ctx.stroke(); ctx.setLineDash([]);
-          const dist = Math.round(Math.sqrt(Math.pow(d.endX-d.startX, 2) + Math.pow(d.endY-d.startY, 2)) / 20);
-          ctx.fillStyle = '#111827'; ctx.fillRect(midX - 15, midY - 15, 40, 25);
-          ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Cairo'; ctx.fillText(`${dist}m`, midX - 10, midY + 2);
-        }
-        else if (d.type === 'vision') {
+        } else if (d.type === 'text') {
+          ctx.fillStyle = '#fff'; ctx.font = `bold ${24*sc}px Cairo`; 
+          ctx.shadowColor = '#000'; ctx.shadowBlur = 5; ctx.fillText(d.text, d.x, d.y);
+        } else if (d.type === 'distance') {
           const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
           ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
-          ctx.beginPath(); ctx.moveTo(d.startX, d.startY);
-          ctx.lineTo(d.endX - 80, d.endY + 80); ctx.lineTo(d.endX + 80, d.endY + 80);
-          ctx.closePath(); ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fill();
-          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
-        }
-        else if (d.type === 'zoom') {
+          ctx.beginPath(); ctx.setLineDash([10, 5]); ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY);
+          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4; ctx.stroke(); ctx.setLineDash([]);
+          const dist = Math.round(Math.hypot(d.endX-d.startX, d.endY-d.startY) / 20);
+          ctx.fillStyle = '#111827'; ctx.fillRect(midX - 20, midY - 15, 40, 25);
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Cairo'; ctx.fillText(`${dist}m`, midX - 15, midY + 3);
+        } else if (d.type === 'vision') {
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
+          ctx.beginPath(); ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX - 80, d.endY + 80); ctx.lineTo(d.endX + 80, d.endY + 80);
+          ctx.closePath(); ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+        } else if (d.type === 'offside') {
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
+          ctx.beginPath(); ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(d.startX, d.startY + 20); ctx.lineTo(d.endX, d.endY + 20); ctx.strokeStyle = '#3b82f6'; ctx.stroke();
+        } else if (d.type === 'arrow') {
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
+          const angle = Math.atan2(d.endY - d.startY, d.endX - d.startX);
+          ctx.beginPath(); ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY);
+          ctx.lineTo(d.endX - 15 * Math.cos(angle - Math.PI/6), d.endY - 15 * Math.sin(angle - Math.PI/6));
+          ctx.moveTo(d.endX, d.endY); ctx.lineTo(d.endX - 15 * Math.cos(angle + Math.PI/6), d.endY - 15 * Math.sin(angle + Math.PI/6));
+          ctx.strokeStyle = '#facc15'; ctx.lineWidth = 4; ctx.stroke();
+        } else if (d.type === 'highlight') {
+          const midX = d.startX; const midY = d.startY;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
+          ctx.beginPath(); ctx.arc(d.startX, d.startY, Math.hypot(d.endX - d.startX, d.endY - d.startY), 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(234, 179, 8, 0.3)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#eab308'; ctx.stroke();
+        } else if (d.type === 'zoom') {
           ctx.beginPath(); ctx.arc(d.x, d.y, 80 * sc, 0, Math.PI*2);
           ctx.lineWidth = 4; ctx.strokeStyle = '#38bdf8'; ctx.stroke(); ctx.clip();
-          // تكبير ثابت 2x داخل العدسة
           ctx.drawImage(baseFrame, d.x - 40*sc, d.y - 40*sc, 80*sc, 80*sc, d.x - 80*sc, d.y - 80*sc, 160*sc, 160*sc);
         }
         ctx.restore();
       });
     }
 
-    async function recordVideoClipInBackground() {
-      const startTime = Math.max(0, currentTime - 5);
-      const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
-      statusBanner.style.display = 'flex';
-      document.getElementById('liveStatusText').innerText = `يتم تجهيز لقطة الفيديو في الخلفية...`;
-      try {
-        const hiddenCanvas = document.getElementById('liveRenderCanvas');
-        hiddenCanvas.width = video.videoWidth || 1280; hiddenCanvas.height = video.videoHeight || 720;
-        const hiddenCtx = hiddenCanvas.getContext('2d');
-        const stream = hiddenCanvas.captureStream(30);
-        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-        const chunks = [];
-        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-        
-        recorder.start();
-        const originalTime = video.currentTime;
-        video.currentTime = startTime;
-        await new Promise(r => { video.onseeked = r; });
-        await video.play();
-
-        function stepFrame() {
-          if (video.currentTime >= endTime || video.paused) { video.pause(); recorder.stop(); video.currentTime = originalTime; return; }
-          hiddenCtx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
-          setTimeout(stepFrame, 1000/30);
-        }
-        stepFrame();
-        recorder.onstop = async () => {
-          const rawBlob = new Blob(chunks, { type: 'video/webm' });
-          let finalBlob = rawBlob;
-          if (typeof ysFixWebmDuration !== 'undefined') { finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res)); }
-          currentVideoBlobUrl = URL.createObjectURL(finalBlob);
-          statusBanner.style.display = 'none';
+    // تسجيل صوت المحلل + شاشة الكانفاس
+    async function toggleVoiceRecording() {
+      const btn = document.getElementById('btnRecordAnalysis');
+      if (!isRecordingVoice) {
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const canvasStream = canvas.captureStream(30);
+          canvasStream.addTrack(audioStream.getAudioTracks()[0]);
+          
+          analysisRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
+          analysisChunks = [];
+          analysisRecorder.ondataavailable = e => { if (e.data.size > 0) analysisChunks.push(e.data); };
+          analysisRecorder.start();
+          
+          isRecordingVoice = true;
+          btn.classList.add('recording');
+          btn.innerHTML = `<i class="fa-solid fa-stop"></i> <span>إيقاف التسجيل...</span>`;
+        } catch(e) { alert("يرجى السماح باستخدام الميكروفون لتسجيل التعليق الصوتي."); }
+      } else {
+        analysisRecorder.stop();
+        analysisRecorder.onstop = () => {
+          const blob = new Blob(analysisChunks, { type: 'video/webm' });
+          recordedAnalysisUrl = URL.createObjectURL(blob);
         };
-      } catch(err) { statusBanner.style.display = 'none'; }
+        isRecordingVoice = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = `<i class="fa-solid fa-microphone"></i> <span>تم التسجيل (سيُحفظ مع الحالة)</span>`;
+      }
     }
 
     function saveVARAnalysis() {
-      selectedShapeIndex = -1; hideControls(); redrawCanvas(); // إزالة التحديد قبل الحفظ
+      selectedShapeIndex = -1; hideControls(); redrawCanvas(); 
       const annotatedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-      refEventsLog.push({ time: formatTime(currentTime), type: currentEvent, imageUrl: annotatedImageUrl, videoUrl: currentVideoBlobUrl || '' });
-      renderLog(); closeVARRoom();
+      const notes = document.getElementById('coachNotes').value || 'لا توجد ملاحظات';
+      
+      refEventsLog.push({ time: formatTime(currentTime), type: currentEvent, notes: notes, imageUrl: annotatedImageUrl, videoUrl: recordedAnalysisUrl });
+      updateDashboard(); renderLog(); closeVARRoom();
+    }
+
+    function updateDashboard() {
+      document.getElementById('statTotal').innerText = refEventsLog.length;
+      document.getElementById('statFouls').innerText = refEventsLog.filter(e => e.type.includes('فاول') || e.type.includes('لعب خطر')).length;
+      document.getElementById('statOffside').innerText = refEventsLog.filter(e => e.type.includes('تسلل')).length;
+      document.getElementById('statPenalties').innerText = refEventsLog.filter(e => e.type.includes('ركلة جزاء')).length;
     }
 
     function renderLog() {
@@ -475,22 +502,45 @@
       if(refEventsLog.length === 0) return;
       tbody.innerHTML = refEventsLog.slice().reverse().map((item, index) => {
         const actualIndex = refEventsLog.length - 1 - index;
-        return `<tr><td>${item.time}</td><td><b>${item.type}</b></td><td><button class="btn-download-action" onclick="openDownloadModal(${actualIndex})"><i class="fa-solid fa-download"></i> خيارات التحميل</button></td></tr>`
+        return `<tr>
+          <td>${item.time}</td><td><b>${item.type}</b></td>
+          <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${item.notes}">${item.notes}</td>
+          <td>
+            <button class="btn-dl" style="background:#f59e0b; color:#000;" onclick="dlItem(${actualIndex}, 'img')"><i class="fa-solid fa-image"></i> صورة</button>
+            ${item.videoUrl ? `<button class="btn-dl" onclick="dlItem(${actualIndex}, 'vid')"><i class="fa-solid fa-video"></i> فيديو تحليلي</button>` : ''}
+          </td>
+        </tr>`
       }).join('');
     }
 
-    function openDownloadModal(index) { currentDownloadIndex = index; dlModal.style.display = 'flex'; }
-    function closeDownloadModal() { dlModal.style.display = 'none'; currentDownloadIndex = -1; }
-    function downloadItem(type) {
-      if (currentDownloadIndex === -1) return;
-      const item = refEventsLog[currentDownloadIndex];
-      const a = document.createElement('a');
-      if (type === 'image') { a.href = item.imageUrl; a.download = `تحليل_${item.type}_صورة_${Date.now()}.jpg`; } 
-      else if (type === 'video') {
-        if(!item.videoUrl) return alert("عفواً، تم حفظ الحالة قبل انتهاء معالجة الفيديو في الخلفية. حاول الانتظار ثواني في المرة القادمة.");
-        a.href = item.videoUrl; a.download = `لقطة_${item.type}_فيديو_${Date.now()}.webm`;
-      }
-      a.click(); closeDownloadModal();
+    function dlItem(idx, type) {
+      const item = refEventsLog[idx]; const a = document.createElement('a');
+      if(type==='img') { a.href = item.imageUrl; a.download = `تحليل_${item.type}_${Date.now()}.jpg`; }
+      if(type==='vid') { a.href = item.videoUrl; a.download = `تحليل_صوتي_${item.type}_${Date.now()}.webm`; }
+      a.click();
+    }
+
+    // طباعة تقرير PDF يدعم اللغة العربية بشكل مثالي عبر المتصفح
+    function generatePDFReport() {
+      if(refEventsLog.length === 0) return alert("لا توجد حالات لطباعتها في التقرير.");
+      
+      document.getElementById('printStats').innerText = `إحصائيات: الإجمالي (${refEventsLog.length}) | أخطاء وتدخلات (${document.getElementById('statFouls').innerText}) | تسلل (${document.getElementById('statOffside').innerText}) | جزاء (${document.getElementById('statPenalties').innerText})`;
+      
+      const pBody = document.getElementById('printLogBody');
+      pBody.innerHTML = refEventsLog.map(item => `
+        <tr>
+          <td style="font-weight:bold;">${item.time}</td>
+          <td style="color:#0284c7; font-weight:bold;">${item.type}</td>
+          <td>${item.notes}</td>
+          <td style="text-align:center;"><img src="${item.imageUrl}" alt="Analysis"></td>
+        </tr>
+      `).join('');
+      
+      document.getElementById('appUI').style.display = 'none';
+      document.getElementById('printArea').style.display = 'block';
+      window.print();
+      document.getElementById('printArea').style.display = 'none';
+      document.getElementById('appUI').style.display = 'flex';
     }
   </script>
 </body>
