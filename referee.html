@@ -37,11 +37,10 @@
     
     .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
     input[type="file"] { color: #fff; font-size: 13px; }
-
     .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
 
     /* Modal - مكتبة التحكيم والرسم */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
     .modal-content { background: #070b12; border: 2px solid var(--primary); border-radius: 12px; width: 95vw; height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
     
     .modal-header { background: #111827; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
@@ -66,26 +65,29 @@
     .canvas-wrapper { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid #374151; border-radius: 8px; background: #111827; cursor: crosshair; }
     #analysisCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
     
+    /* أزرار التحكم بالرسمة (تتحرك مع الرسمة) */
+    .shape-controls { position: absolute; display: none; background: rgba(17, 24, 39, 0.9); border: 1px solid var(--primary); padding: 5px; border-radius: 8px; gap: 5px; z-index: 100; flex-direction: row; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .shape-btn { background: #374151; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+    .shape-btn.ok { color: #10b981; }
+    .shape-btn.del { color: #ef4444; }
+    .shape-btn:hover { background: var(--primary); color: #000; }
+
     .action-bar { padding-top: 10px; display: flex; justify-content: center; gap: 15px; }
     .btn-save-analysis { background: var(--success); color: #fff; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-    /* نافذة خيارات التحميل */
+    /* الجدول والتنزيل */
     .download-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
     .dl-box { background: #111827; padding: 25px; border-radius: 12px; border: 1px solid var(--primary); text-align: center; width: 400px; }
-    .dl-box h3 { color: #fff; margin-bottom: 20px; }
-    .dl-options { display: flex; gap: 15px; justify-content: center; }
-    .dl-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: 0.2s; }
+    .dl-options { display: flex; gap: 15px; justify-content: center; margin-top:20px; }
+    .dl-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .dl-img { background: #f59e0b; color: #000; }
     .dl-vid { background: #38bdf8; color: #000; }
-    .dl-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
     .btn-cancel-dl { background: transparent; color: #94a3b8; border: none; margin-top: 15px; cursor: pointer; font-family: 'Cairo'; }
-
-    /* الجدول */
     .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
     .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
-    .log-table th { background: #1f2937; color: var(--primary); padding: 9px; font-size: 12.5px; }
+    .log-table th { background: #1f2937; color: var(--primary); padding: 9px; }
     .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-    .btn-download-action { background: #4f46e5; color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; }
+    .btn-download-action { background: #4f46e5; color: #fff; padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -152,29 +154,35 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
-  <!-- غرفة الـ VAR والمكتبة الشاملة -->
   <div class="modal-overlay" id="varModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-tv"></i> غرفة تقنية الفيديو (VAR) - تحليل الحالة</h3>
+        <h3><i class="fa-solid fa-tv"></i> غرفة تقنية الفيديو (VAR) - تحليل الحالة والتمركز</h3>
         <button class="btn-close-modal" onclick="closeVARRoom()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
       
       <div class="modal-body">
-        <!-- منطقة الرسم على الشمال -->
         <div class="drawing-panel">
           <div class="toolbar">
-            <button class="tool-btn active" onclick="setTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر</button>
+            <button class="tool-btn active" onclick="setTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر (تحريك وتعديل)</button>
             <button class="tool-btn" onclick="setTool('referee')"><i class="fa-solid fa-user-tie"></i> تمركز الحكم</button>
             <button class="tool-btn" onclick="setTool('ball')"><i class="fa-solid fa-futbol"></i> مكان الكرة</button>
             <button class="tool-btn" onclick="setTool('distance')"><i class="fa-solid fa-ruler-horizontal"></i> مسافة الرؤية</button>
             <button class="tool-btn" onclick="setTool('vision')"><i class="fa-solid fa-eye"></i> زاوية الرؤية (مخروط)</button>
             <button class="tool-btn" onclick="setTool('zoom')"><i class="fa-solid fa-magnifying-glass"></i> عدسة تكبير</button>
-            <button class="tool-btn" onclick="clearCanvas()" style="background:#dc2626;"><i class="fa-solid fa-trash"></i> مسح الرسوم</button>
+            <button class="tool-btn" onclick="clearCanvas()" style="background:#dc2626;"><i class="fa-solid fa-trash"></i> مسح الكل</button>
           </div>
           
-          <div class="canvas-wrapper">
+          <div class="canvas-wrapper" id="canvasContainer">
             <canvas id="analysisCanvas"></canvas>
+            
+            <!-- أزرار التحكم العائمة -->
+            <div id="shapeControls" class="shape-controls">
+              <button class="shape-btn ok" onclick="confirmShape()" title="تأكيد"><i class="fa-solid fa-check"></i></button>
+              <button class="shape-btn del" onclick="deleteShape()" title="حذف"><i class="fa-solid fa-trash"></i></button>
+              <button class="shape-btn" onclick="scaleShape(1.2)" title="تكبير"><i class="fa-solid fa-plus"></i></button>
+              <button class="shape-btn" onclick="scaleShape(0.8)" title="تصغير"><i class="fa-solid fa-minus"></i></button>
+            </div>
           </div>
           
           <div class="action-bar">
@@ -182,30 +190,20 @@
           </div>
         </div>
 
-        <!-- مكتبة القوانين على اليمين -->
         <div class="law-panel">
           <div class="law-title" id="lawModalTitle">نصوص قانون IFAB</div>
-          <div class="law-text" id="lawModalContent">
-            <!-- سيتم حقن النصوص هنا -->
-          </div>
+          <div class="law-text" id="lawModalContent"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- نافذة خيارات التحميل -->
   <div class="download-modal" id="downloadModal">
     <div class="dl-box">
-      <h3>خيارات الحفظ والتنزيل</h3>
+      <h3 style="color:#fff;">خيارات الحفظ والتنزيل</h3>
       <div class="dl-options">
-        <button class="dl-btn dl-img" onclick="downloadItem('image')">
-          <i class="fa-solid fa-image" style="font-size:24px;"></i>
-          تنزيل صورة التحليل<br>(بالرسومات والتمركز)
-        </button>
-        <button class="dl-btn dl-vid" onclick="downloadItem('video')">
-          <i class="fa-solid fa-video" style="font-size:24px;"></i>
-          تنزيل لقطة الفيديو<br>(10 ثواني أصلية)
-        </button>
+        <button class="dl-btn dl-img" onclick="downloadItem('image')"><i class="fa-solid fa-image" style="font-size:24px;"></i> تنزيل صورة التحليل</button>
+        <button class="dl-btn dl-vid" onclick="downloadItem('video')"><i class="fa-solid fa-video" style="font-size:24px;"></i> تنزيل لقطة الفيديو (10ث)</button>
       </div>
       <button class="btn-cancel-dl" onclick="closeDownloadModal()">إلغاء</button>
     </div>
@@ -216,260 +214,224 @@
     const varModal = document.getElementById('varModal');
     const dlModal = document.getElementById('downloadModal');
     const statusBanner = document.getElementById('liveStatusBanner');
+    const shapeControls = document.getElementById('shapeControls');
+    const canvasContainer = document.getElementById('canvasContainer');
     
-    // إعدادات الكانفاس للرسم
     const canvas = document.getElementById('analysisCanvas');
     const ctx = canvas.getContext('2d');
+    
     let baseFrame = null; 
     let currentTool = 'none';
-    let isDrawing = false;
-    let startX = 0, startY = 0;
+    let isDrawing = false, isDragging = false;
+    let startX = 0, startY = 0, dragOffsetX = 0, dragOffsetY = 0;
     
-    // تخزين الرسومات لإعادة الرسم
     let drawings = []; 
-    // تفاصيل الحدث الحالي
+    let selectedShapeIndex = -1;
+
     let currentEvent = '';
     let currentTime = 0;
     let currentVideoBlobUrl = '';
     let refEventsLog = [];
     let currentDownloadIndex = -1;
 
-    // المكتبة الشاملة لقوانين IFAB
     const fullLawDictionary = {
-      'لمس يد': `
-        <ul>
-          <li><b>المادة 12 (الأخطاء وسوء السلوك):</b></li>
-          <li>يحتسب خطأ إذا تعمد اللاعب لمس الكرة بيده أو ذراعه (مثل تحريك اليد تجاه الكرة).</li>
-          <li>يحتسب خطأ إذا لمس الكرة بيده/ذراعه وكانت قد كبرت من مساحة جسمه بشكل غير طبيعي.</li>
-          <li><b>استثناء:</b> لا يعتبر خطأ إذا سقط اللاعب وكانت يده/ذراعه بين جسمه والأرض لدعمه.</li>
-          <li><b>استثناء:</b> لا يعتبر خطأ إذا ارتدت الكرة مباشرة من رأس أو جسم اللاعب نفسه إلى يده.</li>
-        </ul>
-      `,
-      'تسلل (Offside)': `
-        <ul>
-          <li><b>المادة 11 (التسلل):</b></li>
-          <li>موقف التسلل لا يعتبر مخالفة في حد ذاته.</li>
-          <li>يعتبر اللاعب في موقف تسلل إذا كان أي جزء من رأسه، جسمه، أو قدميه في النصف الخاص بالمنافس وأقرب لخط المرمى من الكرة ومن ثاني آخر منافس.</li>
-          <li><b>المخالفة:</b> يعاقب اللاعب فقط إذا كان متداخلاً في اللعب، متداخلاً مع منافس، أو مستفيداً من موقعه لحظة لعب الكرة من زميله.</li>
-        </ul>
-      `,
-      'تدخل متهور (فاول)': `
-        <ul>
-          <li><b>المادة 12:</b></li>
-          <li><b>الإهمال:</b> يظهر اللاعب عدم انتباه أو تصرف بلامبالاة عند التنافس (ركلة حرة فقط).</li>
-          <li><b>التهور:</b> يتصرف اللاعب دون مراعاة للخطر أو العواقب على المنافس (يستوجب إنذار - كارت أصفر).</li>
-          <li><b>استخدام القوة المفرطة:</b> يتجاوز اللاعب الاستخدام الضروري للقوة ويعرض سلامة المنافس للخطر (يستوجب طرد - كارت أحمر).</li>
-        </ul>
-      `,
-      'منع هجمة واعدة': `
-        <ul>
-          <li><b>المادة 12 (SPA):</b></li>
-          <li>إذا ارتكب لاعب مخالفة لمنع هجمة واعدة (مبشرة) للمنافس، يجب إنذاره (بطاقة صفراء).</li>
-          <li>تؤخذ في الاعتبار: المسافة للمرمى، السيطرة على الكرة، وعدد المدافعين.</li>
-        </ul>
-      `,
-      'حرمان من هدف محقق': `
-        <ul>
-          <li><b>المادة 12 (DOGSO):</b></li>
-          <li>يعاقب بالطرد (بطاقة حمراء) من يحرم المنافس من هدف أو فرصة محققة لتسجيل هدف بارتكاب مخالفة.</li>
-          <li><b>الشروط الأربعة:</b> المسافة بين المخالفة والمرمى، الاتجاه العام للعب، احتمالية السيطرة على الكرة، وموقع وعدد المدافعين.</li>
-        </ul>
-      `,
-      'ركلة جزاء': `
-        <ul>
-          <li><b>المادة 14:</b></li>
-          <li>تُمنح ركلة الجزاء إذا ارتكب لاعب مخالفة تستوجب ركلة حرة مباشرة داخل منطقة جزاء فريقه.</li>
-          <li>يجب أن تكون الكرة في اللعب.</li>
-        </ul>
-      `,
-      'لعب خطر': `
-        <ul>
-          <li><b>المادة 12:</b></li>
-          <li>أي تصرف يهدد بإصابة أي شخص (بما في ذلك اللاعب نفسه) أثناء محاولة لعب الكرة.</li>
-          <li>لا يشمل حدوث احتكاك جسدي.</li>
-          <li>يُعاقب بركلة حرة غير مباشرة.</li>
-        </ul>
-      `
+      'ركلة البداية': `<ul><li><b>المادة 8:</b> تُلعب ركلة البداية عند بدء كل شوط، وبعد تسجيل هدف. جميع اللاعبين في نصف ملعبهم. يمكن تسجيل هدف مباشرة.</li></ul>`,
+      'رمية التماس': `<ul><li><b>المادة 15:</b> تُلعب باليدين من خلف ومن فوق الرأس، وجزء من كلتا القدمين على خط التماس أو خارجه. لا يمكن تسجيل هدف مباشرة.</li></ul>`,
+      'ركلة المرمى': `<ul><li><b>المادة 16:</b> تُركل من أي نقطة داخل منطقة المرمى. تصبح الكرة في اللعب بمجرد ركلها وتحركها.</li></ul>`,
+      'إسقاط الكرة': `<ul><li><b>المادة 8:</b> تُسقط للاعب واحد من الفريق الذي لمس الكرة لآخر مرة. يبتعد الآخرون 4 أمتار على الأقل.</li></ul>`,
+      'ركلة حرة مباشرة': `<ul><li><b>المادة 13:</b> تُمنح لمخالفات التعمد والعرقلة. يمكن تسجيل هدف مباشرة. يبتعد الخصم 9.15 متر.</li></ul>`,
+      'ركلة حرة غير مباشرة': `<ul><li><b>المادة 13:</b> تُمنح للعب الخطر. يشير الحكم برفع ذراعه. لا يمكن تسجيل هدف إلا إذا لمست لاعباً آخر.</li></ul>`,
+      'ركلة ركنية': `<ul><li><b>المادة 17:</b> توضع الكرة داخل قوس الركنية القريب. يمكن تسجيل هدف مباشرة ضد الخصم.</li></ul>`,
+      'لمس يد': `<ul><li><b>المادة 12:</b> خطأ إذا تعمد لمس الكرة، أو كبر مساحة جسمه بشكل غير طبيعي. لا يعتبر خطأ إذا كانت لدعم الجسم أثناء السقوط.</li></ul>`,
+      'تسلل (Offside)': `<ul><li><b>المادة 11:</b> يعاقب فقط إذا كان متداخلاً في اللعب أو متداخلاً مع منافس أو مستفيداً من موقعه (أقرب لخط المرمى من الكرة وثاني آخر منافس).</li></ul>`,
+      'تدخل متهور (فاول)': `<ul><li><b>المادة 12:</b> الإهمال (ركلة حرة)، التهور (إنذار أصفر)، القوة المفرطة (طرد أحمر).</li></ul>`,
+      'منع هجمة واعدة': `<ul><li><b>المادة 12 (SPA):</b> إيقاف هجمة مبشرة يستوجب إنذار (بطاقة صفراء).</li></ul>`,
+      'حرمان من هدف محقق': `<ul><li><b>المادة 12 (DOGSO):</b> يعاقب بالطرد. بناءً على: المسافة للمرمى، الاتجاه، السيطرة، وعدد المدافعين.</li></ul>`,
+      'ركلة جزاء': `<ul><li><b>المادة 14:</b> تُمنح لمخالفة تستوجب ركلة حرة مباشرة ارتكبها المدافع داخل منطقة جزائه.</li></ul>`,
+      'لعب خطر': `<ul><li><b>المادة 12:</b> تصرف يهدد بإصابة أي شخص دون احتكاك جسدي. (ركلة حرة غير مباشرة).</li></ul>`
     };
-    // وضع نص افتراضي لباقي الحالات
-    const defaultLaw = `<ul><li>يتم الرجوع لتقدير الحكم ومواد قانون اللعبة (IFAB) المتعلقة بطريقة استئناف اللعب وحماية اللاعبين.</li></ul>`;
 
     function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
     function seekVideo(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    // فتح غرفة الـ VAR
     async function openVARRoom(eventType) {
       if (!video.src) return alert("الرجاء تشغيل فيديو المباراة أولاً!");
-      video.pause();
-      currentEvent = eventType;
-      currentTime = video.currentTime;
-      drawings = [];
-      setTool('none');
+      video.pause(); currentEvent = eventType; currentTime = video.currentTime;
+      drawings = []; setTool('none'); hideControls();
       
-      // تعبئة مكتبة القوانين
       document.getElementById('lawModalTitle').innerText = `قانون: ${eventType}`;
-      document.getElementById('lawModalContent').innerHTML = fullLawDictionary[eventType] || defaultLaw;
+      document.getElementById('lawModalContent').innerHTML = fullLawDictionary[eventType] || '';
 
-      // التقاط الفريم الحالي للرسم عليه
       captureFrameToCanvas();
-      
       varModal.style.display = 'flex';
-      
-      // بدء تسجيل اللقطة (10ث) في الخلفية
       await recordVideoClipInBackground();
     }
+    function closeVARRoom() { varModal.style.display = 'none'; if(video.paused) video.play(); }
 
-    function closeVARRoom() {
-      varModal.style.display = 'none';
-      if(video.paused) video.play();
-    }
-
-    // التقاط الصورة للكانفاس
     function captureFrameToCanvas() {
-      // ضبط أبعاد الكانفاس لتطابق أبعاد الفيديو الأصلية لعدم فقدان الجودة
-      canvas.width = video.videoWidth || 800;
-      canvas.height = video.videoHeight || 450;
+      canvas.width = video.videoWidth || 800; canvas.height = video.videoHeight || 450;
       baseFrame = new Image();
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
+      const tempCanvas = document.createElement('canvas'); tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
       tempCanvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
       baseFrame.src = tempCanvas.toDataURL('image/jpeg');
       baseFrame.onload = redrawCanvas;
     }
 
-    // إدارة أدوات الرسم
     function setTool(toolName) {
-      currentTool = toolName;
+      currentTool = toolName; selectedShapeIndex = -1; hideControls(); redrawCanvas();
       document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
       event.currentTarget.classList.add('active');
     }
 
-    function clearCanvas() {
-      drawings = [];
-      redrawCanvas();
+    function clearCanvas() { drawings = []; selectedShapeIndex = -1; hideControls(); redrawCanvas(); }
+
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height),
+        rawX: e.clientX - rect.left,
+        rawY: e.clientY - rect.top
+      };
     }
 
-    // أحداث الماوس للرسم
     canvas.addEventListener('mousedown', (e) => {
-      if (currentTool === 'none') return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      startX = (e.clientX - rect.left) * scaleX;
-      startY = (e.clientY - rect.top) * scaleY;
+      const pos = getMousePos(e);
+      startX = pos.x; startY = pos.y;
       
-      if (currentTool === 'referee' || currentTool === 'ball') {
-        drawings.push({ type: currentTool, x: startX, y: startY });
+      if (currentTool === 'none') {
+        // تحديد شكل (Hit test)
+        selectedShapeIndex = -1;
+        for (let i = drawings.length - 1; i >= 0; i--) {
+          const d = drawings[i];
+          let isHit = false;
+          if (['referee', 'ball', 'zoom'].includes(d.type)) {
+            if (Math.hypot(pos.x - d.x, pos.y - d.y) < 40 * d.scale) isHit = true;
+          } else if (['distance', 'vision'].includes(d.type)) {
+            const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+            if (Math.hypot(pos.x - midX, pos.y - midY) < 50) isHit = true;
+          }
+          
+          if (isHit) {
+            selectedShapeIndex = i; isDragging = true;
+            if(d.x) { dragOffsetX = pos.x - d.x; dragOffsetY = pos.y - d.y; }
+            positionControls(pos.rawX, pos.rawY);
+            break;
+          }
+        }
+        if (selectedShapeIndex === -1) hideControls();
         redrawCanvas();
-      } else if (currentTool === 'zoom') {
-        drawings.push({ type: 'zoom', x: startX, y: startY });
-        redrawCanvas();
+      } else if (['referee', 'ball', 'zoom'].includes(currentTool)) {
+        drawings.push({ type: currentTool, x: startX, y: startY, scale: 1 });
+        selectedShapeIndex = drawings.length - 1;
+        setTool('none'); positionControls(pos.rawX, pos.rawY); redrawCanvas();
       } else {
         isDrawing = true;
       }
     });
 
     canvas.addEventListener('mousemove', (e) => {
-      if (!isDrawing) return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const currentX = (e.clientX - rect.left) * scaleX;
-      const currentY = (e.clientY - rect.top) * scaleY;
-      
-      redrawCanvas();
-      
-      // رسم حي أثناء السحب
-      ctx.beginPath();
-      if (currentTool === 'distance') {
-        ctx.setLineDash([5, 5]);
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(currentX, currentY);
-        ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        ctx.setLineDash([]);
-      } else if (currentTool === 'vision') {
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(currentX - 50, currentY + 50);
-        ctx.lineTo(currentX + 50, currentY + 50);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
-        ctx.fill();
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+      const pos = getMousePos(e);
+      if (isDragging && selectedShapeIndex > -1) {
+        const d = drawings[selectedShapeIndex];
+        if (d.x) { d.x = pos.x - dragOffsetX; d.y = pos.y - dragOffsetY; }
+        else {
+          const dx = pos.x - startX; const dy = pos.y - startY;
+          d.startX += dx; d.startY += dy; d.endX += dx; d.endY += dy;
+          startX = pos.x; startY = pos.y;
+        }
+        positionControls(pos.rawX, pos.rawY);
+        redrawCanvas();
+      } else if (isDrawing) {
+        redrawCanvas();
+        ctx.beginPath();
+        if (currentTool === 'distance') {
+          ctx.setLineDash([5, 5]); ctx.moveTo(startX, startY); ctx.lineTo(pos.x, pos.y);
+          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]);
+        } else if (currentTool === 'vision') {
+          ctx.moveTo(startX, startY); ctx.lineTo(pos.x - 50, pos.y + 50); ctx.lineTo(pos.x + 50, pos.y + 50);
+          ctx.closePath(); ctx.fillStyle = 'rgba(56, 189, 248, 0.3)'; ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.stroke();
+        }
       }
     });
 
     canvas.addEventListener('mouseup', (e) => {
-      if (!isDrawing) return;
-      isDrawing = false;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const endX = (e.clientX - rect.left) * scaleX;
-      const endY = (e.clientY - rect.top) * scaleY;
-      
-      drawings.push({ type: currentTool, startX, startY, endX, endY });
-      redrawCanvas();
+      isDragging = false;
+      if (isDrawing) {
+        isDrawing = false;
+        const pos = getMousePos(e);
+        drawings.push({ type: currentTool, startX, startY, endX: pos.x, endY: pos.y, scale: 1 });
+        selectedShapeIndex = drawings.length - 1;
+        setTool('none'); positionControls(pos.rawX, pos.rawY); redrawCanvas();
+      }
     });
 
-    // إعادة رسم كل شيء
+    // أدوات التحكم بالرسمة (HTML Overlay)
+    function positionControls(x, y) {
+      shapeControls.style.display = 'flex';
+      shapeControls.style.left = `${Math.min(x + 10, canvasContainer.offsetWidth - 150)}px`;
+      shapeControls.style.top = `${Math.max(y - 50, 10)}px`;
+    }
+    function hideControls() { shapeControls.style.display = 'none'; }
+    function confirmShape() { selectedShapeIndex = -1; hideControls(); redrawCanvas(); }
+    function deleteShape() { if(selectedShapeIndex > -1){ drawings.splice(selectedShapeIndex, 1); selectedShapeIndex = -1; hideControls(); redrawCanvas(); } }
+    function scaleShape(factor) { if(selectedShapeIndex > -1){ drawings[selectedShapeIndex].scale *= factor; redrawCanvas(); } }
+
     function redrawCanvas() {
       if(baseFrame) ctx.drawImage(baseFrame, 0, 0, canvas.width, canvas.height);
       
-      drawings.forEach(d => {
+      drawings.forEach((d, idx) => {
+        const sc = d.scale || 1;
+        ctx.save();
+        
+        // تمييز العنصر المحدد (إطار متوهج)
+        if (idx === selectedShapeIndex) {
+          ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
+        }
+
         if (d.type === 'referee') {
-          ctx.beginPath(); ctx.arc(d.x, d.y, 12, 0, Math.PI*2);
+          ctx.beginPath(); ctx.arc(d.x, d.y, 12 * sc, 0, Math.PI*2);
           ctx.fillStyle = '#eab308'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.stroke();
-          ctx.fillStyle = '#000'; ctx.font = 'bold 12px Cairo'; ctx.fillText('Ref', d.x-9, d.y+4);
+          ctx.fillStyle = '#000'; ctx.font = `bold ${12*sc}px Cairo`; ctx.fillText('Ref', d.x-9*sc, d.y+4*sc);
         }
         else if (d.type === 'ball') {
-          ctx.beginPath(); ctx.arc(d.x, d.y, 10, 0, Math.PI*2);
+          ctx.beginPath(); ctx.arc(d.x, d.y, 10 * sc, 0, Math.PI*2);
           ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#ef4444'; ctx.stroke();
         }
         else if (d.type === 'distance') {
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY); // Scale from center
           ctx.beginPath(); ctx.setLineDash([10, 5]);
           ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY);
           ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4; ctx.stroke(); ctx.setLineDash([]);
-          // حساب وعرض مسافة وهمية
           const dist = Math.round(Math.sqrt(Math.pow(d.endX-d.startX, 2) + Math.pow(d.endY-d.startY, 2)) / 20);
-          ctx.fillStyle = '#111827'; ctx.fillRect((d.startX+d.endX)/2 - 15, (d.startY+d.endY)/2 - 15, 40, 25);
-          ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Cairo'; ctx.fillText(`${dist}m`, (d.startX+d.endX)/2 - 10, (d.startY+d.endY)/2 + 2);
+          ctx.fillStyle = '#111827'; ctx.fillRect(midX - 15, midY - 15, 40, 25);
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Cairo'; ctx.fillText(`${dist}m`, midX - 10, midY + 2);
         }
         else if (d.type === 'vision') {
-          ctx.beginPath();
-          ctx.moveTo(d.startX, d.startY);
-          ctx.lineTo(d.endX - 80, d.endY + 80);
-          ctx.lineTo(d.endX + 80, d.endY + 80);
-          ctx.closePath();
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fill();
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
+          ctx.beginPath(); ctx.moveTo(d.startX, d.startY);
+          ctx.lineTo(d.endX - 80, d.endY + 80); ctx.lineTo(d.endX + 80, d.endY + 80);
+          ctx.closePath(); ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fill();
           ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
         }
         else if (d.type === 'zoom') {
-          // تأثير عدسة التكبير (رسم دائرة مكبرة)
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(d.x, d.y, 80, 0, Math.PI*2);
-          ctx.lineWidth = 4; ctx.strokeStyle = '#38bdf8'; ctx.stroke();
-          ctx.clip();
-          // رسم الجزء المكبر
-          ctx.drawImage(baseFrame, d.x - 40, d.y - 40, 80, 80, d.x - 80, d.y - 80, 160, 160);
-          ctx.restore();
+          ctx.beginPath(); ctx.arc(d.x, d.y, 80 * sc, 0, Math.PI*2);
+          ctx.lineWidth = 4; ctx.strokeStyle = '#38bdf8'; ctx.stroke(); ctx.clip();
+          // تكبير ثابت 2x داخل العدسة
+          ctx.drawImage(baseFrame, d.x - 40*sc, d.y - 40*sc, 80*sc, 80*sc, d.x - 80*sc, d.y - 80*sc, 160*sc, 160*sc);
         }
+        ctx.restore();
       });
     }
 
-    // تسجيل الفيديو 10 ثواني في الخلفية
     async function recordVideoClipInBackground() {
       const startTime = Math.max(0, currentTime - 5);
       const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
-      
       statusBanner.style.display = 'flex';
       document.getElementById('liveStatusText').innerText = `يتم تجهيز لقطة الفيديو في الخلفية...`;
-
       try {
         const hiddenCanvas = document.getElementById('liveRenderCanvas');
         hiddenCanvas.width = video.videoWidth || 1280; hiddenCanvas.height = video.videoHeight || 720;
@@ -486,89 +448,49 @@
         await video.play();
 
         function stepFrame() {
-          if (video.currentTime >= endTime || video.paused) { 
-            video.pause(); recorder.stop(); video.currentTime = originalTime; return; 
-          }
+          if (video.currentTime >= endTime || video.paused) { video.pause(); recorder.stop(); video.currentTime = originalTime; return; }
           hiddenCtx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
           setTimeout(stepFrame, 1000/30);
         }
         stepFrame();
-
         recorder.onstop = async () => {
           const rawBlob = new Blob(chunks, { type: 'video/webm' });
           let finalBlob = rawBlob;
-          if (typeof ysFixWebmDuration !== 'undefined') {
-            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
-          }
+          if (typeof ysFixWebmDuration !== 'undefined') { finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res)); }
           currentVideoBlobUrl = URL.createObjectURL(finalBlob);
           statusBanner.style.display = 'none';
         };
-      } catch(err) {
-        statusBanner.style.display = 'none';
-      }
+      } catch(err) { statusBanner.style.display = 'none'; }
     }
 
-    // حفظ التحليل للجدول
     function saveVARAnalysis() {
+      selectedShapeIndex = -1; hideControls(); redrawCanvas(); // إزالة التحديد قبل الحفظ
       const annotatedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-      
-      refEventsLog.push({
-        time: formatTime(currentTime),
-        type: currentEvent,
-        imageUrl: annotatedImageUrl,
-        videoUrl: currentVideoBlobUrl || '' // قد يكون فارغاً إذا ضغط الحفظ بسرعة قبل انتهاء الفيديو
-      });
-      
-      renderLog();
-      closeVARRoom();
+      refEventsLog.push({ time: formatTime(currentTime), type: currentEvent, imageUrl: annotatedImageUrl, videoUrl: currentVideoBlobUrl || '' });
+      renderLog(); closeVARRoom();
     }
 
-    // عرض الجدول
     function renderLog() {
       const tbody = document.getElementById('refLogBody');
       if(refEventsLog.length === 0) return;
       tbody.innerHTML = refEventsLog.slice().reverse().map((item, index) => {
         const actualIndex = refEventsLog.length - 1 - index;
-        return `
-        <tr>
-          <td>${item.time}</td>
-          <td><b>${item.type}</b></td>
-          <td>
-            <button class="btn-download-action" onclick="openDownloadModal(${actualIndex})">
-              <i class="fa-solid fa-download"></i> خيارات التحميل
-            </button>
-          </td>
-        </tr>
-      `}).join('');
+        return `<tr><td>${item.time}</td><td><b>${item.type}</b></td><td><button class="btn-download-action" onclick="openDownloadModal(${actualIndex})"><i class="fa-solid fa-download"></i> خيارات التحميل</button></td></tr>`
+      }).join('');
     }
 
-    // مودال التحميل
-    function openDownloadModal(index) {
-      currentDownloadIndex = index;
-      dlModal.style.display = 'flex';
-    }
-
-    function closeDownloadModal() {
-      dlModal.style.display = 'none';
-      currentDownloadIndex = -1;
-    }
-
+    function openDownloadModal(index) { currentDownloadIndex = index; dlModal.style.display = 'flex'; }
+    function closeDownloadModal() { dlModal.style.display = 'none'; currentDownloadIndex = -1; }
     function downloadItem(type) {
       if (currentDownloadIndex === -1) return;
       const item = refEventsLog[currentDownloadIndex];
       const a = document.createElement('a');
-      
-      if (type === 'image') {
-        a.href = item.imageUrl;
-        a.download = `تحليل_${item.type}_صورة_${Date.now()}.jpg`;
-      } else if (type === 'video') {
+      if (type === 'image') { a.href = item.imageUrl; a.download = `تحليل_${item.type}_صورة_${Date.now()}.jpg`; } 
+      else if (type === 'video') {
         if(!item.videoUrl) return alert("عفواً، تم حفظ الحالة قبل انتهاء معالجة الفيديو في الخلفية. حاول الانتظار ثواني في المرة القادمة.");
-        a.href = item.videoUrl;
-        a.download = `لقطة_${item.type}_فيديو_${Date.now()}.webm`;
+        a.href = item.videoUrl; a.download = `لقطة_${item.type}_فيديو_${Date.now()}.webm`;
       }
-      
-      a.click();
-      closeDownloadModal();
+      a.click(); closeDownloadModal();
     }
   </script>
 </body>
