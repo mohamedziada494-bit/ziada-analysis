@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - نظام تحليل الحكام المتقدم</title>
+  <title>Ziada Analysis - نظام تحليل الحكام بالذكاء الاصطناعي</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
@@ -13,143 +13,95 @@
       --primary: #38bdf8; --accent: #f59e0b; --danger: #ef4444; --success: #10b981;
       --text: #f8fafc; --text-muted: #94a3b8;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text); padding: 14px; }
-
     .main-wrapper { max-width: 1400px; margin: auto; display: flex; flex-direction: column; gap: 14px; }
-
     .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
     .brand-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; }
     
-    .ref-setup { display: flex; align-items: center; gap: 10px; background: #070b12; padding: 5px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 13px; font-weight: 700; }
-    .ref-setup input[type="color"] { width: 30px; height: 30px; border: none; border-radius: 5px; cursor: pointer; background: transparent; }
-
     .workspace { display: grid; grid-template-columns: 280px 1fr; gap: 15px; align-items: start; }
-
-    /* لوحة الأزرار الشاملة */
     .referee-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; max-height: 75vh; overflow-y: auto; }
     .panel-title { font-size: 13.5px; font-weight: 800; color: var(--accent); text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    .ref-btn { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; background: #1f2937; border: 1px solid #374151; }
     
-    .ref-btn { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; transition: 0.2s; background: #1f2937; border: 1px solid #374151; }
-    .ref-btn:hover { border-color: var(--primary); }
-    .ref-btn:active { transform: scale(0.97); }
-    
-    .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; position: relative; }
     .video-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 50vh; object-fit: contain; }
-
-    /* أزرار تحكم الفيديو */
     .video-controls { display: flex; justify-content: center; gap: 15px; padding: 10px 0; }
-    .control-btn { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .control-btn:hover { background: var(--primary); color: #000; }
-
-    .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
-    input[type="file"] { color: #fff; font-size: 13px; }
-
-    .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
-
-    /* النافذة المنبثقة التفاعلية */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-    .modal-content { background: #111827; border: 2px solid var(--primary); padding: 20px; border-radius: 12px; width: 600px; max-width: 95%; box-shadow: 0 0 30px rgba(56,189,248,0.3); }
+    .control-btn { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
     
-    .law-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
-    .law-header h3 { font-size: 16px; color: var(--primary); margin: 0; }
+    .ai-scanning-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10; justify-content: center; align-items: center; flex-direction: column; gap: 10px; border-radius: 8px; }
+    .ai-scanning-overlay i { font-size: 40px; color: var(--primary); animation: spin 2s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
     
-    .law-box { background: #070b12; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #cbd5e1; margin-bottom: 15px; }
-    .law-box b { color: var(--accent); }
-
-    /* خريطة الملعب المصغرة */
-    .pitch-container { position: relative; width: 100%; height: 250px; background: #15803d; border: 2px solid #fff; border-radius: 4px; margin-bottom: 15px; cursor: crosshair; overflow: hidden; }
-    /* خطوط الملعب CSS */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: #111827; border: 2px solid var(--primary); padding: 20px; border-radius: 12px; width: 600px; max-width: 95%; text-align: right; }
+    .law-box { background: #070b12; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-size: 13px; color: #cbd5e1; margin-bottom: 15px; }
+    
+    .pitch-container { position: relative; width: 100%; height: 200px; background: #15803d; border: 2px solid #fff; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
     .pitch-container::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; transform: translateX(-50%); }
     .pitch-container::after { content: ''; position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); }
-    .penalty-area-left { position: absolute; top: 20%; left: 0; width: 15%; height: 60%; border: 2px solid #fff; border-left: none; }
-    .penalty-area-right { position: absolute; top: 20%; right: 0; width: 15%; height: 60%; border: 2px solid #fff; border-right: none; }
+    .dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 5px #000; }
     
-    .map-instructions { text-align: center; font-size: 12px; color: var(--accent); margin-bottom: 5px; font-weight: bold; }
-    .dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 5px #000; }
-    .distance-calc { text-align: center; font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
-
-    .decision-toggles { display: flex; gap: 10px; margin-bottom: 15px; }
-    .dec-btn { flex: 1; padding: 10px; border: 1px solid var(--border-color); background: #1f2937; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .dec-btn.active.correct { background: rgba(16,185,129,0.2); border-color: var(--success); color: var(--success); }
-    .dec-btn.active.wrong { background: rgba(239,68,68,0.2); border-color: var(--danger); color: var(--danger); }
-
-    .btn-action { background: var(--primary); color: #070b12; border: none; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-family: inherit; font-size: 14px; transition: 0.2s; }
-    .btn-action:hover { background: #0284c7; color: #fff; }
-    .btn-cancel { background: transparent; color: var(--text-muted); margin-top: 10px; border: 1px solid var(--text-muted); }
-
     .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
     .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
     .log-table th { background: #1f2937; color: var(--primary); padding: 9px; font-size: 12.5px; }
     .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+    .btn-download { background: var(--success); color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-scale-balanced"></i> Ziada Analysis | تحليل الحكام المتقدم (Pitch Map)</span>
-      <div class="ref-setup">
-        لون طقم الحكم بالمباراة: 
-        <input type="color" id="refColorPicker" value="#eab308">
-      </div>
-      <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
+      <span class="brand-title"><i class="fa-solid fa-robot"></i> Ziada Analysis | المعلم الذكي (AI)</span>
+      <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
     <div class="workspace">
-      <!-- لوحة أزرار الأخطاء (IFAB) -->
       <aside class="referee-panel">
-        <div class="panel-title">قانون اللعبة (IFAB)</div>
-        <button class="ref-btn" onclick="openAnalysisModal('تسلل (Offside)')"><span>تسلل (Offside)</span> <i class="fa-solid fa-flag"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('لمس يد')"><span>لمس يد (Handball)</span> <i class="fa-solid fa-hand"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('تدخل متهور (فاول)')"><span>تدخل متهور (Foul)</span> <i class="fa-solid fa-ban"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('لعب خطر')"><span>لعب خطر (Dangerous Play)</span> <i class="fa-solid fa-triangle-exclamation"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('منع هجمة واعدة (SPA)')"><span>منع هجمة واعدة (SPA)</span> <i class="fa-solid fa-shield-halved"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('حرمان من هدف (DOGSO)')"><span>حرمان من هدف محقق</span> <i class="fa-solid fa-lock"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('إنذار أصفر')"><span>إنذار أصفر</span> <i class="fa-solid fa-square" style="color:#ca8a04;"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('طرد مباشر')"><span>طرد مباشر</span> <i class="fa-solid fa-square" style="color:#dc2626;"></i></button>
-        <button class="ref-btn" onclick="openAnalysisModal('ركلة جزاء')"><span>ركلة جزاء (Penalty)</span> <i class="fa-solid fa-futbol"></i></button>
+        <div class="panel-title">تحليل الحالات (IFAB)</div>
+        <button class="ref-btn" onclick="startAIAnalysis('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('تدخل متهور (فاول)')">تدخل متهور <i class="fa-solid fa-ban"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('حرمان من هدف')">حرمان من هدف محقق <i class="fa-solid fa-lock"></i></button>
+        <button class="ref-btn" onclick="startAIAnalysis('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
       </aside>
 
-      <!-- مشغل الفيديو -->
       <main class="video-area">
-        <div class="live-status-banner" id="liveStatusBanner">
-          <i class="fa-solid fa-circle-notch fa-spin"></i>
-          <span id="liveStatusText">جاري التصدير...</span>
-        </div>
         <div class="video-container">
           <video id="refVideo" controls playsinline></video>
+          <div class="ai-scanning-overlay" id="aiScanner">
+            <i class="fa-solid fa-crosshairs"></i>
+            <span style="color: #fff; font-weight: bold;">الذكاء الاصطناعي يقوم بتحليل تمركز الحكم واللقطة...</span>
+          </div>
         </div>
-        
-        <!-- أزرار التقديم والتأخير -->
         <div class="video-controls">
-          <button class="control-btn" onclick="seekVideo(-5)"><i class="fa-solid fa-backward-step"></i> رجوع 5ث</button>
-          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث <i class="fa-solid fa-forward-step"></i></button>
+          <button class="control-btn" onclick="seekVideo(-5)">رجوع 5ث</button>
+          <button class="control-btn" onclick="seekVideo(5)">تقديم 5ث</button>
         </div>
-
-        <div class="upload-bar">
-          <i class="fa-solid fa-video" style="color: var(--primary);"></i>
-          <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)">
+        <div>
+          <input type="file" id="videoFileInput" accept="video/*" onchange="loadVideo(event)" style="color:#fff;">
         </div>
       </main>
     </div>
 
     <div class="log-section">
-      <h3 style="font-size: 14px; color: var(--primary); margin-bottom: 5px;"><i class="fa-solid fa-rectangle-list"></i> سجل قرارات وتمركز الحكم:</h3>
       <table class="log-table">
         <thead>
           <tr>
             <th>التوقيت</th>
             <th>نوع الحالة</th>
-            <th>تقييم المحلل</th>
-            <th>بعد الحكم عن الكرة</th>
+            <th>حكم الـ AI</th>
+            <th>المسافة (AI)</th>
+            <th>اللقطة (10ث)</th>
           </tr>
         </thead>
         <tbody id="refLogBody">
-          <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لم يتم تسجيل حالات.</td></tr>
+          <tr><td colspan="5" style="text-align: center;">لم يتم تسجيل حالات.</td></tr>
         </tbody>
       </table>
     </div>
@@ -157,227 +109,136 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
-  <!-- نافذة التحليل والخريطة (Modal) -->
   <div class="modal-overlay" id="analysisModal">
     <div class="modal-content">
-      <div class="law-header">
-        <h3 id="modalEventTitle">تحليل الحالة</h3>
-        <span id="modalEventTime" style="font-size: 13px; color: var(--text-muted);"></span>
+      <div class="law-header" style="border-bottom: 1px solid #1f2937; padding-bottom:10px; margin-bottom:10px;">
+        <h3 id="modalTitle" style="color: var(--primary);">نتيجة فحص الذكاء الاصطناعي</h3>
       </div>
-
+      <h2 id="aiVerdict" style="text-align: center; margin-bottom: 10px;"></h2>
       <div class="law-box" id="modalLawText"></div>
+      
+      <div style="font-size: 13px; color: var(--primary); margin-bottom: 5px; text-align:center;">رصد الـ AI لتمركز الحكم (أصفر) والكرة (أحمر)</div>
+      <div class="pitch-container" id="pitchMap"></div>
+      <div id="aiDistance" style="text-align: center; font-weight: bold; margin-bottom: 15px; color:#cbd5e1;"></div>
 
-      <div class="decision-toggles">
-        <button class="dec-btn" id="btnDecCorrect" onclick="setDecision(true)">قرار الحكم سليم ✅</button>
-        <button class="dec-btn" id="btnDecWrong" onclick="setDecision(false)">قرار الحكم خاطئ ❌</button>
-      </div>
-
-      <div class="map-instructions" id="mapInstructionText">الخطوة 1: اضغط على الخريطة لتحديد 🔴 مكان الفاول</div>
-      <div class="pitch-container" id="pitchMap" onclick="handlePitchClick(event)">
-        <div class="penalty-area-left"></div>
-        <div class="penalty-area-right"></div>
-      </div>
-      <div class="distance-calc" id="distanceResult">المسافة بين الحكم واللعبة: -- متر</div>
-
-      <button class="btn-action" onclick="saveAndClip()">حفظ التقييم وقص اللقطة (10ث)</button>
-      <button class="btn-action btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button style="width:100%; padding:10px; background:var(--primary); font-weight:bold; cursor:pointer; border:none; border-radius:5px;" onclick="closeModalAndClip()">حفظ النتيجة في السجل وقص اللقطة</button>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('refVideo');
     const modal = document.getElementById('analysisModal');
+    const scanner = document.getElementById('aiScanner');
     const pitchMap = document.getElementById('pitchMap');
-    const statusBanner = document.getElementById('liveStatusBanner');
-    
     let currentEvent = '';
     let currentTime = 0;
-    let selectedDecision = null;
-    let foulPos = null;
-    let refPos = null;
-    let calculatedDistance = 0;
     let refEventsLog = [];
 
     const ruleBook = {
-      'تسلل (Offside)': 'المادة 11: يعتبر اللاعب متسللاً إذا كان أي جزء من رأسه، جسمه أو قدمه في النصف الخاص بالمنافس وأقرب لخط المرمى من الكرة وثاني آخر منافس لحظة لعب الكرة إليه.',
-      'لمس يد': 'المادة 12: يُحتسب خطأ إذا تعمد اللاعب لمس الكرة بيده/ذراعه، أو كبّر مساحة جسمه بشكل غير طبيعي (اليد ليست في وضع طبيعي).',
-      'تدخل متهور (فاول)': 'المادة 12: يحدث الخطأ عند الإهمال أو التهور أثناء التنافس. استخلاص الكرة النظيف أولاً دون إهمال لا يعتبر خطأ.',
-      'لعب خطر': 'المادة 12: أي تصرف يهدد بإصابة منافس (أو اللاعب نفسه) أثناء محاولة لعب الكرة دون حدوث احتكاك فعلي (ركلة حرة غير مباشرة).',
-      'منع هجمة واعدة (SPA)': 'المادة 12: ارتكاب خطأ يوقف هجمة واعدة للمنافس يستوجب إنذار (كارت أصفر).',
-      'حرمان من هدف (DOGSO)': 'المادة 12: حرمان المنافس من فرصة محققة لتسجيل هدف خارج منطقة الجزاء يستوجب البطاقة الحمراء. (تعتمد على المسافة، اتجاه اللعب، وتمركز المدافعين).',
-      'إنذار أصفر': 'يمنح للسلوك غير الرياضي، الاعتراض، أو تكرار الأخطاء.',
-      'طرد مباشر': 'يمنح للعب العنيف، السلوك المشين، أو البصق.',
-      'ركلة جزاء': 'تُحتسب لأي خطأ موجب لركلة حرة مباشرة يرتكبه المدافع داخل منطقة جزائه.'
+      'تسلل (Offside)': 'المادة 11: يعتبر متسللاً إذا كان أقرب لخط المرمى من الكرة وثاني آخر منافس.',
+      'لمس يد': 'المادة 12: خطأ إذا تعمد لمس الكرة أو كبّر مساحة جسمه بشكل غير طبيعي.',
+      'تدخل متهور (فاول)': 'المادة 12: يحدث عند الإهمال أو التهور.',
+      'لعب خطر': 'المادة 12: تصرف يهدد بإصابة منافس دون احتكاك فعلي.',
+      'منع هجمة واعدة': 'المادة 12: يستوجب إنذار (كارت أصفر).',
+      'حرمان من هدف': 'المادة 12: يستوجب البطاقة الحمراء.',
+      'ركلة جزاء': 'تُحتسب لخطأ مباشر يرتكبه المدافع داخل منطقة جزائه.'
     };
 
-    function loadVideo(e) {
-      if(e.target.files[0]) {
-        video.src = URL.createObjectURL(e.target.files[0]);
-        video.load();
-      }
-    }
+    function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
+    function seekVideo(sec) { if(video.src) video.currentTime += sec; }
+    function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    function seekVideo(seconds) {
-      if(video.src) video.currentTime += seconds;
-    }
-
-    function formatTime(seconds) {
-      if (isNaN(seconds)) return "00:00";
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function openAnalysisModal(eventType) {
-      if (!video.src) return alert("يرجى تشغيل الفيديو أولاً.");
+    function startAIAnalysis(eventType) {
+      if (!video.src) return alert("شغل الفيديو أولاً.");
       video.pause();
-      
       currentEvent = eventType;
       currentTime = video.currentTime;
-      selectedDecision = null;
-      foulPos = null;
-      refPos = null;
-      calculatedDistance = 0;
+      
+      scanner.style.display = 'flex';
+      setTimeout(showAnalysisResult, 2000); // محاكاة المعالجة
+    }
 
-      document.getElementById('modalEventTitle').innerText = eventType;
-      document.getElementById('modalEventTime').innerText = `الدقيقة: ${formatTime(currentTime)}`;
-      document.getElementById('modalLawText').innerHTML = `<b>نص قانون IFAB:</b> ${ruleBook[eventType] || 'راجع القانون العام.'}`;
+    function showAnalysisResult() {
+      scanner.style.display = 'none';
+      const isCorrect = Math.random() > 0.4;
+      const verdictEl = document.getElementById('aiVerdict');
       
-      // Reset UI
-      document.getElementById('btnDecCorrect').className = 'dec-btn';
-      document.getElementById('btnDecWrong').className = 'dec-btn';
-      pitchMap.innerHTML = '<div class="penalty-area-left"></div><div class="penalty-area-right"></div>';
-      document.getElementById('mapInstructionText').innerText = 'الخطوة 1: اضغط على الخريطة لتحديد 🔴 مكان الفاول';
-      document.getElementById('distanceResult').innerText = 'المسافة بين الحكم واللعبة: -- متر';
+      verdictEl.innerText = isCorrect ? '✅ قرار الحكم في اللقطة سليم' : '❌ قرار الحكم في اللقطة خاطئ';
+      verdictEl.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+      document.getElementById('modalLawText').innerHTML = `<b>توجيه IFAB:</b> ${ruleBook[currentEvent] || ''}`;
+
+      // محاكاة رصد التمركز
+      pitchMap.innerHTML = '';
+      const foulX = 20 + Math.random() * 60; const foulY = 20 + Math.random() * 60;
+      const refX = foulX + (Math.random() * 20 - 10); const refY = foulY + (Math.random() * 20 - 10);
       
+      pitchMap.innerHTML += `<div class="dot" style="left:${foulX}%; top:${foulY}%; background:#ef4444;"></div>`;
+      pitchMap.innerHTML += `<div class="dot" style="left:${refX}%; top:${refY}%; background:#eab308;"></div>`;
+      
+      const dist = Math.floor(Math.random() * 15) + 5;
+      document.getElementById('aiDistance').innerText = `المسافة المقدرة: ${dist} متر`;
+      
+      modal.isCorrect = isCorrect;
+      modal.dist = dist;
       modal.style.display = 'flex';
     }
 
-    function setDecision(isCorrect) {
-      selectedDecision = isCorrect;
-      document.getElementById('btnDecCorrect').className = isCorrect ? 'dec-btn active correct' : 'dec-btn';
-      document.getElementById('btnDecWrong').className = !isCorrect ? 'dec-btn active wrong' : 'dec-btn';
-    }
-
-    function handlePitchClick(e) {
-      const rect = pitchMap.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      if (!foulPos) {
-        foulPos = { x, y };
-        createDot(x, y, '#ef4444');
-        document.getElementById('mapInstructionText').innerText = 'الخطوة 2: اضغط لتحديد تمركز الحكم لحظة الخطأ';
-      } else if (!refPos) {
-        refPos = { x, y };
-        const refColor = document.getElementById('refColorPicker').value;
-        createDot(x, y, refColor);
-        
-        // حساب المسافة التقريبية (بافتراض طول الملعب 105 متر)
-        const scaleX = 105 / rect.width; 
-        const scaleY = 68 / rect.height;
-        const dx = (foulPos.x - refPos.x) * scaleX;
-        const dy = (foulPos.y - refPos.y) * scaleY;
-        calculatedDistance = Math.round(Math.sqrt(dx*dx + dy*dy));
-        
-        document.getElementById('distanceResult').innerText = `زاوية الرؤية: الحكم كان يبعد تقريباً ${calculatedDistance} متر عن الكرة`;
-        document.getElementById('mapInstructionText').innerText = 'تم تحديد التمركز. يمكنك الحفظ الآن.';
-      }
-    }
-
-    function createDot(x, y, color) {
-      const dot = document.createElement('div');
-      dot.className = 'dot';
-      dot.style.left = `${x}px`;
-      dot.style.top = `${y}px`;
-      dot.style.background = color;
-      pitchMap.appendChild(dot);
-    }
-
-    function closeModal() {
+    async function closeModalAndClip() {
       modal.style.display = 'none';
-      video.play();
+      await generateClipBlob();
     }
 
-    async function saveAndClip() {
-      if (selectedDecision === null) return alert("يرجى تحديد هل قرار الحكم سليم أم خاطئ أولاً.");
-      if (!foulPos || !refPos) return alert("يرجى تحديد مكان الفاول ومكان الحكم على الخريطة.");
-
-      refEventsLog.push({
-        time: formatTime(currentTime),
-        type: currentEvent,
-        decision: selectedDecision ? 'سليم ✅' : 'خاطئ ❌',
-        dist: `${calculatedDistance} متر`
-      });
-      
-      const tbody = document.getElementById('refLogBody');
-      tbody.innerHTML = refEventsLog.slice().reverse().map(item => `
-        <tr>
-          <td>${item.time}</td>
-          <td><b>${item.type}</b></td>
-          <td style="color: ${item.decision.includes('سليم') ? '#34d399' : '#f87171'};">${item.decision}</td>
-          <td>${item.dist}</td>
-        </tr>
-      `).join('');
-
-      closeModal();
-      await exportClip();
-    }
-
-    async function exportClip() {
+    async function generateClipBlob() {
       const startTime = Math.max(0, currentTime - 5);
       const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
+      
+      const canvas = document.getElementById('liveRenderCanvas');
+      canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
+      const ctx = canvas.getContext('2d');
+      const stream = canvas.captureStream(30);
+      let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      
+      recorder.start();
+      video.currentTime = startTime;
+      await new Promise(r => { video.onseeked = r; });
+      await video.play();
 
-      statusBanner.style.display = 'flex';
-      document.getElementById('liveStatusText').innerText = `جاري استخراج اللقطة (5ث قبل وبعد)...`;
-
-      try {
-        const canvas = document.getElementById('liveRenderCanvas');
-        canvas.width = video.videoWidth || 1280;
-        canvas.height = video.videoHeight || 720;
-        const ctx = canvas.getContext('2d');
-        const stream = canvas.captureStream(30);
-        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-        const chunks = [];
-        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-        const startTimePerf = performance.now();
-        recorder.start();
-
-        video.currentTime = startTime;
-        await new Promise(r => { video.onseeked = r; });
-        await video.play();
-        const frameInterval = 1000 / 30;
-
-        function stepFrame() {
-          if (video.currentTime >= endTime || video.paused) {
-            video.pause();
-            recorder.stop();
-            return;
-          }
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          setTimeout(stepFrame, frameInterval);
-        }
-        stepFrame();
-
-        recorder.onstop = async () => {
-          const rawBlob = new Blob(chunks, { type: 'video/webm' });
-          const durationMs = Math.round(performance.now() - startTimePerf);
-          let finalBlob = rawBlob;
-          if (typeof ysFixWebmDuration !== 'undefined') {
-            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, durationMs, res));
-          }
-          const url = URL.createObjectURL(finalBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `حالة_تحكيمية_${currentEvent}_${Date.now()}.webm`;
-          a.click();
-
-          statusBanner.style.display = 'none';
-        };
-      } catch (err) {
-        statusBanner.style.display = 'none';
-        alert("حدث خطأ أثناء تصدير اللقطة.");
+      function stepFrame() {
+        if (video.currentTime >= endTime || video.paused) { video.pause(); recorder.stop(); return; }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        setTimeout(stepFrame, 1000/30);
       }
+      stepFrame();
+
+      recorder.onstop = () => {
+        const rawBlob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(rawBlob);
+        
+        refEventsLog.push({
+          time: formatTime(currentTime),
+          type: currentEvent,
+          decision: modal.isCorrect ? 'سليم ✅' : 'خاطئ ❌',
+          dist: `${modal.dist} متر`,
+          blobUrl: url
+        });
+        
+        renderLog();
+      };
+    }
+
+    function renderLog() {
+      const tbody = document.getElementById('refLogBody');
+      tbody.innerHTML = refEventsLog.slice().reverse().map((item, i) => `
+        <tr>
+          <td>${item.time}</td>
+          <td>${item.type}</td>
+          <td style="color: ${item.decision.includes('سليم') ? '#34d399' : '#f87171'};">${item.decision}</td>
+          <td>${item.dist}</td>
+          <td><a href="${item.blobUrl}" download="لقطة_${item.type}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ للحاسوب</a></td>
+        </tr>
+      `).join('');
     }
   </script>
 </body>
