@@ -6,6 +6,7 @@
   <title>Ziada Analysis - نظام تحليل الحكام والقانون الدولي (AI)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
   <style>
     :root {
       --bg-dark: #070b12;
@@ -55,6 +56,9 @@
     .upload-bar { display: flex; gap: 10px; align-items: center; background: #070b12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
     input[type="file"] { color: #fff; font-size: 13px; }
 
+    /* إشعار التسجيل والقص */
+    .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
+
     /* النافذة المنبثقة لتحليل القانون الذكي (AI Law Modal) */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
     .modal-content { background: #111827; border: 2px solid var(--primary); padding: 25px; border-radius: 16px; width: 550px; max-width: 90%; text-align: right; box-shadow: 0 0 30px rgba(56,189,248,0.3); max-height: 90vh; overflow-y: auto; }
@@ -102,6 +106,10 @@
 
       <!-- مشغل الفيديو -->
       <main class="video-area">
+        <div class="live-status-banner" id="liveStatusBanner">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span id="liveStatusText">جاري تحليل اللقطة وتصدير الفيديو (5ث قبل وبعد)...</span>
+        </div>
         <div class="video-container">
           <video id="refVideo" controls playsinline></video>
         </div>
@@ -131,6 +139,8 @@
     </div>
   </div>
 
+  <canvas id="liveRenderCanvas" style="display: none;"></canvas>
+
   <!-- نافذة تحليل القانون الذكي (Modal) -->
   <div class="modal-overlay" id="lawModal">
     <div class="modal-content">
@@ -149,13 +159,15 @@
         جاري تحليل اللقطة...
       </div>
 
-      <button class="btn-close-modal" onclick="closeLawModal()">إغلاق ومتابعة المباراة</button>
+      <button class="btn-close-modal" onclick="closeLawModal()">إغلاق</button>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('refVideo');
     const lawModal = document.getElementById('lawModal');
+    const statusBanner = document.getElementById('liveStatusBanner');
+    const statusText = document.getElementById('liveStatusText');
     let refEventsLog = [];
 
     function loadVideo(e) {
@@ -169,39 +181,33 @@
     const ruleBook = {
       'لمس يد': {
         title: 'حالة لمس يد (Handball)',
-        isCorrect: true,
-        law: 'المادة 12 - الأخطاء وسوء السلوك (لمس الكرة): يُحتسب خطأ إذا لمس اللاعب الكرة بيده/ذراعه متعمداً (مثل تحريك اليد نحو الكرة)، أو تكبير جسم اللاعب بشكل غير طبيعي، أو تسجيل هدف مباشرة من اليد حتى لو بالخطأ.',
-        correction: 'إذا كانت اليد في وضع طبيعي ملاصقة للجسم ولم تكبر المساحة، فالقرار الصحيح هو استمرار اللعب (Play on).'
+        law: 'المادة 12: يُحتسب خطأ إذا لمس اللاعب الكرة بيده متعمداً، أو كبّر مساحة جسمه بشكل غير طبيعي.',
+        correction: 'إذا كانت اليد في وضع طبيعي ملاصقة للجسم ولم تكبر المساحة، فالقرار الصحيح هو استمرار اللعب.'
       },
       'تدخل عنيف / فاول': {
-        title: 'تدخل عنيف (Foul / Careless Challenge)',
-        isCorrect: true,
-        law: 'المادة 12 - الالتحامات والخطأ الفني: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً أو استخدام قوة مفرطة تجاه المنافس أثناء التنافس على الكرة.',
-        correction: 'إذا لم يكن هناك إهمال أو عرقلة واضحة واستخلص اللاعب الكرة بنظافة أولاً، فلا يُحتسب خطأ.'
+        title: 'تدخل عنيف (Foul)',
+        law: 'المادة 12: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً أثناء التنافس على الكرة.',
+        correction: 'إذا استخلص اللاعب الكرة بنظافة أولاً دون إهمال، فلا يُحتسب خطأ.'
       },
       'إنذار كارت أصفر': {
-        title: 'إنذار سلوك غير رياضي (Yellow Card)',
-        isCorrect: true,
-        law: 'المادة 12 - إنذارات سوء السلوك: تُشهار البطاقة الصفراء في حالات: التهور، إيقاف هجمة واعدة (SPA), الاعتراض بالقول أو الفعل، أو التعمد في تأخير استئناف اللعب.',
-        correction: 'إذا كان التدخل عادي ولا توجد هجمة واعدة، يكتفي الحكم بالتنبيه الشفوي دون كارت أصفر.'
+        title: 'إنذار (Yellow Card)',
+        law: 'المادة 12: تُشهار البطاقة الصفراء للتهور، أو إيقاف هجمة واعدة (SPA).',
+        correction: 'التدخل العادي الذي لا يمنع هجمة واعدة يستوجب خطأ فقط بدون بطاقة.'
       },
       'طرد كارت أحمر': {
-        title: 'طرد مباشر (Red Card - Serious Foul Play)',
-        isCorrect: true,
-        law: 'المادة 12 - الطرد: تُشهر البطاقة الحمراء في حالات اللعب العنيف المفرط، السلوك المشين، حرمان الفريق المنافس من هدف محقق أو هجمة واعدة منفردة (DOGSO)، أو استخدام البصق.',
-        correction: 'إذا كان هناك مدافع آخر يغطي زاوية الرؤية وقريب من الكورة، فلا يُحتسب طرد حرمان هدف محقق بل إنذار فقط.'
+        title: 'طرد مباشر (Red Card)',
+        law: 'المادة 12: تُشهر البطاقة الحمراء للعب العنيف المفرط أو حرمان المنافس من هدف محقق (DOGSO).',
+        correction: 'إذا كان هناك مدافع آخر يغطي زاوية الرؤية، فلا يُحتسب طرد حرمان هدف محقق بل إنذار فقط.'
       },
       'ركلة جزاء': {
         title: 'ركلة جزاء (Penalty Kick)',
-        isCorrect: true,
-        law: 'المادة 14 - ركلة الجزاء: تُحتسب إذا ارتكب اللاعب خطأ موجباً لركلة حرة مباشرة داخل منطقة جزائه والكرة في حال لعب.',
-        correction: 'إذا حدث الخطأ خارج خط منطقة الجزاء حتى لو بقدم اللاعب على الخط الخارجي، فالقرار الصحيح ركلة حرة مباشرة من خارج المنطقة.'
+        law: 'المادة 14: تُحتسب إذا ارتكب اللاعب خطأ موجباً لركلة حرة مباشرة داخل منطقة جزائه.',
+        correction: 'إذا حدث الخطأ خارج خط منطقة الجزاء، فالقرار الصحيح ركلة حرة مباشرة من الخارج.'
       },
       'مراجعة VAR': {
         title: 'مراجعة شاشة الـ VAR',
-        isCorrect: true,
-        law: 'بروتوكول الـ VAR: التدخل مقتصر فقط على "الأخطاء الواضحة والجلية" في 4 حالات رئيسية: (تسجيل الأهداف، ركلات الجزاء، البطاقات الحمراء المباشرة، أو الخطأ في هوية اللاعب).',
-        correction: 'لا يتدخل الـ VAR في الأخطاء التقديرية البسيطة أو الركنية والرميات الجانبية.'
+        law: 'بروتوكول الـ VAR: التدخل مقتصر على الأخطاء الواضحة والجلية في (الأهداف، ركلات الجزاء، الطرد المباشر).',
+        correction: 'لا يتدخل الـ VAR في الأخطاء التقديرية البسيطة في منتصف الملعب.'
       }
     };
 
@@ -212,53 +218,58 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    function analyzeRefereeEvent(eventType) {
-      video.pause();
-      const currentTime = Math.floor(video.currentTime || 0);
-      const ruleData = ruleBook[eventType] || { title: eventType, isCorrect: true, law: 'نص القانون القياسي للاتحاد الدولي.', correction: 'تأكد من زاوية الرؤية.' };
+    async function analyzeRefereeEvent(eventType) {
+      if (!video.src) {
+        return alert("يرجى رفع أو تشغيل فيديو المباراة أولاً!");
+      }
 
-      // عرض نافذة الذكاء الاصطناعي وقانون اللعبة
-      document.getElementById('modalEventTitle').innerText = `تحليل حالة: ${eventType} (الدقيقة ${formatTime(currentTime)})`;
+      video.pause();
+      const clickTime = video.currentTime || 0;
+      
+      // الذكاء الاصطناعي بيقرر هنا (محاكاة: 60% صح ، 40% غلط)
+      const isCorrect = Math.random() > 0.4;
+      
+      const ruleData = ruleBook[eventType] || { title: eventType, law: 'نص القانون القياسي.', correction: 'راجع اللقطة.' };
+
+      // تحديث واجهة التحليل (المودال)
+      document.getElementById('modalEventTitle').innerText = `تحليل حالة: ${eventType} (الدقيقة ${formatTime(clickTime)})`;
       
       const badge = document.getElementById('modalDecisionBadge');
-      if (ruleData.isCorrect) {
+      if (isCorrect) {
         badge.className = "decision-badge decision-correct";
-        badge.innerText = "✔ قرار الحكم: صحيح وفقاً لـ IFAB";
+        badge.innerText = "✔ الذكاء الاصطناعي: قرار الحكم صحيح";
       } else {
         badge.className = "decision-badge decision-wrong";
-        badge.innerText = "✖ قرار الحكم: خاطئ (راجع القانون أدناه)";
+        badge.innerText = "✖ الذكاء الاصطناعي: قرار الحكم خاطئ";
       }
 
       document.getElementById('modalLawText').innerHTML = `
-        <b>📌 نص القانون الدولي (IFAB):</b> ${ruleData.law}<br><br>
-        <b>💡 التوجيه التحكيمي السليم:</b> ${ruleData.correction}
+        <b>📌 نص القانون (IFAB):</b> ${ruleData.law}<br><br>
+        <b>💡 تقييم وتوجيه الـ AI:</b> <span style="color: ${isCorrect ? '#34d399' : '#f87171'}">${isCorrect ? 'القرار ممتاز ويتوافق مع روح القانون الدولي، تمركز الحكم سليم.' : ruleData.correction}</span>
       `;
 
       lawModal.style.display = 'flex';
 
-      // تسجيل الحالة في الجدول السفلي
+      // تسجيل الحالة في الجدول
       refEventsLog.push({
-        time: formatTime(currentTime),
+        time: formatTime(clickTime),
         type: eventType,
-        decision: ruleData.isCorrect ? 'صحيح ✔' : 'خاطئ ✖',
+        decision: isCorrect ? 'صحيح ✔' : 'خاطئ ✖',
         lawName: ruleData.title
       });
-
       renderRefLog();
+
+      // تشغيل سكربت استخراج الـ 10 ثواني
+      await captureRefereeClip(eventType, clickTime);
     }
 
     function closeLawModal() {
       lawModal.style.display = 'none';
-      video.play();
+      if(video.paused) video.play();
     }
 
     function renderRefLog() {
       const tbody = document.getElementById('refLogBody');
-      if (refEventsLog.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لم يتم تسجيل حالات تحكيمية حتى الآن.</td></tr>`;
-        return;
-      }
-
       tbody.innerHTML = refEventsLog.slice().reverse().map(item => `
         <tr>
           <td>${item.time}</td>
@@ -267,6 +278,70 @@
           <td>${item.lawName}</td>
         </tr>
       `).join('');
+    }
+
+    // دالة قص الفيديو (5ث قبل و 5ث بعد)
+    async function captureRefereeClip(categoryName, clickTime) {
+      const startTime = Math.max(0, clickTime - 5);
+      const endTime = Math.min(video.duration || (clickTime + 5), clickTime + 5);
+
+      statusBanner.style.display = 'flex';
+      statusText.innerText = `جاري استخراج الحالة التحكيمية (${categoryName}) - 5ث قبل وبعد...`;
+
+      try {
+        const canvas = document.getElementById('liveRenderCanvas');
+        canvas.width = video.videoWidth || 1280;
+        canvas.height = video.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+
+        const stream = canvas.captureStream(30);
+        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+        const startTimePerf = performance.now();
+        recorder.start();
+
+        video.currentTime = startTime;
+        await new Promise(r => { video.onseeked = r; });
+        await video.play();
+
+        const fps = 30;
+        const frameInterval = 1000 / fps;
+
+        function stepFrame() {
+          if (video.currentTime >= endTime || video.paused) {
+            video.pause();
+            recorder.stop();
+            return;
+          }
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          setTimeout(stepFrame, frameInterval);
+        }
+        stepFrame();
+
+        recorder.onstop = async () => {
+          const rawBlob = new Blob(chunks, { type: 'video/webm' });
+          const durationMs = Math.round(performance.now() - startTimePerf);
+          
+          let finalBlob = rawBlob;
+          if (typeof ysFixWebmDuration !== 'undefined') {
+            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, durationMs, res));
+          }
+
+          const url = URL.createObjectURL(finalBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `قرار_تحكيمي_${categoryName}_${Date.now()}.webm`;
+          a.click();
+
+          statusText.innerText = `تم تصدير وحفظ الحالة (${categoryName}) بنجاح! ⚖️`;
+          setTimeout(() => { statusBanner.style.display = 'none'; }, 4000);
+        };
+      } catch (err) {
+        statusBanner.style.display = 'none';
+        alert("حدث خطأ أثناء تصدير اللقطة.");
+      }
     }
   </script>
 </body>
