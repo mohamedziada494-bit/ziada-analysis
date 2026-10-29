@@ -76,13 +76,13 @@
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-robot"></i> Ziada Analysis | المعلم ومحاكي التحكيم الذكي</span>
+      <span class="brand-title"><i class="fa-solid fa-robot"></i> Ziada Analysis | المعلم ومحاكي التحكيم الذكي (AI)</span>
       <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
     <div class="workspace">
       <aside class="referee-panel">
-        <div class="panel-title">تحليل الحالات (IFAB AI)</div>
+        <div class="panel-title">تحليل الحالات بالذكاء الاصطناعي</div>
         <button class="ref-btn" onclick="startAIChat('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
         <button class="ref-btn" onclick="startAIChat('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
         <button class="ref-btn" onclick="startAIChat('تدخل متهور (فاول)')">تدخل متهور (Foul) <i class="fa-solid fa-ban"></i></button>
@@ -129,27 +129,27 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
-  <!-- شاشة الدردشة مع الذكاء الاصطناعي -->
   <div class="modal-overlay" id="aiChatModal">
     <div class="modal-content">
       <div class="chat-header">
-        <h3><i class="fa-solid fa-robot"></i> المعلم التحكيمي الذكي (AI)</h3>
+        <h3><i class="fa-solid fa-robot"></i> المعلم التحكيمي الذكي (Gemini AI)</h3>
         <button class="btn-close-chat" onclick="closeChat()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
       
-      <div class="chat-history" id="chatHistory">
-        <!-- الرسايل هتظهر هنا -->
-      </div>
-      <div class="typing-indicator" id="typingIndicator">المعلم يحلل اللقطة ويكتب الرد...</div>
+      <div class="chat-history" id="chatHistory"></div>
+      <div class="typing-indicator" id="typingIndicator">المعلم يحلل اللقطة ويكتب الرد... <i class="fa-solid fa-circle-notch fa-spin"></i></div>
 
       <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="تناقش مع المعلم حول اللقطة، أو اكتب استفسارك..." onkeypress="handleEnter(event)">
+        <input type="text" id="chatInput" placeholder="أشرح لي اللعبة حصل فيها إيه بالظبط..." onkeypress="handleEnter(event)">
         <button onclick="sendUserMessage()"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
       </div>
     </div>
   </div>
 
   <script>
+    // تم وضع مفتاح الـ API الخاص بك بنجاح
+    const GEMINI_API_KEY = "AIzaSyAZkiGKIyI7RseJ2WYFs-IfqDL0XDxLP3E";
+
     const video = document.getElementById('refVideo');
     const chatModal = document.getElementById('aiChatModal');
     const chatHistory = document.getElementById('chatHistory');
@@ -160,107 +160,83 @@
     let currentEvent = '';
     let currentTime = 0;
     let refEventsLog = [];
-
-    // قاموس قوانين التحكيم للإجابات التلقائية الأولية
-    const aiKnowledge = {
-      'تسلل (Offside)': 'المادة 11 من قانون IFAB: يعتبر اللاعب متسللاً إذا كان أقرب لخط المرمى من الكرة وثاني آخر منافس لحظة لعب الكرة إليه. الرؤية للحكم المساعد يجب أن تكون على خط واحد مع آخر مدافع لتكون دقيقة.',
-      'لمس يد': 'المادة 12 من قانون IFAB: لمسة اليد تُحتسب إذا تعمد اللاعب لمس الكرة بيده/ذراعه، أو كبّر مساحة جسمه بشكل غير طبيعي بوضع اليد بعيداً عن الجسم.',
-      'تدخل متهور (فاول)': 'المادة 12: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً أو استخدام قوة مفرطة. إذا استخلص الكرة بنظافة أولاً لا يُحتسب خطأ.',
-      'لعب خطر': 'المادة 12: اللعب الخطر هو أي تصرف يهدد بإصابة منافس دون حدوث احتكاك فعلي. العقوبة ركلة حرة غير مباشرة.',
-      'منع هجمة واعدة': 'المادة 12: إيقاف هجمة واعدة (SPA) يستوجب احتساب خطأ وتوجيه إنذار (كارت أصفر) للاعب المخالف.',
-      'حرمان من هدف محقق': 'المادة 12 (DOGSO): حرمان المنافس من فرصة محققة لتسجيل هدف خارج منطقة الجزاء يستوجب البطاقة الحمراء مباشرة.',
-      'ركلة جزاء': 'المادة 14: تُحتسب ركلة الجزاء لأي خطأ موجب لركلة حرة مباشرة يرتكبه المدافع داخل منطقة جزاء فريقه.',
-      'مراجعة VAR': 'بروتوكول الـ VAR: يتدخل الفار فقط في الأخطاء "الواضحة والجلية" (أهداف، ركلات جزاء، طرد مباشر، أو خطأ في تحديد الهوية).'
-    };
+    let conversationContext = [];
 
     function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
     function seekVideo(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    // بدأ المحادثة والقص
+    // إعداد شخصية الذكاء الاصطناعي
+    const systemPrompt = `أنت 'المعلم التحكيمي الذكي'، خبير دولي في قوانين كرة القدم (IFAB) وتعمل كمساعد لمحلل أداء مصري اسمه كوتش زيادة. تتحدث باللهجة المصرية ومصطلحات كرة القدم الدارجة (مثل: بلنتي، فاول، فار، طرد، زحمة، خبطت في رجله، ايده مكبرة الجسم). مهمتك مناقشة المدرب في الحالات التحكيمية بناءً على ما يصفه لك من أحداث اللقطة وتوضيح المادة القانونية الصحيحة. كن مختصراً، احترافياً، ولا تستخدم مقدمات طويلة.`;
+
     async function startAIChat(eventType) {
       if (!video.src) return alert("شغل الفيديو أو ارفع المباراة أولاً يا كوتش!");
       video.pause();
       currentEvent = eventType;
       currentTime = video.currentTime;
       
-      // فتح الشات وتفريغه
       chatHistory.innerHTML = '';
       chatInput.value = '';
+      conversationContext = [];
       chatModal.style.display = 'flex';
       
-      // إنشاء التقرير الأولي الذكي
-      showTyping();
-      setTimeout(() => {
-        hideTyping();
-        const dist = Math.floor(Math.random() * 10) + 8; // مسافة عشوائية تقريبية (8 لـ 18 متر)
-        const initialMsg = `
-          <b>أهلاً بك يا كوتش. بناءً على تحليلي للقطة الـ (${eventType}) في الدقيقة ${formatTime(currentTime)}:</b><br>
-          <span class="highlight">القانون:</span> ${aiKnowledge[eventType] || 'هذه الحالة خاضعة لتقدير الحكم.'}<br><br>
-          <span class="highlight">رؤيتي لزاوية الحكم:</span> من خلال تتبع اللقطة، يبدو أن تمركز الحكم كان على بُعد تقريبي يبلغ <b>${dist} أمتار</b> عن موقع الكرة. زاوية الرؤية تبدو شبه واضحة ما لم يحجبها تمركز لاعبين آخرين في المسار القطري.<br><br>
-          هل ترى في اللقطة أي تفاصيل إضافية تحب أن نتناقش حولها؟
-        `;
-        appendMessage('ai', initialMsg);
-      }, 1500);
+      const initialMsg = `أهلاً بك يا كوتش. لقد اخترت تحليل حالة <b>(${eventType})</b> في الدقيقة ${formatTime(currentTime)}.<br><br>بما أنني لا أرى الفيديو، أوصف لي تفاصيل اللقطة (مثلاً: الكورة خبطت في إيده بعد ما لمست رجله، الحكم كان بعيد، اللاعب اتزحلق... الخ) وسأعطيك التقييم القانوني السليم 100%.`;
+      appendMessage('ai', initialMsg);
 
-      // في الخلفية: قص اللقطة
       await generateClipBlob();
     }
 
-    function closeChat() {
-      chatModal.style.display = 'none';
-      if(video.paused) video.play();
-    }
+    function closeChat() { chatModal.style.display = 'none'; if(video.paused) video.play(); }
 
-    // إضافة رسالة للشات
     function appendMessage(sender, text) {
       const msgDiv = document.createElement('div');
       msgDiv.className = `chat-msg msg-${sender}`;
-      msgDiv.innerHTML = text;
+      // تنظيف تنسيقات ماركداون البسيطة من جيميني
+      const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<span class="highlight">$1</span>');
+      msgDiv.innerHTML = sender === 'ai' ? `<b>المعلم الذكي:</b> ${formattedText}` : formattedText;
       chatHistory.appendChild(msgDiv);
       chatHistory.scrollTop = chatHistory.scrollHeight;
     }
 
-    function showTyping() { typingIndicator.style.display = 'block'; chatHistory.scrollTop = chatHistory.scrollHeight; }
-    function hideTyping() { typingIndicator.style.display = 'none'; }
-
     function handleEnter(e) { if(e.key === 'Enter') sendUserMessage(); }
 
-    function sendUserMessage() {
+    async function sendUserMessage() {
       const text = chatInput.value.trim();
       if(!text) return;
       
       appendMessage('user', text);
       chatInput.value = '';
-      showTyping();
+      typingIndicator.style.display = 'block';
+      chatHistory.scrollTop = chatHistory.scrollHeight;
 
-      // محرك الردود الذكي المعتمد على الكلمات المفتاحية
-      setTimeout(() => {
-        hideTyping();
-        let reply = '';
-        if (text.includes('رجله') || text.includes('قدمه') || text.includes('راسه') || text.includes('جسمه')) {
-          reply = 'نقطة تكتيكية ممتازة! حسب التعديلات الأخيرة لـ IFAB، إذا لعب اللاعب الكرة بقدمه أو رأسه وارتدت بشكل غير متوقع إلى يده، لا تعتبر مخالفة تعمد. إذا كان هذا ما حدث فعلاً، فالقرار الصحيح هو استمرار اللعب.';
-        } else if (text.includes('رؤية') || text.includes('زحمة') || text.includes('مقفولة')) {
-          reply = 'أتفق معك. وجود الكثافة العددية في منطقة العمليات (Traffic) يجعل تقدير الحالة بالغ الصعوبة على حكم الساحة. في هذه الحالة يجب الاعتماد على زاوية الحكم المساعد (الراية) أو تدخل الـ VAR إن كان الخطأ جسيماً.';
-        } else if (text.includes('احمر') || text.includes('طرد') || text.includes('عنيف')) {
-          reply = 'بالضبط يا كوتش. الفيصل في الكارت الأحمر هو "استخدام القوة المفرطة" التي تعرض سلامة المنافس للخطر، أو "منع هدف محقق". إذا لم يتوافر أحد الشرطين، فالإنذار الأصفر هو القرار الأنسب.';
-        } else if (text.includes('فار') || text.includes('var') || text.includes('VAR')) {
-          reply = 'حسب البروتوكول، الـ VAR لا يتدخل لمناقشة الحالات الجدلية البسيطة أو الفاولات خارج المنطقة، بل يتدخل فقط إذا ارتكب الحكم "خطأ واضحاً وجلياً" (Clear and Obvious Error).';
-        } else if (text.includes('بلنتي') || text.includes('جزاء')) {
-          reply = 'ركلات الجزاء تتطلب دقة عالية. هل الاحتكاك أثر فعلياً على توازن المهاجم أو منعه من لعب الكرة؟ قانونياً، ليس كل تلامس داخل المنطقة يعتبر ركلة جزاء.';
-        } else if (text.includes('صح') || text.includes('سليم') || text.includes('ممتاز')) {
-          reply = 'عظيم جداً. أتفق مع تقييمك يا كوتش. قرار الحكم هنا يتوافق مع روح القانون وتمركزه ساعده على اتخاذ القرار السليم.';
-        } else if (text.includes('غلط') || text.includes('مش صح') || text.includes('كارثة')) {
-          reply = 'كلامك يحترم. التقدير البشري يحتمل الخطأ، وفي هذه الحالة تحديداً التفاصيل الصغيرة هي التي تصنع الفارق. هل تريدني أن أسجل هذه الملاحظة الفنية في تقريرك؟';
+      // تحديث سياق المحادثة
+      conversationContext.push({ "role": "user", "parts": [{ "text": text }] });
+
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            "system_instruction": { "parts": [{ "text": systemPrompt }] },
+            "contents": conversationContext
+          })
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          appendMessage('ai', `عذراً يا كوتش، في مشكلة في الاتصال بالسيرفر: ${data.error.message}`);
         } else {
-          reply = 'وجهة نظر فنية دقيقة يا كوتش. النقاش الفني يفيد في تحليل مستوى التحكيم. هل تود التركيز على شيء آخر في هذه اللقطة أم نعود للمباراة؟';
+          const aiResponseText = data.candidates[0].content.parts[0].text;
+          appendMessage('ai', aiResponseText);
+          conversationContext.push({ "role": "model", "parts": [{ "text": aiResponseText }] });
         }
-        
-        appendMessage('ai', `<b>المعلم الذكي:</b> ${reply}`);
-      }, 2000); // تأخير ثانيتين لمحاكاة تفكير الذكاء الاصطناعي
+      } catch (error) {
+        appendMessage('ai', 'عذراً يا كوتش، حدث خطأ في الاتصال بالذكاء الاصطناعي. تأكد من اتصال الإنترنت.');
+      }
+      
+      typingIndicator.style.display = 'none';
     }
 
-    // قص الفيديو 10 ثواني بدون تعطيل المحادثة
     async function generateClipBlob() {
       const startTime = Math.max(0, currentTime - 5);
       const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
@@ -278,8 +254,6 @@
         recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
         
         recorder.start();
-        
-        // نحتفظ بوقت المشغل عشان نرجعه بعد القص
         const originalTime = video.currentTime;
         video.currentTime = startTime;
         await new Promise(r => { video.onseeked = r; });
@@ -287,10 +261,7 @@
 
         function stepFrame() {
           if (video.currentTime >= endTime || video.paused) { 
-            video.pause(); 
-            recorder.stop(); 
-            video.currentTime = originalTime; // نرجع الفيديو مكانه
-            return; 
+            video.pause(); recorder.stop(); video.currentTime = originalTime; return; 
           }
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           setTimeout(stepFrame, 1000/30);
@@ -304,13 +275,7 @@
             finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
           }
           const url = URL.createObjectURL(finalBlob);
-          
-          refEventsLog.push({
-            time: formatTime(currentTime),
-            type: currentEvent,
-            blobUrl: url
-          });
-          
+          refEventsLog.push({ time: formatTime(currentTime), type: currentEvent, blobUrl: url });
           renderLog();
           statusBanner.style.display = 'none';
         };
@@ -326,7 +291,7 @@
         <tr>
           <td>${item.time}</td>
           <td><b>${item.type}</b></td>
-          <td><a href="${item.blobUrl}" download="لقطة_${item.type.replace(/ /g, '_')}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ اللقطة المقصوصة للكمبيوتر</a></td>
+          <td><a href="${item.blobUrl}" download="لقطة_${item.type.replace(/ /g, '_')}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ اللقطة</a></td>
         </tr>
       `).join('');
     }
