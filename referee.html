@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - محاكي التحكيم الذكي</title>
+  <title>Ziada Analysis - مكتبة التحكيم وغرفة الـ VAR</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
@@ -40,64 +40,80 @@
 
     .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; }
 
-    /* ستايل شات المحاكي */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-    .modal-content { background: #111827; border: 2px solid var(--primary); border-radius: 12px; width: 650px; max-width: 95%; display: flex; flex-direction: column; height: 80vh; box-shadow: 0 0 30px rgba(56,189,248,0.3); overflow: hidden; }
+    /* Modal - مكتبة التحكيم والرسم */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .modal-content { background: #070b12; border: 2px solid var(--primary); border-radius: 12px; width: 95vw; height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
     
-    .chat-header { background: #1f2937; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary); }
-    .chat-header h3 { font-size: 16px; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; }
-    .btn-close-chat { background: transparent; border: none; color: #ef4444; font-size: 20px; cursor: pointer; }
-    
-    .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #070b12; }
-    
-    .chat-msg { max-width: 85%; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; line-height: 1.6; position: relative; }
-    .msg-ai { background: #1f2937; color: #fff; align-self: flex-start; border-top-right-radius: 0; border: 1px solid #374151; }
-    .msg-ai b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 14.5px; }
-    .msg-ai .highlight { color: var(--accent); font-weight: bold; }
-    .msg-user { background: #0284c7; color: #fff; align-self: flex-end; border-top-left-radius: 0; }
-    
-    .typing-indicator { display: none; align-self: flex-start; padding: 10px 15px; background: #1f2937; border-radius: 10px; color: var(--primary); font-size: 13px; font-weight: bold; }
+    .modal-header { background: #111827; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+    .modal-header h3 { color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; font-size: 18px; }
+    .btn-close-modal { background: transparent; border: none; color: #ef4444; font-size: 24px; cursor: pointer; }
 
-    .chat-input-area { padding: 15px; background: #1f2937; border-top: 1px solid #374151; display: flex; gap: 10px; }
-    .chat-input-area input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #070b12; color: #fff; font-size: 13px; font-family: 'Cairo'; }
-    .chat-input-area input:focus { outline: none; border-color: var(--primary); }
-    .chat-input-area button { background: var(--primary); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-    .chat-input-area button:hover { background: #0284c7; color: #fff; }
+    .modal-body { display: flex; flex: 1; overflow: hidden; }
+    
+    /* الجانب الأيمن: القانون */
+    .law-panel { width: 350px; background: #111827; border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
+    .law-title { color: var(--accent); font-size: 16px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid #374151; padding-bottom: 10px; }
+    .law-text { font-size: 14px; line-height: 1.8; color: #cbd5e1; }
+    .law-text ul { padding-right: 20px; margin-top: 10px; }
+    .law-text li { margin-bottom: 8px; }
 
+    /* الجانب الأيسر: الرسم والتحليل */
+    .drawing-panel { flex: 1; display: flex; flex-direction: column; background: #000; position: relative; padding: 10px; }
+    .toolbar { display: flex; justify-content: center; gap: 10px; padding-bottom: 10px; }
+    .tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 13px; transition: 0.2s; }
+    .tool-btn:hover, .tool-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+    
+    .canvas-wrapper { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid #374151; border-radius: 8px; background: #111827; cursor: crosshair; }
+    #analysisCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+    
+    .action-bar { padding-top: 10px; display: flex; justify-content: center; gap: 15px; }
+    .btn-save-analysis { background: var(--success); color: #fff; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+    /* نافذة خيارات التحميل */
+    .download-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+    .dl-box { background: #111827; padding: 25px; border-radius: 12px; border: 1px solid var(--primary); text-align: center; width: 400px; }
+    .dl-box h3 { color: #fff; margin-bottom: 20px; }
+    .dl-options { display: flex; gap: 15px; justify-content: center; }
+    .dl-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: 0.2s; }
+    .dl-img { background: #f59e0b; color: #000; }
+    .dl-vid { background: #38bdf8; color: #000; }
+    .dl-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .btn-cancel-dl { background: transparent; color: #94a3b8; border: none; margin-top: 15px; cursor: pointer; font-family: 'Cairo'; }
+
+    /* الجدول */
     .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
     .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
     .log-table th { background: #1f2937; color: var(--primary); padding: 9px; font-size: 12.5px; }
     .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-    .btn-download { background: var(--success); color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
+    .btn-download-action { background: #4f46e5; color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-chalkboard-user"></i> Ziada Analysis | محاكي التحكيم التفاعلي</span>
+      <span class="brand-title"><i class="fa-solid fa-scale-balanced"></i> Ziada Analysis | مكتبة التحكيم وغرفة الـ VAR</span>
       <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
     <div class="workspace">
       <aside class="referee-panel">
         <div class="panel-title">تحليل الحالات (IFAB)</div>
-        <!-- الأزرار الشاملة -->
-        <button class="ref-btn" onclick="startAIChat('ركلة البداية')">ركلة البداية <i class="fa-solid fa-play"></i></button>
-        <button class="ref-btn" onclick="startAIChat('رمية التماس')">رمية التماس <i class="fa-solid fa-hands"></i></button>
-        <button class="ref-btn" onclick="startAIChat('ركلة المرمى')">ركلة المرمى <i class="fa-solid fa-futbol"></i></button>
-        <button class="ref-btn" onclick="startAIChat('إسقاط الكرة')">إسقاط الكرة <i class="fa-solid fa-arrow-down"></i></button>
-        <button class="ref-btn" onclick="startAIChat('ركلة حرة مباشرة')">ركلة حرة مباشرة <i class="fa-solid fa-bullseye"></i></button>
-        <button class="ref-btn" onclick="startAIChat('ركلة حرة غير مباشرة')">ركلة حرة غير مباشرة <i class="fa-solid fa-share"></i></button>
-        <button class="ref-btn" onclick="startAIChat('ركلة ركنية')">ركلة ركنية <i class="fa-solid fa-flag"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة البداية')">ركلة البداية <i class="fa-solid fa-play"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('رمية التماس')">رمية التماس <i class="fa-solid fa-hands"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة المرمى')">ركلة المرمى <i class="fa-solid fa-futbol"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('إسقاط الكرة')">إسقاط الكرة <i class="fa-solid fa-arrow-down"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة حرة مباشرة')">ركلة حرة مباشرة <i class="fa-solid fa-bullseye"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة حرة غير مباشرة')">ركلة حرة غير مباشرة <i class="fa-solid fa-share"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة ركنية')">ركلة ركنية <i class="fa-solid fa-flag"></i></button>
         <hr style="border-color: #374151; margin: 5px 0;">
-        <button class="ref-btn" onclick="startAIChat('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
-        <button class="ref-btn" onclick="startAIChat('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
-        <button class="ref-btn" onclick="startAIChat('تدخل متهور (فاول)')">تدخل متهور (Foul) <i class="fa-solid fa-ban"></i></button>
-        <button class="ref-btn" onclick="startAIChat('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
-        <button class="ref-btn" onclick="startAIChat('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
-        <button class="ref-btn" onclick="startAIChat('حرمان من هدف محقق')">حرمان من هدف <i class="fa-solid fa-lock"></i></button>
-        <button class="ref-btn" onclick="startAIChat('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('تسلل (Offside)')">تسلل (Offside) <i class="fa-solid fa-flag"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('لمس يد')">لمس يد (Handball) <i class="fa-solid fa-hand"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('تدخل متهور (فاول)')">تدخل متهور (Foul) <i class="fa-solid fa-ban"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('لعب خطر')">لعب خطر <i class="fa-solid fa-triangle-exclamation"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('منع هجمة واعدة')">منع هجمة واعدة <i class="fa-solid fa-shield"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('حرمان من هدف محقق')">حرمان من هدف <i class="fa-solid fa-lock"></i></button>
+        <button class="ref-btn" onclick="openVARRoom('ركلة جزاء')">ركلة جزاء <i class="fa-solid fa-futbol"></i></button>
       </aside>
 
       <main class="video-area">
@@ -123,12 +139,12 @@
         <thead>
           <tr>
             <th>التوقيت</th>
-            <th>نوع الحالة المقصوصة</th>
-            <th>مكتبة اللقطات (10ث)</th>
+            <th>نوع الحالة</th>
+            <th>مكتبة اللقطات (حفظ وتنزيل)</th>
           </tr>
         </thead>
         <tbody id="refLogBody">
-          <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم استخراج لقطات حتى الآن.</td></tr>
+          <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم تحليل لقطات حتى الآن.</td></tr>
         </tbody>
       </table>
     </div>
@@ -136,148 +152,329 @@
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
-  <div class="modal-overlay" id="aiChatModal">
+  <!-- غرفة الـ VAR والمكتبة الشاملة -->
+  <div class="modal-overlay" id="varModal">
     <div class="modal-content">
-      <div class="chat-header">
-        <h3><i class="fa-solid fa-chalkboard-user"></i> المعلم التحكيمي التفاعلي</h3>
-        <button class="btn-close-chat" onclick="closeChat()"><i class="fa-solid fa-circle-xmark"></i></button>
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-tv"></i> غرفة تقنية الفيديو (VAR) - تحليل الحالة</h3>
+        <button class="btn-close-modal" onclick="closeVARRoom()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
       
-      <div class="chat-history" id="chatHistory"></div>
-      <div class="typing-indicator" id="typingIndicator">المعلم يحلل المعطيات ويكتب الرد... <i class="fa-solid fa-circle-notch fa-spin"></i></div>
+      <div class="modal-body">
+        <!-- منطقة الرسم على الشمال -->
+        <div class="drawing-panel">
+          <div class="toolbar">
+            <button class="tool-btn active" onclick="setTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر</button>
+            <button class="tool-btn" onclick="setTool('referee')"><i class="fa-solid fa-user-tie"></i> تمركز الحكم</button>
+            <button class="tool-btn" onclick="setTool('ball')"><i class="fa-solid fa-futbol"></i> مكان الكرة</button>
+            <button class="tool-btn" onclick="setTool('distance')"><i class="fa-solid fa-ruler-horizontal"></i> مسافة الرؤية</button>
+            <button class="tool-btn" onclick="setTool('vision')"><i class="fa-solid fa-eye"></i> زاوية الرؤية (مخروط)</button>
+            <button class="tool-btn" onclick="setTool('zoom')"><i class="fa-solid fa-magnifying-glass"></i> عدسة تكبير</button>
+            <button class="tool-btn" onclick="clearCanvas()" style="background:#dc2626;"><i class="fa-solid fa-trash"></i> مسح الرسوم</button>
+          </div>
+          
+          <div class="canvas-wrapper">
+            <canvas id="analysisCanvas"></canvas>
+          </div>
+          
+          <div class="action-bar">
+            <button class="btn-save-analysis" onclick="saveVARAnalysis()"><i class="fa-solid fa-floppy-disk"></i> حفظ التحليل للجدول (صورة + فيديو)</button>
+          </div>
+        </div>
 
-      <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="تناقش مع المعلم حول تفاصيل اللقطة (مثال: بس الكرة لمست ايده)..." onkeypress="handleEnter(event)">
-        <button onclick="sendUserMessage()"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+        <!-- مكتبة القوانين على اليمين -->
+        <div class="law-panel">
+          <div class="law-title" id="lawModalTitle">نصوص قانون IFAB</div>
+          <div class="law-text" id="lawModalContent">
+            <!-- سيتم حقن النصوص هنا -->
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- نافذة خيارات التحميل -->
+  <div class="download-modal" id="downloadModal">
+    <div class="dl-box">
+      <h3>خيارات الحفظ والتنزيل</h3>
+      <div class="dl-options">
+        <button class="dl-btn dl-img" onclick="downloadItem('image')">
+          <i class="fa-solid fa-image" style="font-size:24px;"></i>
+          تنزيل صورة التحليل<br>(بالرسومات والتمركز)
+        </button>
+        <button class="dl-btn dl-vid" onclick="downloadItem('video')">
+          <i class="fa-solid fa-video" style="font-size:24px;"></i>
+          تنزيل لقطة الفيديو<br>(10 ثواني أصلية)
+        </button>
+      </div>
+      <button class="btn-cancel-dl" onclick="closeDownloadModal()">إلغاء</button>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('refVideo');
-    const chatModal = document.getElementById('aiChatModal');
-    const chatHistory = document.getElementById('chatHistory');
-    const chatInput = document.getElementById('chatInput');
-    const typingIndicator = document.getElementById('typingIndicator');
+    const varModal = document.getElementById('varModal');
+    const dlModal = document.getElementById('downloadModal');
     const statusBanner = document.getElementById('liveStatusBanner');
     
+    // إعدادات الكانفاس للرسم
+    const canvas = document.getElementById('analysisCanvas');
+    const ctx = canvas.getContext('2d');
+    let baseFrame = null; 
+    let currentTool = 'none';
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    
+    // تخزين الرسومات لإعادة الرسم
+    let drawings = []; 
+    // تفاصيل الحدث الحالي
     let currentEvent = '';
     let currentTime = 0;
+    let currentVideoBlobUrl = '';
     let refEventsLog = [];
+    let currentDownloadIndex = -1;
 
-    // قاموس الردود الذكي والمحاكي لقوانين IFAB
-    const lawDictionary = {
-      'تسلل (Offside)': 'المادة 11: يعتبر اللاعب متسللاً إذا كان أقرب لخط المرمى من الكرة وثاني آخر منافس لحظة لعب الكرة إليه.',
-      'لمس يد': 'المادة 12: لمسة اليد تُحتسب إذا تعمد اللاعب لمس الكرة بيده/ذراعه، أو كبّر مساحة جسمه بشكل غير طبيعي بوضع اليد بعيداً عن الجسم.',
-      'تدخل متهور (فاول)': 'المادة 12: يحدث الخطأ عندما يظهر اللاعب إهمالاً أو تهوراً. إذا استخلص الكرة بنظافة أولاً لا يُحتسب خطأ.',
-      'لعب خطر': 'المادة 12: اللعب الخطر هو أي تصرف يهدد بإصابة منافس دون حدوث احتكاك فعلي (العقوبة: ركلة حرة غير مباشرة).',
-      'منع هجمة واعدة': 'المادة 12: إيقاف هجمة واعدة (SPA) يستوجب احتساب خطأ وتوجيه إنذار (كارت أصفر).',
-      'حرمان من هدف محقق': 'المادة 12 (DOGSO): حرمان المنافس من فرصة محققة لتسجيل هدف يستوجب البطاقة الحمراء مباشرة.',
-      'ركلة جزاء': 'المادة 14: تُحتسب لأي خطأ موجب لركلة حرة مباشرة يرتكبه المدافع داخل منطقة جزائه.',
-      'ركلة حرة مباشرة': 'تُمنح إذا ارتكب اللاعب خطأ (مثل الركل، العرقلة، الدفع، المسك) ضد منافس.',
-      'ركلة حرة غير مباشرة': 'تُمنح في حالات مثل اللعب الخطر، أو إعاقة تقدم المنافس بدون تلامس، أو مخالفات حارس المرمى.',
-      'ركلة ركنية': 'تُمنح عندما تتجاوز الكرة بأكملها خط المرمى ويكون آخر من لمسها أحد لاعبي الفريق المدافع.',
-      'ركلة المرمى': 'تُمنح عندما تتجاوز الكرة خط المرمى ويكون آخر من لمسها أحد لاعبي الفريق المهاجم.',
-      'رمية التماس': 'تُمنح عندما تتجاوز الكرة خط التماس بأكملها، وتلعب باليدين من فوق الرأس.',
-      'إسقاط الكرة': 'طريقة لاستئناف اللعب بعد توقفه لسبب غير مذكور في القانون (مثل إصابة قوية أو تدخل خارجي).'
+    // المكتبة الشاملة لقوانين IFAB
+    const fullLawDictionary = {
+      'لمس يد': `
+        <ul>
+          <li><b>المادة 12 (الأخطاء وسوء السلوك):</b></li>
+          <li>يحتسب خطأ إذا تعمد اللاعب لمس الكرة بيده أو ذراعه (مثل تحريك اليد تجاه الكرة).</li>
+          <li>يحتسب خطأ إذا لمس الكرة بيده/ذراعه وكانت قد كبرت من مساحة جسمه بشكل غير طبيعي.</li>
+          <li><b>استثناء:</b> لا يعتبر خطأ إذا سقط اللاعب وكانت يده/ذراعه بين جسمه والأرض لدعمه.</li>
+          <li><b>استثناء:</b> لا يعتبر خطأ إذا ارتدت الكرة مباشرة من رأس أو جسم اللاعب نفسه إلى يده.</li>
+        </ul>
+      `,
+      'تسلل (Offside)': `
+        <ul>
+          <li><b>المادة 11 (التسلل):</b></li>
+          <li>موقف التسلل لا يعتبر مخالفة في حد ذاته.</li>
+          <li>يعتبر اللاعب في موقف تسلل إذا كان أي جزء من رأسه، جسمه، أو قدميه في النصف الخاص بالمنافس وأقرب لخط المرمى من الكرة ومن ثاني آخر منافس.</li>
+          <li><b>المخالفة:</b> يعاقب اللاعب فقط إذا كان متداخلاً في اللعب، متداخلاً مع منافس، أو مستفيداً من موقعه لحظة لعب الكرة من زميله.</li>
+        </ul>
+      `,
+      'تدخل متهور (فاول)': `
+        <ul>
+          <li><b>المادة 12:</b></li>
+          <li><b>الإهمال:</b> يظهر اللاعب عدم انتباه أو تصرف بلامبالاة عند التنافس (ركلة حرة فقط).</li>
+          <li><b>التهور:</b> يتصرف اللاعب دون مراعاة للخطر أو العواقب على المنافس (يستوجب إنذار - كارت أصفر).</li>
+          <li><b>استخدام القوة المفرطة:</b> يتجاوز اللاعب الاستخدام الضروري للقوة ويعرض سلامة المنافس للخطر (يستوجب طرد - كارت أحمر).</li>
+        </ul>
+      `,
+      'منع هجمة واعدة': `
+        <ul>
+          <li><b>المادة 12 (SPA):</b></li>
+          <li>إذا ارتكب لاعب مخالفة لمنع هجمة واعدة (مبشرة) للمنافس، يجب إنذاره (بطاقة صفراء).</li>
+          <li>تؤخذ في الاعتبار: المسافة للمرمى، السيطرة على الكرة، وعدد المدافعين.</li>
+        </ul>
+      `,
+      'حرمان من هدف محقق': `
+        <ul>
+          <li><b>المادة 12 (DOGSO):</b></li>
+          <li>يعاقب بالطرد (بطاقة حمراء) من يحرم المنافس من هدف أو فرصة محققة لتسجيل هدف بارتكاب مخالفة.</li>
+          <li><b>الشروط الأربعة:</b> المسافة بين المخالفة والمرمى، الاتجاه العام للعب، احتمالية السيطرة على الكرة، وموقع وعدد المدافعين.</li>
+        </ul>
+      `,
+      'ركلة جزاء': `
+        <ul>
+          <li><b>المادة 14:</b></li>
+          <li>تُمنح ركلة الجزاء إذا ارتكب لاعب مخالفة تستوجب ركلة حرة مباشرة داخل منطقة جزاء فريقه.</li>
+          <li>يجب أن تكون الكرة في اللعب.</li>
+        </ul>
+      `,
+      'لعب خطر': `
+        <ul>
+          <li><b>المادة 12:</b></li>
+          <li>أي تصرف يهدد بإصابة أي شخص (بما في ذلك اللاعب نفسه) أثناء محاولة لعب الكرة.</li>
+          <li>لا يشمل حدوث احتكاك جسدي.</li>
+          <li>يُعاقب بركلة حرة غير مباشرة.</li>
+        </ul>
+      `
     };
+    // وضع نص افتراضي لباقي الحالات
+    const defaultLaw = `<ul><li>يتم الرجوع لتقدير الحكم ومواد قانون اللعبة (IFAB) المتعلقة بطريقة استئناف اللعب وحماية اللاعبين.</li></ul>`;
 
     function loadVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
     function seekVideo(sec) { if(video.src) video.currentTime += sec; }
     function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
-    async function startAIChat(eventType) {
-      if (!video.src) return alert("شغل الفيديو أولاً يا كوتش!");
+    // فتح غرفة الـ VAR
+    async function openVARRoom(eventType) {
+      if (!video.src) return alert("الرجاء تشغيل فيديو المباراة أولاً!");
       video.pause();
       currentEvent = eventType;
       currentTime = video.currentTime;
+      drawings = [];
+      setTool('none');
       
-      chatHistory.innerHTML = '';
-      chatInput.value = '';
-      chatModal.style.display = 'flex';
-      typingIndicator.style.display = 'block';
+      // تعبئة مكتبة القوانين
+      document.getElementById('lawModalTitle').innerText = `قانون: ${eventType}`;
+      document.getElementById('lawModalContent').innerHTML = fullLawDictionary[eventType] || defaultLaw;
 
-      // محاكاة تحليل مبدئي للحالة وتمركز الحكم
-      setTimeout(() => {
-        typingIndicator.style.display = 'none';
-        const dist = Math.floor(Math.random() * 12) + 6; // مسافة بين 6 لـ 18 متر
-        const lawText = lawDictionary[eventType] || 'هذه الحالة خاضعة لتقدير الحكم بناءً على زاوية رؤيته.';
-        
-        const initialMsg = `
-          أهلاً بك يا كوتش. لقد اخترت تحليل حالة <span class="highlight">(${eventType})</span> في الدقيقة ${formatTime(currentTime)}.<br><br>
-          <b>نص القانون (IFAB):</b> ${lawText}<br><br>
-          <b>تحليل التمركز المبدئي:</b> من خلال تقدير اللقطة، الحكم كان يبعد حوالي <span class="highlight">${dist} أمتار</span> عن موقع الحدث. المسافة تعتبر جيدة، ولكن هل كانت زاوية الرؤية واضحة أم محجوبة باللاعبين؟<br><br>
-          اشرح لي تفاصيل اللقطة من وجهة نظرك لنتناقش فيها.
-        `;
-        appendMessage('ai', initialMsg);
-      }, 1000);
-
-      // قص اللقطة تلقائياً في الخلفية
-      await generateClipBlob();
+      // التقاط الفريم الحالي للرسم عليه
+      captureFrameToCanvas();
+      
+      varModal.style.display = 'flex';
+      
+      // بدء تسجيل اللقطة (10ث) في الخلفية
+      await recordVideoClipInBackground();
     }
 
-    function closeChat() { chatModal.style.display = 'none'; if(video.paused) video.play(); }
-
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `chat-msg msg-${sender}`;
-      msgDiv.innerHTML = sender === 'ai' ? `<b>المعلم:</b> ${text}` : text;
-      chatHistory.appendChild(msgDiv);
-      chatHistory.scrollTop = chatHistory.scrollHeight;
+    function closeVARRoom() {
+      varModal.style.display = 'none';
+      if(video.paused) video.play();
     }
 
-    function handleEnter(e) { if(e.key === 'Enter') sendUserMessage(); }
+    // التقاط الصورة للكانفاس
+    function captureFrameToCanvas() {
+      // ضبط أبعاد الكانفاس لتطابق أبعاد الفيديو الأصلية لعدم فقدان الجودة
+      canvas.width = video.videoWidth || 800;
+      canvas.height = video.videoHeight || 450;
+      baseFrame = new Image();
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
+      tempCanvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      baseFrame.src = tempCanvas.toDataURL('image/jpeg');
+      baseFrame.onload = redrawCanvas;
+    }
 
-    // محرك الردود الذكي المعتمد على الكلمات المفتاحية
-    function sendUserMessage() {
-      const text = chatInput.value.trim().toLowerCase();
-      if(!text) return;
+    // إدارة أدوات الرسم
+    function setTool(toolName) {
+      currentTool = toolName;
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+
+    function clearCanvas() {
+      drawings = [];
+      redrawCanvas();
+    }
+
+    // أحداث الماوس للرسم
+    canvas.addEventListener('mousedown', (e) => {
+      if (currentTool === 'none') return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      startX = (e.clientX - rect.left) * scaleX;
+      startY = (e.clientY - rect.top) * scaleY;
       
-      appendMessage('user', text);
-      chatInput.value = '';
-      typingIndicator.style.display = 'block';
-      chatHistory.scrollTop = chatHistory.scrollHeight;
+      if (currentTool === 'referee' || currentTool === 'ball') {
+        drawings.push({ type: currentTool, x: startX, y: startY });
+        redrawCanvas();
+      } else if (currentTool === 'zoom') {
+        drawings.push({ type: 'zoom', x: startX, y: startY });
+        redrawCanvas();
+      } else {
+        isDrawing = true;
+      }
+    });
 
-      setTimeout(() => {
-        typingIndicator.style.display = 'none';
-        let reply = '';
-        
-        if (text.includes('ايد') || text.includes('يد') || text.includes('لمس') || text.includes('خبطت')) {
-          reply = 'لو الكورة خبطت في إيده فعلاً، لازم نحدد: هل الإيد كانت في وضع طبيعي ولا مكبرة مساحة الجسم؟ لو مكبرة الجسم أو في حركة متعمدة للإيد تجاه الكورة، يبقى الفاول سليم 100%.';
-        } else if (text.includes('رجل') || text.includes('قدم') || text.includes('راس') || text.includes('جسم')) {
-          reply = 'نقطة تكتيكية ممتازة! حسب التعديلات الأخيرة لـ IFAB، لو اللاعب لعب الكورة برجله أو راسه وارتدت بالغلط لإيده، مفيش تعمد واللعب بيستمر ولا تعتبر مخالفة.';
-        } else if (text.includes('رؤية') || text.includes('زحمة') || text.includes('مقفولة') || text.includes('مش شايف') || text.includes('بعيد')) {
-          reply = 'أتفق معك تماماً. الكثافة العددية (Traffic) بتصعب التقدير جداً على حكم الساحة وبتخلق "عمى مؤقت". في اللحظات دي لازم يعتمد على زاوية الحكم المساعد أو تدخل الـ VAR لو الخطأ مؤثر.';
-        } else if (text.includes('احمر') || text.includes('طرد') || text.includes('عنيف') || text.includes('كسر') || text.includes('متهور')) {
-          reply = 'الكارت الأحمر بيطلع لو في "قوة مفرطة" بتهدد سلامة المنافس، أو لو منع فرصة هدف محقق صريحة. لو مفيش قوة مفرطة واكتفى بالتهور، يبقى إنذار أصفر كفاية.';
-        } else if (text.includes('فار') || text.includes('var') || text.includes('فيديو')) {
-          reply = 'حسب بروتوكول الـ VAR، هو بيتدخل بس في الأخطاء "الواضحة والجلية" (Clear and Obvious). يعني مش أي تلامس بيتم مراجعته، لازم يكون خطأ لا يختلف عليه اتنين في الأهداف أو ركلات الجزاء أو الطرد.';
-        } else if (text.includes('بلنتي') || text.includes('جزاء') || text.includes('منطقة') || text.includes('جوا')) {
-          reply = 'ركلات الجزاء لازم تكون واضحة. مش كل تلامس جوا المنطقة بلنتي، لازم الاحتكاك يكون أثر فعلياً على توازن المهاجم أو منعه يكمل هجمته بشكل غير قانوني.';
-        } else if (text.includes('صح') || text.includes('سليم') || text.includes('مظبوط') || text.includes('اتفق') || text.includes('ممتاز')) {
-          reply = 'تمام جداً يا كوتش. قرار الحكم هنا يتوافق مع روح القانون، وتمركزه ساعده ياخد القرار الصح. هنسجله كقرار إيجابي للحكم في التقرير النهائي.';
-        } else if (text.includes('غلط') || text.includes('مش صح') || text.includes('ظلم') || text.includes('فاول')) {
-          reply = 'كلامك يحترم ومنطقي. التقدير البشري بيغلط أحياناً بسبب التمركز الخاطئ أو سرعة اللعبة. التفاصيل دي هي اللي بتفرق في تقييم مستوى التحكيم الفعلي للمباراة.';
-        } else {
-          reply = 'وجهة نظر فنية دقيقة يا كوتش، والنقاش في التفاصيل دي بيفيد جداً في تحليل مستوى التحكيم وإدارة المباراة. تحب نركز على نقطة تانية في اللقطة دي ولا نرجع نكمل الماتش؟';
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const currentX = (e.clientX - rect.left) * scaleX;
+      const currentY = (e.clientY - rect.top) * scaleY;
+      
+      redrawCanvas();
+      
+      // رسم حي أثناء السحب
+      ctx.beginPath();
+      if (currentTool === 'distance') {
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(currentX, currentY);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else if (currentTool === 'vision') {
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(currentX - 50, currentY + 50);
+        ctx.lineTo(currentX + 50, currentY + 50);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+        ctx.fill();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const endX = (e.clientX - rect.left) * scaleX;
+      const endY = (e.clientY - rect.top) * scaleY;
+      
+      drawings.push({ type: currentTool, startX, startY, endX, endY });
+      redrawCanvas();
+    });
+
+    // إعادة رسم كل شيء
+    function redrawCanvas() {
+      if(baseFrame) ctx.drawImage(baseFrame, 0, 0, canvas.width, canvas.height);
+      
+      drawings.forEach(d => {
+        if (d.type === 'referee') {
+          ctx.beginPath(); ctx.arc(d.x, d.y, 12, 0, Math.PI*2);
+          ctx.fillStyle = '#eab308'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.stroke();
+          ctx.fillStyle = '#000'; ctx.font = 'bold 12px Cairo'; ctx.fillText('Ref', d.x-9, d.y+4);
         }
-        
-        appendMessage('ai', reply);
-      }, 1500);
+        else if (d.type === 'ball') {
+          ctx.beginPath(); ctx.arc(d.x, d.y, 10, 0, Math.PI*2);
+          ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#ef4444'; ctx.stroke();
+        }
+        else if (d.type === 'distance') {
+          ctx.beginPath(); ctx.setLineDash([10, 5]);
+          ctx.moveTo(d.startX, d.startY); ctx.lineTo(d.endX, d.endY);
+          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4; ctx.stroke(); ctx.setLineDash([]);
+          // حساب وعرض مسافة وهمية
+          const dist = Math.round(Math.sqrt(Math.pow(d.endX-d.startX, 2) + Math.pow(d.endY-d.startY, 2)) / 20);
+          ctx.fillStyle = '#111827'; ctx.fillRect((d.startX+d.endX)/2 - 15, (d.startY+d.endY)/2 - 15, 40, 25);
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Cairo'; ctx.fillText(`${dist}m`, (d.startX+d.endX)/2 - 10, (d.startY+d.endY)/2 + 2);
+        }
+        else if (d.type === 'vision') {
+          ctx.beginPath();
+          ctx.moveTo(d.startX, d.startY);
+          ctx.lineTo(d.endX - 80, d.endY + 80);
+          ctx.lineTo(d.endX + 80, d.endY + 80);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fill();
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+        }
+        else if (d.type === 'zoom') {
+          // تأثير عدسة التكبير (رسم دائرة مكبرة)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 80, 0, Math.PI*2);
+          ctx.lineWidth = 4; ctx.strokeStyle = '#38bdf8'; ctx.stroke();
+          ctx.clip();
+          // رسم الجزء المكبر
+          ctx.drawImage(baseFrame, d.x - 40, d.y - 40, 80, 80, d.x - 80, d.y - 80, 160, 160);
+          ctx.restore();
+        }
+      });
     }
 
-    async function generateClipBlob() {
+    // تسجيل الفيديو 10 ثواني في الخلفية
+    async function recordVideoClipInBackground() {
       const startTime = Math.max(0, currentTime - 5);
       const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
       
       statusBanner.style.display = 'flex';
-      document.getElementById('liveStatusText').innerText = `السيستم يقوم باقتطاع وتجهيز اللقطة (5ث قبل وبعد) في الخلفية...`;
+      document.getElementById('liveStatusText').innerText = `يتم تجهيز لقطة الفيديو في الخلفية...`;
 
       try {
-        const canvas = document.getElementById('liveRenderCanvas');
-        canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
-        const ctx = canvas.getContext('2d');
-        const stream = canvas.captureStream(30);
+        const hiddenCanvas = document.getElementById('liveRenderCanvas');
+        hiddenCanvas.width = video.videoWidth || 1280; hiddenCanvas.height = video.videoHeight || 720;
+        const hiddenCtx = hiddenCanvas.getContext('2d');
+        const stream = hiddenCanvas.captureStream(30);
         let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
         const chunks = [];
         recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
@@ -292,7 +489,7 @@
           if (video.currentTime >= endTime || video.paused) { 
             video.pause(); recorder.stop(); video.currentTime = originalTime; return; 
           }
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          hiddenCtx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
           setTimeout(stepFrame, 1000/30);
         }
         stepFrame();
@@ -303,9 +500,7 @@
           if (typeof ysFixWebmDuration !== 'undefined') {
             finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
           }
-          const url = URL.createObjectURL(finalBlob);
-          refEventsLog.push({ time: formatTime(currentTime), type: currentEvent, blobUrl: url });
-          renderLog();
+          currentVideoBlobUrl = URL.createObjectURL(finalBlob);
           statusBanner.style.display = 'none';
         };
       } catch(err) {
@@ -313,16 +508,67 @@
       }
     }
 
+    // حفظ التحليل للجدول
+    function saveVARAnalysis() {
+      const annotatedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+      
+      refEventsLog.push({
+        time: formatTime(currentTime),
+        type: currentEvent,
+        imageUrl: annotatedImageUrl,
+        videoUrl: currentVideoBlobUrl || '' // قد يكون فارغاً إذا ضغط الحفظ بسرعة قبل انتهاء الفيديو
+      });
+      
+      renderLog();
+      closeVARRoom();
+    }
+
+    // عرض الجدول
     function renderLog() {
       const tbody = document.getElementById('refLogBody');
       if(refEventsLog.length === 0) return;
-      tbody.innerHTML = refEventsLog.slice().reverse().map(item => `
+      tbody.innerHTML = refEventsLog.slice().reverse().map((item, index) => {
+        const actualIndex = refEventsLog.length - 1 - index;
+        return `
         <tr>
           <td>${item.time}</td>
           <td><b>${item.type}</b></td>
-          <td><a href="${item.blobUrl}" download="لقطة_${item.type.replace(/ /g, '_')}_${Date.now()}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ اللقطة</a></td>
+          <td>
+            <button class="btn-download-action" onclick="openDownloadModal(${actualIndex})">
+              <i class="fa-solid fa-download"></i> خيارات التحميل
+            </button>
+          </td>
         </tr>
-      `).join('');
+      `}).join('');
+    }
+
+    // مودال التحميل
+    function openDownloadModal(index) {
+      currentDownloadIndex = index;
+      dlModal.style.display = 'flex';
+    }
+
+    function closeDownloadModal() {
+      dlModal.style.display = 'none';
+      currentDownloadIndex = -1;
+    }
+
+    function downloadItem(type) {
+      if (currentDownloadIndex === -1) return;
+      const item = refEventsLog[currentDownloadIndex];
+      const a = document.createElement('a');
+      
+      if (type === 'image') {
+        a.href = item.imageUrl;
+        a.download = `تحليل_${item.type}_صورة_${Date.now()}.jpg`;
+      } else if (type === 'video') {
+        if(!item.videoUrl) return alert("عفواً، تم حفظ الحالة قبل انتهاء معالجة الفيديو في الخلفية. حاول الانتظار ثواني في المرة القادمة.");
+        a.href = item.videoUrl;
+        a.download = `لقطة_${item.type}_فيديو_${Date.now()}.webm`;
+      }
+      
+      a.click();
+      closeDownloadModal();
     }
   </script>
 </body>
