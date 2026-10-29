@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - مختبر حراس المرمى الشامل (Pro Max)</title>
+  <title>Ziada Analysis - استوديو حراس المرمى (Pro Max)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- مكتبة الرسوم البيانية للرادار -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937;
@@ -23,8 +20,8 @@
     .brand-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; }
     
-    .tabs-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-    .tab-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+    .tabs-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+    .tab-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 10px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
     .tab-btn:hover { border-color: var(--primary); }
     .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
 
@@ -33,11 +30,13 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* =========================================
-       التاب الأول: التدريبات 
+       قسم تصميم التدريبات (TacticalPad Builder)
        ========================================= */
-    .training-workspace { display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; height: 65vh; }
+    .training-workspace { display: grid; grid-template-columns: 260px 1fr; gap: 15px; align-items: start; height: 70vh; }
     .tools-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; user-select: none; }
     .tools-title { color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid #374151; padding-bottom: 8px; margin-bottom: 5px; }
+    .tools-hint { font-size: 11px; text-align: center; color: var(--text-muted); margin-bottom: 10px; }
+    
     .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .draggable-source { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px; border-radius: 8px; cursor: grab; font-weight: bold; font-size: 11px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; transition: 0.2s; text-align: center; }
     .draggable-source:hover { background: #374151; border-color: var(--primary); }
@@ -47,6 +46,7 @@
     .pitch-controls { display: flex; justify-content: center; gap: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
     .pitch-btn { background: #1f2937; color: #fff; border: 1px solid #374151; padding: 6px 15px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
     .pitch-btn.active { background: var(--primary); color: #000; }
+    
     .pitch-area { background: var(--pitch-green); border: 2px solid #fff; border-radius: 8px; flex: 1; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
     .pitch-lines { position: absolute; width: 100%; height: 100%; pointer-events: none; transition: all 0.3s; }
     
@@ -54,469 +54,815 @@
     .view-penalty .six-yard-box { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 25%; height: 20%; border: 2px solid #fff; border-top: none; }
     .view-penalty .penalty-arc { position: absolute; top: 50%; left: 50%; transform: translateX(-50%); width: 20%; height: 20%; border: 2px solid #fff; border-radius: 50%; clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
     .view-penalty .goal-net { display: none; }
-    .view-six-yard .penalty-box, .view-six-yard .penalty-arc { display: none; }
+    
+    .view-six-yard .penalty-box { display: none; }
+    .view-six-yard .penalty-arc { display: none; }
     .view-six-yard .six-yard-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 70%; height: 60%; border: 3px solid #fff; border-top: none; }
-    .view-six-yard .goal-net { display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 35%; height: 15%; border: 4px solid #eab308; border-top: none; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px), repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px); }
+    .view-six-yard .goal-net { display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 35%; height: 15%; border: 4px solid #eab308; border-top: none; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px), repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px); box-shadow: inset 0 10px 20px rgba(0,0,0,0.5); }
 
     .drill-item { position: absolute; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6)); transform-origin: center; }
     .drill-item:active { cursor: grabbing; }
     .drill-item .delete-btn { display: none; position: absolute; top: -15px; right: -15px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; text-align: center; line-height: 22px; cursor: pointer; border: 1px solid #fff; z-index: 20; }
     .drill-item:hover .delete-btn { display: block; }
+    .drill-item.animating { transition: top 0.6s ease-in-out, left 0.6s ease-in-out; }
 
-    .anim-bar { background: #111827; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
-    .anim-btn { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+    .anim-bar { background: #111827; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 8px; display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+    .anim-btn { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
+    .anim-btn:hover { background: #4b5563; }
     .anim-btn.record { background: #0ea5e9; color: #000; border-color: #0284c7; }
     .anim-btn.play { background: #10b981; color: #000; border-color: #059669; }
+    .speed-select { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 7px; border-radius: 6px; font-family: 'Cairo'; font-weight: bold; outline: none;}
+    .frames-count { font-size: 13px; font-weight: bold; color: var(--primary); background: #1f2937; padding: 5px 10px; border-radius: 4px;}
+
+    .action-bar { padding: 15px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
+    .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 
     /* =========================================
-       التاب الثاني: التقطيع والتحليل 
+       قسم تقطيع الفيديو (Smart Clipping Dashboard)
        ========================================= */
     .analysis-workspace { display: grid; grid-template-columns: 280px 1fr; gap: 15px; align-items: start; }
-    .clipping-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow-y: auto; }
-    .clip-btn { width: 100%; padding: 8px 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; color: white; background: #1f2937; border: 1px solid #374151; }
-    .clip-btn:hover { border-color: var(--primary); background: #374151; }
-    .mode-toggle-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
     
-    .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .video-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 50vh; }
+    .clipping-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 75vh; overflow-y: auto; }
+    
+    .mode-toggle-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 10px; display: flex; gap: 10px; justify-content: center; flex-direction: column; }
+    .mode-toggle-box label { display: flex; align-items: center; gap: 5px; color: #fff; font-size: 12.5px; font-weight: bold; cursor: pointer; }
+
+    .clip-btn { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: white; background: #1f2937; border: 1px solid #374151; transition: 0.2s; text-align: right; }
+    .clip-btn:hover { border-color: var(--primary); background: #374151; }
+    .clip-btn.sub-btn { background: #0f172a; margin-right: 15px; width: calc(100% - 15px); border-color: #1e293b; color: #94a3b8; }
+    .clip-btn.sub-btn:hover { color: #fff; border-color: var(--primary); background: #1e293b; }
+    .cat-title { color: var(--primary); font-size: 13px; font-weight: bold; padding-right: 5px; margin-top: 5px; margin-bottom: 2px; }
+
+    .recording-btn { background: var(--danger) !important; color: white !important; border-color: #b91c1c !important; animation: pulse 1.5s infinite; justify-content: center !important; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+    .video-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+    .video-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 50vh; position: relative; }
     video { width: 100%; height: 100%; object-fit: contain; }
+    
     .video-controls { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 10px 0; }
+    .control-btn { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .control-btn:hover { background: var(--primary); color: #000; }
     .upload-input { background: #070b12; padding: 8px; border-radius: 8px; color: #fff; font-size: 13px; border: 1px solid #374151; }
 
-    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; background: var(--card-bg); border-radius: 8px; overflow:hidden;}
+    .live-status-banner { display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 5px; justify-content: center; }
+
+    /* الجدول */
+    .log-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px; }
+    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; }
     .log-table th { background: #1f2937; color: var(--primary); padding: 9px; }
-    .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
-    .btn-action-small { background: #3b82f6; color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; border: none; cursor: pointer; margin-right: 5px; }
+    .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+    .btn-download { background: var(--success); color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; }
+    .btn-draw { background: #3b82f6; color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; margin-right: 5px; }
 
     /* =========================================
-       التاب الثالث: المقارنة (Split Screen)
-       ========================================= */
-    .compare-workspace { display: flex; flex-direction: column; gap: 15px; height: 75vh; }
-    .split-screens { display: flex; gap: 15px; flex: 1; }
-    .split-box { flex: 1; background: #000; border: 2px solid var(--border-color); border-radius: 12px; position: relative; display: flex; flex-direction: column; }
-    .split-box video { flex: 1; width: 100%; object-fit: contain; }
-    .split-header { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; z-index: 10; }
-    .split-header input { background: rgba(15, 23, 42, 0.8); color: #fff; border: 1px solid var(--primary); padding: 5px; border-radius: 5px; font-size: 12px; width: 60%; }
-    .compare-controls { display: flex; justify-content: center; gap: 15px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
-    .sync-btn { background: var(--accent); color: #000; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
-
-    /* =========================================
-       التاب الرابع: الإحصائيات (Radar & Heatmap)
-       ========================================= */
-    .stats-workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .stat-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    .stat-title { color: var(--primary); font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center; }
-    
-    /* Heatmap Goal */
-    .goal-heatmap-container { position: relative; width: 100%; max-width: 400px; aspect-ratio: 2/1; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><rect x="10" y="10" width="380" height="190" fill="none" stroke="%23ffffff" stroke-width="8"/><line x1="10" y1="10" x2="50" y2="40" stroke="%23ffffff" stroke-width="4"/><line x1="390" y1="10" x2="350" y2="40" stroke="%23ffffff" stroke-width="4"/><line x1="50" y1="40" x2="350" y2="40" stroke="%23ffffff" stroke-width="4"/><path d="M 10 10 L 50 40 L 350 40 L 390 10" fill="none" stroke="%23ffffff" stroke-width="2" stroke-dasharray="10 10"/><path d="M 10 200 L 50 40 M 390 200 L 350 40" fill="none" stroke="%23ffffff" stroke-width="2" stroke-dasharray="10 10"/></svg>') no-repeat center center; background-size: contain; border-bottom: 5px solid var(--pitch-green); cursor: crosshair; }
-    .heat-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-    .heat-dot.goal { background-color: var(--danger); }
-    .heat-dot.save { background-color: var(--success); }
-    .heatmap-instructions { font-size: 12px; color: var(--text-muted); margin-top: 15px; text-align: center; }
-    
-    /* Radar Controls */
-    .radar-controls { width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .radar-input-group { display: flex; justify-content: space-between; align-items: center; }
-    .radar-input-group label { color: #fff; font-size: 13px; font-weight: bold; width: 40%;}
-    .radar-input-group input { width: 60%; }
-
-    /* =========================================
-       مودال الرسم والتحليل الذكي
+       مودال الرسم والتحليل الذكي (المعدل)
        ========================================= */
     .draw-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; flex-direction: column; padding: 20px; }
-    .draw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .draw-toolbar { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-    .draw-tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-    .draw-tool-btn:hover, .draw-tool-btn.active { background: var(--primary); color: #000; }
+    .draw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .draw-header h2 { color: var(--primary); font-size: 18px; margin: 0; }
+    .draw-close { background: transparent; border: none; color: var(--danger); font-size: 24px; cursor: pointer; }
     
-    /* مؤقت رد الفعل */
-    .reaction-timer-box { display: flex; align-items: center; gap: 10px; background: #0f172a; padding: 5px 15px; border-radius: 8px; border: 1px solid var(--accent); }
-    .timer-btn { background: var(--accent); color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    .timer-result { color: var(--accent); font-weight: bold; font-size: 16px; font-family: monospace; min-width: 60px; text-align: center; }
-
+    .draw-toolbar { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    .draw-tool-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 13px; transition: 0.2s;}
+    .draw-tool-btn:hover, .draw-tool-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+    
+    /* أزرار التحكم في الفيديو داخل الرسم */
+    .draw-video-controls { display: flex; gap: 5px; border-left: 2px solid #374151; padding-left: 15px; margin-left: 5px; }
+    
     .draw-canvas-wrapper { position: relative; flex: 1; background: #000; border: 1px solid #374151; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     #drawVideoPlayer { position: absolute; max-width: 100%; max-height: 100%; object-fit: contain; }
     #drawCanvasOverlay { position: absolute; z-index: 10; cursor: crosshair; }
+    
+    .shape-controls { position: absolute; display: none; background: rgba(17, 24, 39, 0.95); border: 1px solid var(--primary); padding: 5px; border-radius: 8px; gap: 5px; z-index: 100; flex-direction: row; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .shape-btn { background: #374151; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    .shape-btn.ok { color: #10b981; } .shape-btn.del { color: #ef4444; }
+    .shape-btn:hover { background: var(--primary); color: #000; }
+    
+    .draw-footer { display: flex; justify-content: center; margin-top: 15px; }
+    .btn-save-draw { background: var(--success); color: #fff; padding: 10px 30px; border-radius: 8px; border: none; font-weight: bold; font-family: 'Cairo'; font-size: 14px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-flask"></i> Ziada Analysis | مختبر حراس المرمى (GK Lab)</span>
+      <span class="brand-title"><i class="fa-solid fa-hands-holding-circle"></i> Ziada Analysis | استوديو حراس المرمى (Pro Max)</span>
       <a href="index.html" class="btn-top">لوحة التحكم</a>
     </header>
 
     <div class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('training')"><i class="fa-solid fa-clipboard-list"></i> محاكي التدريبات</button>
-      <button class="tab-btn" onclick="switchTab('analysis')"><i class="fa-solid fa-scissors"></i> تقطيع وتحليل</button>
-      <button class="tab-btn" onclick="switchTab('compare')"><i class="fa-solid fa-not-equal"></i> المقارنة الثنائية</button>
-      <button class="tab-btn" onclick="switchTab('stats')"><i class="fa-solid fa-chart-radar"></i> إحصائيات وتقييم</button>
+      <button class="tab-btn active" onclick="switchTab('training')"><i class="fa-solid fa-clipboard-list"></i> محاكي التدريبات والتكتيك</button>
+      <button class="tab-btn" onclick="switchTab('analysis')"><i class="fa-solid fa-scissors"></i> تقطيع وتحليل الحالات (فيديو)</button>
     </div>
 
-    <!-- التاب الأول: محاكي التدريبات -->
+    <!-- التاب الأول: تصميم التدريبات (محاكي الحركة) -->
     <div id="trainingTab" class="tab-content active">
       <div class="training-workspace">
         <aside class="tools-panel">
           <div class="tools-title">مكتبة الأدوات</div>
+          
           <div class="tools-grid">
-            <div class="draggable-source" draggable="true" data-type="gk">حارس (GK)</div>
-            <div class="draggable-source" draggable="true" data-type="gk_coach">مدرب</div>
-            <div class="draggable-source" draggable="true" data-type="ball">كرة</div>
-            <div class="draggable-source" draggable="true" data-type="player_red">مهاجم</div>
-            <div class="draggable-source" draggable="true" data-type="cone_red">قمع</div>
-            <div class="draggable-source" draggable="true" data-type="hurdle">حاجز</div>
+            <div class="draggable-source" draggable="true" data-type="gk">
+              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/></svg>
+              <span>حارس (GK)</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="gk_coach">
+              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#f97316"/><path d="M 20 90 Q 50 50 80 90" fill="#f97316" stroke="#fff" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fff" stroke="#000" stroke-width="2"/></svg>
+              <span>مدرب حراس</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="ball">
+              <svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/><polygon points="50,20 75,40 65,70 35,70 25,40" fill="#000"/></svg>
+              <span>كرة قدم</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="player_red">
+              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#ef4444"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
+              <span>مهاجم أحمر</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="player_blue">
+              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#3b82f6"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
+              <span>مدافع أزرق</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="player_yellow">
+              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#facc15"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
+              <span>لاعب أصفر</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="mannequin">
+              <svg width="30" height="30" viewBox="0 0 100 100"><path d="M 30 90 L 30 50 Q 50 20 70 50 L 70 90 Z" fill="#ef4444" stroke="#fff" stroke-width="2"/><circle cx="50" cy="25" r="15" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>
+              <span>شاخص (حائط)</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="cone_red">
+              <svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>
+              <span>قمع أحمر</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="cone_blue">
+              <svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="2"/></svg>
+              <span>قمع أزرق</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="marker_yellow">
+              <svg width="25" height="25" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="15" fill="#facc15"/></svg>
+              <span>ماركر أرضي</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="hurdle">
+              <svg width="35" height="20" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="30" fill="#000"/><rect x="75" y="20" width="10" height="30" fill="#000"/></svg>
+              <span>حاجز قفز</span>
+            </div>
+            <div class="draggable-source" draggable="true" data-type="ladder">
+              <svg width="20" height="35" viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" fill="none" stroke="#facc15" stroke-width="4"/><line x1="30" y1="30" x2="70" y2="30" stroke="#facc15" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#facc15" stroke-width="4"/><line x1="30" y1="70" x2="70" y2="70" stroke="#facc15" stroke-width="4"/></svg>
+              <span>سلم توافق</span>
+            </div>
           </div>
         </aside>
         
         <div class="pitch-container">
           <div class="pitch-controls">
-            <button class="pitch-btn active" onclick="setPitchView('penalty')">منطقة الجزاء</button>
-            <button class="pitch-btn" onclick="setPitchView('six-yard')">التلات خشبات</button>
+            <button class="pitch-btn active" onclick="setPitchView('penalty')">منطقة الجزاء (مواجهة)</button>
+            <button class="pitch-btn" onclick="setPitchView('six-yard')">التلات خشبات ومنطقة الـ 6</button>
           </div>
+          
           <div class="pitch-area view-penalty" id="pitchArea" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="pitch-lines"><div class="penalty-arc"></div><div class="penalty-box"></div><div class="six-yard-box"></div><div class="goal-net"></div></div>
+            <div class="pitch-lines">
+              <div class="penalty-arc"></div>
+              <div class="penalty-box"></div>
+              <div class="six-yard-box"></div>
+              <div class="goal-net"></div>
+            </div>
           </div>
         </div>
       </div>
+      
       <div class="anim-bar">
-        <button class="anim-btn record" onclick="saveFrame()">حفظ إطار</button>
-        <button class="anim-btn play" onclick="playAnimation()">تشغيل الحركة</button>
-        <button class="anim-btn" style="background:var(--success); border:none;" onclick="printDrill()">حفظ صورة</button>
+        <span style="color:#cbd5e1; font-weight:bold;"><i class="fa-solid fa-film"></i> الحركة:</span>
+        <button class="anim-btn record" onclick="saveFrame()"><i class="fa-solid fa-camera"></i> حفظ إطار</button>
+        <select id="animSpeed" class="speed-select" title="سرعة حركة اللاعبين">
+          <option value="1200">بطيء جداً</option>
+          <option value="800">بطيء</option>
+          <option value="500" selected>عادي</option>
+          <option value="250">سريع</option>
+        </select>
+        <span class="frames-count">اللقطات: <span id="frameCount">0</span></span>
+        <button class="anim-btn play" onclick="playAnimation()"><i class="fa-solid fa-play"></i> تشغيل الحركة</button>
+        <button class="anim-btn" style="background:#ef4444; border-color:#b91c1c;" onclick="clearFrames()"><i class="fa-solid fa-trash-can"></i> مسح الإطارات</button>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-action" style="background:#4b5563; color:#fff;" onclick="clearPitch()"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
+        <button class="btn-action" style="background:var(--success); color:#fff;" onclick="printDrill()"><i class="fa-solid fa-image"></i> حفظ كصورة</button>
+        <button class="btn-action" style="background:var(--primary); color:#000;" onclick="exportDrillVideo()"><i class="fa-solid fa-video"></i> تصدير التدريب (فيديو)</button>
       </div>
     </div>
 
-    <!-- التاب الثاني: التقطيع -->
+    <!-- التاب الثاني: لوحة التقطيع (Clipping Dashboard) -->
     <div id="analysisTab" class="tab-content">
       <div class="analysis-workspace">
+        
         <aside class="clipping-panel">
-          <div class="tools-title">التقطيع السريع</div>
+          <div class="tools-title">التقطيع السريع (Tagging)</div>
+          
           <div class="mode-toggle-box">
-            <label><input type="radio" name="clipMode" value="auto" checked> تقطيع تلقائي (10ث)</label>
-            <label><input type="radio" name="clipMode" value="manual"> تسجيل يدوي</label>
+            <div style="font-size: 11px; text-align: center; color: var(--text-muted); margin-bottom: 5px;">اختر طريقة التقطيع للأزرار بالأسفل:</div>
+            <label><input type="radio" name="clipMode" value="auto" checked> ✂️ تقطيع تلقائي (5ث قبل و 5ث بعد)</label>
+            <label><input type="radio" name="clipMode" value="manual"> 🔴 تسجيل يدوي (مفتوح المدة)</label>
           </div>
-          <button class="clip-btn" onclick="handleTagClick(this, 'انفراد (1v1)')">انفراد 1v1</button>
-          <button class="clip-btn" onclick="handleTagClick(this, 'تصدي لكروس')">عرضيات (كروس)</button>
-          <button class="clip-btn" onclick="handleTagClick(this, 'تصويب بعيد')">تصويب بعيد</button>
-          <button class="clip-btn" onclick="handleTagClick(this, 'لعب بالرجلين')">لعب بالرجلين</button>
+
+          <div class="cat-title">عرضيات (Crosses)</div>
+          <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - كروس')">كروس <i class="fa-solid fa-share"></i></button>
+          <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - كورنر')">كورنر <i class="fa-solid fa-flag"></i></button>
+          <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - فاولات')">فولات <i class="fa-solid fa-bullseye"></i></button>
+          
+          <hr style="border-color:#374151; margin: 4px 0;">
+          <button class="clip-btn" onclick="handleTagClick(this, 'تصويب')">تصويب <i class="fa-solid fa-bullseye"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'اللعب بالرجلين')">اللعب بالرجلين <i class="fa-solid fa-shoe-prints"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'اللعب باليدين')">اللعب باليدين <i class="fa-solid fa-hands"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'رد الفعل')">رد الفعل <i class="fa-solid fa-bolt"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'التواصل')">التواصل مع الدفاع <i class="fa-solid fa-walkie-talkie"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'ركلات المرمى')">ركلات المرمى <i class="fa-solid fa-futbol"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'إحراز هدف')">إحراز هدف <i class="fa-solid fa-check-double"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'بداية كل شوط')">بداية كل شوط <i class="fa-solid fa-stopwatch"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'هدف في مرماه')">هدف في مرماه <i class="fa-solid fa-triangle-exclamation"></i></button>
+          <button class="clip-btn" onclick="handleTagClick(this, 'المساندة')">المساندة والدعم <i class="fa-solid fa-handshake"></i></button>
         </aside>
 
         <main class="video-area">
+          <div class="live-status-banner" id="liveStatusBanner">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span id="liveStatusText">جاري المعالجة... يرجى الانتظار.</span>
+          </div>
           <div class="video-container">
-            <video id="gkVideo" controls playsinline></video>
+            <video id="gkVideo" controls playsinline crossorigin="anonymous"></video>
           </div>
           <div class="video-controls">
+            <button class="control-btn" onclick="skip(-5)"><i class="fa-solid fa-backward-step"></i> رجوع 5ث</button>
+            <button class="control-btn" onclick="skip(5)">تقديم 5ث <i class="fa-solid fa-forward-step"></i></button>
             <input type="file" class="upload-input" accept="video/*" onchange="loadGkVideo(event)">
           </div>
-          <table class="log-table" style="margin-top:10px;">
-            <thead><tr><th>التوقيت</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
-            <tbody id="gkLogBody"></tbody>
-          </table>
+          
+          <div class="log-section">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>التوقيت</th>
+                  <th>نوع الحالة (Tag)</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="gkLogBody">
+                <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم تقطيع لقطات حتى الآن.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </main>
       </div>
-    </div>
-
-    <!-- التاب الثالث: المقارنة (Split-Screen) -->
-    <div id="compareTab" class="tab-content">
-      <div class="compare-workspace">
-        <div class="compare-controls">
-          <button class="sync-btn" onclick="syncPlayPause()"><i class="fa-solid fa-play"></i> تشغيل / إيقاف متزامن</button>
-        </div>
-        <div class="split-screens">
-          <div class="split-box">
-            <div class="split-header"><input type="file" accept="video/*" onchange="loadSplitVid(event, 'vid1')"></div>
-            <video id="vid1" controls muted></video>
-          </div>
-          <div class="split-box">
-            <div class="split-header"><input type="file" accept="video/*" onchange="loadSplitVid(event, 'vid2')"></div>
-            <video id="vid2" controls muted></video>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- التاب الرابع: الإحصائيات (Radar & Heatmap) -->
-    <div id="statsTab" class="tab-content">
-      <div class="stats-workspace">
-        
-        <!-- خريطة التسديدات -->
-        <div class="stat-panel">
-          <div class="stat-title"><i class="fa-solid fa-fire"></i> خريطة التسديدات الحرارية</div>
-          <div class="goal-heatmap-container" id="heatmapGoal">
-            <!-- سيتم إضافة النقاط هنا -->
-          </div>
-          <div class="heatmap-instructions">
-            كليك يسار: <span style="color:var(--danger); font-weight:bold;">هدف 🔴</span> | 
-            كليك يمين: <span style="color:var(--success); font-weight:bold;">تصدي 🟢</span><br>
-            <button onclick="clearHeatmap()" style="margin-top:10px; background:var(--bg-dark); color:#fff; border:1px solid #fff; padding:5px 10px; border-radius:5px; cursor:pointer;">مسح الخريطة</button>
-          </div>
-        </div>
-
-        <!-- رادار التقييم -->
-        <div class="stat-panel">
-          <div class="stat-title"><i class="fa-solid fa-spider"></i> بروفايل مهارات الحارس (Radar)</div>
-          <div style="width: 100%; max-width: 300px;">
-            <canvas id="gkRadarChart"></canvas>
-          </div>
-          <div class="radar-controls">
-            <div class="radar-input-group"><label>رد الفعل (Reflexes)</label><input type="range" id="r_reflex" min="0" max="100" value="75" oninput="updateRadar()"></div>
-            <div class="radar-input-group"><label>العرضيات (Aerial)</label><input type="range" id="r_aerial" min="0" max="100" value="60" oninput="updateRadar()"></div>
-            <div class="radar-input-group"><label>التوزيع (Distribution)</label><input type="range" id="r_dist" min="0" max="100" value="85" oninput="updateRadar()"></div>
-            <div class="radar-input-group"><label>الانفرادات (1v1)</label><input type="range" id="r_1v1" min="0" max="100" value="70" oninput="updateRadar()"></div>
-            <div class="radar-input-group"><label>التمركز (Positioning)</label><input type="range" id="r_pos" min="0" max="100" value="80" oninput="updateRadar()"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- مودال الرسم والذكاء -->
-  <div class="draw-modal" id="drawModal">
-    <div class="draw-header">
-      <h2 style="color:var(--primary); margin:0;">استوديو التحليل والرسم</h2>
-      <button class="draw-close" onclick="closeDrawModal()"><i class="fa-solid fa-circle-xmark"></i></button>
-    </div>
-    
-    <div class="draw-toolbar">
-      <button class="draw-tool-btn" onclick="toggleDrawVideo()"><i class="fa-solid fa-play-pause"></i> تشغيل</button>
-      
-      <!-- مؤقت رد الفعل السحري -->
-      <div class="reaction-timer-box">
-        <button class="timer-btn" onclick="setReactStart()">لحظة التسديد</button>
-        <button class="timer-btn" onclick="setReactEnd()">قفزة الحارس</button>
-        <div class="timer-result" id="reactTimeResult">0.00s</div>
-      </div>
-
-      <button class="draw-tool-btn active" onclick="setDrawTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر</button>
-      <button class="draw-tool-btn" onclick="setDrawTool('gk-pos')">حارس</button>
-      <button class="draw-tool-btn" onclick="setDrawTool('angle')">زاوية التغطية</button>
-      <!-- أداة النقطة العمياء الجديدة -->
-      <button class="draw-tool-btn" style="background:#4f46e5;" onclick="setDrawTool('blind-spot')"><i class="fa-solid fa-eye-slash"></i> محاكي النقطة العمياء</button>
-      
-      <button class="draw-tool-btn" style="background:var(--danger);" onclick="clearDrawings()"><i class="fa-solid fa-trash"></i> مسح</button>
-    </div>
-
-    <div class="draw-canvas-wrapper" id="drawWrapper">
-      <video id="drawVideoPlayer" playsinline></video>
-      <canvas id="drawCanvasOverlay"></canvas>
-    </div>
-    <div style="text-align:center; margin-top:10px;">
-      <button onclick="saveDrawnImage()" style="background:var(--success); color:#fff; padding:10px 30px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">حفظ الصورة التحليلية</button>
     </div>
   </div>
 
   <canvas id="liveRenderCanvas" style="display: none;"></canvas>
 
+  <!-- =========================================
+       استوديو الرسم على اللقطات (Smart Drawing)
+       ========================================= -->
+  <div class="draw-modal" id="drawModal">
+    <div class="draw-header">
+      <h2><i class="fa-solid fa-pen-nib"></i> تحليل اللقطة بالرسم</h2>
+      <button class="draw-close" onclick="closeDrawModal()"><i class="fa-solid fa-circle-xmark"></i></button>
+    </div>
+    
+    <div class="draw-toolbar">
+      <!-- أزرار تحكم الفيديو الجديدة -->
+      <div class="draw-video-controls">
+        <button class="draw-tool-btn" style="background: var(--accent); color: #000; border-color: var(--accent);" onclick="toggleDrawVideo()" title="تشغيل/إيقاف"><i class="fa-solid fa-play-pause"></i> تشغيل الفيديو</button>
+        <button class="draw-tool-btn" onclick="skipDrawVideo(-1)"><i class="fa-solid fa-backward-step"></i> 1ث</button>
+        <button class="draw-tool-btn" onclick="skipDrawVideo(1)">1ث <i class="fa-solid fa-forward-step"></i></button>
+      </div>
+      
+      <!-- أدوات الرسم -->
+      <button class="draw-tool-btn active" onclick="setDrawTool('none')"><i class="fa-solid fa-mouse-pointer"></i> مؤشر (تحديد وحذف)</button>
+      <button class="draw-tool-btn" onclick="setDrawTool('gk-pos')"><i class="fa-solid fa-street-view"></i> تمركز الحارس</button>
+      <button class="draw-tool-btn" onclick="setDrawTool('ball')"><i class="fa-solid fa-futbol"></i> مكان الكرة</button>
+      <button class="draw-tool-btn" onclick="setDrawTool('shot-path')"><i class="fa-solid fa-arrow-trend-down"></i> مسار التسديدة</button>
+      <button class="draw-tool-btn" style="background:#0ea5e9;" onclick="setDrawTool('angle')"><i class="fa-solid fa-draw-polygon"></i> زاوية التغطية (مثلث)</button>
+      <button class="draw-tool-btn" style="background:var(--danger);" onclick="clearDrawings()"><i class="fa-solid fa-trash"></i> مسح الكل</button>
+    </div>
+
+    <div class="draw-canvas-wrapper" id="drawWrapper">
+      <video id="drawVideoPlayer" playsinline></video>
+      <canvas id="drawCanvasOverlay"></canvas>
+      
+      <div id="shapeControlsDraw" class="shape-controls">
+        <button class="shape-btn ok" onclick="confirmDrawShape()"><i class="fa-solid fa-check"></i></button>
+        <button class="shape-btn del" onclick="deleteDrawShape()"><i class="fa-solid fa-trash"></i></button>
+        <button class="shape-btn" onclick="scaleDrawShape(1.1)"><i class="fa-solid fa-plus"></i></button>
+        <button class="shape-btn" onclick="scaleDrawShape(0.9)"><i class="fa-solid fa-minus"></i></button>
+      </div>
+    </div>
+    
+    <div class="draw-footer">
+      <button class="btn-save-draw" onclick="saveDrawnImage()"><i class="fa-solid fa-download"></i> حفظ الصورة التحليلية</button>
+    </div>
+  </div>
+
   <script>
-    // ==========================================
-    // Core Functions & Tabs
-    // ==========================================
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       event.currentTarget.classList.add('active');
       document.getElementById(tabId + 'Tab').classList.add('active');
-      
-      // Initialize Radar if switching to stats tab for the first time
-      if(tabId === 'stats' && !window.radarChart) initRadar();
     }
 
     // ==========================================
-    // Tab 1: Drill Builder (Simplified for Space)
+    // منطق لوحة التدريبات والتحريك (Drill Builder)
     // ==========================================
     const pitchArea = document.getElementById('pitchArea');
     let draggedType = null;
+    let itemIdCounter = 0;
+    
     document.querySelectorAll('.draggable-source').forEach(el => {
-      el.addEventListener('dragstart', (e) => { draggedType = e.target.dataset.type; e.dataTransfer.setData('text/plain', ''); });
+      el.addEventListener('dragstart', (e) => {
+        draggedType = e.target.closest('.draggable-source').dataset.type;
+        e.dataTransfer.setData('text/plain', '');
+      });
     });
     function allowDrop(e) { e.preventDefault(); }
     function drop(e) {
-      e.preventDefault(); if (!draggedType) return;
+      e.preventDefault();
+      if (!draggedType) return;
       const rect = pitchArea.getBoundingClientRect();
-      const div = document.createElement('div'); div.className = 'drill-item';
-      div.innerHTML = `<div style="width:30px;height:30px;background:var(--accent);border-radius:50%;text-align:center;line-height:30px;font-weight:bold;color:#000;">${draggedType.substring(0,2)}</div>`;
-      div.style.left = `${e.clientX - rect.left}px`; div.style.top = `${e.clientY - rect.top}px`;
-      pitchArea.appendChild(div); draggedType = null;
+      createDrillItem(draggedType, e.clientX - rect.left, e.clientY - rect.top);
+      draggedType = null;
     }
-    function setPitchView(view) { pitchArea.className = `pitch-area view-${view}`; }
+
+    const svgShapes = {
+      'gk': `<svg width="45" height="45" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/></svg>`,
+      'gk_coach': `<svg width="45" height="45" viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#f97316"/><path d="M 20 90 Q 50 50 80 90" fill="#f97316" stroke="#fff" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fff" stroke="#000" stroke-width="2"/></svg>`,
+      'player_red': `<svg width="40" height="40" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#ef4444"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>`,
+      'player_blue': `<svg width="40" height="40" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#3b82f6"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>`,
+      'player_yellow': `<svg width="40" height="40" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#facc15"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>`,
+      'ball': `<svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/><polygon points="50,20 75,40 65,70 35,70 25,40" fill="#000"/></svg>`,
+      'cone_red': `<svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>`,
+      'cone_blue': `<svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="2"/></svg>`,
+      'marker_yellow': `<svg width="30" height="30" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="15" fill="#facc15"/></svg>`,
+      'hurdle': `<svg width="45" height="25" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="30" fill="#000"/><rect x="75" y="20" width="10" height="30" fill="#000"/></svg>`,
+      'ladder': `<svg width="30" height="60" viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" fill="none" stroke="#facc15" stroke-width="4"/><line x1="30" y1="30" x2="70" y2="30" stroke="#facc15" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#facc15" stroke-width="4"/><line x1="30" y1="70" x2="70" y2="70" stroke="#facc15" stroke-width="4"/></svg>`,
+      'mannequin': `<svg width="35" height="45" viewBox="0 0 100 100"><path d="M 30 90 L 30 50 Q 50 20 70 50 L 70 90 Z" fill="#ef4444" stroke="#fff" stroke-width="2"/><circle cx="50" cy="25" r="15" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>`,
+    };
+
+    function createDrillItem(type, x, y) {
+      itemIdCounter++; const item = document.createElement('div');
+      item.className = 'drill-item'; item.id = `item_${itemIdCounter}`;
+      item.innerHTML = `${svgShapes[type]} <div class="delete-btn" onclick="this.parentElement.remove()">X</div>`;
+      item.style.left = `${x}px`; item.style.top = `${y}px`;
+      item.style.transform = `translate(-50%, -50%) scale(1)`; item.dataset.scale = 1;
+      
+      item.addEventListener('mousedown', pitchItemDragStart);
+      item.addEventListener('wheel', (e) => {
+        e.preventDefault(); let scale = parseFloat(item.dataset.scale);
+        scale += e.deltaY < 0 ? 0.1 : -0.1;
+        if(scale < 0.3) scale = 0.3; if(scale > 4) scale = 4;
+        item.dataset.scale = scale; item.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      });
+      pitchArea.appendChild(item);
+    }
+
+    let activeItem = null; let pOffsetX = 0, pOffsetY = 0;
+    function pitchItemDragStart(e) {
+      if(e.target.classList.contains('delete-btn')) return;
+      activeItem = this; activeItem.style.zIndex = 100;
+      const rect = activeItem.getBoundingClientRect(); const pRect = pitchArea.getBoundingClientRect();
+      pOffsetX = e.clientX - rect.left - (rect.width/2); pOffsetY = e.clientY - rect.top - (rect.height/2);
+      document.addEventListener('mousemove', pitchItemDragMove); document.addEventListener('mouseup', pitchItemDragEnd);
+    }
+    function pitchItemDragMove(e) {
+      if (!activeItem) return; const pRect = pitchArea.getBoundingClientRect();
+      activeItem.style.left = `${e.clientX - pRect.left - pOffsetX}px`; activeItem.style.top = `${e.clientY - pRect.top - pOffsetY}px`;
+    }
+    function pitchItemDragEnd() {
+      if(activeItem) activeItem.style.zIndex = 10; activeItem = null;
+      document.removeEventListener('mousemove', pitchItemDragMove); document.removeEventListener('mouseup', pitchItemDragEnd);
+    }
+
+    function setPitchView(view) {
+      document.querySelectorAll('.pitch-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active'); pitchArea.className = `pitch-area view-${view}`;
+    }
+    function clearPitch() { pitchArea.querySelectorAll('.drill-item').forEach(item => item.remove()); clearFrames(); }
     
+    function printDrill() { 
+      document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      html2canvas(pitchArea, { backgroundColor: '#15803d' }).then(canvas => { 
+        const link = document.createElement('a'); link.download = `تدريب_${Date.now()}.jpg`; link.href = canvas.toDataURL('image/jpeg'); link.click(); 
+        document.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
+      }); 
+    }
+
     let frames = [];
     function saveFrame() {
-      const pos = []; pitchArea.querySelectorAll('.drill-item').forEach(item => { pos.push({el: item, l: item.style.left, t: item.style.top}); });
-      frames.push(pos);
+      const currentPositions = [];
+      document.querySelectorAll('.drill-item').forEach(item => { currentPositions.push({ id: item.id, left: item.style.left, top: item.style.top }); });
+      frames.push(currentPositions); document.getElementById('frameCount').innerText = frames.length;
     }
-    function playAnimation() { alert('Animation saved logic goes here. Requires full object ID tracking.'); }
-    function printDrill() { html2canvas(pitchArea, {backgroundColor:'#15803d'}).then(c => { const a=document.createElement('a'); a.download='drill.jpg'; a.href=c.toDataURL(); a.click(); }); }
+    function clearFrames() { frames = []; document.getElementById('frameCount').innerText = "0"; }
+    
+    async function playAnimation() {
+      if (frames.length === 0) return alert("قم بتحريك الأدوات واضغط 'حفظ إطار' أولاً!");
+      const speed = parseInt(document.getElementById('animSpeed').value) || 500;
+      
+      document.querySelectorAll('.drill-item').forEach(item => { item.style.transition = 'none'; });
+      applyFrame(frames[0]); await new Promise(r => setTimeout(r, 100));
+
+      for (let i = 1; i < frames.length; i++) {
+        document.querySelectorAll('.drill-item').forEach(item => { item.style.transition = `top ${speed}ms ease-in-out, left ${speed}ms ease-in-out`; });
+        applyFrame(frames[i]); await new Promise(r => setTimeout(r, speed + 100)); 
+      }
+      setTimeout(() => { document.querySelectorAll('.drill-item').forEach(item => { item.style.transition = ''; }); }, 400);
+    }
+    
+    function applyFrame(frameData) { frameData.forEach(pos => { const item = document.getElementById(pos.id); if (item) { item.style.left = pos.left; item.style.top = pos.top; } }); }
+
+    // تصدير الأنيميشن كفيديو باستخدام Canvas
+    async function exportDrillVideo() {
+      if (frames.length === 0) return alert("الرجاء إضافة إطارات للحركة أولاً لتصدير الفيديو.");
+      const speedMs = parseInt(document.getElementById('animSpeed').value) || 500;
+      
+      const statusBanner = document.getElementById('liveStatusBanner');
+      const statusText = document.getElementById('liveStatusText');
+      statusBanner.style.display = 'flex';
+      statusText.innerText = "جاري تصوير وتصدير حركة التدريب كفيديو... يرجى الانتظار وعدم إغلاق الصفحة.";
+      
+      document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      
+      const vCanvas = document.createElement('canvas');
+      vCanvas.width = pitchArea.offsetWidth; vCanvas.height = pitchArea.offsetHeight;
+      const vCtx = vCanvas.getContext('2d');
+      const stream = vCanvas.captureStream(30);
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.start();
+
+      document.querySelectorAll('.drill-item').forEach(item => item.style.transition = 'none');
+      applyFrame(frames[0]);
+      await new Promise(r => setTimeout(r, 200)); 
+
+      for (let i = 0; i < frames.length - 1; i++) {
+        const frameA = frames[i]; const frameB = frames[i+1];
+        const steps = 10; 
+        const stepDelay = speedMs / steps;
+        
+        for(let s = 0; s <= steps; s++) {
+          const ratio = s / steps;
+          frameA.forEach(posA => {
+            const posB = frameB.find(p => p.id === posA.id) || posA;
+            const item = document.getElementById(posA.id);
+            if(item) {
+              const leftA = parseFloat(posA.left); const leftB = parseFloat(posB.left);
+              const topA = parseFloat(posA.top); const topB = parseFloat(posB.top);
+              item.style.left = `${leftA + (leftB - leftA) * ratio}px`;
+              item.style.top = `${topA + (topB - topA) * ratio}px`;
+            }
+          });
+          const snap = await html2canvas(pitchArea, { backgroundColor: '#15803d', scale: 1 });
+          vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
+          await new Promise(r => setTimeout(r, 10)); 
+        }
+      }
+      
+      for(let i=0; i<5; i++) {
+        const snap = await html2canvas(pitchArea, { backgroundColor: '#15803d', scale: 1 });
+        vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
+      }
+
+      recorder.stop();
+      document.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
+      document.querySelectorAll('.drill-item').forEach(item => item.style.transition = '');
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const videoUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = videoUrl; a.download = `حركة_التدريب_${Date.now()}.webm`; a.click();
+        statusBanner.style.display = 'none';
+      };
+    }
 
     // ==========================================
-    // Tab 2: Video Tagging
+    // منطق التقطيع (Clipping Dashboard) - اليدوي والآلي
     // ==========================================
     const video = document.getElementById('gkVideo');
     let gkEventsLog = [];
-    function loadGkVideo(e) { if(e.target.files[0]) video.src = URL.createObjectURL(e.target.files[0]); }
-    
-    function handleTagClick(btn, type) {
-      // Dummy logic for space: Just adds to table
-      const t = Math.floor(video.currentTime);
-      gkEventsLog.push({time: `${Math.floor(t/60)}:${t%60}`, type: type, url: video.src});
-      renderLog();
+    let manualRecorder = null; let manualChunks = []; let manualStartTime = 0;
+    let activeManualTag = null; let activeManualBtn = null;
+
+    function loadGkVideo(e) { if(e.target.files[0]) { video.src = URL.createObjectURL(e.target.files[0]); video.load(); } }
+    function skip(sec) { if(video.src) video.currentTime += sec; }
+    function formatTime(sec) { const m = Math.floor(sec/60); const s = Math.floor(sec%60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+
+    function handleTagClick(btn, eventType) {
+      const mode = document.querySelector('input[name="clipMode"]:checked').value;
+      if (mode === 'auto') {
+        clipVideoAuto(eventType);
+      } else {
+        if (activeManualTag === eventType) {
+          stopManualClip(eventType);
+          btn.classList.remove('recording-btn');
+          btn.innerHTML = btn.dataset.originalHtml;
+          activeManualTag = null; activeManualBtn = null;
+        } else if (!activeManualTag) {
+          btn.dataset.originalHtml = btn.innerHTML;
+          btn.classList.add('recording-btn');
+          btn.innerHTML = `إيقاف الحفظ ⏹️`;
+          activeManualTag = eventType; activeManualBtn = btn;
+          startManualClip();
+        } else {
+          alert("يرجى إيقاف تسجيل الحالة الحالية أولاً!");
+        }
+      }
     }
-    function renderLog() {
+
+    async function clipVideoAuto(eventType) {
+      if (!video.src) return alert("الرجاء رفع أو تشغيل الفيديو أولاً!");
+      video.pause();
+      
+      const currentTime = video.currentTime;
+      const startTime = Math.max(0, currentTime - 5);
+      const endTime = Math.min(video.duration || (currentTime + 5), currentTime + 5);
+      
+      const statusBanner = document.getElementById('liveStatusBanner');
+      const statusText = document.getElementById('liveStatusText');
+      statusBanner.style.display = 'flex';
+      statusText.innerText = `جاري تقطيع لقطة (${eventType}) تلقائياً...`;
+      
+      try {
+        const hiddenCanvas = document.getElementById('liveRenderCanvas');
+        hiddenCanvas.width = video.videoWidth || 1280; hiddenCanvas.height = video.videoHeight || 720;
+        const hiddenCtx = hiddenCanvas.getContext('2d');
+        const stream = hiddenCanvas.captureStream(30);
+        
+        let recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        
+        recorder.start();
+        const originalTime = video.currentTime;
+        video.currentTime = startTime;
+        
+        await new Promise(r => { video.onseeked = r; });
+        await video.play();
+
+        function stepFrame() {
+          if (video.currentTime >= endTime || video.paused) { video.pause(); recorder.stop(); video.currentTime = originalTime; return; }
+          hiddenCtx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+          setTimeout(stepFrame, 1000/30);
+        }
+        stepFrame();
+
+        recorder.onstop = async () => {
+          const rawBlob = new Blob(chunks, { type: 'video/webm' });
+          let finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
+          const videoBlobUrl = URL.createObjectURL(finalBlob);
+          gkEventsLog.push({ time: formatTime(currentTime), type: eventType, videoUrl: videoBlobUrl });
+          renderGkLog(); statusBanner.style.display = 'none';
+        };
+      } catch(err) { statusBanner.style.display = 'none'; alert("خطأ في التقطيع الآلي."); }
+    }
+
+    function startManualClip() {
+      if (!video.src) return alert("الرجاء تشغيل الفيديو أولاً!");
+      manualStartTime = video.currentTime;
+      
+      const statusBanner = document.getElementById('liveStatusBanner');
+      statusBanner.style.display = 'flex';
+      document.getElementById('liveStatusText').innerText = "جاري التسجيل اليدوي الآن... اضغط إيقاف عند الانتهاء.";
+      
+      const hiddenCanvas = document.getElementById('liveRenderCanvas');
+      hiddenCanvas.width = video.videoWidth || 1280; hiddenCanvas.height = video.videoHeight || 720;
+      const hiddenCtx = hiddenCanvas.getContext('2d');
+      const stream = hiddenCanvas.captureStream(30);
+      
+      manualRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      manualChunks = [];
+      manualRecorder.ondataavailable = e => { if (e.data.size > 0) manualChunks.push(e.data); };
+      
+      manualRecorder.start();
+      video.play();
+
+      function stepFrame() {
+        if (manualRecorder.state !== 'recording') return;
+        hiddenCtx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+        setTimeout(stepFrame, 1000/30);
+      }
+      stepFrame();
+    }
+
+    function stopManualClip(tagName) {
+      if(manualRecorder && manualRecorder.state === 'recording') {
+        manualRecorder.stop();
+        video.pause();
+        const durationMs = (video.currentTime - manualStartTime) * 1000;
+
+        manualRecorder.onstop = async () => {
+          const rawBlob = new Blob(manualChunks, { type: 'video/webm' });
+          let finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, durationMs, res));
+          const videoBlobUrl = URL.createObjectURL(finalBlob);
+          gkEventsLog.push({ time: formatTime(manualStartTime), type: tagName, videoUrl: videoBlobUrl });
+          renderGkLog();
+          document.getElementById('liveStatusBanner').style.display = 'none';
+        };
+      }
+    }
+
+    function renderGkLog() {
       const tbody = document.getElementById('gkLogBody');
-      tbody.innerHTML = gkEventsLog.map((item, idx) => `<tr><td>${item.time}</td><td>${item.type}</td><td><button class="btn-action-small" onclick="openDrawModal(${idx})">تحليل بالرسم</button></td></tr>`).join('');
+      if(gkEventsLog.length === 0) return;
+      tbody.innerHTML = gkEventsLog.slice().reverse().map((item, index) => {
+        const actualIndex = gkEventsLog.length - 1 - index;
+        return `
+        <tr>
+          <td>${item.time}</td>
+          <td style="color: var(--primary); font-weight: bold;">${item.type}</td>
+          <td>
+            <a href="${item.videoUrl}" download="لقطة_${item.type}_${Date.now()}.webm" class="btn-download">
+              <i class="fa-solid fa-download"></i> حفظ
+            </a>
+            <button class="btn-draw" onclick="openDrawModal(${actualIndex})">
+              <i class="fa-solid fa-pen-nib"></i> تحليل بالرسم
+            </button>
+          </td>
+        </tr>
+      `}).join('');
     }
 
     // ==========================================
-    // Tab 3: Split-Screen Comparison
-    // ==========================================
-    const v1 = document.getElementById('vid1');
-    const v2 = document.getElementById('vid2');
-    function loadSplitVid(e, vidId) { if(e.target.files[0]) document.getElementById(vidId).src = URL.createObjectURL(e.target.files[0]); }
-    function syncPlayPause() {
-      if(v1.paused || v2.paused) { v1.play(); v2.play(); } 
-      else { v1.pause(); v2.pause(); }
-    }
-
-    // ==========================================
-    // Tab 4: Stats (Heatmap & Radar)
-    // ==========================================
-    const heatmapBox = document.getElementById('heatmapGoal');
-    heatmapBox.addEventListener('mousedown', (e) => {
-      const rect = heatmapBox.getBoundingClientRect();
-      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-      const dot = document.createElement('div');
-      dot.className = e.button === 2 ? 'heat-dot save' : 'heat-dot goal';
-      dot.style.left = `${x}px`; dot.style.top = `${y}px`;
-      heatmapBox.appendChild(dot);
-    });
-    heatmapBox.addEventListener('contextmenu', e => e.preventDefault());
-    function clearHeatmap() { heatmapBox.querySelectorAll('.heat-dot').forEach(d => d.remove()); }
-
-    function initRadar() {
-      const ctx = document.getElementById('gkRadarChart').getContext('2d');
-      window.radarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['رد الفعل', 'العرضيات', 'التوزيع', '1v1', 'التمركز'],
-          datasets: [{
-            label: 'تقييم الحارس',
-            data: [75, 60, 85, 70, 80],
-            backgroundColor: 'rgba(56, 189, 248, 0.4)',
-            borderColor: '#38bdf8',
-            pointBackgroundColor: '#f59e0b',
-            borderWidth: 2
-          }]
-        },
-        options: { scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { color: '#374151' }, pointLabels: { color: '#fff', font: { family: 'Cairo', size: 12 } } } }, plugins: { legend: { display: false } } }
-      });
-    }
-    function updateRadar() {
-      if(!window.radarChart) return;
-      window.radarChart.data.datasets[0].data = [
-        document.getElementById('r_reflex').value, document.getElementById('r_aerial').value, document.getElementById('r_dist').value, document.getElementById('r_1v1').value, document.getElementById('r_pos').value
-      ];
-      window.radarChart.update();
-    }
-
-    // ==========================================
-    // Draw Modal & New AI Tools (Reaction + Blind Spot)
+    // استوديو الرسم على اللقطات المقطوعة (Smart Drawing Modal)
     // ==========================================
     const drawModal = document.getElementById('drawModal');
     const drawVideo = document.getElementById('drawVideoPlayer');
     const drawCanvas = document.getElementById('drawCanvasOverlay');
     const drawCtx = drawCanvas.getContext('2d');
+    const shapeControlsDraw = document.getElementById('shapeControlsDraw');
     
     let drawActiveTool = 'none'; let drawShapes = [];
-    let isDrawing = false; let startX, startY;
-    
-    // Reaction Timer Logic
-    let reactStart = 0; let reactEnd = 0;
-    function setReactStart() { reactStart = drawVideo.currentTime; calcReact(); }
-    function setReactEnd() { reactEnd = drawVideo.currentTime; calcReact(); }
-    function calcReact() {
-      const diff = Math.abs(reactEnd - reactStart);
-      document.getElementById('reactTimeResult').innerText = diff.toFixed(2) + 's';
-    }
+    let isDrawModalDrawing = false, isDrawModalDragging = false;
+    let dStartX = 0, dStartY = 0, dDragOffsetX = 0, dDragOffsetY = 0;
+    let drawSelectedIdx = -1;
 
     function openDrawModal(idx) {
-      drawVideo.src = gkEventsLog[idx].url; drawModal.style.display = 'flex';
-      drawShapes = []; reactStart = 0; reactEnd = 0; document.getElementById('reactTimeResult').innerText = '0.00s';
-      drawVideo.addEventListener('loadeddata', () => {
-        const r = drawVideo.getBoundingClientRect(); drawCanvas.width = r.width; drawCanvas.height = r.height;
-      });
+      const item = gkEventsLog[idx];
+      drawVideo.src = item.videoUrl;
+      drawShapes = []; drawSelectedIdx = -1; setDrawTool('none');
+      drawModal.style.display = 'flex';
+      drawVideo.play();
+      drawVideo.addEventListener('loadeddata', resizeDrawCanvas);
+      window.addEventListener('resize', resizeDrawCanvas);
     }
-    function closeDrawModal() { drawModal.style.display = 'none'; drawVideo.pause(); }
-    function toggleDrawVideo() { if(drawVideo.paused) drawVideo.play(); else drawVideo.pause(); }
+    
+    function closeDrawModal() {
+      drawModal.style.display = 'none'; drawVideo.pause(); drawVideo.src = '';
+      window.removeEventListener('resize', resizeDrawCanvas);
+    }
 
-    function setDrawTool(t) { drawActiveTool = t; if(t !== 'none') drawVideo.pause(); }
-    function clearDrawings() { drawShapes = []; redrawShapes(); }
-
-    drawCanvas.addEventListener('mousedown', e => {
-      const rect = drawCanvas.getBoundingClientRect();
-      startX = e.clientX - rect.left; startY = e.clientY - rect.top;
-      if (drawActiveTool === 'gk-pos') { drawShapes.push({type: 'gk-pos', x: startX, y: startY}); redrawShapes(); setDrawTool('none'); }
-      else if(drawActiveTool !== 'none') isDrawing = true;
-    });
-
-    drawCanvas.addEventListener('mousemove', e => {
-      if(!isDrawing) return;
-      const rect = drawCanvas.getBoundingClientRect();
-      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+    function resizeDrawCanvas() {
+      const rect = drawVideo.getBoundingClientRect();
+      drawCanvas.width = rect.width; drawCanvas.height = rect.height;
+      drawCanvas.style.width = `${rect.width}px`; drawCanvas.style.height = `${rect.height}px`;
       redrawShapes();
+    }
+
+    // أدوات التحكم في تشغيل الفيديو داخل نافذة الرسم
+    function toggleDrawVideo() {
+      if (drawVideo.paused) drawVideo.play();
+      else drawVideo.pause();
+    }
+    
+    function skipDrawVideo(sec) {
+      drawVideo.currentTime += sec;
+    }
+
+    function setDrawTool(tool) {
+      drawActiveTool = tool; drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
+      document.querySelectorAll('.draw-tool-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
       
-      if(drawActiveTool === 'angle') {
-        drawCtx.beginPath(); drawCtx.moveTo(startX, startY); drawCtx.lineTo(x-60, y); drawCtx.lineTo(x+60, y); drawCtx.closePath();
-        drawCtx.fillStyle = 'rgba(56, 189, 248, 0.4)'; drawCtx.fill(); drawCtx.stroke();
-      } else if (drawActiveTool === 'blind-spot') {
-        // رسم النقطة العمياء أثناء الحركة
-        drawCtx.fillStyle = 'rgba(0,0,0,0.85)'; drawCtx.fillRect(0,0,drawCanvas.width, drawCanvas.height);
-        drawCtx.globalCompositeOperation = 'destination-out';
-        drawCtx.beginPath(); drawCtx.moveTo(startX, startY); drawCtx.lineTo(x-100, y+100); drawCtx.lineTo(x+100, y+100); drawCtx.closePath();
-        drawCtx.fillStyle = '#fff'; drawCtx.fill();
-        drawCtx.globalCompositeOperation = 'source-over';
+      // إيقاف الفيديو تلقائياً لو الكابتن اختار أداة رسم عشان يثبت اللقطة ويرسم
+      if(tool !== 'none') drawVideo.pause();
+    }
+    
+    function clearDrawings() { drawShapes = []; drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); }
+
+    function getDPos(e) {
+      const rect = drawCanvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top, rawX: e.clientX, rawY: e.clientY };
+    }
+
+    drawCanvas.addEventListener('mousedown', (e) => {
+      const pos = getDPos(e);
+      if (drawActiveTool === 'none') {
+        drawSelectedIdx = -1;
+        for (let i = drawShapes.length - 1; i >= 0; i--) {
+          const d = drawShapes[i]; let isHit = false;
+          if (d.type === 'gk-pos' || d.type === 'ball') {
+            if (Math.hypot(pos.x - d.x, pos.y - d.y) < 30 * d.scale) isHit = true;
+          } else if (d.type === 'shot-path' || d.type === 'angle') {
+            const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+            if (Math.hypot(pos.x - midX, pos.y - midY) < 50) isHit = true;
+          }
+          if (isHit) {
+            drawSelectedIdx = i; isDrawModalDragging = true;
+            dDragOffsetX = pos.x - d.x; dDragOffsetY = pos.y - d.y;
+            positionDrawControls(pos.rawX, pos.rawY); break;
+          }
+        }
+        if (drawSelectedIdx === -1) hideDrawControls();
+        redrawShapes();
+      } else {
+        dStartX = pos.x; dStartY = pos.y;
+        if (drawActiveTool === 'gk-pos' || drawActiveTool === 'ball') {
+          drawShapes.push({ type: drawActiveTool, x: dStartX, y: dStartY, scale: 1 });
+          drawSelectedIdx = drawShapes.length - 1;
+          setDrawTool('none'); positionDrawControls(pos.rawX, pos.rawY); redrawShapes();
+        } else { isDrawModalDrawing = true; }
       }
     });
 
-    drawCanvas.addEventListener('mouseup', e => {
-      if(!isDrawing) return; isDrawing = false;
-      const rect = drawCanvas.getBoundingClientRect();
-      drawShapes.push({type: drawActiveTool, sx: startX, sy: startY, ex: e.clientX - rect.left, ey: e.clientY - rect.top});
-      redrawShapes(); setDrawTool('none');
+    drawCanvas.addEventListener('mousemove', (e) => {
+      const pos = getDPos(e);
+      if (isDrawModalDragging && drawSelectedIdx > -1) {
+        const d = drawShapes[drawSelectedIdx];
+        if (d.x) { d.x = pos.x - dDragOffsetX; d.y = pos.y - dDragOffsetY; }
+        else {
+          const dx = pos.x - dStartX; const dy = pos.y - dStartY;
+          d.startX += dx; d.startY += dy; d.endX += dx; d.endY += dy;
+          dStartX = pos.x; dStartY = pos.y;
+        }
+        positionDrawControls(pos.rawX, pos.rawY); redrawShapes();
+      } else if (isDrawModalDrawing) {
+        redrawShapes(); drawCtx.beginPath();
+        if (drawActiveTool === 'shot-path') {
+          drawCtx.moveTo(dStartX, dStartY); drawCtx.lineTo(pos.x, pos.y); drawCtx.strokeStyle = '#ef4444'; drawCtx.lineWidth = 4; drawCtx.stroke();
+        } else if (drawActiveTool === 'angle') {
+          drawCtx.moveTo(dStartX, dStartY); drawCtx.lineTo(pos.x - 60, pos.y); drawCtx.lineTo(pos.x + 60, pos.y); drawCtx.closePath();
+          drawCtx.fillStyle = 'rgba(56, 189, 248, 0.4)'; drawCtx.fill(); drawCtx.strokeStyle = '#38bdf8'; drawCtx.lineWidth = 2; drawCtx.stroke();
+        }
+      }
     });
+
+    drawCanvas.addEventListener('mouseup', (e) => {
+      isDrawModalDragging = false;
+      if (isDrawModalDrawing) {
+        isDrawModalDrawing = false; const pos = getDPos(e);
+        drawShapes.push({ type: drawActiveTool, startX: dStartX, startY: dStartY, endX: pos.x, endY: pos.y, scale: 1 });
+        drawSelectedIdx = drawShapes.length - 1;
+        setDrawTool('none'); positionDrawControls(pos.rawX, pos.rawY); redrawShapes();
+      }
+    });
+
+    function positionDrawControls(x, y) {
+      shapeControlsDraw.style.display = 'flex';
+      shapeControlsDraw.style.left = `${Math.min(x + 10, window.innerWidth - 150)}px`;
+      shapeControlsDraw.style.top = `${Math.max(y - 50, 10)}px`;
+    }
+    function hideDrawControls() { shapeControlsDraw.style.display = 'none'; }
+    function confirmDrawShape() { drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); }
+    function deleteDrawShape() { if(drawSelectedIdx > -1){ drawShapes.splice(drawSelectedIdx, 1); drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); } }
+    function scaleDrawShape(factor) { if(drawSelectedIdx > -1){ drawShapes[drawSelectedIdx].scale *= factor; redrawShapes(); } }
 
     function redrawShapes() {
-      drawCtx.clearRect(0,0,drawCanvas.width, drawCanvas.height);
-      
-      // النقطة العمياء لازم تترسم الأول تحت باقي الرسومات
-      const blind = drawShapes.find(d => d.type === 'blind-spot');
-      if (blind) {
-        drawCtx.fillStyle = 'rgba(0,0,0,0.85)'; drawCtx.fillRect(0,0,drawCanvas.width, drawCanvas.height);
-        drawCtx.globalCompositeOperation = 'destination-out';
-        drawCtx.beginPath(); drawCtx.moveTo(blind.sx, blind.sy); drawCtx.lineTo(blind.ex-100, blind.ey+100); drawCtx.lineTo(blind.ex+100, blind.ey+100); drawCtx.closePath();
-        drawCtx.fillStyle = '#fff'; drawCtx.fill();
-        drawCtx.globalCompositeOperation = 'source-over';
-        // إضافة خطوط صفراء لتحديد زاوية الرؤية
-        drawCtx.beginPath(); drawCtx.moveTo(blind.sx, blind.sy); drawCtx.lineTo(blind.ex-100, blind.ey+100); drawCtx.moveTo(blind.sx, blind.sy); drawCtx.lineTo(blind.ex+100, blind.ey+100);
-        drawCtx.strokeStyle = '#facc15'; drawCtx.lineWidth = 2; drawCtx.setLineDash([10,5]); drawCtx.stroke(); drawCtx.setLineDash([]);
-      }
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      drawShapes.forEach((d, idx) => {
+        const sc = d.scale || 1; drawCtx.save();
+        if (idx === drawSelectedIdx) { drawCtx.shadowColor = '#fff'; drawCtx.shadowBlur = 10; }
 
-      drawShapes.forEach(d => {
-        if(d.type === 'gk-pos') {
-          drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 15, 0, Math.PI*2); drawCtx.fillStyle = '#eab308'; drawCtx.fill();
+        if (d.type === 'gk-pos') {
+          drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 18 * sc, 0, Math.PI*2); drawCtx.fillStyle = '#eab308'; drawCtx.fill(); drawCtx.lineWidth=2; drawCtx.strokeStyle='#fff'; drawCtx.stroke();
+          drawCtx.fillStyle = '#000'; drawCtx.font = `bold ${14*sc}px Cairo`; drawCtx.fillText('GK', d.x-12*sc, d.y+5*sc);
+        } else if (d.type === 'ball') {
+          drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 12 * sc, 0, Math.PI*2); drawCtx.fillStyle = '#fff'; drawCtx.fill(); drawCtx.lineWidth=2; drawCtx.strokeStyle='#000'; drawCtx.stroke();
+        } else if (d.type === 'shot-path') {
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          drawCtx.translate(midX, midY); drawCtx.scale(sc, sc); drawCtx.translate(-midX, -midY);
+          const angle = Math.atan2(d.endY - d.startY, d.endX - d.startX);
+          drawCtx.beginPath(); drawCtx.moveTo(d.startX, d.startY); drawCtx.lineTo(d.endX, d.endY);
+          drawCtx.lineTo(d.endX - 15 * Math.cos(angle - Math.PI/6), d.endY - 15 * Math.sin(angle - Math.PI/6));
+          drawCtx.moveTo(d.endX, d.endY); drawCtx.lineTo(d.endX - 15 * Math.cos(angle + Math.PI/6), d.endY - 15 * Math.sin(angle + Math.PI/6));
+          drawCtx.strokeStyle = '#ef4444'; drawCtx.lineWidth = 4; drawCtx.stroke();
         } else if (d.type === 'angle') {
-          drawCtx.beginPath(); drawCtx.moveTo(d.sx, d.sy); drawCtx.lineTo(d.ex-60, d.ey); drawCtx.lineTo(d.ex+60, d.ey); drawCtx.closePath();
-          drawCtx.fillStyle = 'rgba(56, 189, 248, 0.4)'; drawCtx.fill(); drawCtx.strokeStyle='#38bdf8'; drawCtx.lineWidth=2; drawCtx.stroke();
+          const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
+          drawCtx.translate(midX, midY); drawCtx.scale(sc, sc); drawCtx.translate(-midX, -midY);
+          drawCtx.beginPath(); drawCtx.moveTo(d.startX, d.startY); drawCtx.lineTo(d.endX - 60, d.endY); drawCtx.lineTo(d.endX + 60, d.endY);
+          drawCtx.closePath(); drawCtx.fillStyle = 'rgba(56, 189, 248, 0.4)'; drawCtx.fill(); drawCtx.strokeStyle = '#38bdf8'; drawCtx.lineWidth = 2; drawCtx.stroke();
         }
+        drawCtx.restore();
       });
     }
 
     function saveDrawnImage() {
-      const c = document.createElement('canvas'); c.width = drawCanvas.width; c.height = drawCanvas.height;
-      const cx = c.getContext('2d');
-      cx.drawImage(drawVideo, 0, 0, c.width, c.height); cx.drawImage(drawCanvas, 0, 0);
-      const a = document.createElement('a'); a.download = `تحليل_رؤية_${Date.now()}.jpg`; a.href = c.toDataURL(); a.click();
+      drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = drawCanvas.width; exportCanvas.height = drawCanvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
+      exportCtx.drawImage(drawVideo, 0, 0, exportCanvas.width, exportCanvas.height);
+      exportCtx.drawImage(drawCanvas, 0, 0);
+      const link = document.createElement('a');
+      link.download = `تحليل_رسم_${Date.now()}.jpg`; link.href = exportCanvas.toDataURL('image/jpeg', 0.9); link.click();
     }
   </script>
 </body>
