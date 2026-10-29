@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ziada Analysis - مساعد التحكيم الذكي (AI Vision PRO)</title>
+  <title>Ziada Analysis - مساعد التحكيم الذكي (AI Vision)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
@@ -76,7 +76,7 @@
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <span class="brand-title"><i class="fa-solid fa-eye"></i> Ziada Analysis | المعلم ومحاكي التحكيم الذكي (AI Vision PRO)</span>
+      <span class="brand-title"><i class="fa-solid fa-eye"></i> Ziada Analysis | المعلم ومحاكي التحكيم الذكي (AI Vision)</span>
       <a href="index.html" class="btn-top">الرئيسية</a>
     </header>
 
@@ -140,7 +140,7 @@
   <div class="modal-overlay" id="aiChatModal">
     <div class="modal-content">
       <div class="chat-header">
-        <h3><i class="fa-solid fa-eye"></i> المعلم التحكيمي الذكي (AI Vision PRO)</h3>
+        <h3><i class="fa-solid fa-eye"></i> المعلم التحكيمي الذكي (AI Vision)</h3>
         <button class="btn-close-chat" onclick="closeChat()"><i class="fa-solid fa-circle-xmark"></i></button>
       </div>
       
@@ -155,7 +155,7 @@
   </div>
 
   <script>
-    // مفتاح الـ API المربوط بحسابك
+    // مفتاح الـ API الخاص بك
     const GEMINI_API_KEY = "AIzaSyAZkiGKIyI7RseJ2WYFs-IfqDL0XDxLP3E";
 
     const video = document.getElementById('refVideo');
@@ -188,7 +188,7 @@
       conversationContext = [];
       chatModal.style.display = 'flex';
       
-      // 1. التقاط سكرين شوت من الفيديو باستخدام Canvas
+      // 1. التقاط سكرين شوت من الفيديو
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth || 1280;
       canvas.height = video.videoHeight || 720;
@@ -200,7 +200,7 @@
       appendMessage('ai', initialUIMsg);
       typingIndicator.style.display = 'block';
 
-      // 2. تجهيز الطلب لعين الذكاء الاصطناعي متضمناً الصورة
+      // 2. تجهيز الطلب
       const userPromptForVision = `أنت خبير تحكيم. انظر إلى هذه الصورة المأخوذة من مباراة كرة قدم. نوع الحالة المشتبه بها أو الاستئناف: ${eventType}. حلل ما تراه في الصورة بدقة: أين الكرة؟ أين اللاعبون المعنيون؟ ما هو قرارك التحكيمي المبدئي والتطبيق السليم للقانون بناء على ما تراه؟ تحدث باللهجة المصرية.`;
 
       conversationContext.push({
@@ -211,9 +211,9 @@
         ]
       });
 
-      // 3. إرسال الصورة لـ Gemini API (استخدام gemini-1.5-pro الأقوى)
+      // 3. إرسال الطلب باستخدام الموديل المعتمد والمستقر gemini-1.5-flash
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -237,7 +237,7 @@
         appendMessage('ai', 'عذراً يا كوتش، حدث خطأ في رفع الصورة للذكاء الاصطناعي.');
       }
 
-      // 4. قص اللقطة في الخلفية 10 ثواني
+      // 4. قص اللقطة
       await generateClipBlob();
     }
 
@@ -246,7 +246,6 @@
     function appendMessage(sender, text) {
       const msgDiv = document.createElement('div');
       msgDiv.className = `chat-msg msg-${sender}`;
-      // تنظيف تنسيقات ماركداون البسيطة من جيميني
       const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<span class="highlight">$1</span>');
       msgDiv.innerHTML = sender === 'ai' ? `<b>المعلم الذكي:</b> ${formattedText}` : formattedText;
       chatHistory.appendChild(msgDiv);
@@ -267,8 +266,7 @@
       conversationContext.push({ "role": "user", "parts": [{ "text": text }] });
 
       try {
-        // استخدام gemini-1.5-pro للردود
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
