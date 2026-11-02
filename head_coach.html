@@ -41,7 +41,7 @@
     .team-title { font-size: 12px; color: #fff; background: #374151; padding: 5px; border-radius: 4px; text-align: center; margin-bottom: 8px; font-weight: bold;}
     .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
     
-    .draggable-source { background: #1f2937; border: 1px solid #374151; color: white; padding: 5px; border-radius: 6px; cursor: grab; font-weight: bold; font-size: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; transition: 0.2s; text-align: center; }
+    .draggable-source { background: #1f2937; border: 1px solid #374151; color: white; padding: 5px; border-radius: 6px; cursor: grab; font-weight: bold; font-size: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; transition: 0.2s; text-align: center; touch-action: none;}
     .draggable-source:hover { background: #374151; border-color: var(--primary); }
 
     .pitch-container { display: flex; flex-direction: column; gap: 10px; height: 100%; }
@@ -51,10 +51,10 @@
     .draw-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #475569; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; }
     .draw-btn.active, .draw-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    .pitch-area { background: var(--pitch-green); border: 2px solid #fff; border-radius: 8px; flex: 1; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    .pitch-area { background: var(--pitch-green); border: 2px solid #fff; border-radius: 8px; flex: 1; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5); touch-action: none; }
     
     /* طبقات الرسم والربط */
-    .tactical-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
+    .tactical-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; touch-action: none;}
     .tactical-links { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
     .pitch-area.mode-draw .tactical-canvas { pointer-events: auto; cursor: crosshair; }
     .pitch-area.mode-draw .drill-item, .pitch-area.mode-draw .player-node { pointer-events: none; }
@@ -79,7 +79,7 @@
     .view-six-yard .goal-net { display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 35%; height: 15%; border: 4px solid #eab308; border-top: none; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px); }
 
     /* عناصر السحب */
-    .drill-item { position: absolute; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6)); transform-origin: center; transition: box-shadow 0.2s; }
+    .drill-item { position: absolute; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6)); transform-origin: center; transition: box-shadow 0.2s; touch-action: none; }
     .drill-item:active { cursor: grabbing; }
     .drill-item .delete-btn { display: none; position: absolute; top: -10px; right: -10px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; text-align: center; line-height: 18px; cursor: pointer; border: 1px solid #fff; z-index: 20; }
     .drill-item:hover .delete-btn { display: block; }
@@ -101,7 +101,7 @@
     .formation-controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap;}
     .formation-select { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; font-family: 'Cairo'; font-weight: bold; font-size: 14px; outline: none; }
     
-    .player-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; background: #1e293b; border: 3px solid var(--primary); display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .player-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; background: #1e293b; border: 3px solid var(--primary); display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.5); touch-action: none; }
     .player-node:active { cursor: grabbing; }
     .player-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none; pointer-events: none;}
     .player-node .add-photo-btn { position: absolute; color: #fff; font-size: 16px; pointer-events: none; }
@@ -315,15 +315,23 @@
     }
     buildTrainingPalette();
 
+    // دالة مساعدة لجلب إحداثيات التاتش أو الماوس
+    function getClientPos(e) {
+      if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
     let itemIdCounter = 0;
     function allowDrop(e) { e.preventDefault(); }
     function drop(e, pitchId) {
       e.preventDefault(); const svgData = e.dataTransfer.getData('text/plain'); if (!svgData) return;
       const pitch = document.getElementById(pitchId); const rect = pitch.getBoundingClientRect();
-      createDrillItem(svgData, e.clientX - rect.left, e.clientY - rect.top, pitch);
+      const pos = getClientPos(e);
+      createDrillItem(svgData, pos.x - rect.left, pos.y - rect.top, pitch);
     }
 
-    // إنشاء العنصر وإضافة خاصية الـ Double Click لتعديل الاسم
+    // إنشاء العنصر وإضافة خاصية التاتش والسحب
     function createDrillItem(svgHtml, x, y, parentPitch) {
       itemIdCounter++; const item = document.createElement('div');
       item.className = 'drill-item'; item.id = `item_${itemIdCounter}`;
@@ -331,7 +339,9 @@
       item.style.left = `${x}px`; item.style.top = `${y}px`;
       item.style.transform = `translate(-50%, -50%) scale(1.5)`; item.dataset.scale = 1.5;
       
-      item.addEventListener('mousedown', handleItemMousedown);
+      item.addEventListener('mousedown', handleItemStart);
+      item.addEventListener('touchstart', handleItemStart, {passive: false}); // دعم التاتش
+      
       item.addEventListener('dblclick', renameElement);
       item.addEventListener('wheel', (e) => {
         e.preventDefault(); let scale = parseFloat(item.dataset.scale); scale += e.deltaY < 0 ? 0.1 : -0.1;
@@ -343,7 +353,6 @@
 
     function removeNode(btn) {
       const node = btn.parentElement;
-      // إزالة أي روابط تكتيكية متعلقة بالعنصر ده
       tacticalLinks = tacticalLinks.filter(l => l.n1 !== node.id && l.n2 !== node.id);
       node.remove();
     }
@@ -353,9 +362,9 @@
       const newName = prompt("اكتب الاسم أو الرقم الجديد:", "");
       if(newName !== null && newName.trim() !== "") {
         const txtObj = this.querySelector('.p-text');
-        if(txtObj) txtObj.textContent = newName; // للأدوات SVG
+        if(txtObj) txtObj.textContent = newName; 
         const lblObj = this.querySelector('.player-label');
-        if(lblObj) lblObj.textContent = newName; // للاعبي الخطط
+        if(lblObj) lblObj.textContent = newName; 
       }
     }
 
@@ -374,28 +383,35 @@
       pitch.className = pitch.className.replace(/mode-\S+/g, '');
       pitch.classList.add(`mode-${mode.split('-')[0]}`);
       
-      // تفريغ أداة الربط لو غيرنا الأداة
       linkStartNode = null;
       pitch.querySelectorAll('.drill-item, .player-node').forEach(n => n.classList.remove('linked'));
     }
 
     // ==========================================
-    // منطق السحب والتفاعل (Drag / Link)
+    // منطق السحب والتفاعل (Drag / Link) للهواتف واللاب توب
     // ==========================================
     let activeItem = null; let pOffsetX = 0, pOffsetY = 0; let activePitch = null;
     let linkStartNode = null; 
-    let tacticalLinks = []; // [{pitchId, n1, n2}]
+    let tacticalLinks = [];
 
-    function handleItemMousedown(e) {
+    function handleItemStart(e) {
       if(e.target.classList.contains('delete-btn') || e.target.tagName === 'INPUT') return;
+      if(e.type === 'touchstart') e.preventDefault(); // منع السكرول وإيقاف الشاشة أثناء تحريك اللاعب
+
       activePitch = this.parentElement;
       const mode = currentMode[activePitch.id];
       
       if(mode === 'drag') {
         activeItem = this; activeItem.style.zIndex = 100;
         const rect = activeItem.getBoundingClientRect(); 
-        pOffsetX = e.clientX - rect.left - (rect.width/2); pOffsetY = e.clientY - rect.top - (rect.height/2);
-        document.addEventListener('mousemove', pitchItemDragMove); document.addEventListener('mouseup', pitchItemDragEnd);
+        const pos = getClientPos(e);
+        pOffsetX = pos.x - rect.left - rect.width/2; 
+        pOffsetY = pos.y - rect.top - rect.height/2;
+
+        document.addEventListener('mousemove', pitchItemDragMove); 
+        document.addEventListener('mouseup', pitchItemDragEnd);
+        document.addEventListener('touchmove', pitchItemDragMove, {passive: false}); // التاتش
+        document.addEventListener('touchend', pitchItemDragEnd); // إنهاء التاتش
       } else if (mode === 'link') {
         if(!linkStartNode) {
           linkStartNode = this; this.classList.add('linked');
@@ -410,48 +426,74 @@
     
     function pitchItemDragMove(e) {
       if (!activeItem || !activePitch) return; 
+      if (e.type === 'touchmove') e.preventDefault(); // منع السكرول
+
       const pRect = activePitch.getBoundingClientRect();
-      activeItem.style.left = `${e.clientX - pRect.left - pOffsetX}px`; activeItem.style.top = `${e.clientY - pRect.top - pOffsetY}px`;
+      const pos = getClientPos(e);
+      activeItem.style.left = `${pos.x - pRect.left - pOffsetX}px`; 
+      activeItem.style.top = `${pos.y - pRect.top - pOffsetY}px`;
     }
-    function pitchItemDragEnd() {
+    
+    function pitchItemDragEnd(e) {
       if(activeItem) activeItem.style.zIndex = 10; activeItem = null; activePitch = null;
-      document.removeEventListener('mousemove', pitchItemDragMove); document.removeEventListener('mouseup', pitchItemDragEnd);
+      document.removeEventListener('mousemove', pitchItemDragMove); 
+      document.removeEventListener('mouseup', pitchItemDragEnd);
+      document.removeEventListener('touchmove', pitchItemDragMove); 
+      document.removeEventListener('touchend', pitchItemDragEnd);
     }
 
     // ==========================================
-    // محرك الرسم الحر (Canvas)
+    // محرك الرسم الحر (Canvas) يدعم التاتش
     // ==========================================
     let isDrawing = false; let dStartX = 0, dStartY = 0;
     const drawings = { trainPitch: [], matchPitch: [] };
 
     document.querySelectorAll('.tactical-canvas').forEach(canvas => {
-      canvas.addEventListener('mousedown', (e) => {
+      const handleDrawStart = (e) => {
         const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
         if(!mode.startsWith('draw')) return;
-        const rect = canvas.getBoundingClientRect();
-        dStartX = e.clientX - rect.left; dStartY = e.clientY - rect.top;
-        isDrawing = true;
-      });
-      canvas.addEventListener('mousemove', (e) => {
-        if(!isDrawing) return;
-        const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
-        const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+        if(e.type === 'touchstart') e.preventDefault(); // منع السكرول أثناء الرسم
         
-        renderCanvas(pitchId); // إعادة رسم السابق
+        const rect = canvas.getBoundingClientRect();
+        const pos = getClientPos(e);
+        dStartX = pos.x - rect.left; dStartY = pos.y - rect.top;
+        isDrawing = true;
+      };
+
+      const handleDrawMove = (e) => {
+        if(!isDrawing) return;
+        if(e.type === 'touchmove') e.preventDefault();
+        
+        const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
+        const rect = canvas.getBoundingClientRect(); 
+        const pos = getClientPos(e);
+        const x = pos.x - rect.left; const y = pos.y - rect.top;
+        
+        renderCanvas(pitchId); 
         const ctx = canvas.getContext('2d'); ctx.beginPath();
         
         if (mode === 'draw-pen') { ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke(); }
         else if (mode === 'draw-pass') { ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke(); }
         else if (mode === 'draw-run') { ctx.setLineDash([8,8]); ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]); }
         else if (mode === 'draw-highlight') { const radius = Math.hypot(x-dStartX, y-dStartY); ctx.arc(dStartX, dStartY, radius, 0, Math.PI*2); ctx.fillStyle = 'rgba(250, 204, 21, 0.4)'; ctx.fill(); }
-      });
-      canvas.addEventListener('mouseup', (e) => {
+      };
+
+      const handleDrawEnd = (e) => {
         if(!isDrawing) return; isDrawing = false;
         const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
         const rect = canvas.getBoundingClientRect();
-        drawings[pitchId].push({ type: mode, sx: dStartX, sy: dStartY, ex: e.clientX - rect.left, ey: e.clientY - rect.top });
+        const pos = getClientPos(e);
+        drawings[pitchId].push({ type: mode, sx: dStartX, sy: dStartY, ex: pos.x - rect.left, ey: pos.y - rect.top });
         renderCanvas(pitchId);
-      });
+      };
+
+      canvas.addEventListener('mousedown', handleDrawStart);
+      canvas.addEventListener('mousemove', handleDrawMove);
+      canvas.addEventListener('mouseup', handleDrawEnd);
+      
+      canvas.addEventListener('touchstart', handleDrawStart, {passive: false});
+      canvas.addEventListener('touchmove', handleDrawMove, {passive: false});
+      canvas.addEventListener('touchend', handleDrawEnd);
     });
 
     function renderCanvas(pitchId) {
@@ -459,7 +501,7 @@
       const ctx = canvas.getContext('2d'); ctx.clearRect(0,0, canvas.width, canvas.height);
       drawings[pitchId].forEach(d => {
         ctx.beginPath();
-        if(d.type === 'draw-pen') { /* مسار معقد يحتاج تخزين كل النقاط، للتبسيط نرسم خط */ ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke(); }
+        if(d.type === 'draw-pen') { ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke(); }
         else if(d.type === 'draw-pass') { 
           const angle = Math.atan2(d.ey - d.sy, d.ex - d.sx); ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); 
           ctx.lineTo(d.ex - 15 * Math.cos(angle - Math.PI/6), d.ey - 15 * Math.sin(angle - Math.PI/6)); ctx.moveTo(d.ex, d.ey); ctx.lineTo(d.ex - 15 * Math.cos(angle + Math.PI/6), d.ey - 15 * Math.sin(angle + Math.PI/6));
@@ -477,9 +519,6 @@
     }
     window.addEventListener('resize', resizeCanvases); setTimeout(resizeCanvases, 500);
 
-    // ==========================================
-    // تحديث خطوط الربط التكتيكي باستمرار
-    // ==========================================
     function updateTacticalLinks() {
       ['trainPitch', 'matchPitch'].forEach(pitchId => {
         const svg = document.getElementById(pitchId === 'trainPitch' ? 'trainLinksLayer' : 'matchLinksLayer');
@@ -499,10 +538,10 @@
       });
       requestAnimationFrame(updateTacticalLinks);
     }
-    updateTacticalLinks(); // تشغيل حلقة التحديث اللانهائية
+    updateTacticalLinks();
 
     // ==========================================
-    // خطط المباريات (Formations)
+    // خطط المباريات (Formations) - دعم التاتش
     // ==========================================
     const matchPitch = document.getElementById('matchPitch');
     const formations = {
@@ -529,8 +568,11 @@
         node.style.left = `${pos.x}%`; node.style.top = `${finalY}%`; node.style.transform = `translate(-50%, -50%)`;
         
         node.innerHTML = `<img src="" class="player-img" id="img_t${teamNumber}_${i}"><input type="file" accept="image/*" onchange="handlePlayerUpload(event, ${teamNumber}, ${i})"><i class="fa-solid fa-plus add-photo-btn"></i><div class="player-label" style="background:${color}">${pos.label}</div>`;
-        node.addEventListener('mousedown', handleItemMousedown);
+        
+        node.addEventListener('mousedown', handleItemStart);
+        node.addEventListener('touchstart', handleItemStart, {passive: false}); // دعم التاتش
         node.addEventListener('dblclick', renameElement);
+        
         matchPitch.appendChild(node);
       });
     }
@@ -539,16 +581,18 @@
       const ball = document.createElement('div'); ball.className = 'drill-item ball-item'; ball.id = `match_ball_${Date.now()}`;
       ball.innerHTML = `${svgTemplates.ball} <div class="delete-btn" onclick="removeNode(this)">X</div>`;
       ball.style.left = '50%'; ball.style.top = '50%'; ball.style.transform = 'translate(-50%, -50%) scale(1.5)';
-      ball.addEventListener('mousedown', handleItemMousedown); matchPitch.appendChild(ball);
+      
+      ball.addEventListener('mousedown', handleItemStart); 
+      ball.addEventListener('touchstart', handleItemStart, {passive: false}); // دعم التاتش
+      
+      matchPitch.appendChild(ball);
     }
+    
     function handlePlayerUpload(event, team, index) {
       const file = event.target.files[0];
       if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById(`img_t${team}_${index}`).src = e.target.result; document.getElementById(`match_player_t${team}_${index}`).classList.add('has-image'); }; reader.readAsDataURL(file); }
     }
 
-    // ==========================================
-    // التحكم في العرض للملاعب
-    // ==========================================
     function setPitchView(view) {
       document.querySelectorAll('#trainingTab .pitch-btn').forEach(btn => btn.classList.remove('active'));
       event.currentTarget.classList.add('active');
@@ -562,14 +606,12 @@
       clearFrames(pitchId === 'trainPitch' ? 'train' : 'match');
       clearDrawings(pitchId);
     }
+    
     function printPitch(pitchId) { 
       const p = document.getElementById(pitchId); p.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
       html2canvas(p, { backgroundColor: '#15803d' }).then(canvas => { const a = document.createElement('a'); a.download = `لوحة_${Date.now()}.jpg`; a.href = canvas.toDataURL('image/jpeg'); a.click(); p.querySelectorAll('.delete-btn').forEach(b => b.style.display = ''); }); 
     }
 
-    // ==========================================
-    // طباعة تقرير PDF للوحدة التدريبية
-    // ==========================================
     function exportPDF(pitchId) {
       const pitch = document.getElementById(pitchId);
       pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
