@@ -74,24 +74,8 @@
     .video-controls-row { display: flex; align-items: center; justify-content: space-between; background: #070b12; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 12px; }
     .time-txt { font-size: 13px; font-weight: 800; color: var(--primary); direction: ltr; min-width: 95px; text-align: center; }
     
-    .seek-bar { 
-      flex: 1; 
-      -webkit-appearance: none; 
-      height: 8px; 
-      background: #374151; 
-      border-radius: 5px; 
-      outline: none; 
-      cursor: pointer; 
-    }
-    .seek-bar::-webkit-slider-thumb { 
-      -webkit-appearance: none; 
-      width: 17px; 
-      height: 17px; 
-      border-radius: 50%; 
-      background: var(--primary); 
-      cursor: pointer; 
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
-    }
+    .seek-bar { flex: 1; -webkit-appearance: none; height: 8px; background: #374151; border-radius: 5px; outline: none; cursor: pointer; }
+    .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); }
 
     .btn-ctrl { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
     .btn-ctrl:hover { background: #374151; }
@@ -105,7 +89,6 @@
 
     .export-step-box { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
     .export-step-label { font-size: 11px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-
     .export-radio-group { display: flex; flex-direction: column; gap: 6px; }
     .export-radio-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #cbd5e1; padding: 6px; border-radius: 6px; background: #111827; border: 1px solid transparent; transition: 0.2s; }
     .export-radio-item:hover, .export-radio-item.selected { border-color: var(--primary); background: #1e293b; color: #fff; }
@@ -160,41 +143,18 @@
     #studioInteractiveCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; z-index: 10; }
 
     .freeze-countdown-badge {
-      position: absolute;
-      top: 20px; right: 20px;
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 8px 18px;
-      border-radius: 30px;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      z-index: 60;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
-      border: 2px solid #fff;
+      position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff; font-size: 13px; font-weight: 800; padding: 8px 18px; border-radius: 30px;
+      display: none; align-items: center; gap: 8px; z-index: 60; box-shadow: 0 0 20px rgba(56, 189, 248, 0.7); border: 2px solid #fff;
     }
 
-    /* تحديث شريط أزرار الرسم (صح ✔️ و غلط ✖️) ليكون دائم الظهور وقريب من الرسمة */
     .shape-floating-toolbar {
-      position: absolute;
-      display: none;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1.5px solid var(--primary);
-      border-radius: 30px;
-      padding: 6px 12px;
-      gap: 10px;
-      align-items: center;
-      z-index: 50;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.5);
+      position: absolute; display: none; background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid var(--primary); border-radius: 30px; padding: 6px 12px;
+      gap: 10px; align-items: center; z-index: 50; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.5);
       transform: translate(-50%, -120%);
     }
-    .shape-btn {
-      background: none; border: none; color: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; font-size: 14px;
-    }
+    .shape-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; font-size: 14px; }
     .shape-btn:hover { transform: scale(1.15); }
     .btn-shape-ok { background: #10b981; color: #fff; width: 38px; height: 38px; font-size: 18px; }
     .btn-shape-del { background: #ef4444; color: #fff; width: 38px; height: 38px; font-size: 18px; }
@@ -208,7 +168,6 @@
     .tool-btn { width: 100%; background: #0f172a; border: 1px solid var(--border-color); color: #e2e8f0; padding: 8px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
     .tool-btn:hover { background: #1e293b; color: #fff; }
     .tool-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-
     .input-field { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; font-family: inherit; }
   </style>
 </head>
@@ -224,7 +183,6 @@
     </header>
 
     <div class="workspace-grid">
-      <!-- 1. لوحة أزرار التقطيع مع عدادات حية -->
       <aside class="tagging-panel">
         <div class="mode-switch-card">
           <div class="mode-switch-title">
@@ -275,9 +233,7 @@
             <i class="fa-solid fa-plus"></i> إضافة زر خاص بي
           </button>
         </div>
-
         <div id="customActionsContainer" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;"></div>
-
         <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
           <input type="file" id="videoFile" accept="video/*" class="input-field" onchange="loadMatchVideo(event)">
         </div>
@@ -383,58 +339,6 @@
     </section>
   </div>
 
-  <!-- نافذة تعديل بيانات وتوقيتات اللقطة -->
-  <div class="modal-clip-editor" id="modalClipEditor">
-    <div class="clip-editor-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-        <b style="color: var(--primary); font-size: 14px;"><i class="fa-solid fa-pen-to-square"></i> تعديل توقيت وتصنيف اللقطة</b>
-        <button onclick="closeClipEditor()" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="editor-field-row">
-        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">تصنيف الحالة:</label>
-        <select id="editClipCategory" class="input-field">
-          <option value="إجراءات الهجوم">إجراءات الهجوم</option>
-          <option value="حالات فردية">حالات فردية</option>
-          <option value="إجراءات الدفاع">إجراءات الدفاع</option>
-          <option value="أهداف">أهداف ⚽</option>
-          <option value="كرات ثابتة هجومية">كرات ثابتة هجومية</option>
-          <option value="كرات ثابتة دفاعية">كرات ثابتة دفاعية</option>
-          <option value="بناء الهجمة">بناء الهجمة</option>
-          <option value="الضغط العالي">الضغط العالي</option>
-          <option value="طريقة لعب الخصم (تركاية في الملعب)">طريقة لعب الخصم (تركاية)</option>
-          <option value="الكرة الأولى (First Ball)">الكرة الأولى (First Ball)</option>
-          <option value="الكرة الثانية (Second Ball)">الكرة الثانية (Second Ball)</option>
-          <option value="الضغط العكسي (Counter-Press)">الضغط العكسي (Counter-Press)</option>
-          <option value="هجمة مرتدة (Counter-Attack)">هجمة مرتدة (Counter-Attack)</option>
-          <option value="تمريرة مفتاحية (Key Pass)">تمريرة مفتاحية (Key Pass)</option>
-          <option value="عرضيات ودخول المنطقة (Cross & Box)">عُرضيات ودخول المنطقة</option>
-        </select>
-      </div>
-
-      <div class="editor-field-row">
-        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">وقت بداية اللقطة (بالثواني):</label>
-        <input type="number" id="editClipStart" step="0.1" class="input-field">
-        <div class="editor-time-actions">
-          <button class="btn-time-sync" onclick="syncEditorTime('start')"><i class="fa-solid fa-location-crosshairs"></i> اضبط من موقع الفيديو الحالي</button>
-        </div>
-      </div>
-
-      <div class="editor-field-row">
-        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">وقت نهاية اللقطة (بالثواني):</label>
-        <input type="number" id="editClipEnd" step="0.1" class="input-field">
-        <div class="editor-time-actions">
-          <button class="btn-time-sync" onclick="syncEditorTime('end')"><i class="fa-solid fa-location-crosshairs"></i> اضبط من موقع الفيديو الحالي</button>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 8px; margin-top: 6px;">
-        <button class="btn-export-action" style="flex: 1;" onclick="saveEditedClip()"><i class="fa-solid fa-check"></i> حفظ التعديلات</button>
-        <button class="btn-top" onclick="closeClipEditor()">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
   <!-- نافذة الاستوديو التكتيكي -->
   <div class="studio-modal-overlay" id="studioModal">
     <header class="studio-header">
@@ -461,7 +365,7 @@
             <span>وقفة تحليلية: <b id="freezeTimerText">4</b> ثوانٍ</span>
           </div>
 
-          <!-- شريط أزرار الرسم بعد التحديث (صح وغلط) -->
+          <!-- شريط أزرار الرسم بعد التحديث (صح وغلط) يظهر فوراً حول الرسمة -->
           <div class="shape-floating-toolbar" id="shapeFloatingToolbar">
             <button class="shape-btn btn-shape-ok" title="تثبيت واعتماد الرسمة (صح)" onclick="confirmShape()"><i class="fa-solid fa-check"></i></button>
             <button class="shape-btn btn-shape-scale-up" title="تكبير / تطويل (+)" onclick="scaleActiveShape(1.15)"><i class="fa-solid fa-plus"></i></button>
@@ -995,12 +899,11 @@
     }
 
     // ===========================================
-    // ميزة التقديم والتأخير اللحظي في الاستوديو
+    // ميزة التقديم والتأخير اللحظي في الاستوديو (Scrubbing)
     // ===========================================
     studioSeekSlider.addEventListener('mousedown', () => { isSeekingStudio = true; resetFreezeState(); });
     studioSeekSlider.addEventListener('touchstart', () => { isSeekingStudio = true; resetFreezeState(); });
 
-    // هنا بيحصل التحديث اللحظي فريم بفريم
     studioSeekSlider.addEventListener('input', () => {
       isSeekingStudio = true;
       if (currentStudioClip) {
@@ -1011,8 +914,6 @@
         studioVideo.currentTime = target;
         lastCheckedTime = target;
         studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
-        
-        // رسم الأشكال لو متسجلة في الفريم ده
         drawAllShapesForTime(target);
       }
     });
@@ -1221,6 +1122,7 @@
 
       const cur = studioVideo.currentTime;
       currentStudioClip.shapes.forEach(shape => {
+        // الرسمة تظهر في مكانها طالما الفيديو واقف عليها
         if (Math.abs(shape.triggerTime - cur) < 0.1 || (isFreezeActive && Math.abs(shape.triggerTime - activeFreezingTime) < 0.1)) {
           drawSingleShape(sCtx, shape);
         }
@@ -1307,7 +1209,7 @@
     } function drawDistanceLine(ctx, shape) {} function drawBallTrajectory(ctx, shape) {} function drawPassingBlocker(ctx, shape) {}
     function drawOffsideBarrier(ctx, shape) {} function drawMagnifierZoom(ctx, shape) {}
 
-    // وضع الأزرار بشكل ذكي فوق الرسمة عشان متضيعش منك
+    // وضع الأزرار بشكل ذكي فوق الرسمة تماماً لتسهيل الضغط عليها
     function positionFloatingToolbar(shape) {
       if (!shape) return;
       let posX = 0, posY = 0;
@@ -1317,11 +1219,11 @@
       else if (shape.bottomX !== undefined) { posX = shape.bottomX; posY = shape.bottomY; }
       else if (shape.originX !== undefined) { posX = shape.targetX; posY = shape.targetY; }
       
-      posY -= 50; 
+      posY -= 55; // رفعها فوق الرسمة بمسافة واضحة
 
       const rect = sCanvas.getBoundingClientRect();
-      posX = Math.max(100, Math.min(posX, rect.width - 100));
-      posY = Math.max(50, Math.min(posY, rect.height - 50));
+      posX = Math.max(120, Math.min(posX, rect.width - 120));
+      posY = Math.max(60, Math.min(posY, rect.height - 60));
 
       floatingToolbar.style.left = `${posX}px`;
       floatingToolbar.style.top = `${posY}px`;
@@ -1339,7 +1241,7 @@
     function hideFloatingToolbar() { floatingToolbar.style.display = 'none'; isMoving = false; isResizing = false; }
     window.editShapeLabel = function() {};
     
-    // تأكيد الرسمة (تسيف على طول في نفس الفريم وتفضل ظاهرة طول ما الفيديو واقف)
+    // تأكيد الرسمة وتسجيلها على الفريم الحالي (تظهر طالما الفيديو واقف في الفريم ده)
     window.confirmShape = function() {
       if (!currentStudioClip || !activeShape) return;
       activeShape.triggerTime = studioVideo.currentTime;
@@ -1348,10 +1250,10 @@
       }
       hideFloatingToolbar(); 
       activeShape = null; 
-      renderLiveScene(); // بيسيب الرسمة مرسومة
+      renderLiveScene(); 
     };
 
-    // إلغاء الرسمة فوراً (زرار الإكس)
+    // إلغاء وحذف الرسمة فوراً (زرار الإكس)
     window.deleteActiveShape = function() { 
       if (!currentStudioClip || !activeShape) return; 
       currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); 
@@ -1383,6 +1285,9 @@
       });
     }
 
+    // =====================================
+    // محرك التصدير (Real-time Video Rendering)
+    // =====================================
     window.runExportEngine = async function() {
       if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها!");
       if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
@@ -1454,21 +1359,49 @@
               eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
 
               if (overlayMode === 'with_overlay') {
+                // تجميع كل الأشكال اللي اترسمت في نفس اللحظة عشان يظهروا ويتسيفوا مع بعض
                 const activeS = c.shapes.find(s => Math.abs(s.triggerTime - rVideo.currentTime) < 0.1 && !s._exported);
                 if (activeS) {
                   rVideo.pause();
-                  activeS._exported = true; 
                   
-                  eCtx.save();
-                  eCtx.scale(eCanvas.width / sCanvas.width, eCanvas.height / sCanvas.height);
-                  drawSingleShape(eCtx, activeS);
-                  eCtx.restore();
+                  // هات كل الأشكال اللي في نفس التوقيت عشان نرسمهم مرة واحدة
+                  const shapesInSameFrame = c.shapes.filter(s => Math.abs(s.triggerTime - activeS.triggerTime) < 0.1);
+                  shapesInSameFrame.forEach(s => s._exported = true);
+                  
+                  // دالة الرندرة المستمرة طول فترة الـ 4 ثواني
+                  let freezeTimeMs = 0;
+                  let lastFrameTime = performance.now();
+                  
+                  function freezeLoop() {
+                    const now = performance.now();
+                    const dt = now - lastFrameTime;
+                    
+                    if (dt >= (1000 / 30)) { 
+                        freezeTimeMs += dt;
+                        lastFrameTime = now;
+                        
+                        eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
+                        const sW = sCanvas.width || eCanvas.width;
+                        const sH = sCanvas.height || eCanvas.height;
+                        
+                        shapesInSameFrame.forEach(s => {
+                          eCtx.save();
+                          eCtx.scale(eCanvas.width / sW, eCanvas.height / sH);
+                          drawSingleShape(eCtx, s);
+                          eCtx.restore();
+                        });
+                    }
 
-                  setTimeout(() => {
-                    rVideo.currentTime += 0.25;
-                    rVideo.play();
-                    requestAnimationFrame(renderFrame);
-                  }, 4000);
+                    if (freezeTimeMs >= 4000) { 
+                      rVideo.currentTime = activeS.triggerTime + 0.25; 
+                      rVideo.play();
+                      requestAnimationFrame(renderFrame);
+                    } else {
+                      requestAnimationFrame(freezeLoop);
+                    }
+                  }
+                  
+                  requestAnimationFrame(freezeLoop);
                   return;
                 }
               }
