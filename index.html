@@ -232,6 +232,8 @@
     .referee-icon { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
     .admin-icon { background: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
     .gk-icon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    /* ستايل أيقونة المدير الفني */
+    .headcoach-icon { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
     
     .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
 
@@ -352,7 +354,6 @@
           <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
         </form>
 
-        <!-- زرار التواصل عبر واتساب معدل بالرقم الجديد -->
         <div class="contact-hint">للاشتراك، التجديد، أو الدعم الفني:</div>
         <a href="https://wa.me/201027482686" target="_blank" class="whatsapp-btn">
           <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> تواصل مع الإدارة عبر واتساب
@@ -365,12 +366,16 @@
           <p>اختر أداة التحليل لبدء العمل:</p>
         </div>
         <div class="analysis-grid">
+          <!-- زرار صفحة المدير الفني المضاف حديثاً -->
+          <a href="head_coach.html" class="analysis-card" style="border-color: #ec4899;">
+            <div class="icon-box headcoach-icon">👔</div>
+            <div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني (Head Coach)</h3></div>
+          </a>
+          
           <a href="tactical.html" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
           <a href="individual.html" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
           <a href="live.html" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
-          <!-- زرار صفحة تحليل الحكام والقانون -->
           <a href="referee.html" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون (AI)</h3></div></a>
-          <!-- زرار استوديو حراس المرمى الجديد -->
           <a href="goalkeeper.html" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى (GK)</h3></div></a>
           <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة</h3></div></a>
         </div>
@@ -484,7 +489,6 @@
       document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name}`; 
       document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none'; 
       
-      // تشغيل فحص الاشتراك التلقائي
       checkSubscription(user);
     }
     
@@ -532,7 +536,6 @@
       }
     }
 
-    // دالة فحص وحساب وقت الاشتراك المتبقي
     function checkSubscription(userData) {
       if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) {
         return; 
@@ -541,7 +544,6 @@
       const expiryDate = new Date(userData.subscriptionEnd + "T23:59:59").getTime();
       const now = new Date().getTime();
       
-      // تم إصلاح عملية الطرح بدلاً من الخطأ البرمجي
       const distance = expiryDate - now;
 
       const overlay = document.getElementById('subOverlay');
@@ -552,7 +554,6 @@
       overlay.style.display = 'flex';
 
       if (distance > 0) {
-        // تم إصلاح علامات الضرب والقسمة للأيام والساعات
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         
