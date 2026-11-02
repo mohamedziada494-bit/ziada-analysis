@@ -176,7 +176,7 @@
       border: 2px solid #fff;
     }
 
-    /* تعديل شريط أزرار الرسم (صح ✔️ و غلط ✖️) */
+    /* تحديث شريط أزرار الرسم (صح ✔️ و غلط ✖️) ليكون دائم الظهور وقريب من الرسمة */
     .shape-floating-toolbar {
       position: absolute;
       display: none;
@@ -476,7 +476,8 @@
         <div class="video-controls-row">
           <span class="time-txt" id="studioTimeDisp">00:00 / 00:00</span>
           <button class="btn-ctrl" onclick="seekStudioRelative(-3)"><i class="fa-solid fa-backward"></i> -3ث</button>
-          <input type="range" id="studioSeekSlider" class="seek-bar" min="0" max="100" value="0" step="0.05">
+          <!-- شريط التقديم والتأخير اللحظي فريم بفريم (step=0.01) -->
+          <input type="range" id="studioSeekSlider" class="seek-bar" min="0" max="100" value="0" step="0.01">
           <button class="btn-ctrl" onclick="seekStudioRelative(3)">+3ث <i class="fa-solid fa-forward"></i></button>
           <button class="btn-ctrl" id="studioPlayBtn" onclick="toggleStudioPlay()"><i class="fa-solid fa-play"></i> تشغيل</button>
         </div>
@@ -999,6 +1000,7 @@
     studioSeekSlider.addEventListener('mousedown', () => { isSeekingStudio = true; resetFreezeState(); });
     studioSeekSlider.addEventListener('touchstart', () => { isSeekingStudio = true; resetFreezeState(); });
 
+    // هنا بيحصل التحديث اللحظي فريم بفريم
     studioSeekSlider.addEventListener('input', () => {
       isSeekingStudio = true;
       if (currentStudioClip) {
@@ -1006,10 +1008,11 @@
         const clipDuration = currentStudioClip.end - currentStudioClip.start;
         const target = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
         
-        // التحديث اللحظي للفيديو والرسم
         studioVideo.currentTime = target;
         lastCheckedTime = target;
         studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
+        
+        // رسم الأشكال لو متسجلة في الفريم ده
         drawAllShapesForTime(target);
       }
     });
@@ -1304,6 +1307,26 @@
     } function drawDistanceLine(ctx, shape) {} function drawBallTrajectory(ctx, shape) {} function drawPassingBlocker(ctx, shape) {}
     function drawOffsideBarrier(ctx, shape) {} function drawMagnifierZoom(ctx, shape) {}
 
+    // وضع الأزرار بشكل ذكي فوق الرسمة عشان متضيعش منك
+    function positionFloatingToolbar(shape) {
+      if (!shape) return;
+      let posX = 0, posY = 0;
+      
+      if (shape.x2 !== undefined) { posX = shape.x2; posY = shape.y2; }
+      else if (shape.x !== undefined) { posX = shape.x; posY = shape.y; }
+      else if (shape.bottomX !== undefined) { posX = shape.bottomX; posY = shape.bottomY; }
+      else if (shape.originX !== undefined) { posX = shape.targetX; posY = shape.targetY; }
+      
+      posY -= 50; 
+
+      const rect = sCanvas.getBoundingClientRect();
+      posX = Math.max(100, Math.min(posX, rect.width - 100));
+      posY = Math.max(50, Math.min(posY, rect.height - 50));
+
+      floatingToolbar.style.left = `${posX}px`;
+      floatingToolbar.style.top = `${posY}px`;
+    }
+
     function showFloatingToolbar(shape) {
       positionFloatingToolbar(shape);
       floatingToolbar.style.display = 'flex';
@@ -1313,24 +1336,22 @@
       btnShapeEdit.style.display = textEditable ? 'flex' : 'none';
     }
 
-    function positionFloatingToolbar(shape) {
-      let posX = 0, posY = 0;
-      floatingToolbar.style.left = `${posX}px`;
-      floatingToolbar.style.top = `${posY}px`;
-    }
-
     function hideFloatingToolbar() { floatingToolbar.style.display = 'none'; isMoving = false; isResizing = false; }
     window.editShapeLabel = function() {};
     
-    // حفظ واعتماد الرسمة (صح)
+    // تأكيد الرسمة (تسيف على طول في نفس الفريم وتفضل ظاهرة طول ما الفيديو واقف)
     window.confirmShape = function() {
       if (!currentStudioClip || !activeShape) return;
       activeShape.triggerTime = studioVideo.currentTime;
-      if (!currentStudioClip.shapes.includes(activeShape)) { currentStudioClip.shapes.push(activeShape); }
-      hideFloatingToolbar(); activeShape = null; renderLiveScene();
+      if (!currentStudioClip.shapes.includes(activeShape)) { 
+        currentStudioClip.shapes.push(activeShape); 
+      }
+      hideFloatingToolbar(); 
+      activeShape = null; 
+      renderLiveScene(); // بيسيب الرسمة مرسومة
     };
 
-    // إلغاء الرسمة (غلط / إكس)
+    // إلغاء الرسمة فوراً (زرار الإكس)
     window.deleteActiveShape = function() { 
       if (!currentStudioClip || !activeShape) return; 
       currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); 
