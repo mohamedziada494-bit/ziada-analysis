@@ -9,15 +9,9 @@
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
   <style>
     :root {
-      --bg-dark: #070b12;
-      --card-bg: #111827;
-      --border-color: #1f2937;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --danger: #ef4444;
-      --success: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937;
+      --primary: #38bdf8; --accent: #f59e0b; --danger: #ef4444; --success: #10b981;
+      --text: #f8fafc; --text-muted: #94a3b8;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
@@ -42,33 +36,29 @@
     .video-container { position: relative; width: 100%; height: 60vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; object-fit: contain; }
 
-    /* شريط تسجيل الماتش كامل */
-    .record-bar { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); }
-    .timer-display { font-family: monospace; font-size: 22px; font-weight: bold; color: var(--primary); }
-    .btn-record-live { background: #1f2937; color: #fff; border: 1px solid var(--danger); padding: 8px 20px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-    .btn-record-live.recording { background: var(--danger); animation: pulseRec 1.5s infinite; }
-    @keyframes pulseRec { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 50% { opacity: 0.8; box-shadow: 0 0 0 10px rgba(239,68,68,0); } 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+    /* شريط التسجيل الرئيسي */
+    .record-control-bar { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
+    .record-timer { font-family: monospace; font-size: 26px; font-weight: bold; color: var(--danger); display: flex; align-items: center; gap: 10px; }
+    .btn-record-main { background: var(--danger); color: #fff; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
+    .btn-record-main:hover { background: #dc2626; }
+    .btn-record-main.recording { background: #dc2626; animation: pulseRed 1.5s infinite; }
+    @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
     .live-actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 5px; }
     .btn-live-action { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1.5px solid var(--border-color); color: #fff; padding: 14px 10px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
     .btn-live-action:hover { transform: translateY(-3px); border-color: var(--primary); filter: brightness(1.2); }
     .btn-live-action i { font-size: 18px; }
+    .action-att { border-color: #3b82f6; } .action-ind { border-color: #8b5cf6; } .action-set-att { border-color: #06b6d4; } .action-set-def { border-color: #f97316; } .action-replay { border-color: #10b981; } .action-goal { border-color: #f59e0b; background: linear-gradient(135deg, #78350f, #451a03); }
 
-    .action-att { border-color: #3b82f6; }
-    .action-ind { border-color: #8b5cf6; }
-    .action-set-att { border-color: #06b6d4; }
-    .action-set-def { border-color: #f97316; }
-    .action-replay { border-color: #10b981; }
-    .action-goal { border-color: #f59e0b; background: linear-gradient(135deg, #78350f, #451a03); }
-
-    .live-status-banner { display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #10b981; padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; }
+    .live-status-banner { display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #10b981; padding: 10px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; align-items: center; gap: 10px; margin-bottom: 10px;}
 
     /* جدول الحالات المقطوعة */
-    .log-section { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
+    .log-section { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; max-height: 250px; overflow-y: auto; margin-top: 15px; }
     .log-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
-    .log-table th { background: #1f2937; color: var(--primary); padding: 10px; position: sticky; top: 0; }
-    .log-table td { padding: 10px; border-bottom: 1px solid var(--border-color); }
-    .btn-download { background: var(--success); color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; }
+    .log-table th { background: #1f2937; color: var(--primary); padding: 12px; position: sticky; top: 0; }
+    .log-table td { padding: 12px; border-bottom: 1px solid var(--border-color); }
+    .btn-download { background: var(--success); color: #fff; padding: 6px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; transition: 0.2s;}
+    .btn-download:hover { background: #059669; }
     .status-badge { color: var(--accent); font-weight: bold; font-size: 12px; }
   </style>
 </head>
@@ -78,7 +68,7 @@
     <header class="top-nav">
       <div class="brand-title">
         <i class="fa-solid fa-satellite-dish"></i>
-        <span>Ziada Analysis | نظام بث وتحليل اللايف الفوري (تقطيع وتقييم مزدوج)</span>
+        <span>Ziada Analysis | نظام بث وتحليل اللايف الفوري</span>
       </div>
       <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> القائمة الرئيسية</a>
     </header>
@@ -101,7 +91,7 @@
     <main class="live-viewport-box">
       <div class="live-status-banner" id="liveStatusBanner">
         <i class="fa-solid fa-circle-notch fa-spin"></i>
-        <span id="liveStatusText">جاري معالجة اللقطة...</span>
+        <span id="liveStatusText">جاري معالجة المباراة...</span>
       </div>
 
       <div class="video-container">
@@ -109,10 +99,12 @@
       </div>
 
       <!-- شريط تسجيل المباراة الكاملة -->
-      <div class="record-bar">
-        <div class="timer-display" id="matchTimer">00:00:00</div>
-        <button class="btn-record-live" id="btnRecordMatch" onclick="toggleFullMatchRecord()">
-          <i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة</span>
+      <div class="record-control-bar">
+        <div class="record-timer" id="matchTimer">
+          <i class="fa-regular fa-clock"></i> <span id="timerText">00:00:00</span>
+        </div>
+        <button class="btn-record-main" id="btnRecordMatch" onclick="toggleFullMatchRecord()">
+          <i class="fa-solid fa-record-vinyl"></i> <span id="recordBtnText">بدء تسجيل المباراة كاملة</span>
         </button>
       </div>
 
@@ -148,13 +140,13 @@
         <table class="log-table">
           <thead>
             <tr>
-              <th>توقيت المباراة</th>
-              <th>الحالة التكتيكية</th>
-              <th>اللقطة (10 ثواني)</th>
+              <th>التوقيت</th>
+              <th>الحالة (Tag)</th>
+              <th>اللقطة (فيديو)</th>
             </tr>
           </thead>
           <tbody id="liveLogBody">
-            <!-- سيتم إضافة الحالات المقطوعة هنا -->
+            <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لم يتم تقطيع لقطات حتى الآن. (اضغط على أزرار الحالات للتسجيل الفوري)</td></tr>
           </tbody>
         </table>
       </div>
@@ -162,17 +154,15 @@
     </main>
   </div>
 
-  <canvas id="liveRenderCanvas" style="display: none;"></canvas>
-
   <script>
     const liveVideo = document.getElementById('liveVideo');
     const statusBanner = document.getElementById('liveStatusBanner');
     const statusText = document.getElementById('liveStatusText');
     const btnCam = document.getElementById('btnToggleCam');
     const btnRecord = document.getElementById('btnRecordMatch');
-    const timerDisplay = document.getElementById('matchTimer');
+    const recordBtnText = document.getElementById('recordBtnText');
+    const timerText = document.getElementById('timerText');
 
-    // المتغيرات الخاصة بالبث والتسجيل
     let currentStream = null;
     
     // مسجل المباراة الكاملة
@@ -182,23 +172,13 @@
     let matchStartTime = 0;
     let timerInterval = null;
 
-    // المسجل الخفي للتقطيع (Buffer)
-    let bufferRecorder = null;
-    let rollingChunks = []; // يحتفظ بآخر 15 ثانية
-
-    // ==========================================
-    // تهيئة مصادر الفيديو (رابط، ملف، كاميرا)
-    // ==========================================
     function initializeStreamSource() {
-      // بمجرد تشغيل الفيديو من أي مصدر، نلتقط البث منه لتغذية المسجلات
       if (liveVideo.captureStream) {
         currentStream = liveVideo.captureStream();
-        startBufferRecorder(currentStream);
       }
     }
 
     liveVideo.onplay = () => {
-      // نتأكد إننا ملقطناش البث قبل كده لو المصدر مش كاميرا
       if (!currentStream || currentStream.getVideoTracks().length === 0) {
         initializeStreamSource();
       }
@@ -211,7 +191,7 @@
       liveVideo.srcObject = null;
       liveVideo.src = url;
       liveVideo.load();
-      liveVideo.play().catch(e => alert("تعذر تشغيل الرابط مباشرة؛ قد يتطلب أذونات متصفح."));
+      liveVideo.play().catch(e => alert("تعذر تشغيل الرابط مباشرة."));
     }
 
     function loadLocalVideo(e) {
@@ -225,10 +205,8 @@
 
     async function toggleCamera() {
       if (currentStream && liveVideo.srcObject) {
-        // إيقاف الكاميرا
         stopAllStreams();
       } else {
-        // فتح الكاميرا
         try {
           stopAllStreams();
           currentStream = await navigator.mediaDevices.getUserMedia({ 
@@ -240,8 +218,6 @@
           
           btnCam.classList.add('active');
           btnCam.innerHTML = `<i class="fa-solid fa-video-slash"></i> <span>إغلاق الكاميرا</span>`;
-          
-          startBufferRecorder(currentStream);
         } catch (err) {
           alert("تعذر الوصول لكاميرا الجهاز، يرجى التحقق من الأذونات.");
         }
@@ -250,8 +226,6 @@
 
     function stopAllStreams() {
       if (isFullRecording) toggleFullMatchRecord();
-      if (bufferRecorder && bufferRecorder.state !== 'inactive') bufferRecorder.stop();
-      rollingChunks = [];
       
       if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
@@ -264,53 +238,34 @@
       btnCam.innerHTML = `<i class="fa-solid fa-video"></i> <span>فتح كاميرا الجهاز</span>`;
     }
 
-    // ==========================================
-    // تشغيل المسجل الخفي (Buffer - 15 Seconds)
-    // ==========================================
-    function startBufferRecorder(stream) {
-      if (!stream) return;
-      rollingChunks = [];
-      bufferRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-      bufferRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          rollingChunks.push({ timestamp: Date.now(), chunk: e.data });
-          // الاحتفاظ بآخر 15 ثانية فقط
-          if (rollingChunks.length > 15) {
-            rollingChunks.shift(); 
-          }
-        }
-      };
-      bufferRecorder.start(1000); // تحديث كل ثانية
-    }
-
-    // ==========================================
     // تسجيل المباراة الكاملة
-    // ==========================================
     function toggleFullMatchRecord() {
-      if (!currentStream) return alert("الرجاء تشغيل فيديو أو فتح الكاميرا أولاً!");
+      if (!currentStream) return alert("الرجاء تشغيل فيديو أو فتح الكاميرا أولاً للتمكن من تسجيل المباراة!");
 
       if (isFullRecording) {
-        // إيقاف التسجيل
         mainRecorder.stop();
         clearInterval(timerInterval);
         isFullRecording = false;
         btnRecord.classList.remove('recording');
-        btnRecord.innerHTML = `<i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة</span>`;
+        recordBtnText.innerText = "بدء تسجيل المباراة كاملة";
+        btnRecord.innerHTML = `<i class="fa-solid fa-record-vinyl"></i> <span>${recordBtnText.innerText}</span>`;
         
         mainRecorder.onstop = async () => {
           const rawBlob = new Blob(mainChunks, { type: 'video/webm' });
-          const duration = Date.now() - matchStartTime;
-          let finalBlob = await new Promise(resolve => ysFixWebmDuration(rawBlob, duration, resolve));
-          
-          const url = URL.createObjectURL(finalBlob);
+          statusBanner.style.display = 'flex';
+          statusText.innerText = "جاري حفظ وتجهيز ملف المباراة الكاملة...";
+
+          const url = URL.createObjectURL(rawBlob);
           const a = document.createElement('a');
           a.href = url; 
           a.download = `المباراة_الكاملة_${new Date().toLocaleDateString('ar-EG')}.webm`;
           a.click();
           mainChunks = [];
+          
+          statusText.innerText = "تم حفظ المباراة بنجاح!";
+          setTimeout(() => { statusBanner.style.display = 'none'; }, 3000);
         };
       } else {
-        // بدء التسجيل
         mainChunks = [];
         mainRecorder = new MediaRecorder(currentStream, { mimeType: 'video/webm;codecs=vp9' });
         mainRecorder.ondataavailable = e => { if (e.data.size > 0) mainChunks.push(e.data); };
@@ -319,7 +274,8 @@
         isFullRecording = true;
         matchStartTime = Date.now();
         btnRecord.classList.add('recording');
-        btnRecord.innerHTML = `<i class="fa-solid fa-stop"></i> <span>إنهاء وحفظ المباراة</span>`;
+        recordBtnText.innerText = "إيقاف وحفظ المباراة";
+        btnRecord.innerHTML = `<i class="fa-solid fa-stop"></i> <span>${recordBtnText.innerText}</span>`;
         
         timerInterval = setInterval(updateTimer, 1000);
       }
@@ -330,64 +286,73 @@
       const h = Math.floor(diff / 3600).toString().padStart(2, '0');
       const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
       const s = (diff % 60).toString().padStart(2, '0');
-      timerDisplay.innerText = `${h}:${m}:${s}`;
+      timerText.innerText = `${h}:${m}:${s}`;
     }
 
-    // ==========================================
-    // التقطيع الذكي الفوري (10 ثواني) دون إيقاف التسجيل
-    // ==========================================
+    // التقطيع المتوافق مع الموبايل (تسجيل جديد ونقي)
     function triggerInstantExport(categoryName) {
       if (!currentStream) return alert("الرجاء تشغيل فيديو أو فتح الكاميرا أولاً للتقطيع!");
       
       const tagClickTime = Date.now();
-      const currentMatchTime = isFullRecording ? timerDisplay.innerText : 'غير مسجل';
+      const currentMatchTime = isFullRecording ? timerText.innerText : 'غير مسجل';
       const rowId = 'tagRow_' + tagClickTime;
       
       addLogToTable(currentMatchTime, categoryName, rowId);
 
-      // ننتظر 5 ثواني لتسجيل المستقبل
-      setTimeout(async () => {
-        // جمع الـ 5 ثواني السابقة والـ 5 اللاحقة من الـ Buffer
-        const clipChunks = rollingChunks
-          .filter(c => c.timestamp >= tagClickTime - 5500 && c.timestamp <= tagClickTime + 5500)
-          .map(c => c.chunk);
+      let mimeType = 'video/webm';
+      let ext = 'webm';
+      if (MediaRecorder.isTypeSupported('video/mp4')) {
+        mimeType = 'video/mp4';
+        ext = 'mp4';
+      }
 
-        if (clipChunks.length > 0) {
-          const rawBlob = new Blob(clipChunks, { type: 'video/webm' });
-          let finalBlob = await new Promise(resolve => ysFixWebmDuration(rawBlob, 10000, resolve));
-          const url = URL.createObjectURL(finalBlob);
-          updateLogRow(rowId, url, categoryName);
-        } else {
-          updateLogRow(rowId, null, categoryName, 'فشل استخراج المقطع');
-        }
-      }, 5500); 
+      const clipRecorder = new MediaRecorder(currentStream, { mimeType: mimeType });
+      const clipChunks = [];
+      clipRecorder.ondataavailable = e => { if (e.data.size > 0) clipChunks.push(e.data); };
+
+      clipRecorder.start();
+
+      // تسجيل 8 ثواني من لحظة الضغط
+      setTimeout(() => {
+        if(clipRecorder.state !== 'inactive') clipRecorder.stop();
+      }, 8000);
+
+      clipRecorder.onstop = () => {
+        const rawBlob = new Blob(clipChunks, { type: mimeType });
+        const finalUrl = URL.createObjectURL(rawBlob);
+        updateLogRow(rowId, finalUrl, categoryName, ext);
+      };
     }
 
     function addLogToTable(time, tag, rowId) {
       const tbody = document.getElementById('liveLogBody');
+      if(tbody.querySelector('td[colspan="3"]')) {
+        tbody.innerHTML = '';
+      }
+
       const tr = document.createElement('tr');
       tr.id = rowId;
       tr.innerHTML = `
-        <td>${time}</td>
+        <td>${time === '00:00:00' ? 'قبل صافرة البداية' : time}</td>
         <td style="color:var(--primary); font-weight:bold;">${tag}</td>
-        <td class="action-cell"><span class="status-badge"><i class="fa-solid fa-spinner fa-spin"></i> جاري تقطيع وحفظ (10ث)...</span></td>
+        <td class="action-cell"><span class="status-badge"><i class="fa-solid fa-spinner fa-spin"></i> جاري حفظ اللقطة (8ث)...</span></td>
       `;
       tbody.prepend(tr); 
     }
 
-    function updateLogRow(rowId, url, tag, errorMsg) {
+    function updateLogRow(rowId, url, tag, ext) {
       const tr = document.getElementById(rowId);
       if(!tr) return;
       const actionCell = tr.querySelector('.action-cell');
       
       if(url) {
         actionCell.innerHTML = `
-          <a href="${url}" download="لقطة_${tag.replace(/ /g, '_')}_${Date.now()}.webm" class="btn-download">
-            <i class="fa-solid fa-download"></i> تحميل
+          <a href="${url}" download="لقطة_${tag.replace(/ /g, '_')}_${Date.now()}.${ext}" class="btn-download">
+            <i class="fa-solid fa-download"></i> تحميل المقطع
           </a>
         `;
       } else {
-        actionCell.innerHTML = `<span style="color:var(--danger); font-size:12px;">${errorMsg}</span>`;
+        actionCell.innerHTML = `<span style="color:var(--danger); font-size:12px;">فشل الاستخراج</span>`;
       }
     }
   </script>
