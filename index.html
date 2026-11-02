@@ -34,7 +34,6 @@
       padding: 2rem;
     }
 
-    /* 🌐 خلفية خيال علمي تكتيكية مع شبكة رادار وملاعب مستقبلية */
     body::before {
       content: '';
       position: absolute;
@@ -47,7 +46,6 @@
       z-index: 0;
     }
 
-    /* دوائر رادار تكتيكية متحركة في الخلفية */
     .radar-circle {
       position: absolute;
       width: 700px; height: 700px;
@@ -72,7 +70,6 @@
       100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
     }
 
-    /* الحاوية الرئيسية للتصميم */
     .epic-wrapper {
       position: relative;
       z-index: 10;
@@ -84,7 +81,6 @@
       gap: 3rem;
     }
 
-    /* 🦾 لوحة القيادة التكتيكية المستقبلية (اليسار) */
     .tech-hud-display {
       flex: 1.2;
       display: flex;
@@ -160,29 +156,14 @@
       text-align: center;
       box-shadow: 0 0 15px rgba(14, 165, 233, 0.1);
     }
-    .stat-box .number {
-      font-size: 1.25rem;
-      font-weight: 900;
-      color: var(--neon-cyan);
-      margin-bottom: 0.2rem;
-    }
-    .stat-box .label {
-      font-size: 0.75rem;
-      color: #64748b;
-      font-weight: 700;
-    }
+    .stat-box .number { font-size: 1.25rem; font-weight: 900; color: var(--neon-cyan); margin-bottom: 0.2rem; }
+    .stat-box .label { font-size: 0.75rem; color: #64748b; font-weight: 700; }
 
-    /* 🛡️ كارد تسجيل الدخول الفاخر (اليمين) */
     .main-card {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(11, 17, 32, 0.92);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 1.75rem;
-      padding: 2.5rem;
+      width: 100%; max-width: 440px; background: rgba(11, 17, 32, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 1.75rem; padding: 2.5rem;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(14, 165, 233, 0.15);
-      backdrop-filter: blur(20px);
-      position: relative;
+      backdrop-filter: blur(20px); position: relative;
     }
 
     .header { text-align: center; margin-bottom: 1.75rem; }
@@ -193,8 +174,7 @@
     .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.95); padding: 0.6rem; border-radius: 0.75rem; border: 1px solid rgba(56, 189, 248, 0.2); }
     .download-strip button { 
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
-      padding: 0.6rem; font-size: 0.8rem; font-weight: 700; 
-      border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.85;
+      padding: 0.6rem; font-size: 0.8rem; font-weight: 700; border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.85;
       background: linear-gradient(135deg, #1e293b, #0f172a); color: #4ade80; 
     }
 
@@ -204,8 +184,10 @@
     
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; font-size: 0.825rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.4rem; }
-    .form-group input { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: left; transition: all 0.3s;}
-    .form-group input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.95); }
+    .form-group input, .form-group select { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: right; transition: all 0.3s; font-family: inherit;}
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.95); }
+    
+    .form-group select option { background: #0f172a; }
 
     .submit-btn { width: 100%; padding: 0.8rem; background: linear-gradient(135deg, #0284c7, #1d4ed8); color: #ffffff; border: none; border-radius: 0.6rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; margin-top: 0.5rem; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); transition: all 0.3s; }
     .submit-btn:hover { background: linear-gradient(135deg, #0ea5e9, #2563eb); box-shadow: 0 6px 25px rgba(14, 165, 233, 0.6); }
@@ -232,7 +214,6 @@
     .referee-icon { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
     .admin-icon { background: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
     .gk-icon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-    /* ستايل أيقونة المدير الفني */
     .headcoach-icon { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
     
     .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
@@ -240,74 +221,18 @@
     .logout-btn { width: 100%; padding: 0.65rem; background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; border-radius: 0.6rem; cursor: pointer; margin-top: 1.5rem; font-weight: 700; transition: all 0.3s; }
     .logout-btn:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
 
-    /* تنسيقات نافذة تنبيه الاشتراك */
-    .sub-overlay {
-      display: none; 
-      position: fixed; 
-      top: 0; left: 0; 
-      width: 100%; height: 100%; 
-      background: rgba(0, 0, 0, 0.85); 
-      z-index: 9999; 
-      justify-content: center; 
-      align-items: center; 
-      backdrop-filter: blur(4px);
-    }
-    .sub-modal {
-      background: #111827; 
-      border: 2px solid #38bdf8; 
-      padding: 30px; 
-      border-radius: 15px; 
-      text-align: center; 
-      max-width: 400px; 
-      width: 90%;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-    }
+    .sub-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+    .sub-modal { background: #111827; border: 2px solid #38bdf8; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
     .sub-modal h3 { color: #38bdf8; margin-top: 0; font-size: 22px; }
-    .sub-timer {
-      font-size: 18px; 
-      font-weight: 800; 
-      color: #f59e0b; 
-      margin: 15px 0;
-      background: #1f2937;
-      padding: 10px;
-      border-radius: 8px;
-      direction: rtl;
-    }
+    .sub-timer { font-size: 18px; font-weight: 800; color: #f59e0b; margin: 15px 0; background: #1f2937; padding: 10px; border-radius: 8px; direction: rtl; }
     .sub-modal.expired { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
     .sub-modal.expired h3, .sub-modal.expired .sub-timer { color: #ef4444; }
-    .btn-sub-close {
-      background: #38bdf8; 
-      color: #070b12; 
-      border: none; 
-      padding: 10px 25px; 
-      border-radius: 8px; 
-      font-weight: 800; 
-      cursor: pointer; 
-      font-size: 15px; 
-      margin-top: 10px;
-      transition: 0.2s;
-      font-family: inherit;
-    }
+    .btn-sub-close { background: #38bdf8; color: #070b12; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.2s; font-family: inherit; }
     .btn-sub-close:hover { background: #0284c7; color: #fff; }
 
-    /* تنسيقات زرار الواتساب */
-    .whatsapp-btn {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; padding: 10px; margin-top: 15px;
-      background: linear-gradient(135deg, #16a34a, #22c55e);
-      color: white; text-decoration: none; border-radius: 0.6rem;
-      font-weight: 800; font-size: 14px; transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-    }
-    .whatsapp-btn:hover {
-      background: linear-gradient(135deg, #15803d, #16a34a);
-      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
-      transform: translateY(-2px);
-    }
-    .contact-hint {
-      text-align: center; color: #94a3b8; font-size: 12.5px; 
-      font-weight: 700; margin-top: 20px; margin-bottom: 5px;
-    }
+    .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-top: 15px; background: linear-gradient(135deg, #16a34a, #22c55e); color: white; text-decoration: none; border-radius: 0.6rem; font-weight: 800; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+    .whatsapp-btn:hover { background: linear-gradient(135deg, #15803d, #16a34a); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5); transform: translateY(-2px); }
+    .contact-hint { text-align: center; color: #94a3b8; font-size: 12.5px; font-weight: 700; margin-top: 20px; margin-bottom: 5px; }
 
     @media (max-width: 900px) {
       .epic-wrapper { flex-direction: column-reverse; gap: 2rem; }
@@ -322,7 +247,6 @@
   <div class="radar-circle"></div>
 
   <div class="epic-wrapper">
-    <!-- 🔐 كارد تسجيل الدخول (اليمين) -->
     <div class="main-card">
       <div class="header">
         <div class="logo-text">Ziada <span>Analysis</span></div>
@@ -336,7 +260,7 @@
       <div id="auth-panel">
         <div class="tabs">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</button>
-          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">مدرب جديد</button>
+          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">مستخدم جديد</button>
         </div>
 
         <div id="alert-box" class="alert"></div>
@@ -348,9 +272,21 @@
         </form>
 
         <form id="register-form" style="display: none;" onsubmit="handleRegister(event)">
-          <div class="form-group"><label>اسم المدرب الكامل</label><input type="text" id="reg-name" required placeholder="الكابتن / اسمك"></div>
+          <div class="form-group"><label>الاسم الكامل</label><input type="text" id="reg-name" required placeholder="الكابتن / اسمك"></div>
+          
+          <div class="form-group">
+            <label>التخصص (سيتم تفعيل أدواتك بناءً عليه)</label>
+            <select id="reg-specialty" required>
+              <!-- تمت إزالة خيار الشامل تماماً من هنا -->
+              <option value="headcoach">مدير فني (Head Coach)</option>
+              <option value="analyst">محلل أداء (Performance Analyst)</option>
+              <option value="gkcoach">مدرب حراس مرمى (GK Coach)</option>
+              <option value="referee">حكم / خبير تحكيمي (Referee)</option>
+            </select>
+          </div>
+
           <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" required dir="ltr" placeholder="coach@ziada.com"></div>
-          <div class="form-group"><label>كلمة المرور (6 أحرف أو أرقام على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
+          <div class="form-group"><label>كلمة المرور (6 أحرف على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
           <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
         </form>
 
@@ -363,50 +299,35 @@
       <div id="dashboard-panel" class="dashboard-panel">
         <div class="coach-welcome">
           <h2 id="welcome-name">أهلاً بك يا كوتش</h2>
-          <p>اختر أداة التحليل لبدء العمل:</p>
+          <p>أدواتك المتاحة للعمل:</p>
         </div>
         <div class="analysis-grid">
-          <!-- زرار صفحة المدير الفني المضاف حديثاً -->
-          <a href="head_coach.html" class="analysis-card" style="border-color: #ec4899;">
-            <div class="icon-box headcoach-icon">👔</div>
-            <div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني (Head Coach)</h3></div>
-          </a>
+          <a href="head_coach.html" id="card-headcoach" class="analysis-card" style="border-color: #ec4899;"><div class="icon-box headcoach-icon">👔</div><div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني</h3></div></a>
+          <a href="tactical.html" id="card-tactical" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
+          <a href="individual.html" id="card-individual" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
+          <a href="live.html" id="card-live" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
+          <a href="referee.html" id="card-referee" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون</h3></div></a>
+          <a href="goalkeeper.html" id="card-goalkeeper" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى</h3></div></a>
           
-          <a href="tactical.html" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
-          <a href="individual.html" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
-          <a href="live.html" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
-          <a href="referee.html" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون (AI)</h3></div></a>
-          <a href="goalkeeper.html" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى (GK)</h3></div></a>
           <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة</h3></div></a>
         </div>
         <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
       </div>
     </div>
 
-    <!-- 🌐 لوحة القيادة التكتيكية المستقبلية (اليسار) -->
     <div class="tech-hud-display">
       <div class="hud-icon-glow">⚡⚽</div>
       <h1 class="hud-title">Ziada <span>Analysis HUD</span></h1>
       <p class="hud-desc">نظام القيادة والتحليل التكتيكي الذكي للجيل القادم. تتبع البيانات اللحظية، قراءة تحركات اللاعبين، ورسم الخطط الاستراتيجية بأعلى دقة تكنولوجية.</p>
       
       <div class="hud-stats-grid">
-        <div class="stat-box">
-          <div class="number">99.9%</div>
-          <div class="label">دقة التحليل</div>
-        </div>
-        <div class="stat-box">
-          <div class="number">LIVE</div>
-          <div class="label">تتبع لحظي</div>
-        </div>
-        <div class="stat-box">
-          <div class="number">PRO</div>
-          <div class="label">نسخة النخبة</div>
-        </div>
+        <div class="stat-box"><div class="number">99.9%</div><div class="label">دقة التحليل</div></div>
+        <div class="stat-box"><div class="number">LIVE</div><div class="label">تتبع لحظي</div></div>
+        <div class="stat-box"><div class="number">PRO</div><div class="label">نسخة النخبة</div></div>
       </div>
     </div>
   </div>
 
-  <!-- نافذة تنبيه الاشتراك -->
   <div class="sub-overlay" id="subOverlay">
     <div class="sub-modal" id="subModalBox">
       <h3><i class="fa-solid fa-hourglass-half"></i> حالة الاشتراك</h3>
@@ -436,32 +357,22 @@
     }
 
     async function getGlobalInternetDate() {
-      try {
-        const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
-        const data = await response.json();
-        return data.datetime.split('T')[0];
-      } catch (error) {
-        return new Date().toISOString().split('T')[0];
-      }
+      try { const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC'); const data = await response.json(); return data.datetime.split('T')[0]; } 
+      catch (error) { return new Date().toISOString().split('T')[0]; }
     }
 
     async function validateUserAccess(user, userData) {
       if (isRegistering) return; 
       if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
-      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار موافقة المدير الفني.', 'error'); return false; }
+      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار التفعيل.', 'error'); return false; }
       if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
-        if (trueToday > userData.subscriptionEnd) {
-          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false;
-        }
+        if (trueToday > userData.subscriptionEnd) { showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false; }
       }
       if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
-        if (!userData.currentDeviceId) {
-          await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
-        } else if (userData.currentDeviceId !== currentLocalDevice) {
-          showAlert('عفواً، غير مسموح لك بتسجيل الدخول من أكثر من جهاز في نفس الوقت.', 'error'); return false;
-        }
+        if (!userData.currentDeviceId) { await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice }); } 
+        else if (userData.currentDeviceId !== currentLocalDevice) { showAlert('غير مسموح لك بتسجيل الدخول من أكثر من جهاز.', 'error'); return false; }
       }
       return true;
     }
@@ -487,8 +398,16 @@
       document.getElementById('auth-panel').style.display = 'none'; 
       document.getElementById('dashboard-panel').style.display = 'block'; 
       document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name}`; 
-      document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none'; 
       
+      const p = user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }; 
+      document.getElementById('card-headcoach').style.display = p.headCoach ? 'flex' : 'none';
+      document.getElementById('card-tactical').style.display = p.tactical ? 'flex' : 'none';
+      document.getElementById('card-individual').style.display = p.individual ? 'flex' : 'none';
+      document.getElementById('card-live').style.display = p.live ? 'flex' : 'none';
+      document.getElementById('card-referee').style.display = p.referee ? 'flex' : 'none';
+      document.getElementById('card-goalkeeper').style.display = p.goalkeeper ? 'flex' : 'none';
+
+      document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none'; 
       checkSubscription(user);
     }
     
@@ -511,12 +430,25 @@
       isRegistering = true; 
       let createdUser = null; 
 
+      const specialty = document.getElementById('reg-specialty').value;
+      let initPermissions = { headCoach: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
+      
+      if (specialty === 'headcoach') {
+        initPermissions.headCoach = true;
+      } else if (specialty === 'analyst') {
+        initPermissions.tactical = true; initPermissions.individual = true; initPermissions.live = true;
+      } else if (specialty === 'gkcoach') {
+        initPermissions.goalkeeper = true;
+      } else if (specialty === 'referee') {
+        initPermissions.referee = true;
+      }
+
       try {
         const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
         createdUser = cred.user;
         await db.collection('users').doc(createdUser.uid).set({
           uid: createdUser.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
-          role: 'coach', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          role: 'coach', status: 'pending', permissions: initPermissions, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         await createdUser.sendEmailVerification();
         showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
@@ -537,45 +469,18 @@
     }
 
     function checkSubscription(userData) {
-      if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) {
-        return; 
-      }
-
-      const expiryDate = new Date(userData.subscriptionEnd + "T23:59:59").getTime();
-      const now = new Date().getTime();
-      
-      const distance = expiryDate - now;
-
-      const overlay = document.getElementById('subOverlay');
-      const modalBox = document.getElementById('subModalBox');
-      const timerText = document.getElementById('subTimerText');
-      const btnClose = document.getElementById('btnSubClose');
-
+      if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return; 
+      const distance = new Date(userData.subscriptionEnd + "T23:59:59").getTime() - new Date().getTime();
+      const overlay = document.getElementById('subOverlay'); const modalBox = document.getElementById('subModalBox'); const timerText = document.getElementById('subTimerText'); const btnClose = document.getElementById('btnSubClose');
       overlay.style.display = 'flex';
-
       if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        
-        timerText.innerHTML = `متبقي: <span style="font-size:26px;">${days}</span> أيام و <span style="font-size:26px;">${hours}</span> ساعات`;
-        btnClose.innerText = "متابعة للمنصة";
-        btnClose.onclick = closeSubModal;
+        timerText.innerHTML = `متبقي: <span style="font-size:26px;">${Math.floor(distance / (1000 * 60 * 60 * 24))}</span> أيام و <span style="font-size:26px;">${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}</span> ساعات`;
+        btnClose.innerText = "متابعة للمنصة"; btnClose.onclick = () => overlay.style.display = 'none';
       } else {
-        modalBox.classList.add('expired');
-        timerText.innerHTML = "انتهى اشتراكك! يرجى التجديد.";
-        btnClose.innerText = "تسجيل الخروج والتواصل للتجديد";
-        btnClose.style.background = "#ef4444";
-        btnClose.style.color = "#fff";
-        btnClose.onclick = function() {
-          alert("يرجى التواصل مع الإدارة لتجديد الاشتراك عبر الواتساب."); 
-          handleLogout();
-          closeSubModal();
-        };
+        modalBox.classList.add('expired'); timerText.innerHTML = "انتهى اشتراكك! يرجى التجديد.";
+        btnClose.innerText = "تسجيل الخروج والتواصل للتجديد"; btnClose.style.background = "#ef4444"; btnClose.style.color = "#fff";
+        btnClose.onclick = function() { alert("يرجى التواصل مع الإدارة لتجديد الاشتراك."); handleLogout(); overlay.style.display = 'none'; };
       }
-    }
-
-    function closeSubModal() {
-      document.getElementById('subOverlay').style.display = 'none';
     }
   </script>
 </body>

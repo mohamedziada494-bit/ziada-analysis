@@ -19,33 +19,38 @@
     .brand-title { font-size: 1.3rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
     .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
     .btn-top:hover { background: var(--primary); color: #070b12; }
-    .features-control-box { background: var(--card-bg); border: 2px solid #38bdf844; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 5px; }
-    .feature-card { background: #070b12; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
-    .feature-info h4 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-    .feature-info p { font-size: 11.5px; color: var(--text-muted); }
-    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .3s; border-radius: 26px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--success); }
-    input:checked + .slider:before { transform: translateX(24px); }
+    
     .stats-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
     .stat-info h4 { font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
     .stat-info span { font-size: 24px; font-weight: 800; }
     .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    
     .table-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; overflow-x: auto; }
     .users-table { width: 100%; border-collapse: collapse; text-align: right; }
     .users-table th { background: #070b12; padding: 12px 14px; font-size: 12.5px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
     .users-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); }
-    .btn-action-mini { padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+    
+    .btn-action-mini { padding: 6px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; margin-left: 3px; }
     .btn-status-toggle { background: #1e293b; color: #10b981; border: 1px solid #10b981; }
     .btn-status-toggle:hover { background: #10b981; color: #fff; }
     .btn-edit-sub { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
     .btn-edit-sub:hover { background: #38bdf8; color: #070b12; }
+    .btn-perm-edit { background: #1e293b; color: #ec4899; border: 1px solid #ec4899; }
+    .btn-perm-edit:hover { background: #ec4899; color: #fff; }
     .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
     .btn-del:hover { background: #ef4444; color: #fff; }
+
+    /* Modals CSS */
+    .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center; }
+    .modal-box { background:var(--card-bg); padding:24px; border-radius:12px; width:360px; border:1px solid var(--border-color); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { color:#fff; font-size:13px; display:block; margin-bottom:5px; }
+    .form-group input[type="date"] { width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color); }
+    
+    .perm-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; background: #070b12; padding: 15px; border-radius: 8px; border: 1px solid #1f2937; }
+    .perm-item { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; cursor: pointer; }
+    .perm-item input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -56,31 +61,10 @@
       <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> العودة للمنصة الرئيسية</a>
     </header>
 
-    <section class="features-control-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-sliders"></i> التحكم في تشغيل وغلق الميزات للمستخدمين:</h3>
-        <small style="color: var(--text-muted);">التغييرات تُحفظ وتُطبق فوراً على كل المشتركين</small>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-info"><h4><i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> تصدير تقرير الفردي (PDF)</h4></div>
-          <label class="switch"><input type="checkbox" id="toggleIndReport" onchange="updateFeatureSetting('indReport', this.checked)"><span class="slider"></span></label>
-        </div>
-        <div class="feature-card">
-          <div class="feature-info"><h4><i class="fa-solid fa-palette" style="color: #ec4899;"></i> استوديو الرسومات التكتيكية</h4></div>
-          <label class="switch"><input type="checkbox" id="toggleTacticalStudio" onchange="updateFeatureSetting('tacticalStudio', this.checked)"><span class="slider"></span></label>
-        </div>
-        <div class="feature-card">
-          <div class="feature-info"><h4><i class="fa-solid fa-satellite-dish" style="color: #38bdf8;"></i> قسم التحليل اللايف</h4></div>
-          <label class="switch"><input type="checkbox" id="toggleLiveAnalysis" onchange="updateFeatureSetting('liveAnalysis', this.checked)"><span class="slider"></span></label>
-        </div>
-      </div>
-    </section>
-
     <div class="stats-overview-grid">
       <div class="stat-card"><div class="stat-info"><h4>إجمالي المشتركين</h4><span id="statTotalUsers" style="color: var(--primary);">0</span></div><div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div></div>
       <div class="stat-card"><div class="stat-info"><h4>حسابات الإدارة (Admin)</h4><span id="statAdminUsers" style="color: var(--accent);">0</span></div><div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div></div>
-      <div class="stat-card"><div class="stat-info"><h4>المدربين (Coach)</h4><span id="statCoachUsers" style="color: #cbd5e1;">0</span></div><div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>المشتركين (Coach)</h4><span id="statCoachUsers" style="color: #cbd5e1;">0</span></div><div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div></div>
       <div class="stat-card"><div class="stat-info"><h4>في الانتظار (Pending)</h4><span id="statPendingUsers" style="color: var(--danger);">0</span></div><div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div></div>
     </div>
 
@@ -90,12 +74,11 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>اسم المدرب</th>
+            <th>اسم الكابتن</th>
             <th>البريد الإلكتروني</th>
-            <th>الصلاحية</th>
             <th>حالة الحساب</th>
             <th>المدة المتبقية</th>
-            <th>إجراءات الإدارة</th>
+            <th>إجراءات الإدارة (اشتراك / صلاحيات / حذف)</th>
           </tr>
         </thead>
         <tbody id="usersTableBody"></tbody>
@@ -103,31 +86,52 @@
     </div>
   </div>
 
-  <div id="activationModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:var(--card-bg); padding:24px; border-radius:12px; width:350px; border:1px solid var(--border-color);">
-      <h3 id="modalTitle" style="color:var(--success); margin-bottom:16px;"><i class="fa-solid fa-check-circle"></i> إدارة اشتراك المدرب</h3>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ بداية الاشتراك (من):</label>
-        <input type="date" id="startDate" style="width:100%; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
+  <!-- Modal 1: التفعيل والاشتراك -->
+  <div id="activationModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color:var(--success); margin-bottom:16px;"><i class="fa-solid fa-check-circle"></i> إدارة اشتراك المدرب</h3>
+      <div class="form-group">
+        <label>تاريخ بداية الاشتراك (من):</label>
+        <input type="date" id="startDate">
       </div>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label style="color:#fff; font-size:13px; display:block; margin-bottom:5px;">تاريخ انتهاء الاشتراك (إلى):</label>
+      <div class="form-group">
+        <label>تاريخ انتهاء الاشتراك (إلى):</label>
         <div style="display:flex; gap:10px; align-items:center;">
-          <input type="date" id="expireDate" style="flex:1; padding:8px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color);">
-          <label style="color:#fff; font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
-            <input type="checkbox" id="unlimitedSub" onchange="toggleExpireDate()">
-            مفتوح
+          <input type="date" id="expireDate" style="flex:1;">
+          <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <input type="checkbox" id="unlimitedSub" onchange="toggleExpireDate()"> مفتوح
           </label>
         </div>
       </div>
       <div class="form-group" style="margin-bottom:20px;">
-        <label style="color:#fff; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" id="multiDevice" style="width:16px; height:16px;"> السماح بالدخول من أكثر من جهاز
         </label>
       </div>
       <div style="display:flex; gap:10px;">
-        <button onclick="confirmActivation()" style="flex:1; background:var(--success); color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">حفظ والتفعيل</button>
-        <button onclick="closeModal()" style="flex:1; background:#374151; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer;">إلغاء</button>
+        <button onclick="confirmActivation()" style="flex:1; background:var(--success); color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">حفظ التفعيل</button>
+        <button onclick="closeModals()" style="flex:1; background:#374151; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer;">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: الصلاحيات والأدوات -->
+  <div id="permissionsModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color:#ec4899; margin-bottom:16px;"><i class="fa-solid fa-sliders"></i> تخصيص أدوات المشترك</h3>
+      
+      <div class="perm-list">
+        <label class="perm-item"><input type="checkbox" id="perm-headCoach"> 👔 استوديو المدير الفني</label>
+        <label class="perm-item"><input type="checkbox" id="perm-tactical"> 📋 التحليل التكتيكي المتقدم</label>
+        <label class="perm-item"><input type="checkbox" id="perm-individual"> 🎯 التحليل الفردي للأداء</label>
+        <label class="perm-item"><input type="checkbox" id="perm-live"> ⏱️ التحليل المباشر للمباريات</label>
+        <label class="perm-item"><input type="checkbox" id="perm-referee"> ⚖️ تحليل الحكام والقانون</label>
+        <label class="perm-item"><input type="checkbox" id="perm-goalkeeper"> 🧤 استوديو حراس المرمى</label>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button onclick="savePermissions()" style="flex:1; background:#ec4899; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">حفظ الصلاحيات</button>
+        <button onclick="closeModals()" style="flex:1; background:#374151; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer;">إلغاء</button>
       </div>
     </div>
   </div>
@@ -147,17 +151,21 @@
     const currentUser = JSON.parse(localStorage.getItem('ziada_active_user') || '{}');
     if (currentUser.role !== 'admin') { alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!'); window.location.href = 'index.html'; }
 
-    let currentUserIdToActivate = null;
+    let currentUserIdToManage = null;
+    let usersDataMap = {}; // خريطة لحفظ بيانات كل مستخدم لسهولة جلب الصلاحيات
 
     function loadUsers() {
       db.collection('users').onSnapshot(snapshot => {
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '';
+        usersDataMap = {};
         let total = 0, admins = 0, coaches = 0, pendings = 0;
         let rowCounter = 1;
 
         snapshot.forEach((doc) => {
           const u = doc.data();
+          usersDataMap[doc.id] = u; // حفظ البيانات في الخريطة
+          
           total++;
           if (u.role === 'admin') admins++;
           if (u.role === 'coach') coaches++;
@@ -166,25 +174,20 @@
           const isPending = u.status === 'pending';
           const isApproved = u.status === 'approved';
 
-          // حساب الأيام المتبقية
           let remainingText = '-';
           if (u.role !== 'admin' && isApproved) {
             if (u.subscriptionEnd === 'unlimited') {
               remainingText = '<span style="color: #38bdf8; font-weight:bold;">مفتوح (مدى الحياة)</span>';
             } else if (u.subscriptionEnd) {
-              const today = new Date();
-              today.setHours(0,0,0,0);
-              const end = new Date(u.subscriptionEnd);
-              end.setHours(0,0,0,0);
+              const today = new Date(); today.setHours(0,0,0,0);
+              const end = new Date(u.subscriptionEnd); end.setHours(0,0,0,0);
               const diffTime = end - today;
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
               
               if (diffDays < 0) remainingText = `<span style="color: #ef4444; font-weight:bold;">منتهي منذ ${Math.abs(diffDays)} يوم</span>`;
               else if (diffDays === 0) remainingText = `<span style="color: #fbbf24; font-weight:bold;">ينتهي اليوم</span>`;
               else remainingText = `<span style="color: #10b981; font-weight:bold;">متبقي ${diffDays} يوم</span>`;
-            } else {
-              remainingText = '<span style="color: #94a3b8;">غير محدد</span>';
-            }
+            } else { remainingText = '<span style="color: #94a3b8;">غير محدد</span>'; }
           }
 
           tbody.innerHTML += `
@@ -192,17 +195,16 @@
               <td>${rowCounter++}</td>
               <td>${u.name || 'غير محدد'}</td>
               <td><code>${u.email || 'غير محدد'}</code></td>
-              <td>${u.role === 'admin' ? '<b style="color:#f59e0b">مدير فني</b>' : 'مدرب مساعد'}</td>
-              <td><b style="color:${isPending ? '#fbbf24' : '#4ade80'}">${isPending ? 'قيد المراجعة' : 'مفعل'}</b></td>
+              <td><b style="color:${isPending ? '#fbbf24' : (u.role === 'admin' ? '#f59e0b' : '#4ade80')}">${u.role === 'admin' ? 'مدير المنصة' : (isPending ? 'قيد المراجعة' : 'مفعل')}</b></td>
               <td>${remainingText}</td>
               <td>
                 ${u.role !== 'admin' ? `
                   ${isPending ? 
-                    `<button onclick="openActivationModal('${doc.id}', '', '', false)" class="btn-action-mini btn-status-toggle">تحديد الاشتراك وتفعيل</button>` 
-                    : 
-                    `<button onclick="openActivationModal('${doc.id}', '${u.subscriptionStartDate || ''}', '${u.subscriptionEnd || ''}', ${u.allowMultiDevice || false})" class="btn-action-mini btn-edit-sub">تعديل الاشتراك</button>`
+                    `<button onclick="openActivationModal('${doc.id}')" class="btn-action-mini btn-status-toggle">تفعيل</button>` : 
+                    `<button onclick="openActivationModal('${doc.id}')" class="btn-action-mini btn-edit-sub">الاشتراك</button>`
                   }
-                  <button onclick="deleteUser('${doc.id}', '${u.name}')" class="btn-action-mini btn-del">حذف الحساب</button>
+                  <button onclick="openPermissionsModal('${doc.id}')" class="btn-action-mini btn-perm-edit">الصلاحيات</button>
+                  <button onclick="deleteUser('${doc.id}', '${u.name}')" class="btn-action-mini btn-del">حذف</button>
                 ` : '<span style="color:#94a3b8; font-size: 11px;">صلاحيات كاملة</span>'}
               </td>
             </tr>
@@ -215,75 +217,108 @@
       });
     }
 
+    // ===================================
+    // إدارة الاشتراك
+    // ===================================
     function toggleExpireDate() {
-      const isUnlimited = document.getElementById('unlimitedSub').checked;
-      const expireInput = document.getElementById('expireDate');
-      expireInput.disabled = isUnlimited;
-      if (isUnlimited) expireInput.value = '';
+      const isUn = document.getElementById('unlimitedSub').checked;
+      document.getElementById('expireDate').disabled = isUn;
+      if (isUn) document.getElementById('expireDate').value = '';
     }
 
-    function openActivationModal(uid, currentStart = '', currentEnd = '', currentMultiDevice = false) {
-      currentUserIdToActivate = uid;
+    function openActivationModal(uid) {
+      currentUserIdToManage = uid;
+      const u = usersDataMap[uid];
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('startDate').value = currentStart || today;
       
-      if (currentEnd === 'unlimited') {
+      document.getElementById('startDate').value = u.subscriptionStartDate || today;
+      
+      if (u.subscriptionEnd === 'unlimited') {
         document.getElementById('expireDate').value = '';
         document.getElementById('unlimitedSub').checked = true;
         document.getElementById('expireDate').disabled = true;
       } else {
-        document.getElementById('expireDate').value = currentEnd || ''; 
+        document.getElementById('expireDate').value = u.subscriptionEnd || ''; 
         document.getElementById('unlimitedSub').checked = false;
         document.getElementById('expireDate').disabled = false;
       }
       
-      document.getElementById('multiDevice').checked = currentMultiDevice; 
+      document.getElementById('multiDevice').checked = u.allowMultiDevice || false; 
       document.getElementById('activationModal').style.display = 'flex';
     }
 
-    function closeModal() { document.getElementById('activationModal').style.display = 'none'; currentUserIdToActivate = null; }
-
     async function confirmActivation() {
       const startDate = document.getElementById('startDate').value;
-      const isUnlimited = document.getElementById('unlimitedSub').checked;
+      const isUn = document.getElementById('unlimitedSub').checked;
       let expireDate = document.getElementById('expireDate').value;
       const multiDevice = document.getElementById('multiDevice').checked;
       
       if (!startDate) return alert('يجب تحديد تاريخ البداية!');
-      if (!isUnlimited && !expireDate) return alert('يجب تحديد تاريخ الانتهاء أو اختيار اشتراك مفتوح!');
-      if (!isUnlimited && new Date(expireDate) <= new Date(startDate)) return alert('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية!');
+      if (!isUn && !expireDate) return alert('يجب تحديد تاريخ الانتهاء أو اختيار اشتراك مفتوح!');
+      if (!isUn && new Date(expireDate) <= new Date(startDate)) return alert('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية!');
 
-      if (isUnlimited) expireDate = 'unlimited';
+      if (isUn) expireDate = 'unlimited';
 
       try {
-        await db.collection('users').doc(currentUserIdToActivate).update({
+        await db.collection('users').doc(currentUserIdToManage).update({
           status: 'approved', subscriptionStartServer: firebase.firestore.FieldValue.serverTimestamp(),
           subscriptionStartDate: startDate, subscriptionEnd: expireDate,
           allowMultiDevice: multiDevice, currentDeviceId: ''
         });
         alert('تم حفظ بيانات الاشتراك وتفعيل الحساب بنجاح! ✅');
-        closeModal();
-      } catch (error) { alert('حدث خطأ أثناء حفظ البيانات: ' + error.message); }
+        closeModals();
+      } catch (error) { alert('حدث خطأ: ' + error.message); }
+    }
+
+    // ===================================
+    // إدارة الصلاحيات والأدوات
+    // ===================================
+    function openPermissionsModal(uid) {
+      currentUserIdToManage = uid;
+      const u = usersDataMap[uid];
+      const p = u.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }; // افتراضي القديم
+
+      document.getElementById('perm-headCoach').checked = p.headCoach || false;
+      document.getElementById('perm-tactical').checked = p.tactical || false;
+      document.getElementById('perm-individual').checked = p.individual || false;
+      document.getElementById('perm-live').checked = p.live || false;
+      document.getElementById('perm-referee').checked = p.referee || false;
+      document.getElementById('perm-goalkeeper').checked = p.goalkeeper || false;
+
+      document.getElementById('permissionsModal').style.display = 'flex';
+    }
+
+    async function savePermissions() {
+      const newPerms = {
+        headCoach: document.getElementById('perm-headCoach').checked,
+        tactical: document.getElementById('perm-tactical').checked,
+        individual: document.getElementById('perm-individual').checked,
+        live: document.getElementById('perm-live').checked,
+        referee: document.getElementById('perm-referee').checked,
+        goalkeeper: document.getElementById('perm-goalkeeper').checked
+      };
+
+      try {
+        await db.collection('users').doc(currentUserIdToManage).update({ permissions: newPerms });
+        alert('تم تحديث صلاحيات الكابتن بنجاح! 🚀');
+        closeModals();
+      } catch (error) { alert('حدث خطأ أثناء الحفظ: ' + error.message); }
+    }
+
+    // ===================================
+    function closeModals() { 
+      document.getElementById('activationModal').style.display = 'none'; 
+      document.getElementById('permissionsModal').style.display = 'none'; 
+      currentUserIdToManage = null; 
     }
 
     async function deleteUser(uid, name) {
-      if (confirm(`هل أنت متأكد من حذف حساب الكابتن "${name}"؟ (لن يتمكن من الدخول مرة أخرى)`)) {
+      if (confirm(`هل أنت متأكد من حذف حساب الكابتن "${name}" نهائياً؟`)) {
         try { await db.collection('users').doc(uid).delete(); alert('تم حذف الحساب بنجاح.'); } catch (error) { alert('حدث خطأ أثناء الحذف.'); }
       }
     }
 
-    function loadFeatures() {
-      db.collection('settings').doc('features').onSnapshot(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          document.getElementById('toggleIndReport').checked = data.indReport || false;
-          document.getElementById('toggleTacticalStudio').checked = data.tacticalStudio || false;
-          document.getElementById('toggleLiveAnalysis').checked = data.liveAnalysis || false;
-        }
-      });
-    }
-    async function updateFeatureSetting(featureName, isChecked) { await db.collection('settings').doc('features').set({ [featureName]: isChecked }, { merge: true }); }
-    loadUsers(); loadFeatures();
+    loadUsers();
   </script>
 </body>
 </html>
