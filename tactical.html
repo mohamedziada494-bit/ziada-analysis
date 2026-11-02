@@ -144,7 +144,6 @@
     .studio-header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; }
     .studio-layout-grid { flex: 1; display: grid; grid-template-columns: 280px 1fr 265px; gap: 12px; overflow: hidden; }
 
-    /* تحديث شكل القائمة الجانبية في الاستوديو زي الصورة */
     .studio-clips-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
     .cat-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
     .cat-header { display: flex; justify-content: space-between; align-items: center; background: #1e293b; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
@@ -177,43 +176,33 @@
       border: 2px solid #fff;
     }
 
+    /* تعديل شريط أزرار الرسم (صح ✔️ و غلط ✖️) */
     .shape-floating-toolbar {
       position: absolute;
       display: none;
       background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid var(--primary);
       border-radius: 30px;
-      padding: 5px 12px;
-      gap: 8px;
+      padding: 6px 12px;
+      gap: 10px;
       align-items: center;
       z-index: 50;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.5);
       transform: translate(-50%, -120%);
     }
     .shape-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      transition: all 0.2s;
+      background: none; border: none; color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; font-size: 14px;
     }
     .shape-btn:hover { transform: scale(1.15); }
-    .btn-shape-ok { background: #10b981; color: #fff; }
-    .btn-shape-scale-up { background: #3b82f6; color: #fff; }
-    .btn-shape-scale-down { background: #475569; color: #fff; }
-    .btn-shape-edit { background: #f59e0b; color: #fff; }
-    .btn-shape-move { background: #0284c7; color: #fff; }
+    .btn-shape-ok { background: #10b981; color: #fff; width: 38px; height: 38px; font-size: 18px; }
+    .btn-shape-del { background: #ef4444; color: #fff; width: 38px; height: 38px; font-size: 18px; }
+    
+    .btn-shape-scale-up { background: #3b82f6; } .btn-shape-scale-down { background: #475569; }
+    .btn-shape-edit { background: #f59e0b; } .btn-shape-move { background: #0284c7; }
     .btn-shape-move.active { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
-    .btn-shape-track { background: #8b5cf6; color: #fff; }
-    .btn-shape-track.active { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
-    .btn-shape-del { background: #ef4444; color: #fff; }
+    .btn-shape-track { background: #8b5cf6; } .btn-shape-track.active { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
 
     .studio-tools-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
     .tool-btn { width: 100%; background: #0f172a; border: 1px solid var(--border-color); color: #e2e8f0; padding: 8px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
@@ -472,14 +461,15 @@
             <span>وقفة تحليلية: <b id="freezeTimerText">4</b> ثوانٍ</span>
           </div>
 
+          <!-- شريط أزرار الرسم بعد التحديث (صح وغلط) -->
           <div class="shape-floating-toolbar" id="shapeFloatingToolbar">
             <button class="shape-btn btn-shape-ok" title="تثبيت واعتماد الرسمة (صح)" onclick="confirmShape()"><i class="fa-solid fa-check"></i></button>
-            <button class="shape-btn btn-shape-scale-up" title="تكبير / تطويل (+)" onclick="scaleActiveShape(1.15)"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-            <button class="shape-btn btn-shape-scale-down" title="تصغير / تقصير (-)" onclick="scaleActiveShape(0.85)"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+            <button class="shape-btn btn-shape-scale-up" title="تكبير / تطويل (+)" onclick="scaleActiveShape(1.15)"><i class="fa-solid fa-plus"></i></button>
+            <button class="shape-btn btn-shape-scale-down" title="تصغير / تقصير (-)" onclick="scaleActiveShape(0.85)"><i class="fa-solid fa-minus"></i></button>
             <button class="shape-btn btn-shape-edit" id="btnShapeEdit" title="تعديل الملاحظة أو أرقام وأسماء اللاعبين" onclick="editShapeLabel()"><i class="fa-solid fa-pen"></i></button>
             <button class="shape-btn btn-shape-move" id="btnShapeMove" title="تحريك وتعديل مكان العنصر" onclick="toggleMoveMode()"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
             <button class="shape-btn btn-shape-track" id="btnShapeTrack" title="تتبع اللاعب مع حركة الفيديو" onclick="toggleTrackMode()"><i class="fa-solid fa-crosshairs"></i></button>
-            <button class="shape-btn btn-shape-del" title="حذف هذه الرسمة" onclick="deleteActiveShape()"><i class="fa-solid fa-trash"></i></button>
+            <button class="shape-btn btn-shape-del" title="إلغاء الرسمة (غلط)" onclick="deleteActiveShape()"><i class="fa-solid fa-xmark"></i></button>
           </div>
         </div>
 
@@ -678,7 +668,6 @@
 
     seekSlider.addEventListener('mousedown', () => { isSeekingMain = true; });
     seekSlider.addEventListener('touchstart', () => { isSeekingMain = true; });
-
     seekSlider.addEventListener('input', () => {
       isSeekingMain = true;
       if (video.duration) {
@@ -686,12 +675,10 @@
         timeDisp.innerText = `${formatTime(targetTime)} / ${formatTime(video.duration)}`;
       }
     });
-
     seekSlider.addEventListener('change', () => {
       if (video.duration) { video.currentTime = (seekSlider.value / 100) * video.duration; }
       isSeekingMain = false;
     });
-
     seekSlider.addEventListener('mouseup', () => { isSeekingMain = false; });
     seekSlider.addEventListener('touchend', () => { isSeekingMain = false; });
 
@@ -875,7 +862,6 @@
       if (document.getElementById('studioModal').classList.contains('active')) resizeStudioCanvas();
     });
 
-    // تنظيم التصنيفات كجروبات داخل الاستوديو
     function renderStudioSidebarClips() {
       studioClipsList.innerHTML = '';
       
@@ -991,7 +977,6 @@
           isFreezeActive = false;
           activeFreezingTime = null;
 
-          // إضافة ربع ثانية لتخطي الرسمة ومنع التكرار واختفائها فوراً
           studioVideo.currentTime += 0.25;
           lastCheckedTime = studioVideo.currentTime;
           studioVideo.play();
@@ -1008,30 +993,30 @@
       sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
     }
 
+    // ===========================================
+    // ميزة التقديم والتأخير اللحظي في الاستوديو
+    // ===========================================
     studioSeekSlider.addEventListener('mousedown', () => { isSeekingStudio = true; resetFreezeState(); });
     studioSeekSlider.addEventListener('touchstart', () => { isSeekingStudio = true; resetFreezeState(); });
 
     studioSeekSlider.addEventListener('input', () => {
       isSeekingStudio = true;
       if (currentStudioClip) {
+        resetFreezeState();
         const clipDuration = currentStudioClip.end - currentStudioClip.start;
         const target = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
+        
+        // التحديث اللحظي للفيديو والرسم
+        studioVideo.currentTime = target;
+        lastCheckedTime = target;
         studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
+        drawAllShapesForTime(target);
       }
     });
 
     studioSeekSlider.addEventListener('change', () => {
-      if (currentStudioClip) {
-        const clipDuration = currentStudioClip.end - currentStudioClip.start;
-        studioVideo.currentTime = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
-        lastCheckedTime = studioVideo.currentTime;
-      }
       isSeekingStudio = false;
-      drawAllShapesForTime(studioVideo.currentTime);
     });
-
-    studioSeekSlider.addEventListener('mouseup', () => { isSeekingStudio = false; });
-    studioSeekSlider.addEventListener('touchend', () => { isSeekingStudio = false; });
 
     window.seekStudioRelative = function(sec) {
       if (!currentStudioClip) return;
@@ -1067,7 +1052,6 @@
         const el = document.getElementById(id);
         if (el) el.classList.toggle('active', id === `tool_${tool}`);
       });
-      // إيقاف الفيديو أوتوماتيك أول ما تختار أداة
       if (!studioVideo.paused) {
         studioVideo.pause();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
@@ -1234,7 +1218,6 @@
 
       const cur = studioVideo.currentTime;
       currentStudioClip.shapes.forEach(shape => {
-        // الرسمة تظهر فقط وقت الفريز أو لو كنا واقفين على فريمها
         if (Math.abs(shape.triggerTime - cur) < 0.1 || (isFreezeActive && Math.abs(shape.triggerTime - activeFreezingTime) < 0.1)) {
           drawSingleShape(sCtx, shape);
         }
@@ -1262,7 +1245,6 @@
       });
     }
 
-    // تم تمرير السياق (ctx) لدعم الرسم أثناء التصدير
     function drawSingleShape(ctx, shape) {
       if (shape.type === 'spotlight_cone') drawWhiteConicalSpotlight(ctx, shape);
       else if (shape.type === 'player_ring') drawPlayer3DRing(ctx, shape);
@@ -1340,15 +1322,25 @@
     function hideFloatingToolbar() { floatingToolbar.style.display = 'none'; isMoving = false; isResizing = false; }
     window.editShapeLabel = function() {};
     
+    // حفظ واعتماد الرسمة (صح)
     window.confirmShape = function() {
       if (!currentStudioClip || !activeShape) return;
       activeShape.triggerTime = studioVideo.currentTime;
       if (!currentStudioClip.shapes.includes(activeShape)) { currentStudioClip.shapes.push(activeShape); }
       hideFloatingToolbar(); activeShape = null; renderLiveScene();
     };
+
+    // إلغاء الرسمة (غلط / إكس)
+    window.deleteActiveShape = function() { 
+      if (!currentStudioClip || !activeShape) return; 
+      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); 
+      activeShape = null; 
+      hideFloatingToolbar(); 
+      renderLiveScene(); 
+    };
+
     window.toggleMoveMode = function() { isMoving = !isMoving; btnShapeMove.classList.toggle('active', isMoving); };
     window.toggleTrackMode = function() { if (!activeShape) return; activeShape.tracked = !activeShape.tracked; btnShapeTrack.classList.toggle('active', activeShape.tracked); renderLiveScene(); };
-    window.deleteActiveShape = function() { if (!currentStudioClip || !activeShape) return; currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); activeShape = null; hideFloatingToolbar(); renderLiveScene(); };
 
     window.updateExportUI = function() {
       const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
@@ -1370,9 +1362,6 @@
       });
     }
 
-    // =====================================
-    // التصدير السريع (Real-time Video Rendering)
-    // =====================================
     window.runExportEngine = async function() {
       if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها!");
       if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
@@ -1415,7 +1404,6 @@
         const eCtx = eCanvas.getContext('2d');
 
         const stream = eCanvas.captureStream(30);
-        // سرعة طبيعية وتشفير عالي
         const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 8000000 });
         const chunks = [];
         recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
@@ -1455,9 +1443,7 @@
                   drawSingleShape(eCtx, activeS);
                   eCtx.restore();
 
-                  // وقفة 4 ثواني للتسجيل
                   setTimeout(() => {
-                    // تخطي جزء من الثانية عشان الرسمة متتكررش
                     rVideo.currentTime += 0.25;
                     rVideo.play();
                     requestAnimationFrame(renderFrame);
@@ -1491,7 +1477,6 @@
           }
           statusMsg.innerText = 'تم التصدير بنجاح! 🚀';
           
-          // تنظيف الفلاج
           clips.forEach(c => c.shapes.forEach(s => s._exported = false));
         };
       }
