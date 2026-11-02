@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ziada Analysis - استوديو المدير الفني (Pro Max)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937;
+      --primary: #ec4899; --accent: #f59e0b; --danger: #ef4444; --success: #10b981;
+      --text: #f8fafc; --text-muted: #94a3b8; --pitch-green: #15803d;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); padding: 14px; overflow-x: hidden; }
+    
+    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px; }
+    .brand-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; }
+    
+    .tabs-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .tab-btn { background: #1f2937; border: 1px solid #374151; color: white; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+    .tab-btn:hover { border-color: var(--primary); }
+    .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* =========================================
+       الملعب العام والأدوات (Training)
+       ========================================= */
+    .workspace-grid { display: grid; grid-template-columns: 280px 1fr; gap: 15px; align-items: start; height: 82vh; }
+    .tools-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; user-select: none; }
+    .tools-title { color: var(--primary); font-weight: 800; text-align: center; border-bottom: 1px solid #374151; padding-bottom: 8px; margin-bottom: 5px; position: sticky; top: 0; background: var(--card-bg); z-index: 5;}
+    
+    .team-section { margin-bottom: 15px; }
+    .team-title { font-size: 12px; color: #fff; background: #374151; padding: 5px; border-radius: 4px; text-align: center; margin-bottom: 8px; font-weight: bold;}
+    .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    
+    .draggable-source { background: #1f2937; border: 1px solid #374151; color: white; padding: 5px; border-radius: 6px; cursor: grab; font-weight: bold; font-size: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; transition: 0.2s; text-align: center; }
+    .draggable-source:hover { background: #374151; border-color: var(--primary); }
+
+    .pitch-container { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+    .pitch-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .pitch-btn { background: #1f2937; color: #fff; border: 1px solid #374151; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.2s;}
+    .pitch-btn.active { background: var(--primary); color: #000; }
+    .draw-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #475569; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; }
+    .draw-btn.active, .draw-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    .pitch-area { background: var(--pitch-green); border: 2px solid #fff; border-radius: 8px; flex: 1; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    
+    /* طبقات الرسم والربط */
+    .tactical-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
+    .tactical-links { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+    .pitch-area.mode-draw .tactical-canvas { pointer-events: auto; cursor: crosshair; }
+    .pitch-area.mode-draw .drill-item, .pitch-area.mode-draw .player-node { pointer-events: none; }
+    .pitch-area.mode-link .drill-item, .pitch-area.mode-link .player-node { cursor: crosshair; border: 2px dashed var(--accent); }
+
+    /* خطوط الملعب */
+    .pitch-lines { position: absolute; width: 100%; height: 100%; pointer-events: none; transition: all 0.3s; z-index: 1;}
+    .center-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20%; aspect-ratio: 1; border: 2px solid #fff; border-radius: 50%; }
+    .half-way-line { position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #fff; }
+    .penalty-box-top { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 50%; height: 18%; border: 2px solid #fff; border-top: none; }
+    .six-yard-box-top { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 20%; height: 6%; border: 2px solid #fff; border-top: none; }
+    .penalty-box-bottom { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 50%; height: 18%; border: 2px solid #fff; border-bottom: none; }
+    .six-yard-box-bottom { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 20%; height: 6%; border: 2px solid #fff; border-bottom: none; }
+
+    .view-penalty .penalty-box-bottom, .view-penalty .six-yard-box-bottom, .view-penalty .center-circle, .view-penalty .half-way-line { display: none; }
+    .view-penalty .penalty-box-top { width: 60%; height: 50%; }
+    .view-penalty .six-yard-box-top { width: 25%; height: 20%; }
+    .view-penalty .penalty-arc { position: absolute; top: 50%; left: 50%; transform: translateX(-50%); width: 20%; height: 20%; border: 2px solid #fff; border-radius: 50%; clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
+    
+    .view-six-yard .penalty-box-top, .view-six-yard .penalty-box-bottom, .view-six-yard .center-circle, .view-six-yard .half-way-line { display: none; }
+    .view-six-yard .six-yard-box-top { top: 15%; width: 70%; height: 60%; border-width: 3px; }
+    .view-six-yard .goal-net { display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 35%; height: 15%; border: 4px solid #eab308; border-top: none; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px); }
+
+    /* عناصر السحب */
+    .drill-item { position: absolute; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6)); transform-origin: center; transition: box-shadow 0.2s; }
+    .drill-item:active { cursor: grabbing; }
+    .drill-item .delete-btn { display: none; position: absolute; top: -10px; right: -10px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; text-align: center; line-height: 18px; cursor: pointer; border: 1px solid #fff; z-index: 20; }
+    .drill-item:hover .delete-btn { display: block; }
+    .drill-item.linked { box-shadow: 0 0 15px var(--accent); }
+
+    /* شريط الأنيميشن */
+    .anim-bar { background: #111827; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .anim-btn { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; font-size: 13px;}
+    .anim-btn:hover { background: #4b5563; }
+    .anim-btn.record { background: #0ea5e9; color: #000; border-color: #0284c7; }
+    .anim-btn.play { background: var(--primary); color: #fff; border-color: #be185d; }
+    .speed-select { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 5px; border-radius: 6px; font-family: 'Cairo'; font-weight: bold; outline: none; font-size: 12px;}
+    
+    .drill-details { width: 100%; background: #1f2937; color: #fff; border: 1px solid #374151; border-radius: 8px; padding: 10px; font-family: 'Cairo'; margin-top: 10px; resize: vertical; min-height: 80px; }
+
+    /* =========================================
+       عناصر التشكيل والمباريات (Formations)
+       ========================================= */
+    .formation-controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap;}
+    .formation-select { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 6px; font-family: 'Cairo'; font-weight: bold; font-size: 14px; outline: none; }
+    
+    .player-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; background: #1e293b; border: 3px solid var(--primary); display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .player-node:active { cursor: grabbing; }
+    .player-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none; pointer-events: none;}
+    .player-node .add-photo-btn { position: absolute; color: #fff; font-size: 16px; pointer-events: none; }
+    .player-node input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5; }
+    .player-node.has-image .add-photo-btn { display: none; }
+    .player-node.has-image img { display: block; }
+    .player-label { position: absolute; bottom: -22px; background: rgba(0,0,0,0.8); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; font-weight:bold; cursor: text;}
+
+    .action-bar { padding: 15px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
+    .btn-action { background: var(--primary); color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px;}
+
+    /* PDF Report Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 20px; direction: rtl; }
+      .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
+      .print-notes { margin-top: 20px; border: 1px solid #000; padding: 15px; background: #f8fafc; font-size: 14px; white-space: pre-wrap; }
+      .print-img { width: 100%; border: 2px solid #000; margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- منطقة الطباعة وتوليد التقرير PDF -->
+  <div id="printArea" style="display: none;">
+    <div class="print-header">
+      <h1 style="color:#000;">Ziada Analysis | التقرير الفني والتكتيكي</h1>
+      <h3 id="printDate"></h3>
+    </div>
+    <img id="printPitchImg" class="print-img" src="">
+    <div class="print-notes" id="printNotesText"></div>
+  </div>
+
+  <div class="main-wrapper" id="appUI">
+    <header class="top-nav">
+      <span class="brand-title"><i class="fa-solid fa-user-tie"></i> Ziada Analysis | استوديو المدير الفني (Pro Max)</span>
+      <a href="index.html" class="btn-top">الرئيسية</a>
+    </header>
+
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('training')"><i class="fa-solid fa-clipboard-list"></i> تصميم التدريبات والتحركات</button>
+      <button class="tab-btn" onclick="switchTab('match')"><i class="fa-solid fa-chess-board"></i> خطط المباريات (Formations)</button>
+    </div>
+
+    <!-- التاب الأول: تصميم التدريبات -->
+    <div id="trainingTab" class="tab-content active">
+      <div class="workspace-grid">
+        <aside class="tools-panel" id="trainingTools">
+          <div class="tools-title">مكتبة العناصر</div>
+          
+          <div class="team-section" id="teamRedSection">
+            <div class="team-title" style="background: #991b1b;">الفريق الأول (أحمر)</div>
+            <div class="tools-grid" id="teamRedGrid"></div>
+          </div>
+          
+          <div class="team-section" id="teamBlueSection">
+            <div class="team-title" style="background: #1e3a8a;">الفريق الثاني (أزرق)</div>
+            <div class="tools-grid" id="teamBlueGrid"></div>
+          </div>
+
+          <div class="team-section">
+            <div class="team-title" style="background: #ca8a04;">الحكام والأدوات</div>
+            <div class="tools-grid" id="equipGrid" style="grid-template-columns: repeat(3, 1fr);"></div>
+          </div>
+        </aside>
+        
+        <div class="pitch-container">
+          <div class="pitch-controls">
+            <!-- أزرار رؤية الملعب -->
+            <button class="pitch-btn active" onclick="setPitchView('full')">ملعب كامل</button>
+            <button class="pitch-btn" onclick="setPitchView('penalty')">منطقة جزاء</button>
+            <button class="pitch-btn" onclick="setPitchView('six-yard')">تلات خشبات</button>
+            <span style="color:#475569;">|</span>
+            <!-- أدوات الرسم والربط التكتيكي -->
+            <button class="draw-btn active" onclick="setMode('drag', 'trainPitch')"><i class="fa-solid fa-hand"></i> تحريك الأفراد</button>
+            <button class="draw-btn" onclick="setMode('link', 'trainPitch')"><i class="fa-solid fa-link"></i> ربط تكتيكي</button>
+            <button class="draw-btn" onclick="setMode('draw-pen', 'trainPitch')"><i class="fa-solid fa-pen"></i> قلم</button>
+            <button class="draw-btn" onclick="setMode('draw-pass', 'trainPitch')"><i class="fa-solid fa-arrow-right-long"></i> تمرير</button>
+            <button class="draw-btn" onclick="setMode('draw-run', 'trainPitch')"><i class="fa-solid fa-arrow-right-dots"></i> تحرك</button>
+            <button class="draw-btn" onclick="setMode('draw-highlight', 'trainPitch')"><i class="fa-solid fa-highlighter"></i> مساحة</button>
+            <button class="draw-btn" style="color:var(--danger);" onclick="clearDrawings('trainPitch')"><i class="fa-solid fa-eraser"></i> مسح الرسوم</button>
+          </div>
+          
+          <div class="pitch-area view-full" id="trainPitch" ondrop="drop(event, 'trainPitch')" ondragover="allowDrop(event)">
+            <svg class="tactical-links" id="trainLinksLayer"></svg>
+            <canvas class="tactical-canvas" id="trainCanvasLayer"></canvas>
+            <div class="pitch-lines">
+              <div class="center-circle"></div><div class="half-way-line"></div>
+              <div class="penalty-box-top"></div><div class="six-yard-box-top"></div>
+              <div class="penalty-box-bottom"></div><div class="six-yard-box-bottom"></div>
+              <div class="goal-net"></div>
+            </div>
+          </div>
+          <textarea class="drill-details" id="drillNotes" placeholder="اكتب تفاصيل وملاحظات التدريب هنا... (دبل كليك على أي لاعب في الملعب لتغيير اسمه)"></textarea>
+        </div>
+      </div>
+      
+      <!-- شريط التحريك -->
+      <div class="anim-bar">
+        <button class="anim-btn record" onclick="saveFrame('train')"><i class="fa-solid fa-camera"></i> حفظ إطار الحركة</button>
+        <select id="trainAnimSpeed" class="speed-select">
+          <option value="1200">بطيء جداً</option><option value="800">بطيء</option><option value="500" selected>عادي</option><option value="250">سريع</option>
+        </select>
+        <span style="color:#fff; font-size:13px;">الإطارات: <span id="trainFrameCount" style="color:var(--primary); font-weight:bold;">0</span></span>
+        <button class="anim-btn play" onclick="playAnimation('train')"><i class="fa-solid fa-play"></i> تشغيل العرض</button>
+        <button class="anim-btn" style="background:#ef4444;" onclick="clearFrames('train')"><i class="fa-solid fa-trash-can"></i> مسح الإطارات</button>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-action" style="background:#4b5563;" onclick="clearPitch('trainPitch')"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
+        <button class="btn-action" style="background:var(--accent); color:#000;" onclick="exportPDF('trainPitch')"><i class="fa-solid fa-file-pdf"></i> طباعة التقرير (PDF)</button>
+        <button class="btn-action" style="background:var(--success);" onclick="printPitch('trainPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة</button>
+        <button class="btn-action" onclick="exportVideo('trainPitch')"><i class="fa-solid fa-video"></i> تصدير (فيديو)</button>
+      </div>
+    </div>
+
+    <!-- التاب الثاني: خطط المباريات (Formations) -->
+    <div id="matchTab" class="tab-content">
+      <div class="formation-controls">
+        <select class="formation-select" id="formation1" onchange="loadMatchTeam(1)" style="border-color: #3b82f6;">
+          <option value="">-- فريق 1 (أزرق) --</option>
+          <option value="4-4-2">4-4-2 التقليدية</option><option value="4-3-3">4-3-3 الهجومية</option>
+          <option value="4-2-3-1">4-2-3-1 المتوازنة</option><option value="3-5-2">3-5-2 الكثافة</option>
+        </select>
+        <select class="formation-select" id="formation2" onchange="loadMatchTeam(2)" style="border-color: #ef4444;">
+          <option value="">-- فريق 2 (أحمر) --</option>
+          <option value="4-4-2">4-4-2 التقليدية</option><option value="4-3-3">4-3-3 الهجومية</option>
+          <option value="4-2-3-1">4-2-3-1 المتوازنة</option><option value="3-5-2">3-5-2 الكثافة</option>
+        </select>
+        <button class="pitch-btn" style="padding:8px 15px; font-size:14px;" onclick="addMatchBall()">إضافة كرة ⚽</button>
+      </div>
+
+      <div class="pitch-container" style="height: 70vh;">
+        <div class="pitch-controls">
+          <button class="draw-btn active" onclick="setMode('drag', 'matchPitch')"><i class="fa-solid fa-hand"></i> تحريك الأفراد</button>
+          <button class="draw-btn" onclick="setMode('link', 'matchPitch')"><i class="fa-solid fa-link"></i> ربط تكتيكي</button>
+          <button class="draw-btn" onclick="setMode('draw-pen', 'matchPitch')"><i class="fa-solid fa-pen"></i> قلم</button>
+          <button class="draw-btn" onclick="setMode('draw-pass', 'matchPitch')"><i class="fa-solid fa-arrow-right-long"></i> تمرير</button>
+          <button class="draw-btn" onclick="setMode('draw-run', 'matchPitch')"><i class="fa-solid fa-arrow-right-dots"></i> تحرك</button>
+          <button class="draw-btn" style="color:var(--danger);" onclick="clearDrawings('matchPitch')"><i class="fa-solid fa-eraser"></i> مسح الرسوم</button>
+        </div>
+        
+        <div class="pitch-area view-full" id="matchPitch" style="box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);">
+          <svg class="tactical-links" id="matchLinksLayer"></svg>
+          <canvas class="tactical-canvas" id="matchCanvasLayer"></canvas>
+          <div class="pitch-lines">
+            <div class="center-circle"></div><div class="half-way-line"></div>
+            <div class="penalty-box-top"></div><div class="six-yard-box-top"></div>
+            <div class="penalty-box-bottom"></div><div class="six-yard-box-bottom"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="anim-bar">
+        <button class="anim-btn record" onclick="saveFrame('match')"><i class="fa-solid fa-camera"></i> حفظ التمركز</button>
+        <select id="matchAnimSpeed" class="speed-select">
+          <option value="1200">بطيء جداً</option><option value="800">بطيء</option><option value="500" selected>عادي</option><option value="250">سريع</option>
+        </select>
+        <span style="color:#fff; font-size:13px;">الإطارات: <span id="matchFrameCount" style="color:var(--primary); font-weight:bold;">0</span></span>
+        <button class="anim-btn play" onclick="playAnimation('match')"><i class="fa-solid fa-play"></i> تشغيل التحركات</button>
+        <button class="anim-btn" style="background:#ef4444;" onclick="clearFrames('match')"><i class="fa-solid fa-trash-can"></i> مسح الإطارات</button>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-action" style="background:var(--danger);" onclick="clearPitch('matchPitch')"><i class="fa-solid fa-trash"></i> تنظيف الملعب</button>
+        <button class="btn-action" style="background:var(--success);" onclick="printPitch('matchPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة</button>
+        <button class="btn-action" onclick="exportVideo('matchPitch')"><i class="fa-solid fa-video"></i> تصدير (فيديو)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // تهيئة التابات والأدوات الأساسية
+    // ==========================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId + 'Tab').classList.add('active');
+      resizeCanvases();
+    }
+
+    const svgTemplates = {
+      playerRed: (num) => `<svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ef4444" stroke="#fff" stroke-width="4"/><text class="p-text" x="50" y="65" font-size="40" font-family="Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
+      playerBlue: (num) => `<svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#3b82f6" stroke="#fff" stroke-width="4"/><text class="p-text" x="50" y="65" font-size="40" font-family="Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
+      referee: (num) => `<svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#eab308" stroke="#000" stroke-width="4"/><text class="p-text" x="50" y="65" font-size="35" font-family="Arial" font-weight="bold" fill="#000" text-anchor="middle">R${num}</text></svg>`,
+      ball: `<svg width="20" height="20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/><polygon points="50,20 75,40 65,70 35,70 25,40" fill="#000"/></svg>`,
+      coneRed: `<svg width="20" height="20" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="4"/></svg>`,
+      coneBlue: `<svg width="20" height="20" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="4"/></svg>`,
+      marker: `<svg width="25" height="25" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="15" fill="#facc15"/></svg>`,
+      hurdle: `<svg width="35" height="20" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="30" fill="#000"/><rect x="75" y="20" width="10" height="30" fill="#000"/></svg>`,
+      ladder: `<svg width="20" height="35" viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" fill="none" stroke="#facc15" stroke-width="4"/><line x1="30" y1="30" x2="70" y2="30" stroke="#facc15" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#facc15" stroke-width="4"/><line x1="30" y1="70" x2="70" y2="70" stroke="#facc15" stroke-width="4"/></svg>`,
+      mannequin: `<svg width="25" height="35" viewBox="0 0 100 100"><path d="M 30 90 L 30 50 Q 50 20 70 50 L 70 90 Z" fill="#ef4444" stroke="#fff" stroke-width="2"/><circle cx="50" cy="25" r="15" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>`
+    };
+
+    function buildTrainingPalette() {
+      const redGrid = document.getElementById('teamRedGrid'); const blueGrid = document.getElementById('teamBlueGrid'); const equipGrid = document.getElementById('equipGrid');
+      for(let i=1; i<=20; i++){ redGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.playerRed(i)}'>${svgTemplates.playerRed(i)}</div>`; }
+      for(let i=1; i<=20; i++){ blueGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.playerBlue(i)}'>${svgTemplates.playerBlue(i)}</div>`; }
+      for(let i=1; i<=3; i++){ equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.referee(i)}'>${svgTemplates.referee(i)}<br>حكم</div>`; }
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.ball}'>${svgTemplates.ball}<br>كرة</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.coneRed}'>${svgTemplates.coneRed}<br>قمع أحمر</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.coneBlue}'>${svgTemplates.coneBlue}<br>قمع أزرق</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.marker}'>${svgTemplates.marker}<br>ماركر</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.hurdle}'>${svgTemplates.hurdle}<br>حاجز</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.ladder}'>${svgTemplates.ladder}<br>سلم</div>`;
+      equipGrid.innerHTML += `<div class="draggable-source" draggable="true" data-svg='${svgTemplates.mannequin}'>${svgTemplates.mannequin}<br>شاخص</div>`;
+      document.querySelectorAll('.draggable-source').forEach(el => { el.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', e.target.closest('.draggable-source').dataset.svg); }); });
+    }
+    buildTrainingPalette();
+
+    let itemIdCounter = 0;
+    function allowDrop(e) { e.preventDefault(); }
+    function drop(e, pitchId) {
+      e.preventDefault(); const svgData = e.dataTransfer.getData('text/plain'); if (!svgData) return;
+      const pitch = document.getElementById(pitchId); const rect = pitch.getBoundingClientRect();
+      createDrillItem(svgData, e.clientX - rect.left, e.clientY - rect.top, pitch);
+    }
+
+    // إنشاء العنصر وإضافة خاصية الـ Double Click لتعديل الاسم
+    function createDrillItem(svgHtml, x, y, parentPitch) {
+      itemIdCounter++; const item = document.createElement('div');
+      item.className = 'drill-item'; item.id = `item_${itemIdCounter}`;
+      item.innerHTML = `${svgHtml} <div class="delete-btn" onclick="removeNode(this)">X</div>`;
+      item.style.left = `${x}px`; item.style.top = `${y}px`;
+      item.style.transform = `translate(-50%, -50%) scale(1.5)`; item.dataset.scale = 1.5;
+      
+      item.addEventListener('mousedown', handleItemMousedown);
+      item.addEventListener('dblclick', renameElement);
+      item.addEventListener('wheel', (e) => {
+        e.preventDefault(); let scale = parseFloat(item.dataset.scale); scale += e.deltaY < 0 ? 0.1 : -0.1;
+        if(scale < 0.5) scale = 0.5; if(scale > 4) scale = 4;
+        item.dataset.scale = scale; item.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      });
+      parentPitch.appendChild(item);
+    }
+
+    function removeNode(btn) {
+      const node = btn.parentElement;
+      // إزالة أي روابط تكتيكية متعلقة بالعنصر ده
+      tacticalLinks = tacticalLinks.filter(l => l.n1 !== node.id && l.n2 !== node.id);
+      node.remove();
+    }
+
+    function renameElement(e) {
+      e.stopPropagation();
+      const newName = prompt("اكتب الاسم أو الرقم الجديد:", "");
+      if(newName !== null && newName.trim() !== "") {
+        const txtObj = this.querySelector('.p-text');
+        if(txtObj) txtObj.textContent = newName; // للأدوات SVG
+        const lblObj = this.querySelector('.player-label');
+        if(lblObj) lblObj.textContent = newName; // للاعبي الخطط
+      }
+    }
+
+    // ==========================================
+    // إدارة الأوضاع (تحريك - ربط - رسم)
+    // ==========================================
+    let currentMode = { trainPitch: 'drag', matchPitch: 'drag' };
+    
+    function setMode(mode, pitchId) {
+      currentMode[pitchId] = mode;
+      const pitch = document.getElementById(pitchId);
+      const controls = pitch.parentElement.querySelector('.pitch-controls');
+      controls.querySelectorAll('.draw-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      pitch.className = pitch.className.replace(/mode-\S+/g, '');
+      pitch.classList.add(`mode-${mode.split('-')[0]}`);
+      
+      // تفريغ أداة الربط لو غيرنا الأداة
+      linkStartNode = null;
+      pitch.querySelectorAll('.drill-item, .player-node').forEach(n => n.classList.remove('linked'));
+    }
+
+    // ==========================================
+    // منطق السحب والتفاعل (Drag / Link)
+    // ==========================================
+    let activeItem = null; let pOffsetX = 0, pOffsetY = 0; let activePitch = null;
+    let linkStartNode = null; 
+    let tacticalLinks = []; // [{pitchId, n1, n2}]
+
+    function handleItemMousedown(e) {
+      if(e.target.classList.contains('delete-btn') || e.target.tagName === 'INPUT') return;
+      activePitch = this.parentElement;
+      const mode = currentMode[activePitch.id];
+      
+      if(mode === 'drag') {
+        activeItem = this; activeItem.style.zIndex = 100;
+        const rect = activeItem.getBoundingClientRect(); 
+        pOffsetX = e.clientX - rect.left - (rect.width/2); pOffsetY = e.clientY - rect.top - (rect.height/2);
+        document.addEventListener('mousemove', pitchItemDragMove); document.addEventListener('mouseup', pitchItemDragEnd);
+      } else if (mode === 'link') {
+        if(!linkStartNode) {
+          linkStartNode = this; this.classList.add('linked');
+        } else {
+          if(linkStartNode.id !== this.id) {
+            tacticalLinks.push({ pitchId: activePitch.id, n1: linkStartNode.id, n2: this.id });
+          }
+          linkStartNode.classList.remove('linked'); linkStartNode = null;
+        }
+      }
+    }
+    
+    function pitchItemDragMove(e) {
+      if (!activeItem || !activePitch) return; 
+      const pRect = activePitch.getBoundingClientRect();
+      activeItem.style.left = `${e.clientX - pRect.left - pOffsetX}px`; activeItem.style.top = `${e.clientY - pRect.top - pOffsetY}px`;
+    }
+    function pitchItemDragEnd() {
+      if(activeItem) activeItem.style.zIndex = 10; activeItem = null; activePitch = null;
+      document.removeEventListener('mousemove', pitchItemDragMove); document.removeEventListener('mouseup', pitchItemDragEnd);
+    }
+
+    // ==========================================
+    // محرك الرسم الحر (Canvas)
+    // ==========================================
+    let isDrawing = false; let dStartX = 0, dStartY = 0;
+    const drawings = { trainPitch: [], matchPitch: [] };
+
+    document.querySelectorAll('.tactical-canvas').forEach(canvas => {
+      canvas.addEventListener('mousedown', (e) => {
+        const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
+        if(!mode.startsWith('draw')) return;
+        const rect = canvas.getBoundingClientRect();
+        dStartX = e.clientX - rect.left; dStartY = e.clientY - rect.top;
+        isDrawing = true;
+      });
+      canvas.addEventListener('mousemove', (e) => {
+        if(!isDrawing) return;
+        const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
+        const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+        
+        renderCanvas(pitchId); // إعادة رسم السابق
+        const ctx = canvas.getContext('2d'); ctx.beginPath();
+        
+        if (mode === 'draw-pen') { ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke(); }
+        else if (mode === 'draw-pass') { ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke(); }
+        else if (mode === 'draw-run') { ctx.setLineDash([8,8]); ctx.moveTo(dStartX, dStartY); ctx.lineTo(x, y); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]); }
+        else if (mode === 'draw-highlight') { const radius = Math.hypot(x-dStartX, y-dStartY); ctx.arc(dStartX, dStartY, radius, 0, Math.PI*2); ctx.fillStyle = 'rgba(250, 204, 21, 0.4)'; ctx.fill(); }
+      });
+      canvas.addEventListener('mouseup', (e) => {
+        if(!isDrawing) return; isDrawing = false;
+        const pitchId = canvas.parentElement.id; const mode = currentMode[pitchId];
+        const rect = canvas.getBoundingClientRect();
+        drawings[pitchId].push({ type: mode, sx: dStartX, sy: dStartY, ex: e.clientX - rect.left, ey: e.clientY - rect.top });
+        renderCanvas(pitchId);
+      });
+    });
+
+    function renderCanvas(pitchId) {
+      const canvas = document.querySelector(`#${pitchId} .tactical-canvas`);
+      const ctx = canvas.getContext('2d'); ctx.clearRect(0,0, canvas.width, canvas.height);
+      drawings[pitchId].forEach(d => {
+        ctx.beginPath();
+        if(d.type === 'draw-pen') { /* مسار معقد يحتاج تخزين كل النقاط، للتبسيط نرسم خط */ ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke(); }
+        else if(d.type === 'draw-pass') { 
+          const angle = Math.atan2(d.ey - d.sy, d.ex - d.sx); ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); 
+          ctx.lineTo(d.ex - 15 * Math.cos(angle - Math.PI/6), d.ey - 15 * Math.sin(angle - Math.PI/6)); ctx.moveTo(d.ex, d.ey); ctx.lineTo(d.ex - 15 * Math.cos(angle + Math.PI/6), d.ey - 15 * Math.sin(angle + Math.PI/6));
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke(); 
+        }
+        else if(d.type === 'draw-run') { ctx.setLineDash([8,8]); ctx.moveTo(d.sx, d.sy); ctx.lineTo(d.ex, d.ey); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]); }
+        else if(d.type === 'draw-highlight') { const radius = Math.hypot(d.ex-d.sx, d.ey-d.sy); ctx.arc(d.sx, d.sy, radius, 0, Math.PI*2); ctx.fillStyle = 'rgba(250, 204, 21, 0.4)'; ctx.fill(); }
+      });
+    }
+
+    function clearDrawings(pitchId) { drawings[pitchId] = []; renderCanvas(pitchId); tacticalLinks = tacticalLinks.filter(l => l.pitchId !== pitchId); }
+    
+    function resizeCanvases() {
+      document.querySelectorAll('.tactical-canvas').forEach(c => { const r = c.parentElement.getBoundingClientRect(); c.width = r.width; c.height = r.height; renderCanvas(c.parentElement.id); });
+    }
+    window.addEventListener('resize', resizeCanvases); setTimeout(resizeCanvases, 500);
+
+    // ==========================================
+    // تحديث خطوط الربط التكتيكي باستمرار
+    // ==========================================
+    function updateTacticalLinks() {
+      ['trainPitch', 'matchPitch'].forEach(pitchId => {
+        const svg = document.getElementById(pitchId === 'trainPitch' ? 'trainLinksLayer' : 'matchLinksLayer');
+        if(!svg) return;
+        let linesHtml = '';
+        tacticalLinks.filter(l => l.pitchId === pitchId).forEach(l => {
+          const n1 = document.getElementById(l.n1); const n2 = document.getElementById(l.n2);
+          if(n1 && n2) {
+            const pitchRect = svg.parentElement.getBoundingClientRect();
+            const r1 = n1.getBoundingClientRect(); const r2 = n2.getBoundingClientRect();
+            const x1 = r1.left - pitchRect.left + r1.width/2; const y1 = r1.top - pitchRect.top + r1.height/2;
+            const x2 = r2.left - pitchRect.left + r2.width/2; const y2 = r2.top - pitchRect.top + r2.height/2;
+            linesHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#facc15" stroke-width="3" stroke-dasharray="8 4" />`;
+          }
+        });
+        svg.innerHTML = linesHtml;
+      });
+      requestAnimationFrame(updateTacticalLinks);
+    }
+    updateTacticalLinks(); // تشغيل حلقة التحديث اللانهائية
+
+    // ==========================================
+    // خطط المباريات (Formations)
+    // ==========================================
+    const matchPitch = document.getElementById('matchPitch');
+    const formations = {
+      '4-4-2': [ {x: 50, y: 90, label: 'GK'}, {x: 20, y: 75, label: 'LB'}, {x: 40, y: 75, label: 'CB'}, {x: 60, y: 75, label: 'CB'}, {x: 80, y: 75, label: 'RB'}, {x: 20, y: 50, label: 'LM'}, {x: 40, y: 50, label: 'CM'}, {x: 60, y: 50, label: 'CM'}, {x: 80, y: 50, label: 'RM'}, {x: 35, y: 25, label: 'FW'}, {x: 65, y: 25, label: 'FW'} ],
+      '4-3-3': [ {x: 50, y: 90, label: 'GK'}, {x: 20, y: 75, label: 'LB'}, {x: 40, y: 75, label: 'CB'}, {x: 60, y: 75, label: 'CB'}, {x: 80, y: 75, label: 'RB'}, {x: 30, y: 55, label: 'CM'}, {x: 50, y: 55, label: 'CDM'}, {x: 70, y: 55, label: 'CM'}, {x: 25, y: 25, label: 'LW'}, {x: 50, y: 20, label: 'ST'}, {x: 75, y: 25, label: 'RW'} ],
+      '4-2-3-1': [ {x: 50, y: 90, label: 'GK'}, {x: 20, y: 75, label: 'LB'}, {x: 40, y: 75, label: 'CB'}, {x: 60, y: 75, label: 'CB'}, {x: 80, y: 75, label: 'RB'}, {x: 35, y: 60, label: 'CDM'}, {x: 65, y: 60, label: 'CDM'}, {x: 25, y: 40, label: 'LAM'}, {x: 50, y: 40, label: 'CAM'}, {x: 75, y: 40, label: 'RAM'}, {x: 50, y: 20, label: 'ST'} ],
+      '3-5-2': [ {x: 50, y: 90, label: 'GK'}, {x: 30, y: 75, label: 'CB'}, {x: 50, y: 75, label: 'CB'}, {x: 70, y: 75, label: 'CB'}, {x: 15, y: 50, label: 'LWB'}, {x: 35, y: 50, label: 'CM'}, {x: 50, y: 55, label: 'CDM'}, {x: 65, y: 50, label: 'CM'}, {x: 85, y: 50, label: 'RWB'}, {x: 35, y: 25, label: 'FW'}, {x: 65, y: 25, label: 'FW'} ]
+    };
+
+    function loadMatchTeam(teamNumber) {
+      const selected = document.getElementById(`formation${teamNumber}`).value;
+      if(!selected) return;
+      matchPitch.querySelectorAll(`.player-node.team${teamNumber}`).forEach(e => {
+        tacticalLinks = tacticalLinks.filter(l => l.n1 !== e.id && l.n2 !== e.id);
+        e.remove();
+      });
+      
+      const positions = formations[selected]; const color = teamNumber === 1 ? '#3b82f6' : '#ef4444';
+      positions.forEach((pos, i) => {
+        const node = document.createElement('div');
+        node.className = `player-node team${teamNumber}`; node.id = `match_player_t${teamNumber}_${i}`;
+        node.style.borderColor = color;
+        let finalY = teamNumber === 1 ? pos.y : (100 - pos.y);
+        node.style.left = `${pos.x}%`; node.style.top = `${finalY}%`; node.style.transform = `translate(-50%, -50%)`;
+        
+        node.innerHTML = `<img src="" class="player-img" id="img_t${teamNumber}_${i}"><input type="file" accept="image/*" onchange="handlePlayerUpload(event, ${teamNumber}, ${i})"><i class="fa-solid fa-plus add-photo-btn"></i><div class="player-label" style="background:${color}">${pos.label}</div>`;
+        node.addEventListener('mousedown', handleItemMousedown);
+        node.addEventListener('dblclick', renameElement);
+        matchPitch.appendChild(node);
+      });
+    }
+
+    function addMatchBall() {
+      const ball = document.createElement('div'); ball.className = 'drill-item ball-item'; ball.id = `match_ball_${Date.now()}`;
+      ball.innerHTML = `${svgTemplates.ball} <div class="delete-btn" onclick="removeNode(this)">X</div>`;
+      ball.style.left = '50%'; ball.style.top = '50%'; ball.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      ball.addEventListener('mousedown', handleItemMousedown); matchPitch.appendChild(ball);
+    }
+    function handlePlayerUpload(event, team, index) {
+      const file = event.target.files[0];
+      if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById(`img_t${team}_${index}`).src = e.target.result; document.getElementById(`match_player_t${team}_${index}`).classList.add('has-image'); }; reader.readAsDataURL(file); }
+    }
+
+    // ==========================================
+    // التحكم في العرض للملاعب
+    // ==========================================
+    function setPitchView(view) {
+      document.querySelectorAll('#trainingTab .pitch-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('trainPitch').className = `pitch-area view-${view}`;
+      setTimeout(resizeCanvases, 300);
+    }
+    
+    function clearPitch(pitchId) { 
+      const p = document.getElementById(pitchId);
+      p.querySelectorAll('.drill-item, .player-node').forEach(item => item.remove()); 
+      clearFrames(pitchId === 'trainPitch' ? 'train' : 'match');
+      clearDrawings(pitchId);
+    }
+    function printPitch(pitchId) { 
+      const p = document.getElementById(pitchId); p.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      html2canvas(p, { backgroundColor: '#15803d' }).then(canvas => { const a = document.createElement('a'); a.download = `لوحة_${Date.now()}.jpg`; a.href = canvas.toDataURL('image/jpeg'); a.click(); p.querySelectorAll('.delete-btn').forEach(b => b.style.display = ''); }); 
+    }
+
+    // ==========================================
+    // طباعة تقرير PDF للوحدة التدريبية
+    // ==========================================
+    function exportPDF(pitchId) {
+      const pitch = document.getElementById(pitchId);
+      pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      
+      html2canvas(pitch, { backgroundColor: '#15803d' }).then(canvas => {
+        document.getElementById('printPitchImg').src = canvas.toDataURL('image/jpeg');
+        document.getElementById('printDate').innerText = `التاريخ: ${new Date().toLocaleDateString('ar-EG')}`;
+        document.getElementById('printNotesText').innerText = document.getElementById('drillNotes').value || "لا توجد ملاحظات إضافية.";
+        
+        document.getElementById('appUI').style.display = 'none';
+        document.getElementById('printArea').style.display = 'block';
+        
+        setTimeout(() => {
+          window.print();
+          document.getElementById('printArea').style.display = 'none';
+          document.getElementById('appUI').style.display = 'block';
+          pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
+        }, 500);
+      });
+    }
+
+    // ==========================================
+    // محرك الأنيميشن وتسجيل الفيديو
+    // ==========================================
+    const animationData = { 'train': { frames: [] }, 'match': { frames: [] } };
+    
+    function saveFrame(tabPrefix) {
+      const pitchId = tabPrefix === 'train' ? 'trainPitch' : 'matchPitch'; const pitch = document.getElementById(pitchId);
+      const currentPositions = [];
+      pitch.querySelectorAll('.drill-item, .player-node').forEach(item => { currentPositions.push({ id: item.id, left: item.style.left, top: item.style.top }); });
+      animationData[tabPrefix].frames.push(currentPositions); document.getElementById(`${tabPrefix}FrameCount`).innerText = animationData[tabPrefix].frames.length;
+    }
+    
+    function clearFrames(tabPrefix) { animationData[tabPrefix].frames = []; document.getElementById(`${tabPrefix}FrameCount`).innerText = "0"; }
+    
+    async function playAnimation(tabPrefix) {
+      const frames = animationData[tabPrefix].frames; if (frames.length === 0) return alert("قم بحفظ إطارين على الأقل!");
+      const pitchId = tabPrefix === 'train' ? 'trainPitch' : 'matchPitch'; const pitch = document.getElementById(pitchId);
+      const speed = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value) || 500;
+      
+      pitch.querySelectorAll('.drill-item, .player-node').forEach(item => { item.style.transition = 'none'; });
+      applyFrame(frames[0], pitch); await new Promise(r => setTimeout(r, 100));
+
+      for (let i = 1; i < frames.length; i++) {
+        pitch.querySelectorAll('.drill-item, .player-node').forEach(item => { item.style.transition = `top ${speed}ms ease-in-out, left ${speed}ms ease-in-out`; });
+        applyFrame(frames[i], pitch); await new Promise(r => setTimeout(r, speed + 100)); 
+      }
+      setTimeout(() => { pitch.querySelectorAll('.drill-item, .player-node').forEach(item => { item.style.transition = ''; }); }, 400);
+    }
+    
+    function applyFrame(frameData, pitch) { frameData.forEach(pos => { const item = document.getElementById(pos.id); if (item) { item.style.left = pos.left; item.style.top = pos.top; } }); }
+
+    async function exportVideo(pitchId) {
+      const tabPrefix = pitchId === 'trainPitch' ? 'train' : 'match'; const frames = animationData[tabPrefix].frames;
+      if (frames.length === 0) return alert("الرجاء إضافة إطارات للحركة أولاً لتصدير الفيديو.");
+      const speedMs = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value) || 500;
+      alert("سيتم تسجيل الحركة كفيديو.. برجاء عدم تحريك الماوس أو النزول بالشاشة.");
+      
+      const pitch = document.getElementById(pitchId); pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      
+      const vCanvas = document.createElement('canvas'); vCanvas.width = pitch.offsetWidth; vCanvas.height = pitch.offsetHeight;
+      const vCtx = vCanvas.getContext('2d'); const stream = vCanvas.captureStream(30);
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' }); const chunks = []; recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.start();
+
+      pitch.querySelectorAll('.drill-item, .player-node').forEach(item => item.style.transition = 'none');
+      applyFrame(frames[0], pitch); await new Promise(r => setTimeout(r, 200)); 
+
+      for (let i = 0; i < frames.length - 1; i++) {
+        const frameA = frames[i]; const frameB = frames[i+1]; const steps = 10; 
+        for(let s = 0; s <= steps; s++) {
+          const ratio = s / steps;
+          frameA.forEach(posA => {
+            const posB = frameB.find(p => p.id === posA.id) || posA; const item = document.getElementById(posA.id);
+            if(item) {
+              let lA = posA.left.includes('%') ? (parseFloat(posA.left)/100 * pitch.offsetWidth) : parseFloat(posA.left); let lB = posB.left.includes('%') ? (parseFloat(posB.left)/100 * pitch.offsetWidth) : parseFloat(posB.left);
+              let tA = posA.top.includes('%') ? (parseFloat(posA.top)/100 * pitch.offsetHeight) : parseFloat(posA.top); let tB = posB.top.includes('%') ? (parseFloat(posB.top)/100 * pitch.offsetHeight) : parseFloat(posB.top);
+              item.style.left = `${lA + (lB - lA) * ratio}px`; item.style.top = `${tA + (tB - tA) * ratio}px`;
+            }
+          });
+          const snap = await html2canvas(pitch, { backgroundColor: '#15803d', scale: 1 }); vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
+          await new Promise(r => setTimeout(r, 10)); 
+        }
+      }
+      for(let i=0; i<5; i++) { const snap = await html2canvas(pitch, { backgroundColor: '#15803d', scale: 1 }); vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height); }
+
+      recorder.stop(); pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = ''); pitch.querySelectorAll('.drill-item, .player-node').forEach(item => item.style.transition = '');
+      
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `حركة_تكتيكية_${Date.now()}.webm`; a.click();
+      };
+    }
+  </script>
+</body>
+</html>
