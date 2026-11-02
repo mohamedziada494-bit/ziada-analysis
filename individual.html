@@ -187,7 +187,7 @@
     .stats-table td { padding: 7px 8px; border-bottom: 1px solid #d0d7de; font-weight: 600; }
     .stats-table tr:nth-child(even) { background: #f6f8fa; }
 
-    .timeline-box { max-height: 380px; overflow-y: auto; font-size: 12px; border: 1px solid #d0d7de; padding: 10px; border-radius: 6px; background: #f6f8fa; }
+    .timeline-box { max-height: 480px; overflow-y: auto; font-size: 12px; border: 1px solid #d0d7de; padding: 10px; border-radius: 6px; background: #f6f8fa; }
     .timeline-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #d0d7de; cursor: pointer; transition: background 0.2s; }
     .timeline-row:hover { background: #e2e8f0; }
     .timeline-content { display: flex; align-items: center; gap: 6px; }
@@ -262,7 +262,10 @@
         <button class="tag-btn btn-dribble" onclick="openDribbleChoiceModal()"><span>مراوغة 1v1</span> <i class="fa-solid fa-bolt"></i></button>
         <button class="tag-btn btn-recovery" onclick="openPitchModal('استخلاص كرة')"><span>استخلاص كورة</span> <i class="fa-solid fa-shield-halved"></i></button>
         <button class="tag-btn btn-loss" onclick="openPitchModal('فقدان كرة')"><span>فقدان كورة</span> <i class="fa-solid fa-ban"></i></button>
-        <button class="tag-btn btn-air" onclick="openAirChoiceModal()"><span>هوائيات</span> <i class="fa-solid fa-parachute-box"></i></button>
+        
+        <!-- التعديل الجديد للالتحامات -->
+        <button class="tag-btn btn-air" onclick="openDuelChoiceModal()" style="background: #5c6bc0;"><span>التحامات</span> <i class="fa-solid fa-hand-back-fist"></i></button>
+        
         <button class="tag-btn btn-shot" onclick="openPitchModal('تسديدة')"><span>تسديد</span> <i class="fa-solid fa-crosshairs"></i></button>
         <button class="tag-btn btn-goal" onclick="openPitchModal('هدف')"><span>هدف مسجل</span> <i class="fa-solid fa-fire"></i></button>
         <button class="tag-btn btn-cross" onclick="openCrossChoiceModal()"><span>كرة عرضية</span> <i class="fa-solid fa-repeat"></i></button>
@@ -271,7 +274,6 @@
 
       <main class="video-main-area">
         <div class="video-container">
-          <!-- رجعنا مشغل الفيديو لشروطه الأصلية وضفنا controls عشان تدعم المتصفح -->
           <video id="matchVideo" playsinline controls></video>
         </div>
 
@@ -378,12 +380,15 @@
             <div class="legend-item"><div class="legend-circle" style="background: #9a3412; border: 1px dashed #fff;"></div> مراوغة فاشلة</div>
             <div class="legend-item"><div class="legend-circle" style="background: #008080; border: 1px solid #fff;"></div> استخلاص كرة</div>
             <div class="legend-item"><div class="legend-circle" style="background: #b91c1c; border: 1px solid #fff;"></div> فقدان كرة</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #5c6bc0; border: 1px solid #fff;"></div> هوائي فائز</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #7986cb; border: 1px dashed #fff;"></div> هوائي خاسر</div>
             <div class="legend-item"><div class="legend-box" style="background: #0969da;"></div> كروس صح</div>
             <div class="legend-item"><div class="legend-box" style="background: #f85149;"></div> كروس خطأ</div>
             <div class="legend-item"><div class="legend-circle" style="background: #d29922; border: 1px solid #fff;"></div> تسديد</div>
             <div class="legend-item"><div class="legend-circle" style="background: #e3b341; border: 1px solid #000;"></div> هدف ⚽</div>
+            <!-- أيقونات الالتحامات الجديدة -->
+            <div class="legend-item"><div class="legend-circle" style="background: #5c6bc0; border: 1px solid #fff;"></div> هوائي فائز</div>
+            <div class="legend-item"><div class="legend-circle" style="background: #7986cb; border: 1px dashed #fff;"></div> هوائي خاسر</div>
+            <div class="legend-item"><div class="legend-circle" style="background: #0d9488; border: 1px solid #fff;"></div> أرضي فائز</div>
+            <div class="legend-item"><div class="legend-circle" style="background: #be123c; border: 1px dashed #fff;"></div> أرضي خاسر</div>
           </div>
 
           <div id="heatmapLegendBox" style="display: none;">
@@ -418,6 +423,7 @@
 
   <div id="pdfExportContainer"></div>
 
+  <!-- Modal: إعداد الفريق -->
   <div class="modal-overlay" id="teamSetupModal">
     <div class="modal-content" style="width: 600px; text-align: right;">
       <h3 style="color: #38bdf8; margin-top: 0; text-align: center;">
@@ -491,6 +497,7 @@
     </div>
   </div>
 
+  <!-- Modal: الذكاء الاصطناعي -->
   <div class="modal-overlay" id="aiAutoModal">
     <div class="modal-content" style="width: 530px;">
       <h3 style="color: #ec4899; margin-top: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> محلل الرؤية الحاسوبية والذكاء الاصطناعي</h3>
@@ -529,30 +536,12 @@
   <div class="modal-overlay" id="dribbleChoiceModal">
     <div class="modal-content" style="width: 440px;">
       <h3 style="color: #ea580c; margin-top: 0;"><i class="fa-solid fa-bolt"></i> تسجيل مراوغة (1v1)</h3>
-      <div class="modal-player-box">
-        <label style="font-weight: bold; color: #ea580c; font-size: 14px; display: block; margin-bottom: 5px;">اسم اللاعبة المنفذة:</label>
-        <select id="dribblePlayerSelect"></select>
-      </div>
-      <div style="font-size: 14px; color: #c9d1d9; margin-bottom: 12px;">اختر تقييم المراوغة:</div>
       <div class="choice-grid">
         <button class="btn-choice-ok" style="background: #ea580c;" onclick="startDribblePitch(true)">مراوغة ناجحة ✔</button>
         <button class="btn-choice-bad" onclick="startDribblePitch(false)">مراوغة فاشلة ✖</button>
       </div>
       <br>
       <button style="background: #30363d; color: #fff; margin-top: 10px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="closeDribbleChoiceModal()">إلغاء</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="pitchModal">
-    <div class="modal-content">
-      <div class="modal-player-box">
-        <label style="font-weight: bold; color: #58a6ff; font-size: 14px; display: block; margin-bottom: 5px;">حدد اللاعبة المنفذة للحدث:</label>
-        <select id="modalPlayerSelect"></select>
-      </div>
-      <div id="modalInstructions" style="color: #d29922; font-weight: bold; font-size: 15px; margin-bottom: 12px;">الخطوة 1: اضغط على مكان الحدث بالملعب</div>
-      <canvas id="modalCanvas" width="300" height="450"></canvas>
-      <br>
-      <button style="background: #30363d; color: #fff; margin-top: 12px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="cancelPitchEvent()">إلغاء ومتابعة الفيديو</button>
     </div>
   </div>
 
@@ -568,15 +557,18 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="airChoiceModal">
-    <div class="modal-content" style="width: 420px;">
-      <h3 style="color: #5c6bc0; margin-top: 0;">تسجيل كرة هوائية 🪂</h3>
+  <!-- النافذة الجديدة للالتحامات -->
+  <div class="modal-overlay" id="duelChoiceModal">
+    <div class="modal-content" style="width: 440px;">
+      <h3 style="color: #5c6bc0; margin-top: 0;"><i class="fa-solid fa-hand-back-fist"></i> تسجيل التحامات (Duels)</h3>
       <div class="choice-grid">
-        <button class="btn-choice-ok" style="background: #5c6bc0;" onclick="startAirPitch(true)">هوائي فائز ✔</button>
-        <button class="btn-choice-bad" onclick="startAirPitch(false)">هوائي خاسر ✖</button>
+        <button class="btn-choice-ok" style="background: #5c6bc0;" onclick="startDuelPitch('التحام هوائي فائز')">هوائي فائز 🪂✔</button>
+        <button class="btn-choice-bad" style="background: #7986cb;" onclick="startDuelPitch('التحام هوائي خاسر')">هوائي خاسر 🪂✖</button>
+        <button class="btn-choice-ok" style="background: #0d9488;" onclick="startDuelPitch('التحام أرضي فائز')">أرضي فائز 🏃✔</button>
+        <button class="btn-choice-bad" style="background: #be123c;" onclick="startDuelPitch('التحام أرضي خاسر')">أرضي خاسر 🏃✖</button>
       </div>
       <br>
-      <button style="background: #30363d; color: #fff; margin-top: 10px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="closeAirChoiceModal()">إلغاء</button>
+      <button style="background: #30363d; color: #fff; margin-top: 10px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="closeDuelChoiceModal()">إلغاء</button>
     </div>
   </div>
 
@@ -589,6 +581,20 @@
       </div>
       <br>
       <button style="background: #30363d; color: #fff; margin-top: 10px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="closeCrossChoiceModal()">إلغاء</button>
+    </div>
+  </div>
+
+  <!-- النافذة اللي بتختار منها مكان الملعب واللاعبة -->
+  <div class="modal-overlay" id="pitchModal">
+    <div class="modal-content">
+      <div class="modal-player-box">
+        <label style="font-weight: bold; color: #58a6ff; font-size: 14px; display: block; margin-bottom: 5px;">حدد اللاعبة المنفذة للحدث:</label>
+        <select id="modalPlayerSelect"></select>
+      </div>
+      <div id="modalInstructions" style="color: #d29922; font-weight: bold; font-size: 15px; margin-bottom: 12px;">الخطوة 1: اضغط على مكان الحدث بالملعب</div>
+      <canvas id="modalCanvas" width="300" height="450"></canvas>
+      <br>
+      <button style="background: #30363d; color: #fff; margin-top: 12px; padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-family: inherit;" onclick="cancelPitchEvent()">إلغاء ومتابعة الفيديو</button>
     </div>
   </div>
 
@@ -617,7 +623,7 @@
     const statusText = document.getElementById('videoStatus');
     const modal = document.getElementById('pitchModal');
     const receiveChoiceModal = document.getElementById('receiveChoiceModal');
-    const airChoiceModal = document.getElementById('airChoiceModal');
+    const duelChoiceModal = document.getElementById('duelChoiceModal');
     const crossChoiceModal = document.getElementById('crossChoiceModal');
     const dribbleChoiceModal = document.getElementById('dribbleChoiceModal');
     const teamSetupModal = document.getElementById('teamSetupModal');
@@ -628,7 +634,6 @@
     const activeCtx = activeCanvas.getContext('2d');
     const pSelect = document.getElementById('playerSelect');
     const modalPSelect = document.getElementById('modalPlayerSelect');
-    const dribblePSelect = document.getElementById('dribblePlayerSelect');
     const btnPlayPause = document.getElementById('btnPlayPause');
     
     const seekSlider = document.getElementById('videoSeekSlider');
@@ -679,17 +684,10 @@
       }
     }
 
-    video.addEventListener('play', () => {
-      btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
-    });
+    video.addEventListener('play', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; });
+    video.addEventListener('pause', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; });
 
-    video.addEventListener('pause', () => {
-      btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
-    });
-
-    function seekVideo(seconds) {
-      video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + seconds));
-    }
+    function seekVideo(seconds) { video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + seconds)); }
 
     function jumpToVideoTime(timeSec) {
       video.currentTime = Math.max(0, timeSec - 2);
@@ -708,7 +706,6 @@
       statusText.style.color = "#38bdf8";
     }
 
-    // هنا دالة التحميل تم إرجاعها تماماً كما كانت في الكود الأصلي اللي اشتغل معاك
     function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -748,15 +745,8 @@
       renderCurrentPlayerView();
     }
 
-    function openTeamSetupModal() {
-      video.pause();
-      teamSetupModal.style.display = 'flex';
-    }
-
-    function closeTeamSetupModal() {
-      teamSetupModal.style.display = 'none';
-      video.play();
-    }
+    function openTeamSetupModal() { video.pause(); teamSetupModal.style.display = 'flex'; }
+    function closeTeamSetupModal() { teamSetupModal.style.display = 'none'; video.play(); }
 
     function saveTeamSetup() {
       matchConfig.myTeam = document.getElementById('myTeamNameInput').value || "فريقنا";
@@ -778,7 +768,6 @@
 
       pSelect.innerHTML = '';
       modalPSelect.innerHTML = '';
-      dribblePSelect.innerHTML = '';
 
       const makeOptGroups = () => {
         const g1 = document.createElement('optgroup');
@@ -806,19 +795,13 @@
       const [b1, b2] = makeOptGroups();
       modalPSelect.appendChild(b1); modalPSelect.appendChild(b2);
 
-      const [c1, c2] = makeOptGroups();
-      dribblePSelect.appendChild(c1); dribblePSelect.appendChild(c2);
-
       renderCurrentPlayerView();
       teamSetupModal.style.display = 'none';
       video.play();
     }
 
     function openAIAutoModal() {
-      if (!video.src) {
-        alert("يرجى رفع ملف الفيديو أولاً ليقوم الذكاء الاصطناعي بمسحه وتحليله!");
-        return;
-      }
+      if (!video.src) { alert("يرجى رفع ملف الفيديو أولاً ليقوم الذكاء الاصطناعي بمسحه وتحليله!"); return; }
       video.pause();
       document.getElementById('modalKitDot').style.backgroundColor = matchConfig.primaryKitColor;
       document.getElementById('modalPlayersCount').innerText = `${matchConfig.starters.length + matchConfig.subs.length} لاعبة`;
@@ -827,10 +810,7 @@
       aiAutoModal.style.display = 'flex';
     }
 
-    function closeAIAutoModal() {
-      aiAutoModal.style.display = 'none';
-      video.play();
-    }
+    function closeAIAutoModal() { aiAutoModal.style.display = 'none'; video.play(); }
 
     function runAIAutoAnalysis() {
       const mode = document.getElementById('aiModeSelect').value;
@@ -875,7 +855,7 @@
       const samplePlayers = mode === 'player' ? [targetPlayer] : [...matchConfig.starters];
       const eventTypes = [
         'باص صحيح', 'باص صحيح', 'باص خاطئ', 'استلام صحيح', 
-        'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح'
+        'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح', 'التحام هوائي فائز', 'التحام أرضي فائز'
       ];
 
       const newGeneratedEvents = [];
@@ -987,67 +967,22 @@
       ctx.drawImage(offCanvas, 0, 0);
     }
 
-    function openDribbleChoiceModal() {
-      video.pause();
-      dribblePSelect.value = pSelect.value;
-      dribbleChoiceModal.style.display = 'flex';
-    }
+    function openDribbleChoiceModal() { video.pause(); dribbleChoiceModal.style.display = 'flex'; }
+    function closeDribbleChoiceModal() { dribbleChoiceModal.style.display = 'none'; video.play(); }
+    function startDribblePitch(isOk) { dribbleChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة'); }
 
-    function closeDribbleChoiceModal() {
-      dribbleChoiceModal.style.display = 'none';
-      video.play();
-    }
+    function openReceiveChoiceModal() { video.pause(); receiveChoiceModal.style.display = 'flex'; }
+    function closeReceiveChoiceModal() { receiveChoiceModal.style.display = 'none'; video.play(); }
+    function startReceivePitch(isOk) { receiveChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ'); }
 
-    function startDribblePitch(isOk) {
-      const selectedPlayer = dribblePSelect.value;
-      dribbleChoiceModal.style.display = 'none';
-      openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة', selectedPlayer);
-    }
+    // دوال نافذة الالتحامات الجديدة
+    function openDuelChoiceModal() { video.pause(); duelChoiceModal.style.display = 'flex'; }
+    function closeDuelChoiceModal() { duelChoiceModal.style.display = 'none'; video.play(); }
+    function startDuelPitch(type) { duelChoiceModal.style.display = 'none'; openPitchModal(type); }
 
-    function openReceiveChoiceModal() {
-      video.pause();
-      receiveChoiceModal.style.display = 'flex';
-    }
-
-    function closeReceiveChoiceModal() {
-      receiveChoiceModal.style.display = 'none';
-      video.play();
-    }
-
-    function startReceivePitch(isOk) {
-      receiveChoiceModal.style.display = 'none';
-      openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ');
-    }
-
-    function openAirChoiceModal() {
-      video.pause();
-      airChoiceModal.style.display = 'flex';
-    }
-
-    function closeAirChoiceModal() {
-      airChoiceModal.style.display = 'none';
-      video.play();
-    }
-
-    function startAirPitch(isOk) {
-      airChoiceModal.style.display = 'none';
-      openPitchModal(isOk ? 'هوائي فائز' : 'هوائي خاسر');
-    }
-
-    function openCrossChoiceModal() {
-      video.pause();
-      crossChoiceModal.style.display = 'flex';
-    }
-
-    function closeCrossChoiceModal() {
-      crossChoiceModal.style.display = 'none';
-      video.play();
-    }
-
-    function startCrossPitch(isOk) {
-      crossChoiceModal.style.display = 'none';
-      openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ');
-    }
+    function openCrossChoiceModal() { video.pause(); crossChoiceModal.style.display = 'flex'; }
+    function closeCrossChoiceModal() { crossChoiceModal.style.display = 'none'; video.play(); }
+    function startCrossPitch(isOk) { crossChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ'); }
 
     function openPitchModal(type, preSelectedPlayer = null) {
       video.pause();
@@ -1073,9 +1008,9 @@
       } else if (type.includes('مراوغة')) {
         inst.innerText = `[${type} ⚡] - اضغط على مكان حدوث المراوغة بالملعب`;
         inst.style.color = type === 'مراوغة ناجحة' ? '#ea580c' : '#9a3412';
-      } else if (type.includes('هوائي')) {
-        inst.innerText = `[${type} 🪂] - اضغط على مكان الالتحام الهوائي بالملعب`;
-        inst.style.color = type === 'هوائي فائز' ? '#5c6bc0' : '#7986cb';
+      } else if (type.includes('التحام')) {
+        inst.innerText = `[${type} ⚔️] - اضغط على مكان حدوث الالتحام بالملعب`;
+        inst.style.color = type.includes('فائز') ? '#5c6bc0' : '#7986cb';
       } else if (type === 'استخلاص كرة') {
         inst.innerText = `[استخلاص كرة 🛡] - اضغط على مكان قطع الكرة بالملعب`;
         inst.style.color = '#008080';
@@ -1204,7 +1139,7 @@
       drawVerticalPitch(activeCtx, activeCanvas.width, activeCanvas.height);
 
       let ok = 0, bad = 0, recOk = 0, recBad = 0, recovery = 0, loss = 0;
-      let dribbleOk = 0, dribbleBad = 0, airOk = 0, airBad = 0, shots = 0, goals = 0, crossOk = 0, crossBad = 0;
+      let dribbleOk = 0, dribbleBad = 0, airOk = 0, airBad = 0, groundOk = 0, groundBad = 0, shots = 0, goals = 0, crossOk = 0, crossBad = 0;
 
       const playerEventsWithIndex = [];
       const heatPoints = [];
@@ -1251,92 +1186,74 @@
         } else if (ev.type === 'استلام صحيح' && ev.x) {
           recOk++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#238636';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 5, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.stroke();
+            activeCtx.fillStyle = '#238636'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 5, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.stroke();
           }
         } else if (ev.type === 'استلام خاطئ' && ev.x) {
           recBad++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#a371f7';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 5, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.stroke();
+            activeCtx.fillStyle = '#a371f7'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 5, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.stroke();
           }
         } else if (ev.type === 'مراوغة ناجحة' && ev.x) {
           dribbleOk++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#ea580c';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+            activeCtx.fillStyle = '#ea580c'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
           }
         } else if (ev.type === 'مراوغة فاشلة' && ev.x) {
           dribbleBad++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#9a3412';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1; activeCtx.stroke();
+            activeCtx.fillStyle = '#9a3412'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1; activeCtx.stroke();
           }
         } else if (ev.type === 'استخلاص كرة' && ev.x) {
           recovery++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#008080';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+            activeCtx.fillStyle = '#008080'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
           }
         } else if (ev.type === 'فقدان كرة' && ev.x) {
           loss++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#b91c1c';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+            activeCtx.fillStyle = '#b91c1c'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
           }
-        } else if (ev.type === 'هوائي فائز' && ev.x) {
+        } else if (ev.type === 'التحام هوائي فائز' && ev.x) {
           airOk++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#5c6bc0';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+            activeCtx.fillStyle = '#5c6bc0'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
           }
-        } else if (ev.type === 'هوائي خاسر' && ev.x) {
+        } else if (ev.type === 'التحام هوائي خاسر' && ev.x) {
           airBad++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#7986cb';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1; activeCtx.stroke();
+            activeCtx.fillStyle = '#7986cb'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1; activeCtx.stroke();
+          }
+        } else if (ev.type === 'التحام أرضي فائز' && ev.x) {
+          groundOk++;
+          if (pitchViewMode === 'events') {
+            activeCtx.fillStyle = '#0d9488'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+          }
+        } else if (ev.type === 'التحام أرضي خاسر' && ev.x) {
+          groundBad++;
+          if (pitchViewMode === 'events') {
+            activeCtx.fillStyle = '#be123c'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1; activeCtx.stroke();
           }
         } else if (ev.type === 'تسديدة' && ev.x) {
           shots++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#d29922';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
+            activeCtx.fillStyle = '#d29922'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 6, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#fff'; activeCtx.lineWidth = 1.5; activeCtx.stroke();
           }
         } else if (ev.type === 'هدف' && ev.x) {
           goals++;
           if (pitchViewMode === 'events') {
-            activeCtx.fillStyle = '#e3b341';
-            activeCtx.beginPath();
-            activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 8, 0, 2 * Math.PI);
-            activeCtx.fill();
-            activeCtx.strokeStyle = '#000'; activeCtx.lineWidth = 2; activeCtx.stroke();
+            activeCtx.fillStyle = '#e3b341'; activeCtx.beginPath(); activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, 8, 0, 2 * Math.PI);
+            activeCtx.fill(); activeCtx.strokeStyle = '#000'; activeCtx.lineWidth = 2; activeCtx.stroke();
           }
         }
       });
@@ -1364,6 +1281,9 @@
 
       const totalAir = airOk + airBad;
       const airAcc = totalAir > 0 ? Math.round((airOk / totalAir) * 100) : 0;
+      
+      const totalGround = groundOk + groundBad;
+      const groundAcc = totalGround > 0 ? Math.round((groundOk / totalGround) * 100) : 0;
 
       const totalCross = crossOk + crossBad;
       const crossAcc = totalCross > 0 ? Math.round((crossOk / totalCross) * 100) : 0;
@@ -1378,8 +1298,12 @@
         <tr><td>مراوغة فاشلة / مقطوعة</td><td style="text-align: center; color: #9a3412;">${dribbleBad}</td><td style="text-align: center; color: #9a3412;">${totalDribble > 0 ? (100 - dribbleAcc) + '%' : '-'}</td></tr>
         <tr><td>استخلاص كرة (قطع ناجح)</td><td style="text-align: center; color: #008080;">${recovery}</td><td style="text-align: center;">-</td></tr>
         <tr><td>فقدان كرة (كرة مقطوعة)</td><td style="text-align: center; color: #b91c1c; font-weight: bold;">${loss}</td><td style="text-align: center;">-</td></tr>
+        
         <tr><td>التحامات هوائية فائزة</td><td style="text-align: center; color: #5c6bc0;">${airOk}</td><td style="text-align: center; color: #5c6bc0;">${airAcc}%</td></tr>
         <tr><td>التحامات هوائية خاسرة</td><td style="text-align: center; color: #7986cb;">${airBad}</td><td style="text-align: center; color: #7986cb;">${totalAir > 0 ? (100 - airAcc) + '%' : '-'}</td></tr>
+        <tr><td>التحامات أرضية فائزة</td><td style="text-align: center; color: #0d9488;">${groundOk}</td><td style="text-align: center; color: #0d9488;">${groundAcc}%</td></tr>
+        <tr><td>التحامات أرضية خاسرة</td><td style="text-align: center; color: #be123c;">${groundBad}</td><td style="text-align: center; color: #be123c;">${totalGround > 0 ? (100 - groundAcc) + '%' : '-'}</td></tr>
+        
         <tr><td>عرضيات (كروس) صحيحة</td><td style="text-align: center; color: #0969da;">${crossOk}</td><td style="text-align: center; color: #0969da;">${crossAcc}%</td></tr>
         <tr><td>عرضيات (كروس) خاطئة</td><td style="text-align: center; color: #f85149;">${crossBad}</td><td style="text-align: center; color: #f85149;">${totalCross > 0 ? (100 - crossAcc) + '%' : '-'}</td></tr>
         <tr><td>تسديدات على المرمى</td><td style="text-align: center; color: #d29922;">${shots}</td><td style="text-align: center;">-</td></tr>
