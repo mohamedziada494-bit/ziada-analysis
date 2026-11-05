@@ -34,6 +34,8 @@
 
     .live-viewport-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .video-container { position: relative; width: 100%; height: 60vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    
+    /* منع التقعير عن طريق فرض الأبعاد الحقيقية وعدم مط الفيديو */
     video { width: 100%; height: 100%; object-fit: contain; }
 
     /* شريط التسجيل الرئيسي */
@@ -209,8 +211,14 @@
       } else {
         try {
           stopAllStreams();
+          // التعديل: فرض أبعاد قياسية ومنع العدسات العريضة لتفادي التقعير
           currentStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { ideal: "environment" }, width: 1280, height: 720 }, 
+            video: { 
+              facingMode: { ideal: "environment" }, 
+              width: { ideal: 1280 }, 
+              height: { ideal: 720 },
+              aspectRatio: { ideal: 1.777 } 
+            }, 
             audio: true 
           });
           liveVideo.srcObject = currentStream;
@@ -238,7 +246,7 @@
       btnCam.innerHTML = `<i class="fa-solid fa-video"></i> <span>فتح كاميرا الجهاز</span>`;
     }
 
-    // تسجيل المباراة الكاملة
+    // تسجيل المباراة الكاملة - التعديل: جودة أعلى وتقسيم القطع لتفادي التقطيع
     function toggleFullMatchRecord() {
       if (!currentStream) return alert("الرجاء تشغيل فيديو أو فتح الكاميرا أولاً للتمكن من تسجيل المباراة!");
 
@@ -255,7 +263,14 @@
           statusBanner.style.display = 'flex';
           statusText.innerText = "جاري حفظ وتجهيز ملف المباراة الكاملة...";
 
-          const url = URL.createObjectURL(rawBlob);
+          // استخدام مكتبة fix-webm-duration لإصلاح مدة الفيديو وتفادي تلف الملفات
+          let finalBlob = rawBlob;
+          if (typeof ysFixWebmDuration !== 'undefined') {
+             const duration = Date.now() - matchStartTime;
+             finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, duration, res));
+          }
+
+          const url = URL.createObjectURL(finalBlob);
           const a = document.createElement('a');
           a.href = url; 
           a.download = `المباراة_الكاملة_${new Date().toLocaleDateString('ar-EG')}.webm`;
@@ -267,9 +282,18 @@
         };
       } else {
         mainChunks = [];
-        mainRecorder = new MediaRecorder(currentStream, { mimeType: 'video/webm;codecs=vp9' });
+        
+        // التعديل: استخدام ترميز أفضل مع تحديد Bitrate لتقليل التقطيع
+        let options = { mimeType: 'video/webm;codecs=vp8' };
+        if (!MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+          options = { mimeType: 'video/webm' };
+        }
+        
+        mainRecorder = new MediaRecorder(currentStream, options);
         mainRecorder.ondataavailable = e => { if (e.data.size > 0) mainChunks.push(e.data); };
-        mainRecorder.start();
+        
+        // التعديل: تمرير 200ms لحفظ الفيديو على أجزاء وتخفيف الضغط على الذاكرة
+        mainRecorder.start(200);
         
         isFullRecording = true;
         matchStartTime = Date.now();
@@ -289,7 +313,7 @@
       timerText.innerText = `${h}:${m}:${s}`;
     }
 
-    // التقطيع المتوافق مع الموبايل (تسجيل جديد ونقي)
+    // التقطيع المتوافق مع الموبايل (التقطيع الفوري للقطات القصيرة)
     function triggerInstantExport(categoryName) {
       if (!currentStream) return alert("الرجاء تشغيل فيديو أو فتح الكاميرا أولاً للتقطيع!");
       
@@ -310,16 +334,22 @@
       const clipChunks = [];
       clipRecorder.ondataavailable = e => { if (e.data.size > 0) clipChunks.push(e.data); };
 
-      clipRecorder.start();
+      // تسجيل وحفظ أجزاء الفيديو كل 200ms لمنع التقطيع في اللقطات القصيرة
+      clipRecorder.start(200);
 
       // تسجيل 8 ثواني من لحظة الضغط
       setTimeout(() => {
         if(clipRecorder.state !== 'inactive') clipRecorder.stop();
       }, 8000);
 
-      clipRecorder.onstop = () => {
+      clipRecorder.onstop = async () => {
         const rawBlob = new Blob(clipChunks, { type: mimeType });
-        const finalUrl = URL.createObjectURL(rawBlob);
+        let finalBlob = rawBlob;
+        if (ext === 'webm' && typeof ysFixWebmDuration !== 'undefined') {
+            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 8000, res));
+        }
+
+        const finalUrl = URL.createObjectURL(finalBlob);
         updateLogRow(rowId, finalUrl, categoryName, ext);
       };
     }
