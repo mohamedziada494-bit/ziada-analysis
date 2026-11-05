@@ -241,6 +241,31 @@
       body { padding: 1rem; }
     }
   </style>
+
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    // منع كليك يمين (القائمة المنسدلة)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
+    document.addEventListener('keydown', function(e) {
+      // منع F12
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+      }
+      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+      }
+      // منع Ctrl+U (عرض مصدر الصفحة View Source)
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
 </head>
 <body>
 
@@ -277,7 +302,6 @@
           <div class="form-group">
             <label>التخصص (سيتم تفعيل أدواتك بناءً عليه)</label>
             <select id="reg-specialty" required>
-              <!-- تمت إزالة خيار الشامل تماماً من هنا -->
               <option value="headcoach">مدير فني (Head Coach)</option>
               <option value="analyst">محلل أداء (Performance Analyst)</option>
               <option value="gkcoach">مدرب حراس مرمى (GK Coach)</option>
