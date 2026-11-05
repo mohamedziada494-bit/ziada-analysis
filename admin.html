@@ -52,6 +52,31 @@
     .perm-item { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; cursor: pointer; }
     .perm-item input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
   </style>
+
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    // منع كليك يمين (القائمة المنسدلة)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
+    document.addEventListener('keydown', function(e) {
+      // منع F12
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+      }
+      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+      }
+      // منع Ctrl+U (عرض مصدر الصفحة View Source)
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
 </head>
 <body>
 
@@ -152,7 +177,7 @@
     if (currentUser.role !== 'admin') { alert('يجب تسجيل الدخول بحساب المدير الفني أولاً!'); window.location.href = 'index.html'; }
 
     let currentUserIdToManage = null;
-    let usersDataMap = {}; // خريطة لحفظ بيانات كل مستخدم لسهولة جلب الصلاحيات
+    let usersDataMap = {}; 
 
     function loadUsers() {
       db.collection('users').onSnapshot(snapshot => {
@@ -164,7 +189,7 @@
 
         snapshot.forEach((doc) => {
           const u = doc.data();
-          usersDataMap[doc.id] = u; // حفظ البيانات في الخريطة
+          usersDataMap[doc.id] = u; 
           
           total++;
           if (u.role === 'admin') admins++;
@@ -276,7 +301,7 @@
     function openPermissionsModal(uid) {
       currentUserIdToManage = uid;
       const u = usersDataMap[uid];
-      const p = u.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }; // افتراضي القديم
+      const p = u.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }; 
 
       document.getElementById('perm-headCoach').checked = p.headCoach || false;
       document.getElementById('perm-tactical').checked = p.tactical || false;
