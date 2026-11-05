@@ -142,6 +142,16 @@
     .draw-footer { display: flex; justify-content: center; margin-top: 15px; }
     .btn-save-draw { background: var(--success); color: #fff; padding: 10px 30px; border-radius: 8px; border: none; font-weight: bold; font-family: 'Cairo'; font-size: 14px; cursor: pointer; }
   </style>
+
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); }
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); }
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) { e.preventDefault(); }
+    });
+  </script>
 </head>
 <body>
 
@@ -423,17 +433,19 @@
       pitchArea.appendChild(item);
     }
 
-    let activeItem = null; let pOffsetX = 0, pOffsetY = 0;
+    let activeItem = null; let pOffsetX = 0; let pOffsetY = 0;
     function pitchItemDragStart(e) {
       if(e.target.classList.contains('delete-btn')) return;
       activeItem = this; activeItem.style.zIndex = 100;
-      const rect = activeItem.getBoundingClientRect(); const pRect = pitchArea.getBoundingClientRect();
-      pOffsetX = e.clientX - rect.left - (rect.width/2); pOffsetY = e.clientY - rect.top - (rect.height/2);
+      const rect = activeItem.getBoundingClientRect(); 
+      pOffsetX = e.clientX - rect.left - rect.width/2; 
+      pOffsetY = e.clientY - rect.top - rect.height/2;
       document.addEventListener('mousemove', pitchItemDragMove); document.addEventListener('mouseup', pitchItemDragEnd);
     }
     function pitchItemDragMove(e) {
       if (!activeItem) return; const pRect = pitchArea.getBoundingClientRect();
-      activeItem.style.left = `${e.clientX - pRect.left - pOffsetX}px`; activeItem.style.top = `${e.clientY - pRect.top - pOffsetY}px`;
+      activeItem.style.left = `${e.clientX - pRect.left - pOffsetX}px`; 
+      activeItem.style.top = `${e.clientY - pRect.top - pOffsetY}px`;
     }
     function pitchItemDragEnd() {
       if(activeItem) activeItem.style.zIndex = 10; activeItem = null;
@@ -839,10 +851,7 @@
         } else if (d.type === 'shot-path') {
           const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
           drawCtx.translate(midX, midY); drawCtx.scale(sc, sc); drawCtx.translate(-midX, -midY);
-          const angle = Math.atan2(d.endY - d.startY, d.endX - d.startX);
           drawCtx.beginPath(); drawCtx.moveTo(d.startX, d.startY); drawCtx.lineTo(d.endX, d.endY);
-          drawCtx.lineTo(d.endX - 15 * Math.cos(angle - Math.PI/6), d.endY - 15 * Math.sin(angle - Math.PI/6));
-          drawCtx.moveTo(d.endX, d.endY); drawCtx.lineTo(d.endX - 15 * Math.cos(angle + Math.PI/6), d.endY - 15 * Math.sin(angle + Math.PI/6));
           drawCtx.strokeStyle = '#ef4444'; drawCtx.lineWidth = 4; drawCtx.stroke();
         } else if (d.type === 'angle') {
           const midX = (d.startX + d.endX)/2; const midY = (d.startY + d.endY)/2;
