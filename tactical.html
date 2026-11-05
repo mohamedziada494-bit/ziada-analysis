@@ -170,6 +170,30 @@
     .tool-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
     .input-field { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; font-family: inherit; }
   </style>
+
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    // منع كليك يمين (القائمة المنسدلة)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
+    document.addEventListener('keydown', function(e) {
+      // منع F12
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+      }
+      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+      }
+      // منع Ctrl+U (عرض مصدر الصفحة View Source)
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </head>
 <body>
 
@@ -1122,7 +1146,6 @@
 
       const cur = studioVideo.currentTime;
       currentStudioClip.shapes.forEach(shape => {
-        // الرسمة تظهر في مكانها طالما الفيديو واقف عليها
         if (Math.abs(shape.triggerTime - cur) < 0.1 || (isFreezeActive && Math.abs(shape.triggerTime - activeFreezingTime) < 0.1)) {
           drawSingleShape(sCtx, shape);
         }
@@ -1219,7 +1242,7 @@
       else if (shape.bottomX !== undefined) { posX = shape.bottomX; posY = shape.bottomY; }
       else if (shape.originX !== undefined) { posX = shape.targetX; posY = shape.targetY; }
       
-      posY -= 55; // رفعها فوق الرسمة بمسافة واضحة
+      posY -= 55;
 
       const rect = sCanvas.getBoundingClientRect();
       posX = Math.max(120, Math.min(posX, rect.width - 120));
@@ -1359,16 +1382,13 @@
               eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
 
               if (overlayMode === 'with_overlay') {
-                // تجميع كل الأشكال اللي اترسمت في نفس اللحظة عشان يظهروا ويتسيفوا مع بعض
                 const activeS = c.shapes.find(s => Math.abs(s.triggerTime - rVideo.currentTime) < 0.1 && !s._exported);
                 if (activeS) {
                   rVideo.pause();
                   
-                  // هات كل الأشكال اللي في نفس التوقيت عشان نرسمهم مرة واحدة
                   const shapesInSameFrame = c.shapes.filter(s => Math.abs(s.triggerTime - activeS.triggerTime) < 0.1);
                   shapesInSameFrame.forEach(s => s._exported = true);
                   
-                  // دالة الرندرة المستمرة طول فترة الـ 4 ثواني
                   let freezeTimeMs = 0;
                   let lastFrameTime = performance.now();
                   
