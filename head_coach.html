@@ -123,6 +123,31 @@
       .print-img { width: 100%; border: 2px solid #000; margin-top: 20px; }
     }
   </style>
+
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    // منع كليك يمين (القائمة المنسدلة)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
+    document.addEventListener('keydown', function(e) {
+      // منع F12
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+      }
+      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+      }
+      // منع Ctrl+U (عرض مصدر الصفحة View Source)
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
 </head>
 <body>
 
