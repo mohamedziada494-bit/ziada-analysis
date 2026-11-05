@@ -187,7 +187,7 @@
     .stats-table td { padding: 7px 8px; border-bottom: 1px solid #d0d7de; font-weight: 600; }
     .stats-table tr:nth-child(even) { background: #f6f8fa; }
 
-    .timeline-box { max-height: 480px; overflow-y: auto; font-size: 12px; border: 1px solid #d0d7de; padding: 10px; border-radius: 6px; background: #f6f8fa; }
+    .timeline-box { max-height: 380px; overflow-y: auto; font-size: 12px; border: 1px solid #d0d7de; padding: 10px; border-radius: 6px; background: #f6f8fa; }
     .timeline-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #d0d7de; cursor: pointer; transition: background 0.2s; }
     .timeline-row:hover { background: #e2e8f0; }
     .timeline-content { display: flex; align-items: center; gap: 6px; }
@@ -216,6 +216,25 @@
 
     #pdfExportContainer { position: absolute; left: -9999px; top: -9999px; width: 800px; background: #fff; color: #000; }
   </style>
+  
+  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <script>
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+      }
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+      }
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </head>
 <body>
 
@@ -274,6 +293,7 @@
 
       <main class="video-main-area">
         <div class="video-container">
+          <!-- رجعنا مشغل الفيديو لشروطه الأصلية وضفنا controls عشان تدعم المتصفح -->
           <video id="matchVideo" playsinline controls></video>
         </div>
 
@@ -423,7 +443,6 @@
 
   <div id="pdfExportContainer"></div>
 
-  <!-- Modal: إعداد الفريق -->
   <div class="modal-overlay" id="teamSetupModal">
     <div class="modal-content" style="width: 600px; text-align: right;">
       <h3 style="color: #38bdf8; margin-top: 0; text-align: center;">
@@ -497,7 +516,6 @@
     </div>
   </div>
 
-  <!-- Modal: الذكاء الاصطناعي -->
   <div class="modal-overlay" id="aiAutoModal">
     <div class="modal-content" style="width: 530px;">
       <h3 style="color: #ec4899; margin-top: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> محلل الرؤية الحاسوبية والذكاء الاصطناعي</h3>
@@ -536,6 +554,11 @@
   <div class="modal-overlay" id="dribbleChoiceModal">
     <div class="modal-content" style="width: 440px;">
       <h3 style="color: #ea580c; margin-top: 0;"><i class="fa-solid fa-bolt"></i> تسجيل مراوغة (1v1)</h3>
+      <div class="modal-player-box">
+        <label style="font-weight: bold; color: #ea580c; font-size: 14px; display: block; margin-bottom: 5px;">اسم اللاعبة المنفذة:</label>
+        <select id="dribblePlayerSelect"></select>
+      </div>
+      <div style="font-size: 14px; color: #c9d1d9; margin-bottom: 12px;">اختر تقييم المراوغة:</div>
       <div class="choice-grid">
         <button class="btn-choice-ok" style="background: #ea580c;" onclick="startDribblePitch(true)">مراوغة ناجحة ✔</button>
         <button class="btn-choice-bad" onclick="startDribblePitch(false)">مراوغة فاشلة ✖</button>
@@ -557,7 +580,6 @@
     </div>
   </div>
 
-  <!-- النافذة الجديدة للالتحامات -->
   <div class="modal-overlay" id="duelChoiceModal">
     <div class="modal-content" style="width: 440px;">
       <h3 style="color: #5c6bc0; margin-top: 0;"><i class="fa-solid fa-hand-back-fist"></i> تسجيل التحامات (Duels)</h3>
@@ -584,7 +606,6 @@
     </div>
   </div>
 
-  <!-- النافذة اللي بتختار منها مكان الملعب واللاعبة -->
   <div class="modal-overlay" id="pitchModal">
     <div class="modal-content">
       <div class="modal-player-box">
@@ -634,6 +655,7 @@
     const activeCtx = activeCanvas.getContext('2d');
     const pSelect = document.getElementById('playerSelect');
     const modalPSelect = document.getElementById('modalPlayerSelect');
+    const dribblePSelect = document.getElementById('dribblePlayerSelect');
     const btnPlayPause = document.getElementById('btnPlayPause');
     
     const seekSlider = document.getElementById('videoSeekSlider');
@@ -687,7 +709,9 @@
     video.addEventListener('play', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; });
     video.addEventListener('pause', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; });
 
-    function seekVideo(seconds) { video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + seconds)); }
+    function seekVideo(seconds) {
+      video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + seconds));
+    }
 
     function jumpToVideoTime(timeSec) {
       video.currentTime = Math.max(0, timeSec - 2);
@@ -745,8 +769,15 @@
       renderCurrentPlayerView();
     }
 
-    function openTeamSetupModal() { video.pause(); teamSetupModal.style.display = 'flex'; }
-    function closeTeamSetupModal() { teamSetupModal.style.display = 'none'; video.play(); }
+    function openTeamSetupModal() {
+      video.pause();
+      teamSetupModal.style.display = 'flex';
+    }
+
+    function closeTeamSetupModal() {
+      teamSetupModal.style.display = 'none';
+      video.play();
+    }
 
     function saveTeamSetup() {
       matchConfig.myTeam = document.getElementById('myTeamNameInput').value || "فريقنا";
@@ -768,6 +799,7 @@
 
       pSelect.innerHTML = '';
       modalPSelect.innerHTML = '';
+      dribblePSelect.innerHTML = '';
 
       const makeOptGroups = () => {
         const g1 = document.createElement('optgroup');
@@ -795,13 +827,19 @@
       const [b1, b2] = makeOptGroups();
       modalPSelect.appendChild(b1); modalPSelect.appendChild(b2);
 
+      const [c1, c2] = makeOptGroups();
+      dribblePSelect.appendChild(c1); dribblePSelect.appendChild(c2);
+
       renderCurrentPlayerView();
       teamSetupModal.style.display = 'none';
       video.play();
     }
 
     function openAIAutoModal() {
-      if (!video.src) { alert("يرجى رفع ملف الفيديو أولاً ليقوم الذكاء الاصطناعي بمسحه وتحليله!"); return; }
+      if (!video.src) {
+        alert("يرجى رفع ملف الفيديو أولاً ليقوم الذكاء الاصطناعي بمسحه وتحليله!");
+        return;
+      }
       video.pause();
       document.getElementById('modalKitDot').style.backgroundColor = matchConfig.primaryKitColor;
       document.getElementById('modalPlayersCount').innerText = `${matchConfig.starters.length + matchConfig.subs.length} لاعبة`;
@@ -810,7 +848,10 @@
       aiAutoModal.style.display = 'flex';
     }
 
-    function closeAIAutoModal() { aiAutoModal.style.display = 'none'; video.play(); }
+    function closeAIAutoModal() {
+      aiAutoModal.style.display = 'none';
+      video.play();
+    }
 
     function runAIAutoAnalysis() {
       const mode = document.getElementById('aiModeSelect').value;
@@ -855,7 +896,7 @@
       const samplePlayers = mode === 'player' ? [targetPlayer] : [...matchConfig.starters];
       const eventTypes = [
         'باص صحيح', 'باص صحيح', 'باص خاطئ', 'استلام صحيح', 
-        'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح', 'التحام هوائي فائز', 'التحام أرضي فائز'
+        'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح'
       ];
 
       const newGeneratedEvents = [];
@@ -967,22 +1008,82 @@
       ctx.drawImage(offCanvas, 0, 0);
     }
 
-    function openDribbleChoiceModal() { video.pause(); dribbleChoiceModal.style.display = 'flex'; }
-    function closeDribbleChoiceModal() { dribbleChoiceModal.style.display = 'none'; video.play(); }
-    function startDribblePitch(isOk) { dribbleChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة'); }
+    function openDribbleChoiceModal() {
+      video.pause();
+      dribblePSelect.value = pSelect.value;
+      dribbleChoiceModal.style.display = 'flex';
+    }
 
-    function openReceiveChoiceModal() { video.pause(); receiveChoiceModal.style.display = 'flex'; }
-    function closeReceiveChoiceModal() { receiveChoiceModal.style.display = 'none'; video.play(); }
-    function startReceivePitch(isOk) { receiveChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ'); }
+    function closeDribbleChoiceModal() {
+      dribbleChoiceModal.style.display = 'none';
+      video.play();
+    }
 
-    // دوال نافذة الالتحامات الجديدة
-    function openDuelChoiceModal() { video.pause(); duelChoiceModal.style.display = 'flex'; }
-    function closeDuelChoiceModal() { duelChoiceModal.style.display = 'none'; video.play(); }
-    function startDuelPitch(type) { duelChoiceModal.style.display = 'none'; openPitchModal(type); }
+    function startDribblePitch(isOk) {
+      const selectedPlayer = dribblePSelect.value;
+      dribbleChoiceModal.style.display = 'none';
+      openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة', selectedPlayer);
+    }
 
-    function openCrossChoiceModal() { video.pause(); crossChoiceModal.style.display = 'flex'; }
-    function closeCrossChoiceModal() { crossChoiceModal.style.display = 'none'; video.play(); }
-    function startCrossPitch(isOk) { crossChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ'); }
+    function openReceiveChoiceModal() {
+      video.pause();
+      receiveChoiceModal.style.display = 'flex';
+    }
+
+    function closeReceiveChoiceModal() {
+      receiveChoiceModal.style.display = 'none';
+      video.play();
+    }
+
+    function startReceivePitch(isOk) {
+      receiveChoiceModal.style.display = 'none';
+      openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ');
+    }
+
+    function openAirChoiceModal() {
+      video.pause();
+      airChoiceModal.style.display = 'flex';
+    }
+
+    function closeAirChoiceModal() {
+      airChoiceModal.style.display = 'none';
+      video.play();
+    }
+
+    function startAirPitch(isOk) {
+      airChoiceModal.style.display = 'none';
+      openPitchModal(isOk ? 'هوائي فائز' : 'هوائي خاسر');
+    }
+
+    function openCrossChoiceModal() {
+      video.pause();
+      crossChoiceModal.style.display = 'flex';
+    }
+
+    function closeCrossChoiceModal() {
+      crossChoiceModal.style.display = 'none';
+      video.play();
+    }
+
+    function startCrossPitch(isOk) {
+      crossChoiceModal.style.display = 'none';
+      openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ');
+    }
+
+    function openDuelChoiceModal() {
+      video.pause();
+      duelChoiceModal.style.display = 'flex';
+    }
+
+    function closeDuelChoiceModal() {
+      duelChoiceModal.style.display = 'none';
+      video.play();
+    }
+
+    function startDuelPitch(type) {
+      duelChoiceModal.style.display = 'none';
+      openPitchModal(type);
+    }
 
     function openPitchModal(type, preSelectedPlayer = null) {
       video.pause();
