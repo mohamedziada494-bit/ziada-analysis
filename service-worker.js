@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ziada-analysis-v1';
+const CACHE_NAME = 'ziada-analysis-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -8,15 +8,29 @@ const urlsToCache = [
   './live.html',
   './head_coach.html',
   './goalkeeper.html',
+  './referee.html',
   './manifest.json'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
