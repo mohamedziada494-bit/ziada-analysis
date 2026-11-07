@@ -74,8 +74,9 @@
     .video-controls-row { display: flex; align-items: center; justify-content: space-between; background: #070b12; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 12px; }
     .time-txt { font-size: 13px; font-weight: 800; color: var(--primary); direction: ltr; min-width: 95px; text-align: center; }
     
-    .seek-bar { flex: 1; -webkit-appearance: none; height: 8px; background: #374151; border-radius: 5px; outline: none; cursor: pointer; }
-    .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); }
+    /* التعديل هنا: إضافة appearance: none بجانب -webkit-appearance */
+    .seek-bar { flex: 1; -webkit-appearance: none; appearance: none; height: 8px; background: #374151; border-radius: 5px; outline: none; cursor: pointer; }
+    .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); }
 
     .btn-ctrl { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
     .btn-ctrl:hover { background: #374151; }
@@ -173,22 +174,16 @@
 
   <!-- كود حماية الواجهة ومنع أدوات المطورين -->
   <script>
-    // منع كليك يمين (القائمة المنسدلة)
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
     });
-
-    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
     document.addEventListener('keydown', function(e) {
-      // منع F12
       if (e.key === 'F12' || e.keyCode === 123) {
         e.preventDefault();
       }
-      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
       if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
         e.preventDefault();
       }
-      // منع Ctrl+U (عرض مصدر الصفحة View Source)
       if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
         e.preventDefault();
       }
@@ -1146,6 +1141,7 @@
 
       const cur = studioVideo.currentTime;
       currentStudioClip.shapes.forEach(shape => {
+        // الرسمة تظهر في مكانها طالما الفيديو واقف عليها
         if (Math.abs(shape.triggerTime - cur) < 0.1 || (isFreezeActive && Math.abs(shape.triggerTime - activeFreezingTime) < 0.1)) {
           drawSingleShape(sCtx, shape);
         }
@@ -1242,7 +1238,7 @@
       else if (shape.bottomX !== undefined) { posX = shape.bottomX; posY = shape.bottomY; }
       else if (shape.originX !== undefined) { posX = shape.targetX; posY = shape.targetY; }
       
-      posY -= 55;
+      posY -= 55; // رفعها فوق الرسمة بمسافة واضحة
 
       const rect = sCanvas.getBoundingClientRect();
       posX = Math.max(120, Math.min(posX, rect.width - 120));
@@ -1321,10 +1317,16 @@
 
       let exportGroups = [];
       if (typeMode === 'category_separate' && selectedCat === 'ALL') {
-        const cats = [...new Set(clips.map(c => c.category))];
-        cats.forEach(cat => { exportGroups.push({ groupName: cat, clips: clips.filter(c => c.category === cat) }); });
+        // إنشاء ملف منفصل لكل لقطة
+        clips.forEach((c, index) => {
+           exportGroups.push({ groupName: `${c.category}_لقطة_${index + 1}`, clips: [c] });
+        });
       } else if (typeMode === 'category_separate') {
-        exportGroups.push({ groupName: selectedCat, clips: clips.filter(c => c.category === selectedCat) });
+        // إنشاء ملف منفصل لكل لقطة من التصنيف المحدد
+        const filteredClips = clips.filter(c => c.category === selectedCat);
+        filteredClips.forEach((c, index) => {
+            exportGroups.push({ groupName: `${selectedCat}_لقطة_${index + 1}`, clips: [c] });
+        });
       } else {
         exportGroups.push({ groupName: "تقرير_تكتيكي_شامل", clips: [...clips] });
       }
