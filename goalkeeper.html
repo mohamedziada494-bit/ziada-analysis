@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="plan-guard.js"></script>
 
   <style>
     :root {
@@ -782,13 +783,14 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية حراس المرمى -->
+  <!-- التحقق من الجلسة وصلاحية حراس المرمى (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
         const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
         if (!u || !u.uid) { window.location.href = 'index.html'; return; }
-        if (u.role !== 'admin' && u.permissions && u.permissions.goalkeeper === false) {
+        const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+        if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.goalkeeper === false) {
           alert('ليس لديك صلاحية الدخول لاستوديو حراس المرمى.');
           window.location.href = 'index.html';
         }
@@ -1320,6 +1322,7 @@
     // أنيميشن التدريب وتصدير Full HD 60fps
     // ==========================================
     function saveFrame() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxAnimFrames', frames.length, 'إطارات حركة')) return;
       const items = pitchArea.querySelectorAll('.drill-item');
       if (items.length === 0) return alert('أضف أدوات للملعب أولاً قبل حفظ الإطار.');
       const posArr = [];
@@ -1478,6 +1481,7 @@
     }
 
     async function printDrill() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة تدريب حراس المرمى HD')) return;
       deselectAll();
       const { w, h, sf } = getHDConfig();
       const assets = await prepareDrillAssets();
@@ -1499,6 +1503,7 @@
     }
 
     async function exportDrillVideo() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو تدريب حراس المرمى Full HD')) return;
       if (frames.length < 2) return alert('الرجاء حفظ إطارين على الأقل لتصدير الفيديو.');
       if (!window.MediaRecorder) return alert('متصفحك لا يدعم تسجيل الفيديو.');
       deselectAll();
@@ -1627,6 +1632,7 @@
 
       const mode = document.querySelector('input[name="clipMode"]:checked').value;
       if (mode === 'auto') {
+        if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', gkEventsLog.length, 'لقطات حراس مرمى')) return;
         clipVideoAuto(eventType);
       } else {
         if (activeManualTag === eventType) {
@@ -1635,6 +1641,7 @@
           btn.innerHTML = btn.dataset.originalHtml;
           activeManualTag = null; activeManualBtn = null;
         } else if (!activeManualTag) {
+          if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', gkEventsLog.length, 'لقطات حراس مرمى')) return;
           btn.dataset.originalHtml = btn.innerHTML;
           btn.classList.add('recording-btn');
           btn.innerHTML = 'إيقاف وحفظ اللقطة ⏹️';
@@ -1787,6 +1794,16 @@
       document.getElementById('statConceded').innerText = gkEventsLog.filter(e => e.type.includes('هدف في مرماه')).length;
     }
 
+    function downloadGkClip(idx) {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تحميل لقطة حارس المرمى')) return;
+      const item = gkEventsLog[idx];
+      if (!item || !item.videoUrl) return;
+      const a = document.createElement('a');
+      a.href = item.videoUrl;
+      a.download = `GK_${item.type}_${item.time.replace(':', '-')}.webm`;
+      a.click();
+    }
+
     function renderGkLog() {
       const tbody = document.getElementById('gkLogBody');
       if (gkEventsLog.length === 0) {
@@ -1799,7 +1816,7 @@
           <td>${escapeHtml(item.time)}</td>
           <td style="color: #34d399; font-weight: 800;">${escapeHtml(item.type)}</td>
           <td style="display:flex; gap:6px; flex-wrap:wrap;">
-            <a href="${item.videoUrl}" download="GK_${item.type}_${item.time.replace(':', '-')}.webm" class="btn-download"><i class="fa-solid fa-download"></i> حفظ</a>
+            <button class="btn-download" onclick="downloadGkClip(${actualIndex})"><i class="fa-solid fa-download"></i> حفظ</button>
             <button class="btn-draw" onclick="openDrawModal(${actualIndex})"><i class="fa-solid fa-pen-nib"></i> تحليل بالرسم</button>
             <button class="btn-del-clip" onclick="deleteGkClip(${actualIndex})" title="حذف"><i class="fa-solid fa-trash"></i></button>
           </td>
@@ -2031,7 +2048,6 @@
         drawCtx.lineTo(d.endX - 15 * Math.cos(angle + Math.PI / 6), d.endY - 15 * Math.sin(angle + Math.PI / 6));
         drawCtx.strokeStyle = '#ef4444'; drawCtx.lineWidth = 4; drawCtx.stroke();
       } else if (d.type === 'angle') {
-        // مخروط زاوية تغطية حقيقي يدور مع اتجاه التسديدة نحو المرمى
         const dx = d.endX - d.startX, dy = d.endY - d.startY;
         const len = Math.hypot(dx, dy) * sc;
         const ang = Math.atan2(dy, dx);
@@ -2054,6 +2070,7 @@
     }
 
     function saveDrawnImage() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة تحليل اللقطة HD')) return;
       drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
       const ec = document.createElement('canvas');
       ec.width = drawCanvas.width; ec.height = drawCanvas.height;
@@ -2150,6 +2167,10 @@
     })();
 
     function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
+        ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً');
+        return;
+      }
       if (!pendingRecovery) return;
       const s = pendingRecovery;
       pitchArea.querySelectorAll('.drill-item').forEach(e => e.remove());
