@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     :root {
@@ -23,7 +22,6 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --pitch-green: #15803d;
-      --pitch-stripe: #166534;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -137,9 +135,7 @@
     .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* =========================================
-       مساحة العمل والمكتبة
-       ========================================= */
+    /* مساحة العمل والمكتبة */
     .workspace-grid {
       display: grid;
       grid-template-columns: 270px 1fr;
@@ -217,9 +213,7 @@
     .draggable-source:hover { background: #374151; border-color: var(--primary); transform: translateY(-1px); }
     .draggable-source:active { transform: scale(0.95); }
 
-    /* =========================================
-       حاوية الملعب وأدوات التحكم
-       ========================================= */
+    /* حاوية الملعب وأدوات التحكم */
     .pitch-container {
       display: flex;
       flex-direction: column;
@@ -290,7 +284,7 @@
     }
     .color-dot.active { border-color: #fff; transform: scale(1.18); box-shadow: 0 0 8px rgba(255,255,255,0.5); }
 
-    /* شريط التحكم العائم للعنصر المحدد (مثالي للموبايل واللاب) */
+    /* شريط التحكم العائم للعنصر المحدد */
     .selected-bar {
       display: none;
       align-items: center;
@@ -471,9 +465,7 @@
     }
     .drill-details:focus { border-color: var(--primary); }
 
-    /* =========================================
-       عناصر التشكيل والمباريات (Formations)
-       ========================================= */
+    /* عناصر التشكيل والمباريات */
     .formation-controls {
       display: flex;
       justify-content: center;
@@ -565,7 +557,7 @@
     }
     .btn-action:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-    /* النوافذ المنبثقة (استرجاع المشروع + التصدير) */
+    /* النوافذ المنبثقة */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -624,10 +616,9 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #ec4899, #38bdf8);
-      transition: width 0.15s;
+      transition: width 0.1s;
     }
 
-    /* إشعار Toast سريع */
     .toast-msg {
       position: fixed;
       bottom: 20px;
@@ -648,29 +639,17 @@
     }
     .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* التجاوب الكامل مع الهواتف والتابلت */
     @media (max-width: 900px) {
       body { padding: 8px; }
       .top-nav { padding: 10px 12px; }
       .brand-title { font-size: 0.98rem; }
       .tab-btn { flex: 1; justify-content: center; padding: 8px 12px; font-size: 12.5px; }
 
-      .workspace-grid {
-        grid-template-columns: 1fr;
-      }
-      /* عرض الملعب أولاً على الموبايل ثم المكتبة تحته */
+      .workspace-grid { grid-template-columns: 1fr; }
       .pitch-container { order: 1; }
-      .tools-panel {
-        order: 2;
-        height: auto;
-        min-height: 0;
-        max-height: 280px;
-      }
+      .tools-panel { order: 2; height: auto; min-height: 0; max-height: 280px; }
       .tools-grid { grid-template-columns: repeat(5, 1fr); }
-      .pitch-area {
-        height: 58vh;
-        min-height: 390px;
-      }
+      .pitch-area { height: 58vh; min-height: 390px; }
       .player-node { width: 38px; height: 38px; }
       .player-label { font-size: 9.5px; bottom: -19px; }
       .ctrl-sep { display: none; }
@@ -678,7 +657,6 @@
       .anim-btn, .btn-action { padding: 7px 11px; font-size: 12px; }
     }
 
-    /* تنسيق الطباعة PDF */
     @media print {
       body { background: #fff; padding: 0; }
       body * { visibility: hidden; }
@@ -724,7 +702,6 @@
     })();
   </script>
 
-  <!-- عنصر رفع صور اللاعبين الخفي -->
   <input type="file" id="hiddenPlayerPhotoInput" accept="image/*" style="display:none;">
 
   <!-- منطقة طباعة PDF -->
@@ -737,7 +714,7 @@
     <div class="print-notes" id="printNotesText"></div>
   </div>
 
-  <!-- نافذة استرجاع المشروع السابق (Crash Recovery) -->
+  <!-- نافذة استرجاع المشروع السابق -->
   <div class="modal-overlay" id="recoveryModal">
     <div class="modal-card">
       <h3><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع محفوظ تلقائياً</h3>
@@ -753,8 +730,8 @@
   <!-- نافذة تقدم تصدير الفيديو -->
   <div class="modal-overlay" id="exportProgressModal">
     <div class="modal-card">
-      <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير الفيديو التكتيكي</h3>
-      <p id="exportStatusText">يرجى الانتظار وعدم إغلاق الصفحة حتى اكتمال التسجيل...</p>
+      <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير الفيديو بجودة Full HD</h3>
+      <p id="exportStatusText">جاري تسجيل الحركة بسرعة 60 إطار/ثانية وبأعلى نقاء...</p>
       <div class="progress-track"><div class="progress-fill" id="exportProgressFill"></div></div>
       <div id="exportPercentText" style="font-weight:800; color:var(--cyan); font-size:15px;">0%</div>
     </div>
@@ -822,7 +799,6 @@
             <button class="draw-btn btn-danger-soft" onclick="clearDrawings('trainPitch')"><i class="fa-solid fa-eraser"></i> مسح الرسوم</button>
           </div>
 
-          <!-- شريط التحكم السريع في العنصر المحدد -->
           <div class="selected-bar" id="trainSelectedBar">
             <span>عنصر محدد:</span>
             <button class="sel-btn" onclick="renameSelectedItem()"><i class="fa-solid fa-pen-to-square"></i> تغيير الاسم/الرقم</button>
@@ -846,12 +822,11 @@
         </div>
       </div>
 
-      <!-- شريط الأنيميشن -->
       <div class="anim-bar">
         <button class="anim-btn record" onclick="saveFrame('train')"><i class="fa-solid fa-camera"></i> حفظ إطار الحركة</button>
         <select id="trainAnimSpeed" class="speed-select" onchange="scheduleAutoSave()">
           <option value="1200">بطيء جداً</option>
-          <option value="800">بطيء</option>
+          <option value="850">بطيء</option>
           <option value="550" selected>عادي</option>
           <option value="300">سريع</option>
         </select>
@@ -864,8 +839,8 @@
       <div class="action-bar">
         <button class="btn-action" style="background:#4b5563;" onclick="clearPitch('trainPitch')"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
         <button class="btn-action" style="background:var(--accent); color:#070b12;" onclick="exportPDF('trainPitch')"><i class="fa-solid fa-file-pdf"></i> طباعة التقرير (PDF)</button>
-        <button class="btn-action" style="background:var(--success);" onclick="printPitch('trainPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة</button>
-        <button class="btn-action" onclick="exportVideo('trainPitch')"><i class="fa-solid fa-video"></i> تصدير (فيديو)</button>
+        <button class="btn-action" style="background:var(--success);" onclick="printPitch('trainPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة HD</button>
+        <button class="btn-action" onclick="exportVideo('trainPitch')"><i class="fa-solid fa-video"></i> تصدير فيديو HD</button>
       </div>
     </div>
 
@@ -912,7 +887,6 @@
           <button class="draw-btn btn-danger-soft" onclick="clearDrawings('matchPitch')"><i class="fa-solid fa-eraser"></i> مسح الرسوم</button>
         </div>
 
-        <!-- شريط التحكم السريع للاعب المحدد في خطط المباريات -->
         <div class="selected-bar" id="matchSelectedBar">
           <span>لاعب/عنصر محدد:</span>
           <button class="sel-btn" onclick="renameSelectedItem()"><i class="fa-solid fa-pen-to-square"></i> تغيير الاسم</button>
@@ -935,7 +909,7 @@
         <button class="anim-btn record" onclick="saveFrame('match')"><i class="fa-solid fa-camera"></i> حفظ التمركز</button>
         <select id="matchAnimSpeed" class="speed-select" onchange="scheduleAutoSave()">
           <option value="1200">بطيء جداً</option>
-          <option value="800">بطيء</option>
+          <option value="850">بطيء</option>
           <option value="550" selected>عادي</option>
           <option value="300">سريع</option>
         </select>
@@ -948,8 +922,8 @@
       <div class="action-bar">
         <button class="btn-action" style="background:var(--danger);" onclick="clearPitch('matchPitch')"><i class="fa-solid fa-trash"></i> تنظيف الملعب</button>
         <button class="btn-action" style="background:var(--accent); color:#070b12;" onclick="exportPDF('matchPitch')"><i class="fa-solid fa-file-pdf"></i> طباعة التقرير (PDF)</button>
-        <button class="btn-action" style="background:var(--success);" onclick="printPitch('matchPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة</button>
-        <button class="btn-action" onclick="exportVideo('matchPitch')"><i class="fa-solid fa-video"></i> تصدير (فيديو)</button>
+        <button class="btn-action" style="background:var(--success);" onclick="printPitch('matchPitch')"><i class="fa-solid fa-image"></i> حفظ كصورة HD</button>
+        <button class="btn-action" onclick="exportVideo('matchPitch')"><i class="fa-solid fa-video"></i> تصدير فيديو HD</button>
       </div>
     </div>
   </div>
@@ -988,7 +962,7 @@
     }
 
     // ==========================================
-    // التبويبات ومكتبة العناصر (تدعم الموبايل واللاب)
+    // التبويبات ومكتبة العناصر
     // ==========================================
     function switchTab(tabId, btnEl) {
       currentTab = tabId;
@@ -1005,16 +979,16 @@
     }
 
     const svgTemplates = {
-      playerRed: (num) => `<svg width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ef4444" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
-      playerBlue: (num) => `<svg width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#3b82f6" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
-      referee: (num) => `<svg width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#eab308" stroke="#000" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="34" font-family="Cairo, Arial" font-weight="bold" fill="#000" text-anchor="middle">R${num}</text></svg>`,
-      ball: () => `<svg width="22" height="22" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="5"/><polygon points="50,18 76,38 66,70 34,70 24,38" fill="#111"/></svg>`,
-      coneRed: () => `<svg width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="5"/></svg>`,
-      coneBlue: () => `<svg width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="5"/></svg>`,
-      marker: () => `<svg width="26" height="26" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="42" ry="18" fill="#facc15" stroke="#000" stroke-width="3"/></svg>`,
-      hurdle: () => `<svg width="36" height="22" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="28" fill="#111"/><rect x="75" y="20" width="10" height="28" fill="#111"/></svg>`,
-      ladder: () => `<svg width="22" height="36" viewBox="0 0 100 100"><rect x="28" y="8" width="44" height="84" fill="none" stroke="#facc15" stroke-width="6"/><line x1="28" y1="29" x2="72" y2="29" stroke="#facc15" stroke-width="5"/><line x1="28" y1="50" x2="72" y2="50" stroke="#facc15" stroke-width="5"/><line x1="28" y1="71" x2="72" y2="71" stroke="#facc15" stroke-width="5"/></svg>`,
-      mannequin: () => `<svg width="26" height="36" viewBox="0 0 100 100"><path d="M 30 92 L 30 50 Q 50 22 70 50 L 70 92 Z" fill="#ef4444" stroke="#fff" stroke-width="4"/><circle cx="50" cy="24" r="15" fill="#ef4444" stroke="#fff" stroke-width="4"/></svg>`
+      playerRed: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ef4444" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
+      playerBlue: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#3b82f6" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num}</text></svg>`,
+      referee: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#eab308" stroke="#000" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="34" font-family="Cairo, Arial" font-weight="bold" fill="#000" text-anchor="middle">R${num}</text></svg>`,
+      ball: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="5"/><polygon points="50,18 76,38 66,70 34,70 24,38" fill="#111"/></svg>`,
+      coneRed: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="5"/></svg>`,
+      coneBlue: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="5"/></svg>`,
+      marker: () => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="42" ry="18" fill="#facc15" stroke="#000" stroke-width="3"/></svg>`,
+      hurdle: () => `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="22" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="28" fill="#111"/><rect x="75" y="20" width="10" height="28" fill="#111"/></svg>`,
+      ladder: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="36" viewBox="0 0 100 100"><rect x="28" y="8" width="44" height="84" fill="none" stroke="#facc15" stroke-width="6"/><line x1="28" y1="29" x2="72" y2="29" stroke="#facc15" stroke-width="5"/><line x1="28" y1="50" x2="72" y2="50" stroke="#facc15" stroke-width="5"/><line x1="28" y1="71" x2="72" y2="71" stroke="#facc15" stroke-width="5"/></svg>`,
+      mannequin: () => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="36" viewBox="0 0 100 100"><path d="M 30 92 L 30 50 Q 50 22 70 50 L 70 92 Z" fill="#ef4444" stroke="#fff" stroke-width="4"/><circle cx="50" cy="24" r="15" fill="#ef4444" stroke="#fff" stroke-width="4"/></svg>`
     };
 
     function getSvgByType(type, num) {
@@ -1043,14 +1017,12 @@
       });
 
       document.querySelectorAll('.draggable-source').forEach(el => {
-        // السحب بالماوس على اللاب توب
         el.addEventListener('dragstart', (e) => {
           e.dataTransfer.setData('application/json', JSON.stringify({
             type: el.dataset.type,
             num: el.dataset.num || ''
           }));
         });
-        // الضغط للإضافة الفورية (ممتاز للموبايل واللاب)
         el.addEventListener('click', () => {
           const pitch = document.getElementById('trainPitch');
           const randX = clampPercent(45 + (Math.random() * 14 - 7));
@@ -1138,7 +1110,7 @@
     }
 
     // ==========================================
-    // شريط التحكم في العنصر المحدد (تسمية/حجم/صورة/حذف)
+    // شريط التحكم في العنصر المحدد
     // ==========================================
     function selectElement(el) {
       deselectAll();
@@ -1195,7 +1167,6 @@
       scheduleAutoSave();
     }
 
-    // رفع وضغط صورة اللاعب
     function triggerPlayerPhotoUpload() {
       if (!selectedElement || !selectedElement.classList.contains('player-node')) return;
       const input = document.getElementById('hiddenPlayerPhotoInput');
@@ -1211,17 +1182,15 @@
       reader.onload = function (ev) {
         const img = new Image();
         img.onload = function () {
-          // ضغط الصورة لـ 140x140 عشان متتقلش الحفظ التلقائي
           const c = document.createElement('canvas');
-          const size = 140;
+          const size = 180;
           c.width = size; c.height = size;
           const ctx = c.getContext('2d');
           const minSide = Math.min(img.width, img.height);
           const sx = (img.width - minSide) / 2;
           const sy = (img.height - minSide) / 2;
           ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-          const compressedDataUrl = c.toDataURL('image/jpeg', 0.8);
-          targetNode.querySelector('.player-img').src = compressedDataUrl;
+          targetNode.querySelector('.player-img').src = c.toDataURL('image/jpeg', 0.85);
           targetNode.classList.add('has-image');
           scheduleAutoSave();
         };
@@ -1230,7 +1199,6 @@
       reader.readAsDataURL(file);
     });
 
-    // إلغاء التحديد عند الضغط على مكان فاضي في الملعب
     ['trainPitch', 'matchPitch'].forEach(pid => {
       document.getElementById(pid).addEventListener('mousedown', (e) => {
         if (e.target.id === pid || e.target.classList.contains('pitch-lines')) deselectAll();
@@ -1238,7 +1206,7 @@
     });
 
     // ==========================================
-    // إدارة أوضاع التفاعل (تحريك - ربط - رسم)
+    // إدارة أوضاع التفاعل
     // ==========================================
     function setMode(mode, pitchId, btnEl) {
       currentMode[pitchId] = mode;
@@ -1263,7 +1231,7 @@
     }
 
     // ==========================================
-    // منطق السحب والربط التكتيكي (ماوس + تاتش بنسب مئوية)
+    // منطق السحب والربط التكتيكي
     // ==========================================
     let activeItem = null;
     let activePitch = null;
@@ -1337,11 +1305,8 @@
     function pitchItemDragEnd() {
       if (activeItem) {
         activeItem.style.zIndex = 10;
-        if (!hasMoved) {
-          selectElement(activeItem);
-        } else {
-          scheduleAutoSave();
-        }
+        if (!hasMoved) selectElement(activeItem);
+        else scheduleAutoSave();
       }
       activeItem = null;
       activePitch = null;
@@ -1352,7 +1317,7 @@
     }
 
     // ==========================================
-    // محرك الرسم الحر والتكتيكي (إحداثيات نسبية 0..1)
+    // محرك الرسم الحر والتكتيكي
     // ==========================================
     let isDrawing = false;
     let activeStroke = null;
@@ -1388,12 +1353,8 @@
 
         const pitchId = canvas.parentElement.id;
         const p = getNormPos(e);
-        if (activeStroke.type === 'draw-pen') {
-          activeStroke.points.push(p);
-        } else {
-          activeStroke.ex = p.x;
-          activeStroke.ey = p.y;
-        }
+        if (activeStroke.type === 'draw-pen') activeStroke.points.push(p);
+        else { activeStroke.ex = p.x; activeStroke.ey = p.y; }
         renderCanvas(pitchId, activeStroke);
       };
 
@@ -1433,7 +1394,7 @@
       ctx.stroke();
     }
 
-    function drawShapeOnCtx(ctx, d, w, h) {
+    function drawShapeOnCtx(ctx, d, w, h, sf = 1) {
       ctx.save();
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -1446,7 +1407,7 @@
           ctx.lineTo(d.points[i].x * w, d.points[i].y * h);
         }
         ctx.strokeStyle = color;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 3.5 * sf;
         ctx.stroke();
       } else if (d.type === 'draw-pass') {
         const sx = d.sx * w, sy = d.sy * h, ex = d.ex * w, ey = d.ey * h;
@@ -1454,20 +1415,20 @@
         ctx.moveTo(sx, sy);
         ctx.lineTo(ex, ey);
         ctx.strokeStyle = color;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 3.5 * sf;
         ctx.stroke();
-        drawArrowHead(ctx, sx, sy, ex, ey, 14);
+        drawArrowHead(ctx, sx, sy, ex, ey, 14 * sf);
       } else if (d.type === 'draw-run') {
         const sx = d.sx * w, sy = d.sy * h, ex = d.ex * w, ey = d.ey * h;
         ctx.beginPath();
-        ctx.setLineDash([9, 7]);
+        ctx.setLineDash([9 * sf, 7 * sf]);
         ctx.moveTo(sx, sy);
         ctx.lineTo(ex, ey);
         ctx.strokeStyle = color;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 3.5 * sf;
         ctx.stroke();
         ctx.setLineDash([]);
-        drawArrowHead(ctx, sx, sy, ex, ey, 14);
+        drawArrowHead(ctx, sx, sy, ex, ey, 14 * sf);
       } else if (d.type === 'draw-highlight') {
         const sx = d.sx * w, sy = d.sy * h, ex = d.ex * w, ey = d.ey * h;
         const radius = Math.hypot(ex - sx, ey - sy);
@@ -1478,7 +1439,7 @@
                         color === '#38bdf8' ? 'rgba(56,189,248,0.32)' : 'rgba(250,204,21,0.34)';
         ctx.fill();
         ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 * sf;
         ctx.stroke();
       }
       ctx.restore();
@@ -1489,8 +1450,8 @@
       if (!canvas || canvas.width === 0 || canvas.height === 0) return;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawings[pitchId].forEach(d => drawShapeOnCtx(ctx, d, canvas.width, canvas.height));
-      if (previewStroke) drawShapeOnCtx(ctx, previewStroke, canvas.width, canvas.height);
+      drawings[pitchId].forEach(d => drawShapeOnCtx(ctx, d, canvas.width, canvas.height, 1));
+      if (previewStroke) drawShapeOnCtx(ctx, previewStroke, canvas.width, canvas.height, 1);
     }
 
     function undoDrawing(pitchId) {
@@ -1521,7 +1482,6 @@
     window.addEventListener('resize', () => { resizeCanvases(); renderAllTacticalLinks(); });
     setTimeout(() => { resizeCanvases(); renderAllTacticalLinks(); }, 250);
 
-    // رسم خطوط الربط التكتيكي عند الحاجة فقط (صديق للبطارية والأداء)
     function renderTacticalLinks(pitchId) {
       const svg = document.getElementById(pitchId === 'trainPitch' ? 'trainLinksLayer' : 'matchLinksLayer');
       if (!svg) return;
@@ -1657,50 +1617,377 @@
     }
 
     // ==========================================
-    // التصدير (صورة + PDF)
+    // محرك الرندر المباشر بدقة Full HD (1920px - 60 FPS)
+    // يُستخدم في تصدير الفيديو والصور وملفات PDF بدون أي تشويه
     // ==========================================
-    function printPitch(pitchId) {
-      deselectAll();
-      const p = document.getElementById(pitchId);
-      p.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
-      html2canvas(p, { backgroundColor: '#15803d', scale: 2, useCORS: true }).then(canvas => {
-        const a = document.createElement('a');
-        a.download = `Ziada_Tactical_${Date.now()}.jpg`;
-        a.href = canvas.toDataURL('image/jpeg', 0.92);
-        a.click();
-        p.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
+    function loadImageSafe(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
       });
     }
 
-    function exportPDF(pitchId) {
-      deselectAll();
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawPitchBackgroundHD(ctx, w, h, view) {
+      // خلفية نجيلة خضراء نقية بخطوط قص متساوية
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(0, 0, w, h);
+
+      const stripeCount = 12;
+      const stripeH = h / stripeCount;
+      for (let i = 0; i < stripeCount; i++) {
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(0, 0, 0, 0.045)';
+        ctx.fillRect(0, i * stripeH, w, stripeH);
+      }
+
+      // خطوط الملعب البيضاء بدقة HD
+      const lw = Math.max(3, w * 0.0024);
+      const pad = lw * 1.5;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.fillStyle = '#ffffff';
+      ctx.lineWidth = lw;
+
+      // الإطار الخارجي
+      ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
+
+      if (view === 'full') {
+        // خط المنتصف
+        ctx.beginPath();
+        ctx.moveTo(pad, h / 2);
+        ctx.lineTo(w - pad, h / 2);
+        ctx.stroke();
+
+        // دائرة المنتصف ونقطة البداية
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, w * 0.09, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, w * 0.0045, 0, Math.PI * 2);
+        ctx.fill();
+
+        // منطقة الجزاء و 6 ياردة (فوق)
+        ctx.strokeRect(w * 0.26, pad, w * 0.48, h * 0.17);
+        ctx.strokeRect(w * 0.39, pad, w * 0.22, h * 0.06);
+
+        // منطقة الجزاء و 6 ياردة (تحت)
+        ctx.strokeRect(w * 0.26, h - pad - h * 0.17, w * 0.48, h * 0.17);
+        ctx.strokeRect(w * 0.39, h - pad - h * 0.06, w * 0.22, h * 0.06);
+      } else if (view === 'penalty') {
+        ctx.strokeRect(w * 0.18, pad, w * 0.64, h * 0.52);
+        ctx.strokeRect(w * 0.36, pad, w * 0.28, h * 0.20);
+      } else if (view === 'six-yard') {
+        // شباك المرمى الصفراء
+        const netX = w * 0.31, netW = w * 0.38, netH = h * 0.14;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(netX, pad, netW, netH);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+        ctx.lineWidth = lw * 0.7;
+        for (let d = -netH; d < netW + netH; d += w * 0.015) {
+          ctx.beginPath();
+          ctx.moveTo(netX + d, pad);
+          ctx.lineTo(netX + d - netH, pad + netH);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        ctx.strokeStyle = '#eab308';
+        ctx.lineWidth = lw * 1.8;
+        ctx.strokeRect(netX, pad, netW, netH);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+        ctx.lineWidth = lw * 1.3;
+        ctx.strokeRect(w * 0.14, h * 0.14, w * 0.72, h * 0.62);
+      }
+      ctx.restore();
+    }
+
+    async function preparePitchRenderAssets(pitchId) {
       const pitch = document.getElementById(pitchId);
-      pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+      const assets = [];
+      const nodes = pitch.querySelectorAll('.drill-item, .player-node');
 
-      html2canvas(pitch, { backgroundColor: '#15803d', scale: 2, useCORS: true }).then(canvas => {
-        document.getElementById('printPitchImg').src = canvas.toDataURL('image/jpeg', 0.92);
-        document.getElementById('printDate').innerText = `التاريخ: ${new Date().toLocaleDateString('ar-EG', { dateStyle: 'full' })}`;
-        const notes = pitchId === 'trainPitch'
-          ? (document.getElementById('drillNotes').value || 'لا توجد ملاحظات إضافية.')
-          : `تشكيل فريق 1: ${document.getElementById('formation1').value || '-'} | تشكيل فريق 2: ${document.getElementById('formation2').value || '-'}`;
-        document.getElementById('printNotesText').innerText = notes;
+      for (const el of nodes) {
+        const left = parseFloat(el.style.left) || 50;
+        const top = parseFloat(el.style.top) || 50;
 
-        document.getElementById('appUI').style.display = 'none';
-        document.getElementById('printArea').style.display = 'block';
+        if (el.classList.contains('player-node')) {
+          const imgEl = el.querySelector('.player-img');
+          const lblEl = el.querySelector('.player-label');
+          const hasImage = el.classList.contains('has-image') && imgEl && imgEl.src;
+          const loadedImg = hasImage ? await loadImageSafe(imgEl.src) : null;
 
-        setTimeout(() => {
-          window.print();
-          document.getElementById('printArea').style.display = 'none';
-          document.getElementById('appUI').style.display = 'block';
-          pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
-          resizeCanvases();
-          renderAllTacticalLinks();
-        }, 400);
+          assets.push({
+            kind: 'player',
+            id: el.id,
+            left,
+            top,
+            diameter: el.offsetWidth || 44,
+            color: el.dataset.color || '#ec4899',
+            label: lblEl ? lblEl.textContent : '',
+            img: loadedImg
+          });
+        } else {
+          const type = el.dataset.type || 'ball';
+          const scale = parseFloat(el.dataset.scale || 1.35);
+          const svgEl = el.querySelector('svg');
+          const origW = svgEl ? (parseFloat(svgEl.getAttribute('width')) || 26) : 26;
+          const origH = svgEl ? (parseFloat(svgEl.getAttribute('height')) || 26) : 26;
+          const txtObj = el.querySelector('.p-text');
+          const customText = txtObj ? txtObj.textContent : (el.dataset.num || '');
+
+          if (type === 'playerRed' || type === 'playerBlue' || type === 'referee') {
+            assets.push({
+              kind: 'drill-circle',
+              id: el.id,
+              left,
+              top,
+              type,
+              scale,
+              origW,
+              text: customText
+            });
+          } else {
+            let loadedImg = null;
+            if (svgEl) {
+              const clone = svgEl.cloneNode(true);
+              clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+              clone.setAttribute('width', origW * 5);
+              clone.setAttribute('height', origH * 5);
+              const svgStr = new XMLSerializer().serializeToString(clone);
+              loadedImg = await loadImageSafe('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr));
+            }
+            assets.push({
+              kind: 'drill-svg',
+              id: el.id,
+              left,
+              top,
+              scale,
+              origW,
+              origH,
+              img: loadedImg
+            });
+          }
+        }
+      }
+      return assets;
+    }
+
+    function renderPitchFrameHD(ctx, w, h, sf, pitchId, assets, posMap) {
+      const view = pitchId === 'trainPitch' ? currentPitchView : 'full';
+      drawPitchBackgroundHD(ctx, w, h, view);
+
+      // 1. خطوط الربط التكتيكي
+      const links = tacticalLinks.filter(l => l.pitchId === pitchId);
+      if (links.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 3 * sf;
+        ctx.setLineDash([9 * sf, 5 * sf]);
+        links.forEach(l => {
+          const p1 = posMap[l.n1];
+          const p2 = posMap[l.n2];
+          if (p1 && p2) {
+            ctx.beginPath();
+            ctx.moveTo((p1.left / 100) * w, (p1.top / 100) * h);
+            ctx.lineTo((p2.left / 100) * w, (p2.top / 100) * h);
+            ctx.stroke();
+          }
+        });
+        ctx.restore();
+      }
+
+      // 2. الرسومات الحرة والأسهم
+      drawings[pitchId].forEach(d => drawShapeOnCtx(ctx, d, w, h, sf));
+
+      // 3. العناصر واللاعبين
+      assets.forEach(asset => {
+        const p = posMap[asset.id] || { left: asset.left, top: asset.top };
+        const cx = (p.left / 100) * w;
+        const cy = (p.top / 100) * h;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 7 * sf;
+        ctx.shadowOffsetY = 3 * sf;
+
+        if (asset.kind === 'drill-circle') {
+          const r = (asset.origW * asset.scale * sf) / 2;
+          const fillCol = asset.type === 'playerRed' ? '#ef4444' : (asset.type === 'playerBlue' ? '#3b82f6' : '#eab308');
+          const strokeCol = asset.type === 'referee' ? '#000000' : '#ffffff';
+          const textCol = asset.type === 'referee' ? '#000000' : '#ffffff';
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = fillCol;
+          ctx.fill();
+          ctx.lineWidth = Math.max(2, r * 0.11);
+          ctx.strokeStyle = strokeCol;
+          ctx.stroke();
+
+          ctx.shadowColor = 'transparent';
+          ctx.fillStyle = textCol;
+          const fontSize = Math.max(10, Math.round(r * (asset.text.length > 2 ? 0.62 : 0.85)));
+          ctx.font = `800 ${fontSize}px Cairo, Arial, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(asset.text, cx, cy + fontSize * 0.06);
+        } else if (asset.kind === 'drill-svg' && asset.img) {
+          const dw = asset.origW * asset.scale * sf;
+          const dh = asset.origH * asset.scale * sf;
+          ctx.drawImage(asset.img, cx - dw / 2, cy - dh / 2, dw, dh);
+        } else if (asset.kind === 'player') {
+          const r = (asset.diameter / 2) * sf;
+
+          // دائرة اللاعب
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = '#1e293b';
+          ctx.fill();
+
+          if (asset.img) {
+            ctx.save();
+            ctx.shadowColor = 'transparent';
+            ctx.beginPath();
+            ctx.arc(cx, cy, r - 1.5 * sf, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(asset.img, cx - r, cy - r, r * 2, r * 2);
+            ctx.restore();
+          } else {
+            // أيقونة لاعب بيضاء واضحة
+            ctx.save();
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.arc(cx, cy - r * 0.18, r * 0.26, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(cx, cy + r * 0.56, r * 0.44, Math.PI * 1.15, Math.PI * 1.85);
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // إطار الدائرة الملون
+          ctx.shadowColor = 'transparent';
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.lineWidth = 3 * sf;
+          ctx.strokeStyle = asset.color;
+          ctx.stroke();
+
+          // شارة اسم/مركز اللاعب أسفل الدائرة
+          if (asset.label) {
+            const fontSize = Math.round(11 * sf);
+            ctx.font = `800 ${fontSize}px Cairo, Arial, sans-serif`;
+            const textW = ctx.measureText(asset.label).width;
+            const padX = 7 * sf;
+            const badgeW = textW + padX * 2;
+            const badgeH = fontSize * 1.55;
+            const bx = cx - badgeW / 2;
+            const by = cy + r + 3 * sf;
+
+            ctx.fillStyle = asset.color;
+            drawRoundedRect(ctx, bx, by, badgeW, badgeH, 4 * sf);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(asset.label, cx, by + badgeH / 2 + sf * 0.5);
+          }
+        }
+        ctx.restore();
       });
+
+      // علامة مائية أنيقة خفيفة للمنصة في الزاوية
+      ctx.save();
+      const wmFont = Math.round(13 * sf);
+      ctx.font = `800 ${wmFont}px Cairo, Arial, sans-serif`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('Ziada Analysis Pro', 18 * sf, h - 12 * sf);
+      ctx.restore();
+    }
+
+    function getHDCanvasConfig(pitchId) {
+      const pitch = document.getElementById(pitchId);
+      const rect = pitch.getBoundingClientRect();
+      const w = 1920;
+      let h = Math.round(w * (rect.height / rect.width));
+      if (h % 2 !== 0) h += 1; // أبعاد زوجية لضمان أعلى توافق مع مشغلات الفيديو
+      const sf = w / rect.width;
+      return { w, h, sf };
     }
 
     // ==========================================
-    // محرك الأنيميشن السلس (requestAnimationFrame) + تصدير الفيديو
+    // حفظ صورة HD وطباعة PDF (عبر المحرك المباشر النقي)
+    // ==========================================
+    async function renderStaticHDDataUrl(pitchId) {
+      deselectAll();
+      const { w, h, sf } = getHDCanvasConfig(pitchId);
+      const assets = await preparePitchRenderAssets(pitchId);
+      const posMap = {};
+      assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      renderPitchFrameHD(ctx, w, h, sf, pitchId, assets, posMap);
+      return canvas.toDataURL('image/png');
+    }
+
+    async function printPitch(pitchId) {
+      const dataUrl = await renderStaticHDDataUrl(pitchId);
+      const a = document.createElement('a');
+      a.download = `Ziada_Tactical_HD_${Date.now()}.png`;
+      a.href = dataUrl;
+      a.click();
+      showToast('تم حفظ الصورة بجودة Full HD ✓');
+    }
+
+    async function exportPDF(pitchId) {
+      const dataUrl = await renderStaticHDDataUrl(pitchId);
+      document.getElementById('printPitchImg').src = dataUrl;
+      document.getElementById('printDate').innerText = `التاريخ: ${new Date().toLocaleDateString('ar-EG', { dateStyle: 'full' })}`;
+      const notes = pitchId === 'trainPitch'
+        ? (document.getElementById('drillNotes').value || 'لا توجد ملاحظات إضافية.')
+        : `تشكيل فريق 1: ${document.getElementById('formation1').value || '-'} | تشكيل فريق 2: ${document.getElementById('formation2').value || '-'}`;
+      document.getElementById('printNotesText').innerText = notes;
+
+      document.getElementById('appUI').style.display = 'none';
+      document.getElementById('printArea').style.display = 'block';
+
+      setTimeout(() => {
+        window.print();
+        document.getElementById('printArea').style.display = 'none';
+        document.getElementById('appUI').style.display = 'block';
+        resizeCanvases();
+        renderAllTacticalLinks();
+      }, 300);
+    }
+
+    // ==========================================
+    // محرك الأنيميشن السلس وتصدير الفيديو Real-Time 60 FPS Full HD
     // ==========================================
     function saveFrame(tabPrefix) {
       const pitchId = tabPrefix === 'train' ? 'trainPitch' : 'matchPitch';
@@ -1748,9 +2035,7 @@
     }
 
     function stopAnimation(tabPrefix) {
-      if (animState[tabPrefix].playing) {
-        animState[tabPrefix].stopReq = true;
-      }
+      if (animState[tabPrefix].playing) animState[tabPrefix].stopReq = true;
     }
 
     async function playAnimation(tabPrefix) {
@@ -1790,10 +2075,8 @@
               const posB = frameB.find(p => p.id === posA.id) || posA;
               const item = document.getElementById(posA.id);
               if (item) {
-                const l = posA.left + (posB.left - posA.left) * t;
-                const tp = posA.top + (posB.top - posA.top) * t;
-                item.style.left = `${l}%`;
-                item.style.top = `${tp}%`;
+                item.style.left = `${posA.left + (posB.left - posA.left) * t}%`;
+                item.style.top = `${posA.top + (posB.top - posA.top) * t}%`;
               }
             });
             renderTacticalLinks(pitchId);
@@ -1831,9 +2114,6 @@
       if (!window.MediaRecorder) return alert('متصفحك الحالي لا يدعم تسجيل الفيديو المباشر. يُنصح باستخدام Chrome أو Edge.');
 
       deselectAll();
-      const pitch = document.getElementById(pitchId);
-      pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
-
       const modal = document.getElementById('exportProgressModal');
       const fill = document.getElementById('exportProgressFill');
       const pctTxt = document.getElementById('exportPercentText');
@@ -1841,95 +2121,136 @@
       fill.style.width = '0%';
       pctTxt.textContent = '0%';
 
+      const { w, h, sf } = getHDCanvasConfig(pitchId);
+      const assets = await preparePitchRenderAssets(pitchId);
       const speedMs = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value) || 550;
-      const stepsPerSegment = Math.max(8, Math.round(speedMs / 55));
-      const totalDraws = (frames.length - 1) * (stepsPerSegment + 1) + 6;
-      let doneDraws = 0;
 
       const vCanvas = document.createElement('canvas');
-      vCanvas.width = Math.round(pitch.offsetWidth);
-      vCanvas.height = Math.round(pitch.offsetHeight);
+      vCanvas.width = w;
+      vCanvas.height = h;
       const vCtx = vCanvas.getContext('2d');
-      const stream = vCanvas.captureStream(24);
+
+      const stream = vCanvas.captureStream(60);
       const mimeType = getSupportedVideoMime();
-      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      let recorder;
+      try {
+        const opts = { videoBitsPerSecond: 8000000 };
+        if (mimeType) opts.mimeType = mimeType;
+        recorder = new MediaRecorder(stream, opts);
+      } catch (e) {
+        recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      }
+
       const chunks = [];
       recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
 
-      const recordStartTime = Date.now();
-      recorder.start();
+      // حساب الجدول الزمني الحقيقي للحركة (بدون أي بطء)
+      const startHoldMs = 350;
+      const waypointHoldMs = 100;
+      const endHoldMs = 700;
+      const segmentsCount = frames.length - 1;
+      const totalAnimMs = startHoldMs + segmentsCount * speedMs + Math.max(0, segmentsCount - 1) * waypointHoldMs + endHoldMs;
 
-      try {
-        applyFrameImmediate(frames[0], pitch);
-        await new Promise(r => setTimeout(r, 100));
+      function buildPosMapAtTime(elapsedMs) {
+        const posMap = {};
+        assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
 
-        for (let i = 0; i < frames.length - 1; i++) {
-          const frameA = frames[i];
-          const frameB = frames[i + 1];
+        let frameA = frames[0];
+        let frameB = frames[0];
+        let t = 0;
 
-          for (let s = 0; s <= stepsPerSegment; s++) {
-            const t = easeInOutQuad(s / stepsPerSegment);
-            frameA.forEach(posA => {
-              const posB = frameB.find(p => p.id === posA.id) || posA;
-              const item = document.getElementById(posA.id);
-              if (item) {
-                item.style.left = `${posA.left + (posB.left - posA.left) * t}%`;
-                item.style.top = `${posA.top + (posB.top - posA.top) * t}%`;
+        if (elapsedMs <= startHoldMs) {
+          frameA = frames[0]; frameB = frames[0]; t = 0;
+        } else if (elapsedMs >= totalAnimMs - endHoldMs) {
+          frameA = frames[frames.length - 1]; frameB = frameA; t = 0;
+        } else {
+          let cursor = elapsedMs - startHoldMs;
+          for (let i = 0; i < segmentsCount; i++) {
+            if (cursor <= speedMs) {
+              frameA = frames[i];
+              frameB = frames[i + 1];
+              t = easeInOutQuad(cursor / speedMs);
+              break;
+            }
+            cursor -= speedMs;
+            if (i < segmentsCount - 1) {
+              if (cursor <= waypointHoldMs) {
+                frameA = frames[i + 1];
+                frameB = frames[i + 1];
+                t = 0;
+                break;
               }
-            });
-            renderTacticalLinks(pitchId);
-
-            const snap = await html2canvas(pitch, { backgroundColor: '#15803d', scale: 1, useCORS: true });
-            vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
-            vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
-
-            doneDraws++;
-            const pct = Math.min(99, Math.round((doneDraws / totalDraws) * 100));
-            fill.style.width = `${pct}%`;
-            pctTxt.textContent = `${pct}%`;
-            await new Promise(r => setTimeout(r, 15));
+              cursor -= waypointHoldMs;
+            }
           }
         }
 
-        // تثبيت الإطار الأخير لحظة
-        for (let k = 0; k < 6; k++) {
-          const snap = await html2canvas(pitch, { backgroundColor: '#15803d', scale: 1, useCORS: true });
-          vCtx.drawImage(snap, 0, 0, vCanvas.width, vCanvas.height);
-          await new Promise(r => setTimeout(r, 40));
-        }
+        frameA.forEach(posA => {
+          const posB = frameB.find(p => p.id === posA.id) || posA;
+          posMap[posA.id] = {
+            left: posA.left + (posB.left - posA.left) * t,
+            top: posA.top + (posB.top - posA.top) * t
+          };
+        });
+        return posMap;
+      }
 
-        const totalDuration = Date.now() - recordStartTime;
+      // رسم أول إطار قبل بدء التسجيل لضمان بداية نظيفة
+      renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, buildPosMapAtTime(0));
+
+      const recordStartTime = performance.now();
+      recorder.start();
+
+      try {
+        await new Promise((resolve) => {
+          function tick(now) {
+            const elapsed = now - recordStartTime;
+            const posMap = buildPosMapAtTime(Math.min(elapsed, totalAnimMs));
+            renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, posMap);
+
+            const pct = Math.min(99, Math.round((elapsed / totalAnimMs) * 100));
+            fill.style.width = `${pct}%`;
+            pctTxt.textContent = `${pct}%`;
+
+            if (elapsed < totalAnimMs) {
+              requestAnimationFrame(tick);
+            } else {
+              resolve();
+            }
+          }
+          requestAnimationFrame(tick);
+        });
+
+        const finalDuration = Math.round(performance.now() - recordStartTime);
         recorder.onstop = () => {
           const rawBlob = new Blob(chunks, { type: mimeType || 'video/webm' });
           const downloadBlob = (finalBlob) => {
             const ext = (mimeType && mimeType.includes('mp4')) ? 'mp4' : 'webm';
             const a = document.createElement('a');
             a.href = URL.createObjectURL(finalBlob);
-            a.download = `Ziada_Animation_${Date.now()}.${ext}`;
+            a.download = `Ziada_Tactical_HD_${Date.now()}.${ext}`;
             a.click();
             fill.style.width = '100%';
             pctTxt.textContent = '100%';
-            setTimeout(() => { modal.style.display = 'none'; showToast('تم تصدير الفيديو بنجاح ✓'); }, 400);
+            setTimeout(() => { modal.style.display = 'none'; showToast('تم تصدير الفيديو بجودة Full HD وبسرعة مثالية ✓'); }, 350);
           };
 
           if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) {
-            ysFixWebmDuration(rawBlob, totalDuration, (fixedBlob) => downloadBlob(fixedBlob));
+            ysFixWebmDuration(rawBlob, finalDuration, (fixedBlob) => downloadBlob(fixedBlob));
           } else {
             downloadBlob(rawBlob);
           }
         };
         recorder.stop();
       } catch (err) {
-        recorder.stop();
+        try { recorder.stop(); } catch (e) {}
         modal.style.display = 'none';
         alert('حدث خطأ أثناء تصدير الفيديو: ' + err.message);
-      } finally {
-        pitch.querySelectorAll('.delete-btn').forEach(b => b.style.display = '');
       }
     }
 
     // ==========================================
-    // نظام الحفظ التلقائي واسترجاع المشروع (Auto-Save & Crash Recovery)
+    // نظام الحفظ التلقائي واسترجاع المشروع
     // ==========================================
     function collectProjectState() {
       const trainItems = [];
@@ -2005,15 +2326,11 @@
       const badge = document.getElementById('autosaveBadge');
       try {
         const state = collectProjectState();
-        if (!hasMeaningfulData(state)) {
-          localStorage.removeItem(AUTOSAVE_KEY);
-        } else {
-          localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state));
-        }
+        if (!hasMeaningfulData(state)) localStorage.removeItem(AUTOSAVE_KEY);
+        else localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state));
         badge.classList.remove('saving');
         badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
       } catch (err) {
-        // في حالة امتلاء مساحة التخزين (نادر جداً بعد ضغط الصور) نحفظ بدون صور اللاعبين
         try {
           const fallback = collectProjectState();
           fallback.matchPlayers.forEach(p => p.photoSrc = '');
@@ -2034,7 +2351,6 @@
     document.getElementById('drillNotes').addEventListener('input', scheduleAutoSave);
     window.addEventListener('beforeunload', saveProjectNow);
 
-    // فحص وجود مشروع سابق عند فتح الصفحة
     let pendingRecoveryState = null;
     (function checkForSavedProject() {
       try {
@@ -2065,14 +2381,12 @@
       isRestoring = true;
       const s = pendingRecoveryState;
 
-      // استرجاع عناصر التدريب
       const trainPitch = document.getElementById('trainPitch');
       trainPitch.querySelectorAll('.drill-item').forEach(e => e.remove());
       (s.trainItems || []).forEach(it => {
         createDrillItem(it.type, it.num, it.left, it.top, trainPitch, it.id, it.scale || 1.35, it.customText);
       });
 
-      // استرجاع خطط المباريات
       matchPitch.querySelectorAll('.player-node, .ball-item').forEach(e => e.remove());
       document.getElementById('formation1').value = s.formation1 || '';
       document.getElementById('formation2').value = s.formation2 || '';
@@ -2084,7 +2398,6 @@
       });
       (s.matchBalls || []).forEach(b => addMatchBall(b.id, b.left, b.top, b.scale || 1.35));
 
-      // استرجاع الملاحظات والرسوم والربط والإطارات
       document.getElementById('drillNotes').value = s.drillNotes || '';
       if (s.trainAnimSpeed) document.getElementById('trainAnimSpeed').value = s.trainAnimSpeed;
       if (s.matchAnimSpeed) document.getElementById('matchAnimSpeed').value = s.matchAnimSpeed;
