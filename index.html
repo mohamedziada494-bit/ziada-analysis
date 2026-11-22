@@ -171,6 +171,19 @@
     .header .logo-text span { color: var(--neon-gold); }
     .header p { font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; font-weight: 600; }
 
+    .auth-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 0;
+      gap: 12px;
+      color: var(--neon-cyan);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .auth-loader i { font-size: 2rem; }
+
     .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.95); padding: 0.6rem; border-radius: 0.75rem; border: 1px solid rgba(56, 189, 248, 0.2); }
     .download-strip button { 
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
@@ -186,7 +199,6 @@
     .form-group label { display: block; font-size: 0.825rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.4rem; }
     .form-group input, .form-group select { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: right; transition: all 0.3s; font-family: inherit;}
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.95); }
-    
     .form-group select option { background: #0f172a; }
 
     .submit-btn { width: 100%; padding: 0.8rem; background: linear-gradient(135deg, #0284c7, #1d4ed8); color: #ffffff; border: none; border-radius: 0.6rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; margin-top: 0.5rem; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); transition: all 0.3s; }
@@ -237,35 +249,28 @@
     @media (max-width: 900px) {
       .epic-wrapper { flex-direction: column-reverse; gap: 2rem; }
       .tech-hud-display { width: 100%; padding: 2rem 1rem; }
-      .main-card { max-width: 100%; }
+      .main-card { max-width: 100%; padding: 1.75rem; }
       body { padding: 1rem; }
     }
   </style>
 
-  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <!-- كود حماية الواجهة ومنع أدوات المطورين (Capture Phase) -->
   <script>
-    // منع كليك يمين (القائمة المنسدلة)
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-
-    // منع اختصارات الكيبورد الخاصة بالمطورين (F12, Ctrl+Shift+I, Ctrl+U)
-    document.addEventListener('keydown', function(e) {
-      // منع F12
-      if (e.key === 'F12' || e.keyCode === 123) {
+    document.addEventListener('contextmenu', e => e.preventDefault(), true);
+    document.addEventListener('keydown', e => {
+      const forbiddenKeys = ['U', 'S', 'P'];
+      const devKeys = ['I', 'J', 'C'];
+      if (
+        e.key === 'F12' || e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
+      ) {
         e.preventDefault();
+        e.stopPropagation();
+        return false;
       }
-      // منع Ctrl+Shift+I و Ctrl+Shift+J و Ctrl+Shift+C
-      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-        e.preventDefault();
-      }
-      // منع Ctrl+U (عرض مصدر الصفحة View Source)
-      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-        e.preventDefault();
-      }
-    });
+    }, true);
   </script>
-
 </head>
 <body>
 
@@ -279,10 +284,16 @@
       </div>
 
       <div class="download-strip">
-        <button disabled>📱 تطبيق الموبايل (قريباً... SOOON)</button>
+        <button disabled>📱 تطبيق الموبايل (قريباً... SOON)</button>
       </div>
 
-      <div id="auth-panel">
+      <!-- مؤشر تحميل سريع لمنع ومضة شاشة تسجيل الدخول -->
+      <div id="auth-loader" class="auth-loader">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <span>جاري تحميل حسابك...</span>
+      </div>
+
+      <div id="auth-panel" style="display: none;">
         <div class="tabs">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</button>
           <button class="tab-btn" id="tab-register" onclick="switchTab('register')">مستخدم جديد</button>
@@ -370,60 +381,122 @@
       appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(); const db = firebase.firestore();
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    let isRegistering = false; 
+    let isRegistering = false;
+
+    // عرض فوري للوحة التحكم لو المستخدم مسجل دخول مسبقاً (لمنع الوميض نهائياً)
+    (function instantRestoreUI() {
+      try {
+        const cachedUser = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
+        if (cachedUser && cachedUser.uid) {
+          showDashboard(cachedUser, true);
+        }
+      } catch (e) {}
+    })();
 
     function getDeviceFingerprint() {
       let deviceId = localStorage.getItem('ziada_device_id');
-      if (!deviceId) { deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(); localStorage.setItem('ziada_device_id', deviceId); }
+      if (!deviceId) {
+        deviceId = 'dev_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+        localStorage.setItem('ziada_device_id', deviceId);
+      }
       return deviceId;
     }
 
     async function getGlobalInternetDate() {
-      try { const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC'); const data = await response.json(); return data.datetime.split('T')[0]; } 
-      catch (error) { return new Date().toISOString().split('T')[0]; }
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const data = await response.json();
+        return data.datetime.split('T')[0];
+      } catch (error) {
+        return new Date().toISOString().split('T')[0];
+      }
     }
 
     async function validateUserAccess(user, userData) {
-      if (isRegistering) return; 
-      if (userData.role !== 'admin' && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return false; }
-      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة. يرجى انتظار التفعيل.', 'error'); return false; }
+      if (isRegistering) return false;
+      if (userData.role !== 'admin' && !user.emailVerified) {
+        showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error');
+        return false;
+      }
+      if (userData.status === 'pending' && userData.role !== 'admin') {
+        showAlert('حسابك قيد المراجعة. يرجى انتظار التفعيل.', 'error');
+        return false;
+      }
       if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
-        if (trueToday > userData.subscriptionEnd) { showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error'); return false; }
+        if (trueToday > userData.subscriptionEnd) {
+          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error');
+          return false;
+        }
       }
       if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
-        if (!userData.currentDeviceId) { await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice }); } 
-        else if (userData.currentDeviceId !== currentLocalDevice) { showAlert('غير مسموح لك بتسجيل الدخول من أكثر من جهاز.', 'error'); return false; }
+        if (!userData.currentDeviceId) {
+          await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
+        } else if (userData.currentDeviceId !== currentLocalDevice) {
+          showAlert('غير مسموح لك بتسجيل الدخول من أكثر من جهاز.', 'error');
+          return false;
+        }
       }
       return true;
     }
 
     auth.onAuthStateChanged(async (user) => {
-      if (isRegistering) return; 
+      if (isRegistering) return;
       if (user) {
         try {
           const userDoc = await db.collection('users').doc(user.uid).get();
           if (userDoc.exists) {
             const userData = userDoc.data();
             const isValid = await validateUserAccess(user, userData);
-            if (isValid) { localStorage.setItem('ziada_active_user', JSON.stringify(userData)); showDashboard(userData); } 
-            else { await auth.signOut(); showAuthPanel(); }
-          } else { await auth.signOut(); showAuthPanel(); }
-        } catch (error) { showAlert('حدث خطأ أثناء جلب البيانات.', 'error'); }
-      } else { showAuthPanel(); }
+            if (isValid) {
+              localStorage.setItem('ziada_active_user', JSON.stringify(userData));
+              showDashboard(userData, false);
+            } else {
+              localStorage.removeItem('ziada_active_user');
+              await auth.signOut();
+              showAuthPanel();
+            }
+          } else {
+            localStorage.removeItem('ziada_active_user');
+            await auth.signOut();
+            showAuthPanel();
+          }
+        } catch (error) {
+          // في حالة انقطاع الإنترنت: السماح بالعمل من البيانات المحفوظة محلياً
+          const cachedUser = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
+          if (cachedUser && cachedUser.uid === user.uid) {
+            showDashboard(cachedUser, true);
+          } else {
+            showAuthPanel();
+            showAlert('حدث خطأ أثناء جلب البيانات. تأكد من اتصالك بالإنترنت.', 'error');
+          }
+        }
+      } else {
+        localStorage.removeItem('ziada_active_user');
+        showAuthPanel();
+      }
     });
 
-    function showAuthPanel() { document.getElementById('auth-panel').style.display = 'block'; document.getElementById('dashboard-panel').style.display = 'none'; }
+    function showAuthPanel() {
+      document.getElementById('auth-loader').style.display = 'none';
+      document.getElementById('auth-panel').style.display = 'block';
+      document.getElementById('dashboard-panel').style.display = 'none';
+    }
     
-    function showDashboard(user) { 
-      document.getElementById('auth-panel').style.display = 'none'; 
-      document.getElementById('dashboard-panel').style.display = 'block'; 
-      document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name}`; 
+    function showDashboard(user, skipSubModal = false) {
+      document.getElementById('auth-loader').style.display = 'none';
+      document.getElementById('auth-panel').style.display = 'none';
+      document.getElementById('dashboard-panel').style.display = 'block';
+      document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name || ''}`;
       
-      const p = user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }; 
+      const p = user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
       document.getElementById('card-headcoach').style.display = p.headCoach ? 'flex' : 'none';
       document.getElementById('card-tactical').style.display = p.tactical ? 'flex' : 'none';
       document.getElementById('card-individual').style.display = p.individual ? 'flex' : 'none';
@@ -431,28 +504,62 @@
       document.getElementById('card-referee').style.display = p.referee ? 'flex' : 'none';
       document.getElementById('card-goalkeeper').style.display = p.goalkeeper ? 'flex' : 'none';
 
-      document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none'; 
-      checkSubscription(user);
+      document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none';
+      if (!skipSubModal) checkSubscription(user);
     }
     
-    function handleLogout() { auth.signOut().then(() => { localStorage.removeItem('ziada_active_user'); showAuthPanel(); document.getElementById('login-form').reset(); }); }
-    function showAlert(message, type) { const box = document.getElementById('alert-box'); box.textContent = message; box.className = `alert ${type}`; box.style.display = 'block'; setTimeout(() => box.style.display = 'none', 5000); }
-    function switchTab(type) { const isLogin = type === 'login'; document.getElementById('login-form').style.display = isLogin ? 'block' : 'none'; document.getElementById('register-form').style.display = isLogin ? 'none' : 'block'; document.getElementById('tab-login').classList.toggle('active', isLogin); document.getElementById('tab-register').classList.toggle('active', !isLogin); document.getElementById('alert-box').style.display = 'none'; }
+    function handleLogout() {
+      auth.signOut().then(() => {
+        localStorage.removeItem('ziada_active_user');
+        sessionStorage.removeItem('ziada_sub_shown');
+        showAuthPanel();
+        document.getElementById('login-form').reset();
+      });
+    }
+
+    function closeSubModal() {
+      document.getElementById('subOverlay').style.display = 'none';
+    }
+
+    function showAlert(message, type) {
+      const box = document.getElementById('alert-box');
+      box.textContent = message;
+      box.className = `alert ${type}`;
+      box.style.display = 'block';
+      setTimeout(() => box.style.display = 'none', 5000);
+    }
+
+    function switchTab(type) {
+      const isLogin = type === 'login';
+      document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('register-form').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('tab-login').classList.toggle('active', isLogin);
+      document.getElementById('tab-register').classList.toggle('active', !isLogin);
+      document.getElementById('alert-box').style.display = 'none';
+    }
 
     async function handleLogin(e) {
       e.preventDefault();
-      const btn = document.getElementById('login-btn-text'); btn.textContent = 'جاري التحقق الأمني...';
-      try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } 
-      catch (error) { showAlert('البريد أو كلمة المرور غير صحيحة.', 'error'); } 
-      finally { btn.textContent = 'دخول للمنصة'; }
+      const btn = document.getElementById('login-btn-text');
+      btn.textContent = 'جاري التحقق الأمني...';
+      try {
+        await auth.signInWithEmailAndPassword(
+          document.getElementById('login-email').value,
+          document.getElementById('login-password').value
+        );
+      } catch (error) {
+        showAlert('البريد أو كلمة المرور غير صحيحة.', 'error');
+      } finally {
+        btn.textContent = 'دخول للمنصة';
+      }
     }
 
     async function handleRegister(e) {
       e.preventDefault();
-      const btn = document.getElementById('reg-btn-text'); 
+      const btn = document.getElementById('reg-btn-text');
       btn.textContent = 'جاري إنشاء البروفايل التكتيكي...';
-      isRegistering = true; 
-      let createdUser = null; 
+      isRegistering = true;
+      let createdUser = null;
 
       const specialty = document.getElementById('reg-specialty').value;
       let initPermissions = { headCoach: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
@@ -468,11 +575,19 @@
       }
 
       try {
-        const cred = await auth.createUserWithEmailAndPassword(document.getElementById('reg-email').value, document.getElementById('reg-password').value);
+        const cred = await auth.createUserWithEmailAndPassword(
+          document.getElementById('reg-email').value,
+          document.getElementById('reg-password').value
+        );
         createdUser = cred.user;
         await db.collection('users').doc(createdUser.uid).set({
-          uid: createdUser.uid, name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value,
-          role: 'coach', status: 'pending', permissions: initPermissions, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          uid: createdUser.uid,
+          name: document.getElementById('reg-name').value,
+          email: document.getElementById('reg-email').value,
+          role: 'coach',
+          status: 'pending',
+          permissions: initPermissions,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         await createdUser.sendEmailVerification();
         showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
@@ -480,30 +595,48 @@
         await auth.signOut();
       } catch (error) {
         if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
-          try { await createdUser.delete(); } catch(e) { }
+          try { await createdUser.delete(); } catch(e) {}
         }
         if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
         else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
         else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
         await auth.signOut();
-      } finally { 
-        isRegistering = false; 
-        btn.textContent = 'إنشاء الحساب الآن'; 
+      } finally {
+        isRegistering = false;
+        btn.textContent = 'إنشاء الحساب الآن';
       }
     }
 
     function checkSubscription(userData) {
-      if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return; 
+      if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return;
       const distance = new Date(userData.subscriptionEnd + "T23:59:59").getTime() - new Date().getTime();
-      const overlay = document.getElementById('subOverlay'); const modalBox = document.getElementById('subModalBox'); const timerText = document.getElementById('subTimerText'); const btnClose = document.getElementById('btnSubClose');
-      overlay.style.display = 'flex';
+      const overlay = document.getElementById('subOverlay');
+      const modalBox = document.getElementById('subModalBox');
+      const timerText = document.getElementById('subTimerText');
+      const btnClose = document.getElementById('btnSubClose');
+
       if (distance > 0) {
+        if (sessionStorage.getItem('ziada_sub_shown')) return;
+        sessionStorage.setItem('ziada_sub_shown', '1');
+        modalBox.classList.remove('expired');
+        overlay.style.display = 'flex';
         timerText.innerHTML = `متبقي: <span style="font-size:26px;">${Math.floor(distance / (1000 * 60 * 60 * 24))}</span> أيام و <span style="font-size:26px;">${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}</span> ساعات`;
-        btnClose.innerText = "متابعة للمنصة"; btnClose.onclick = () => overlay.style.display = 'none';
+        btnClose.innerText = "متابعة للمنصة";
+        btnClose.style.background = "#38bdf8";
+        btnClose.style.color = "#070b12";
+        btnClose.onclick = closeSubModal;
       } else {
-        modalBox.classList.add('expired'); timerText.innerHTML = "انتهى اشتراكك! يرجى التجديد.";
-        btnClose.innerText = "تسجيل الخروج والتواصل للتجديد"; btnClose.style.background = "#ef4444"; btnClose.style.color = "#fff";
-        btnClose.onclick = function() { alert("يرجى التواصل مع الإدارة لتجديد الاشتراك."); handleLogout(); overlay.style.display = 'none'; };
+        modalBox.classList.add('expired');
+        overlay.style.display = 'flex';
+        timerText.innerHTML = "انتهى اشتراكك! يرجى التجديد.";
+        btnClose.innerText = "تسجيل الخروج والتواصل للتجديد";
+        btnClose.style.background = "#ef4444";
+        btnClose.style.color = "#fff";
+        btnClose.onclick = function() {
+          alert("يرجى التواصل مع الإدارة لتجديد الاشتراك.");
+          handleLogout();
+          closeSubModal();
+        };
       }
     }
   </script>
