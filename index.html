@@ -420,7 +420,7 @@
 
     async function validateUserAccess(user, userData) {
       if (isRegistering) return false;
-      if (userData.role !== 'admin' && !user.emailVerified) {
+      if (userData.role !== 'admin' && !userData.createdByAdmin && !user.emailVerified) {
         showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error');
         return false;
       }
