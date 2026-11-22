@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="plan-guard.js"></script>
 
   <style>
     :root {
@@ -795,13 +796,14 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحكيم -->
+  <!-- التحقق من الجلسة وصلاحية التحكيم (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
         const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
         if (!u || !u.uid) { window.location.href = 'index.html'; return; }
-        if (u.role !== 'admin' && u.permissions && u.permissions.referee === false) {
+        const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+        if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.referee === false) {
           alert('ليس لديك صلاحية الدخول لاستوديو التحكيم.');
           window.location.href = 'index.html';
         }
@@ -1087,7 +1089,6 @@
     let recStartTime = 0;
     let recLoopId = null;
     let recTimerInterval = null;
-    let recStopPromiseResolve = null;
 
     let autosaveTimer = null;
     let lastSavedVideoTime = 0;
@@ -1203,7 +1204,7 @@
     });
 
     // ==========================================
-    // فتح وإغلاق غرفة الـ VAR
+    // فتح وإغلاق غرفة الـ VAR (مربوط بحدود الباقة العادية)
     // ==========================================
     function setVerdict(v) {
       currentVerdict = v;
@@ -1214,6 +1215,11 @@
 
     function openVARRoom(eventType) {
       if (!video.src) return alert('قم باختيار فيديو المباراة أولاً!');
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxRefCases', refEventsLog.length, 'حالات تحكيمية VAR')) {
+        video.pause();
+        return;
+      }
+
       video.pause();
       currentEvent = eventType;
       currentTime = video.currentTime;
@@ -1249,7 +1255,6 @@
     function captureFrameToCanvas() {
       const vw = video.videoWidth || 1280;
       const vh = video.videoHeight || 720;
-      // تثبيت أقصى عرض عند 1280px للحفاظ على جودة HD وسرعة فائقة
       const scale = vw > 1280 ? (1280 / vw) : 1;
       canvas.width = Math.round(vw * scale);
       canvas.height = Math.round(vh * scale);
@@ -1524,15 +1529,12 @@
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(`${dist}m`, midX, midY + 1);
       } else if (d.type === 'vision') {
-        // مخروط رؤية حقيقي يدور مع اتجاه سحب الحكم
         const dx = d.endX - d.startX, dy = d.endY - d.startY;
         const len = Math.hypot(dx, dy) * sc;
         const angle = Math.atan2(dy, dx);
         const halfSpread = Math.PI / 7;
         const p1x = d.startX + len * Math.cos(angle - halfSpread);
         const p1y = d.startY + len * Math.sin(angle - halfSpread);
-        const p2x = d.startX + len * Math.cos(angle + halfSpread);
-        const p2y = d.startY + len * Math.sin(angle + halfSpread);
 
         ctx.beginPath();
         ctx.moveTo(d.startX, d.startY);
@@ -1548,7 +1550,6 @@
         const midX = (d.startX + d.endX) / 2, midY = (d.startY + d.endY) / 2;
         ctx.translate(midX, midY); ctx.scale(sc, sc); ctx.translate(-midX, -midY);
 
-        // خط الـ VAR الرئيسي
         ctx.beginPath();
         ctx.moveTo(d.startX, d.startY);
         ctx.lineTo(d.endX, d.endY);
@@ -1556,7 +1557,6 @@
         ctx.lineWidth = 3.5 * sf;
         ctx.stroke();
 
-        // علامة عمودية صغيرة عند نقطة البداية (نقطة التلامس/الكتف)
         ctx.beginPath();
         ctx.setLineDash([5 * sf, 4 * sf]);
         ctx.moveTo(d.startX, d.startY - 26 * sf);
@@ -1566,7 +1566,6 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // شارة توضيحية
         ctx.fillStyle = col;
         ctx.fillRect(d.endX - 24 * sf, d.endY - 24 * sf, 48 * sf, 20 * sf);
         ctx.fillStyle = '#fff';
@@ -1609,7 +1608,6 @@
       drawings.forEach((d, idx) => drawSingleShape(d, idx === selectedShapeIndex));
       if (previewShape) drawSingleShape(previewShape, false);
 
-      // نقطة خفية أثناء التسجيل لضمان بث مستمر 30fps لـ MediaRecorder
       if (isRecordingVoice) {
         ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
         ctx.beginPath();
@@ -1619,7 +1617,7 @@
     }
 
     // ==========================================
-    // تسجيل التعليق الصوتي + الرسم (فيديو WebM مضبوط المدة)
+    // تسجيل التعليق الصوتي + الرسم (مربوط بنظام الباقات)
     // ==========================================
     function getBestRecorderMime() {
       const mimes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
@@ -1631,6 +1629,8 @@
 
     async function toggleVoiceRecording() {
       if (!isRecordingVoice) {
+        if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تسجيل فيديو التعليق الصوتي VAR')) return;
+
         const btn = document.getElementById('btnRecordAnalysis');
         try {
           analysisAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1649,7 +1649,6 @@
           isRecordingVoice = true;
           analysisRecorder.start(250);
 
-          // حلقة رسم مستمرة لضمان سلاسة الفيديو أثناء التحدث
           const keepAliveDraw = () => {
             if (!isRecordingVoice) return;
             redrawCanvas();
@@ -1822,6 +1821,13 @@
     function dlItem(idx, type) {
       const item = refEventsLog[idx];
       if (!item) return;
+
+      if (type === 'img') {
+        if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة تحليل VAR HD')) return;
+      } else if (type === 'vid') {
+        if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو التعليق الصوتي VAR')) return;
+      }
+
       const a = document.createElement('a');
       if (type === 'img') {
         a.href = item.imageUrl;
@@ -1834,9 +1840,10 @@
     }
 
     // ==========================================
-    // طباعة تقرير مراقب الحكام PDF
+    // طباعة تقرير مراقب الحكام PDF (مربوط بنظام الباقات)
     // ==========================================
     function generatePDFReport() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'تقرير مراقب الحكام PDF')) return;
       if (refEventsLog.length === 0) return alert('لا توجد حالات لطباعتها في التقرير.');
 
       const matchName = document.getElementById('matchNameInput').value.trim() || 'غير محدد';
@@ -1998,6 +2005,10 @@
     })();
 
     function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
+        ZiadaPlan.requireGold('استرجاع جلسة التحكيم المحفوظة تلقائياً');
+        return;
+      }
       if (!pendingRecoveryState) return;
       const s = pendingRecoveryState;
       document.getElementById('matchNameInput').value = s.matchName || '';
