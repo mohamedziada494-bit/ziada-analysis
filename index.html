@@ -14,190 +14,56 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    :root { 
-      --neon-blue: #0284c7; 
-      --neon-cyan: #38bdf8; 
-      --neon-gold: #f59e0b; 
-      --bg-dark: #020617;
-    }
-
+    :root { --neon-blue: #0284c7; --neon-cyan: #38bdf8; --neon-gold: #f59e0b; --bg-dark: #020617; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--bg-dark);
-      overflow-x: hidden;
-      position: relative;
-      padding: 2rem;
-    }
-
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: var(--bg-dark); overflow-x: hidden; position: relative; padding: 2rem; }
     body::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: 
-        radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.12) 0%, transparent 60%),
-        linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-      background-size: 100% 100%, 40px 40px, 40px 40px;
-      z-index: 0;
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.12) 0%, transparent 60%), linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px; z-index: 0;
     }
 
-    .radar-circle {
-      position: absolute;
-      width: 700px; height: 700px;
-      border: 1px solid rgba(56, 189, 248, 0.1);
-      border-radius: 50%;
-      top: 50%; left: 30%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 50px rgba(14, 165, 233, 0.05);
-      animation: radarPulse 8s ease-in-out infinite alternate;
-      z-index: 0;
-      pointer-events: none;
-    }
-    .radar-circle::after {
-      content: '';
-      position: absolute;
-      inset: 50px;
-      border: 1px dashed rgba(245, 158, 11, 0.15);
-      border-radius: 50%;
-    }
-    @keyframes radarPulse {
-      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.5; }
-      100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
-    }
+    .radar-circle { position: absolute; width: 700px; height: 700px; border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 50%; top: 50%; left: 30%; transform: translate(-50%, -50%); box-shadow: 0 0 50px rgba(14, 165, 233, 0.05); animation: radarPulse 8s ease-in-out infinite alternate; z-index: 0; pointer-events: none; }
+    .radar-circle::after { content: ''; position: absolute; inset: 50px; border: 1px dashed rgba(245, 158, 11, 0.15); border-radius: 50%; }
+    @keyframes radarPulse { 0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } }
 
-    .epic-wrapper {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      width: 100%;
-      max-width: 1250px;
-      align-items: center;
-      justify-content: space-between;
-      gap: 3rem;
-    }
+    .epic-wrapper { position: relative; z-index: 10; display: flex; width: 100%; max-width: 1250px; align-items: center; justify-content: space-between; gap: 3rem; }
+    .tech-hud-display { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 2rem; box-shadow: inset 0 0 30px rgba(56, 189, 248, 0.05), 0 20px 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); position: relative; overflow: hidden; }
+    .tech-hud-display::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent); animation: scanLine 3s linear infinite; }
+    @keyframes scanLine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-    .tech-hud-display {
-      flex: 1.2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 3rem 2rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      border-radius: 2rem;
-      box-shadow: inset 0 0 30px rgba(56, 189, 248, 0.05), 0 20px 40px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(15px);
-      position: relative;
-      overflow: hidden;
-    }
+    .hud-icon-glow { font-size: 4.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); animation: floatIcon 4s ease-in-out infinite; }
+    @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-    .tech-hud-display::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-      animation: scanLine 3s linear infinite;
-    }
-    @keyframes scanLine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    .hud-icon-glow {
-      font-size: 4.5rem;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6));
-      animation: floatIcon 4s ease-in-out infinite;
-    }
-    @keyframes floatIcon {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .hud-title {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #ffffff;
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.5px;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    }
+    .hud-title { font-size: 2.2rem; font-weight: 900; color: #ffffff; margin-bottom: 0.75rem; letter-spacing: -0.5px; text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
     .hud-title span { color: var(--neon-gold); text-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+    .hud-desc { color: #94a3b8; font-size: 0.95rem; line-height: 1.8; max-width: 450px; margin-bottom: 2rem; font-weight: 600; }
 
-    .hud-desc {
-      color: #94a3b8;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      max-width: 450px;
-      margin-bottom: 2rem;
-      font-weight: 600;
-    }
-
-    .hud-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .stat-box {
-      background: rgba(3, 7, 18, 0.8);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      padding: 1rem;
-      border-radius: 1rem;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(14, 165, 233, 0.1);
-    }
+    .hud-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; width: 100%; max-width: 480px; }
+    .stat-box { background: rgba(3, 7, 18, 0.8); border: 1px solid rgba(56, 189, 248, 0.25); padding: 1rem; border-radius: 1rem; text-align: center; box-shadow: 0 0 15px rgba(14, 165, 233, 0.1); }
     .stat-box .number { font-size: 1.25rem; font-weight: 900; color: var(--neon-cyan); margin-bottom: 0.2rem; }
     .stat-box .label { font-size: 0.75rem; color: #64748b; font-weight: 700; }
 
-    .main-card {
-      width: 100%; max-width: 440px; background: rgba(11, 17, 32, 0.92);
-      border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 1.75rem; padding: 2.5rem;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(14, 165, 233, 0.15);
-      backdrop-filter: blur(20px); position: relative;
-    }
-
+    .main-card { width: 100%; max-width: 440px; background: rgba(11, 17, 32, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 1.75rem; padding: 2.5rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(14, 165, 233, 0.15); backdrop-filter: blur(20px); position: relative; }
     .header { text-align: center; margin-bottom: 1.75rem; }
     .header .logo-text { font-size: 1.9rem; font-weight: 900; color: #ffffff; }
     .header .logo-text span { color: var(--neon-gold); }
     .header p { font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; font-weight: 600; }
 
-    .auth-loader {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2.5rem 0;
-      gap: 12px;
-      color: var(--neon-cyan);
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
+    .auth-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 0; gap: 12px; color: var(--neon-cyan); font-size: 0.9rem; font-weight: 700; }
     .auth-loader i { font-size: 2rem; }
 
     .download-strip { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.95); padding: 0.6rem; border-radius: 0.75rem; border: 1px solid rgba(56, 189, 248, 0.2); }
-    .download-strip button { 
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
-      padding: 0.6rem; font-size: 0.8rem; font-weight: 700; border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.85;
-      background: linear-gradient(135deg, #1e293b, #0f172a); color: #4ade80; 
-    }
+    .download-strip button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; font-size: 0.8rem; font-weight: 700; border-radius: 0.5rem; border: none; cursor: not-allowed; opacity: 0.85; background: linear-gradient(135deg, #1e293b, #0f172a); color: #4ade80; }
 
     .tabs { display: flex; background: rgba(15, 23, 42, 0.9); padding: 0.25rem; border-radius: 0.6rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
     .tab-btn { flex: 1; padding: 0.6rem; border: none; background: transparent; color: #94a3b8; font-size: 0.85rem; font-weight: 700; border-radius: 0.4rem; cursor: pointer; transition: all 0.3s; }
     .tab-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
-    
+
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; font-size: 0.825rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.4rem; }
-    .form-group input, .form-group select { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: right; transition: all 0.3s; font-family: inherit;}
+    .form-group input, .form-group select { width: 100%; padding: 0.75rem; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 0.6rem; color: #f8fafc; text-align: right; transition: all 0.3s; font-family: inherit; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.95); }
     .form-group select option { background: #0f172a; }
 
@@ -209,54 +75,23 @@
     .alert { padding: 0.75rem; border-radius: 0.5rem; font-size: 0.825rem; margin-bottom: 1.25rem; display: none; text-align: center; font-weight: 600; }
     .alert.error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
     .alert.success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; }
-    
+
     .dashboard-panel { display: none; }
     .coach-welcome { text-align: center; margin-bottom: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
     .coach-welcome h2 { font-size: 1.25rem; color: var(--neon-cyan); font-weight: 800; }
     .coach-welcome p { color: #94a3b8; font-size: 0.825rem; margin-top: 0.25rem; }
 
-    /* كارت حالة الباقة (Gold / Free) */
-    .plan-status-card {
-      border-radius: 0.85rem;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1rem;
-      text-align: center;
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .plan-status-card.is-gold {
-      background: rgba(245, 158, 11, 0.14);
-      border: 1px solid rgba(245, 158, 11, 0.55);
-      color: #fde68a;
-    }
-    .plan-status-card.is-free {
-      background: rgba(148, 163, 184, 0.1);
-      border: 1px dashed rgba(245, 158, 11, 0.55);
-      color: #e2e8f0;
-    }
-    .btn-upgrade-gold-dash {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      color: #070b12;
-      padding: 0.5rem 1rem;
-      border-radius: 0.55rem;
-      font-weight: 900;
-      font-size: 0.82rem;
-      text-decoration: none;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-      transition: 0.2s;
-    }
+    .plan-status-card { border-radius: 0.85rem; padding: 0.8rem 1rem; margin-bottom: 1rem; text-align: center; display: none; flex-direction: column; gap: 0.5rem; }
+    .plan-status-card.is-gold { background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.55); color: #fde68a; }
+    .plan-status-card.is-free { background: rgba(148, 163, 184, 0.1); border: 1px dashed rgba(245, 158, 11, 0.55); color: #e2e8f0; }
+    .btn-upgrade-gold-dash { display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: linear-gradient(135deg, #d97706, #f59e0b); color: #070b12; padding: 0.5rem 1rem; border-radius: 0.55rem; font-weight: 900; font-size: 0.82rem; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); transition: 0.2s; }
     .btn-upgrade-gold-dash:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
     .analysis-grid { display: flex; flex-direction: column; gap: 0.85rem; }
     .analysis-card { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; transition: all 0.3s; }
     .analysis-card:hover { background: rgba(30, 41, 59, 0.95); border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); transform: translateX(-4px); }
     .analysis-card .icon-box { width: 44px; height: 44px; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-    
+
     .tactical-icon { background: rgba(14, 165, 233, 0.2); color: var(--neon-cyan); }
     .individual-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
     .live-icon { background: rgba(239, 68, 68, 0.2); color: #f87171; }
@@ -265,7 +100,6 @@
     .gk-icon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
     .headcoach-icon { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
     .perfdev-icon { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
-    
     .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
 
     .logout-btn { width: 100%; padding: 0.65rem; background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; border-radius: 0.6rem; cursor: pointer; margin-top: 1.5rem; font-weight: 700; transition: all 0.3s; }
@@ -292,20 +126,12 @@
     }
   </style>
 
-  <!-- كود حماية الواجهة ومنع أدوات المطورين (Capture Phase) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), true);
     document.addEventListener('keydown', e => {
-      const forbiddenKeys = ['U', 'S', 'P'];
-      const devKeys = ['I', 'J', 'C'];
-      if (
-        e.key === 'F12' || e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+      const forbiddenKeys = ['U', 'S', 'P'], devKeys = ['I', 'J', 'C'];
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) || (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))) {
+        e.preventDefault(); e.stopPropagation(); return false;
       }
     }, true);
   </script>
@@ -325,7 +151,6 @@
         <button disabled>📱 تطبيق الموبايل (قريباً... SOON)</button>
       </div>
 
-      <!-- مؤشر تحميل سريع لمنع ومضة شاشة تسجيل الدخول -->
       <div id="auth-loader" class="auth-loader">
         <i class="fa-solid fa-circle-notch fa-spin"></i>
         <span>جاري تحميل حسابك...</span>
@@ -347,18 +172,16 @@
 
         <form id="register-form" style="display: none;" onsubmit="handleRegister(event)">
           <div class="form-group"><label>الاسم الكامل</label><input type="text" id="reg-name" required placeholder="الكابتن / اسمك"></div>
-          
           <div class="form-group">
             <label>التخصص (سيتم تفعيل أدواتك بناءً عليه)</label>
             <select id="reg-specialty" required>
               <option value="analyst">محلل أداء (Performance Analyst)</option>
               <option value="headcoach">مدير فني (Head Coach)</option>
-              <option value="perfdev">مطور أداء فردي (Performance Developer)</option>
+              <option value="perfdev">مطور الأداء (Performance Developer)</option>
               <option value="gkcoach">مدرب حراس مرمى (GK Coach)</option>
               <option value="referee">حكم / خبير تحكيمي (Referee)</option>
             </select>
           </div>
-
           <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" required dir="ltr" placeholder="coach@ziada.com"></div>
           <div class="form-group"><label>كلمة المرور (6 أحرف على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
           <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب والبدء فوراً</button>
@@ -376,18 +199,16 @@
           <p>أدواتك المتاحة للعمل:</p>
         </div>
 
-        <!-- كارت حالة الباقة (Gold / Free) -->
         <div id="planStatusCard" class="plan-status-card"></div>
 
         <div class="analysis-grid">
           <a href="head_coach.html" id="card-headcoach" class="analysis-card" style="border-color: #ec4899;"><div class="icon-box headcoach-icon">👔</div><div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني</h3></div></a>
-          <a href="performance_dev.html" id="card-perfdev" class="analysis-card" style="border-color: #f97316;"><div class="icon-box perfdev-icon">⚡</div><div class="card-info"><h3 style="color: #fb923c;">استوديو مطور الأداء الفردي والتدريب الذهني</h3></div></a>
+          <a href="performance_dev.html" id="card-perfdev" class="analysis-card" style="border-color: #f97316;"><div class="icon-box perfdev-icon">⚡</div><div class="card-info"><h3 style="color: #fb923c;">مطور الأداء</h3></div></a>
           <a href="tactical.html" id="card-tactical" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
           <a href="individual.html" id="card-individual" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
           <a href="live.html" id="card-live" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
           <a href="referee.html" id="card-referee" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون</h3></div></a>
           <a href="goalkeeper.html" id="card-goalkeeper" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى</h3></div></a>
-          
           <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة والباقات</h3></div></a>
         </div>
         <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
@@ -398,7 +219,6 @@
       <div class="hud-icon-glow">⚡⚽</div>
       <h1 class="hud-title">Ziada <span>Analysis HUD</span></h1>
       <p class="hud-desc">نظام القيادة والتحليل التكتيكي الذكي للجيل القادم. تتبع البيانات اللحظية، قراءة تحركات اللاعبين، ورسم الخطط الاستراتيجية بأعلى دقة تكنولوجية.</p>
-      
       <div class="hud-stats-grid">
         <div class="stat-box"><div class="number">FREE</div><div class="label">تجربة فورية</div></div>
         <div class="stat-box"><div class="number">GOLD</div><div class="label">تصدير Full HD</div></div>
@@ -429,18 +249,9 @@
     const db = firebase.firestore();
 
     const DEFAULT_PLAN_CONFIG = {
-      autoApproveFree: true,
-      skipEmailVerifyForFree: true,
-      freeUnlockAllTools: true,
-      freeBlockVideoExport: true,
-      freeBlockPdfExport: true,
-      freeBlockImageExport: false,
-      freeBlockAutoSave: false,
-      maxTacticalClips: 3,
-      maxIndividualEvents: 5,
-      maxAnimFrames: 2,
-      maxRefCases: 2,
-      maxLiveClips: 2,
+      autoApproveFree: true, skipEmailVerifyForFree: true, freeUnlockAllTools: true,
+      freeBlockVideoExport: true, freeBlockPdfExport: true, freeBlockImageExport: false, freeBlockAutoSave: false,
+      maxTacticalClips: 3, maxIndividualEvents: 5, maxAnimFrames: 2, maxRefCases: 2, maxLiveClips: 2,
       whatsappNumber: '201027482686',
       goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، وعدد غير محدود من اللقطات والحالات.'
     };
@@ -456,9 +267,7 @@
     async function fetchPlanConfig() {
       try {
         const snap = await db.collection('settings').doc('plan_config').get();
-        if (snap.exists) {
-          globalPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG, snap.data());
-        }
+        if (snap.exists) globalPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG, snap.data());
         localStorage.setItem('ziada_plan_config', JSON.stringify(globalPlanConfig));
         const phone = String(globalPlanConfig.whatsappNumber || '201027482686').replace(/[^\d]/g, '');
         const waEl = document.getElementById('authWhatsappLink');
@@ -467,13 +276,10 @@
       return globalPlanConfig;
     }
 
-    // عرض فوري للوحة التحكم لو المستخدم مسجل دخول مسبقاً (لمنع الوميض نهائياً)
     (function instantRestoreUI() {
       try {
         const cachedUser = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
-        if (cachedUser && cachedUser.uid) {
-          showDashboard(cachedUser, true);
-        }
+        if (cachedUser && cachedUser.uid) showDashboard(cachedUser, true);
       } catch (e) {}
     })();
 
@@ -503,49 +309,32 @@
       if (isRegistering) return { ok: false };
       const cfg = globalPlanConfig;
       const isFreePlan = userData.plan === 'free';
-
       const skipVerify = userData.role === 'admin' || userData.createdByAdmin || (isFreePlan && cfg.skipEmailVerifyForFree);
-      if (!skipVerify && !user.emailVerified) {
-        showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error');
-        return { ok: false };
-      }
-      if (userData.status === 'pending' && userData.role !== 'admin') {
-        showAlert('حسابك قيد المراجعة أو موقوف مؤقتاً. يرجى التواصل مع الإدارة.', 'error');
-        return { ok: false };
-      }
+      if (!skipVerify && !user.emailVerified) { showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error'); return { ok: false }; }
+      if (userData.status === 'pending' && userData.role !== 'admin') { showAlert('حسابك قيد المراجعة أو موقوف مؤقتاً. يرجى التواصل مع الإدارة.', 'error'); return { ok: false }; }
 
-      let effectivePlan = 'gold';
-      let expiredGold = false;
-
-      if (userData.role === 'admin') {
-        effectivePlan = 'gold';
-      } else if (isFreePlan) {
-        effectivePlan = 'free';
-      } else if (userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
+      let effectivePlan = 'gold', expiredGold = false;
+      if (userData.role === 'admin') effectivePlan = 'gold';
+      else if (isFreePlan) effectivePlan = 'free';
+      else if (userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
-        if (trueToday > userData.subscriptionEnd) {
-          effectivePlan = 'free';
-          expiredGold = true;
-        }
+        if (trueToday > userData.subscriptionEnd) { effectivePlan = 'free'; expiredGold = true; }
       }
 
       if (userData.role !== 'admin' && effectivePlan === 'gold' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
-        if (!userData.currentDeviceId) {
-          await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
-        } else if (userData.currentDeviceId !== currentLocalDevice) {
+        if (!userData.currentDeviceId) await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
+        else if (userData.currentDeviceId !== currentLocalDevice) {
           showAlert('غير مسموح لك بتسجيل الدخول لباقة Gold من أكثر من جهاز. تواصل مع الإدارة لفك الجهاز.', 'error');
           return { ok: false };
         }
       }
-
       return { ok: true, effectivePlan, expiredGold };
     }
 
     auth.onAuthStateChanged(async (user) => {
       if (isRegistering) return;
       await fetchPlanConfig();
-
       if (user) {
         try {
           const userDoc = await db.collection('users').doc(user.uid).get();
@@ -553,35 +342,17 @@
             const userData = userDoc.data();
             const res = await validateUserAccess(user, userData);
             if (res.ok) {
-              const enrichedUser = Object.assign({}, userData, {
-                effectivePlan: res.effectivePlan,
-                expiredGold: !!res.expiredGold
-              });
+              const enrichedUser = Object.assign({}, userData, { effectivePlan: res.effectivePlan, expiredGold: !!res.expiredGold });
               localStorage.setItem('ziada_active_user', JSON.stringify(enrichedUser));
               showDashboard(enrichedUser, false);
-            } else {
-              localStorage.removeItem('ziada_active_user');
-              await auth.signOut();
-              showAuthPanel();
-            }
-          } else {
-            localStorage.removeItem('ziada_active_user');
-            await auth.signOut();
-            showAuthPanel();
-          }
+            } else { localStorage.removeItem('ziada_active_user'); await auth.signOut(); showAuthPanel(); }
+          } else { localStorage.removeItem('ziada_active_user'); await auth.signOut(); showAuthPanel(); }
         } catch (error) {
           const cachedUser = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
-          if (cachedUser && cachedUser.uid === user.uid) {
-            showDashboard(cachedUser, true);
-          } else {
-            showAuthPanel();
-            showAlert('حدث خطأ أثناء جلب البيانات. تأكد من اتصالك بالإنترنت.', 'error');
-          }
+          if (cachedUser && cachedUser.uid === user.uid) showDashboard(cachedUser, true);
+          else { showAuthPanel(); showAlert('حدث خطأ أثناء جلب البيانات. تأكد من اتصالك بالإنترنت.', 'error'); }
         }
-      } else {
-        localStorage.removeItem('ziada_active_user');
-        showAuthPanel();
-      }
+      } else { localStorage.removeItem('ziada_active_user'); showAuthPanel(); }
     });
 
     function showAuthPanel() {
@@ -589,7 +360,7 @@
       document.getElementById('auth-panel').style.display = 'block';
       document.getElementById('dashboard-panel').style.display = 'none';
     }
-    
+
     function showDashboard(user, skipSubModal = false) {
       document.getElementById('auth-loader').style.display = 'none';
       document.getElementById('auth-panel').style.display = 'none';
@@ -603,23 +374,15 @@
       const isAdmin = user.role === 'admin';
       const isUserGold = isAdmin || user.effectivePlan === 'gold' || (!user.effectivePlan && user.plan !== 'free');
 
-      if (isAdmin) {
-        planCard.style.display = 'none';
-      } else if (isUserGold) {
-        planCard.className = 'plan-status-card is-gold';
-        planCard.style.display = 'flex';
+      if (isAdmin) planCard.style.display = 'none';
+      else if (isUserGold) {
+        planCard.className = 'plan-status-card is-gold'; planCard.style.display = 'flex';
         const subInfo = user.subscriptionEnd === 'unlimited' ? 'مفتوح مدى الحياة' : (user.subscriptionEnd ? `ساري حتى ${user.subscriptionEnd}` : 'مفعل');
         planCard.innerHTML = `<div style="font-weight:900; font-size:0.86rem;">⭐ حسابك على باقة Gold (صلاحية كاملة)</div><div style="font-size:0.75rem; color:#cbd5e1;">${subInfo}</div>`;
       } else {
-        planCard.className = 'plan-status-card is-free';
-        planCard.style.display = 'flex';
-        const msg = user.expiredGold
-          ? 'انتهت مدة باقة Gold — تعمل الآن على الباقة العادية (Free)'
-          : '🆓 أنت على الباقة العادية (تجريبية بحدود)';
-        planCard.innerHTML = `
-          <div style="font-weight:800; font-size:0.8rem;">${msg}</div>
-          <a href="${waUpgradeUrl}" target="_blank" class="btn-upgrade-gold-dash"><i class="fa-solid fa-crown"></i> ترقية حسابك لـ Gold الآن</a>
-        `;
+        planCard.className = 'plan-status-card is-free'; planCard.style.display = 'flex';
+        const msg = user.expiredGold ? 'انتهت مدة باقة Gold — تعمل الآن على الباقة العادية (Free)' : '🆓 أنت على الباقة العادية (تجريبية بحدود)';
+        planCard.innerHTML = `<div style="font-weight:800; font-size:0.8rem;">${msg}</div><a href="${waUpgradeUrl}" target="_blank" class="btn-upgrade-gold-dash"><i class="fa-solid fa-crown"></i> ترقية حسابك لـ Gold الآن</a>`;
       }
 
       const unlockAllForFree = !isUserGold && globalPlanConfig.freeUnlockAllTools;
@@ -633,11 +396,10 @@
       document.getElementById('card-live').style.display = p.live ? 'flex' : 'none';
       document.getElementById('card-referee').style.display = p.referee ? 'flex' : 'none';
       document.getElementById('card-goalkeeper').style.display = p.goalkeeper ? 'flex' : 'none';
-
       document.getElementById('admin-card').style.display = isAdmin ? 'flex' : 'none';
       if (!skipSubModal) checkSubscription(user);
     }
-    
+
     function handleLogout() {
       auth.signOut().then(() => {
         localStorage.removeItem('ziada_active_user');
@@ -647,17 +409,8 @@
       });
     }
 
-    function closeSubModal() {
-      document.getElementById('subOverlay').style.display = 'none';
-    }
-
-    function showAlert(message, type) {
-      const box = document.getElementById('alert-box');
-      box.textContent = message;
-      box.className = `alert ${type}`;
-      box.style.display = 'block';
-      setTimeout(() => box.style.display = 'none', 5000);
-    }
+    function closeSubModal() { document.getElementById('subOverlay').style.display = 'none'; }
+    function showAlert(message, type) { const box = document.getElementById('alert-box'); box.textContent = message; box.className = `alert ${type}`; box.style.display = 'block'; setTimeout(() => box.style.display = 'none', 5000); }
 
     function switchTab(type) {
       const isLogin = type === 'login';
@@ -670,126 +423,68 @@
 
     async function handleLogin(e) {
       e.preventDefault();
-      const btn = document.getElementById('login-btn-text');
-      btn.textContent = 'جاري التحقق الأمني...';
-      try {
-        await auth.signInWithEmailAndPassword(
-          document.getElementById('login-email').value.trim(),
-          document.getElementById('login-password').value
-        );
-      } catch (error) {
-        showAlert('البريد أو كلمة المرور غير صحيحة.', 'error');
-      } finally {
-        btn.textContent = 'دخول للمنصة';
-      }
+      const btn = document.getElementById('login-btn-text'); btn.textContent = 'جاري التحقق الأمني...';
+      try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value.trim(), document.getElementById('login-password').value); }
+      catch (error) { showAlert('البريد أو كلمة المرور غير صحيحة.', 'error'); }
+      finally { btn.textContent = 'دخول للمنصة'; }
     }
 
     async function handleRegister(e) {
       e.preventDefault();
-      const btn = document.getElementById('reg-btn-text');
-      btn.textContent = 'جاري إنشاء البروفايل التكتيكي...';
-      isRegistering = true;
-      let createdUser = null;
-
+      const btn = document.getElementById('reg-btn-text'); btn.textContent = 'جاري إنشاء البروفايل التكتيكي...';
+      isRegistering = true; let createdUser = null;
       await fetchPlanConfig();
-      const cfg = globalPlanConfig;
-      const specialty = document.getElementById('reg-specialty').value;
+      const cfg = globalPlanConfig, specialty = document.getElementById('reg-specialty').value;
       let initPermissions = { headCoach: false, performanceDev: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
 
-      if (cfg.freeUnlockAllTools) {
-        initPermissions = { headCoach: true, performanceDev: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
-      } else if (specialty === 'headcoach') {
-        initPermissions.headCoach = true;
-      } else if (specialty === 'perfdev') {
-        initPermissions.performanceDev = true;
-      } else if (specialty === 'analyst') {
-        initPermissions.tactical = true; initPermissions.individual = true; initPermissions.live = true;
-      } else if (specialty === 'gkcoach') {
-        initPermissions.goalkeeper = true;
-      } else if (specialty === 'referee') {
-        initPermissions.referee = true;
-      }
+      if (cfg.freeUnlockAllTools) initPermissions = { headCoach: true, performanceDev: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+      else if (specialty === 'headcoach') initPermissions.headCoach = true;
+      else if (specialty === 'perfdev') initPermissions.performanceDev = true;
+      else if (specialty === 'analyst') { initPermissions.tactical = true; initPermissions.individual = true; initPermissions.live = true; }
+      else if (specialty === 'gkcoach') initPermissions.goalkeeper = true;
+      else if (specialty === 'referee') initPermissions.referee = true;
 
       const initStatus = cfg.autoApproveFree ? 'approved' : 'pending';
-
       try {
-        const email = document.getElementById('reg-email').value.trim();
-        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim(), name = document.getElementById('reg-name').value.trim();
         const cred = await auth.createUserWithEmailAndPassword(email, document.getElementById('reg-password').value);
         createdUser = cred.user;
-
-        const newUserDoc = {
-          uid: createdUser.uid,
-          name: name,
-          email: email,
-          role: 'coach',
-          plan: 'free',
-          status: initStatus,
-          permissions: initPermissions,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        const newUserDoc = { uid: createdUser.uid, name, email, role: 'coach', plan: 'free', status: initStatus, permissions: initPermissions, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
         await db.collection('users').doc(createdUser.uid).set(newUserDoc);
 
         if (cfg.autoApproveFree && cfg.skipEmailVerifyForFree) {
           const activeObj = Object.assign({}, newUserDoc, { effectivePlan: 'free', expiredGold: false });
           localStorage.setItem('ziada_active_user', JSON.stringify(activeObj));
-          document.getElementById('register-form').reset();
-          isRegistering = false;
-          showDashboard(activeObj, true);
+          document.getElementById('register-form').reset(); isRegistering = false; showDashboard(activeObj, true);
         } else {
           await createdUser.sendEmailVerification();
           showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
-          document.getElementById('register-form').reset();
-          await auth.signOut();
-          isRegistering = false;
+          document.getElementById('register-form').reset(); await auth.signOut(); isRegistering = false;
         }
       } catch (error) {
-        if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
-          try { await createdUser.delete(); } catch(e) {}
-        }
+        if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') { try { await createdUser.delete(); } catch(e) {} }
         if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
         else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
         else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
         try { await auth.signOut(); } catch(e) {}
         isRegistering = false;
-      } finally {
-        btn.textContent = 'إنشاء الحساب والبدء فوراً';
-      }
+      } finally { btn.textContent = 'إنشاء الحساب والبدء فوراً'; }
     }
 
     function checkSubscription(userData) {
-      if (userData.role === 'admin') return;
-      if (sessionStorage.getItem('ziada_sub_shown')) return;
-
-      const overlay = document.getElementById('subOverlay');
-      const modalBox = document.getElementById('subModalBox');
-      const timerText = document.getElementById('subTimerText');
-      const btnClose = document.getElementById('btnSubClose');
-
+      if (userData.role === 'admin' || sessionStorage.getItem('ziada_sub_shown')) return;
+      const overlay = document.getElementById('subOverlay'), modalBox = document.getElementById('subModalBox'), timerText = document.getElementById('subTimerText'), btnClose = document.getElementById('btnSubClose');
       if (userData.expiredGold) {
-        sessionStorage.setItem('ziada_sub_shown', '1');
-        modalBox.classList.add('expired');
-        overlay.style.display = 'flex';
+        sessionStorage.setItem('ziada_sub_shown', '1'); modalBox.classList.add('expired'); overlay.style.display = 'flex';
         timerText.innerHTML = 'انتهى اشتراك باقة Gold! تم تحويلك للباقة العادية (Free) مؤقتاً.';
-        btnClose.innerText = 'متابعة للمنصة أو التجديد';
-        btnClose.style.background = '#f59e0b';
-        btnClose.style.color = '#070b12';
-        btnClose.onclick = closeSubModal;
-        return;
+        btnClose.innerText = 'متابعة للمنصة أو التجديد'; btnClose.style.background = '#f59e0b'; btnClose.style.color = '#070b12'; btnClose.onclick = closeSubModal; return;
       }
-
       if (userData.effectivePlan !== 'gold' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return;
       const distance = new Date(userData.subscriptionEnd + "T23:59:59").getTime() - new Date().getTime();
-
       if (distance > 0) {
-        sessionStorage.setItem('ziada_sub_shown', '1');
-        modalBox.classList.remove('expired');
-        overlay.style.display = 'flex';
+        sessionStorage.setItem('ziada_sub_shown', '1'); modalBox.classList.remove('expired'); overlay.style.display = 'flex';
         timerText.innerHTML = `متبقي في باقة Gold:<br><span style="font-size:26px;">${Math.floor(distance / (1000 * 60 * 60 * 24))}</span> أيام و <span style="font-size:26px;">${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}</span> ساعات`;
-        btnClose.innerText = "متابعة للمنصة";
-        btnClose.style.background = "#38bdf8";
-        btnClose.style.color = "#070b12";
-        btnClose.onclick = closeSubModal;
+        btnClose.innerText = "متابعة للمنصة"; btnClose.style.background = "#38bdf8"; btnClose.style.color = "#070b12"; btnClose.onclick = closeSubModal;
       }
     }
   </script>
