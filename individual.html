@@ -8,6 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="plan-guard.js"></script>
 
   <style>
     :root {
@@ -657,13 +658,14 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحليل الفردي -->
+  <!-- التحقق من الجلسة وصلاحية التحليل الفردي (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
         const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
         if (!u || !u.uid) { window.location.href = 'index.html'; return; }
-        if (u.role !== 'admin' && u.permissions && u.permissions.individual === false) {
+        const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+        if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.individual === false) {
           alert('ليس لديك صلاحية الدخول لأداة التحليل الفردي.');
           window.location.href = 'index.html';
         }
@@ -1287,7 +1289,6 @@
       modalPSelect.innerHTML = '';
       dribblePSelect.innerHTML = '';
 
-      // خيار عرض الفريق بالكامل في القائمة الرئيسية فقط
       const allOpt = document.createElement('option');
       allOpt.value = '__ALL__';
       allOpt.innerText = `📊 الفريق بالكامل (${matchConfig.myTeam})`;
@@ -1355,9 +1356,10 @@
     }
 
     // ==========================================
-    // محاكاة الرصد التجريبي
+    // محاكاة الرصد التجريبي (مقيدة بحدود الباقة العادية)
     // ==========================================
     function openAIAutoModal() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) return;
       video.pause();
       document.getElementById('modalKitDot').style.backgroundColor = matchConfig.primaryKitColor;
       document.getElementById('modalPlayersCount').innerText = `${matchConfig.starters.length + matchConfig.subs.length} لاعبة`;
@@ -1372,6 +1374,10 @@
     }
 
     function runAIAutoAnalysis() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) {
+        aiAutoModal.style.display = 'none';
+        return;
+      }
       const mode = document.getElementById('aiModeSelect').value;
       const targetPlayer = (pSelect.value === '__ALL__') ? matchConfig.starters[0] : pSelect.value;
       const progressBox = document.getElementById('aiProgressBox');
@@ -1414,7 +1420,13 @@
         'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح',
         'التحام هوائي فائز', 'التحام أرضي فائز'
       ];
-      const numEvents = Math.floor(Math.random() * 8) + 14;
+      let numEvents = Math.floor(Math.random() * 8) + 14;
+      if (window.ZiadaPlan && !ZiadaPlan.isGold()) {
+        const maxAllowed = parseInt(ZiadaPlan.getConfig().maxIndividualEvents, 10) || 0;
+        if (maxAllowed > 0) {
+          numEvents = Math.max(0, Math.min(numEvents, maxAllowed - eventsData.length));
+        }
+      }
       for (let i = 0; i < numEvents; i++) {
         const p = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
         const evType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
@@ -1456,11 +1468,9 @@
       ctx.lineWidth = 1.6;
       ctx.strokeRect(10, 10, width - 20, height - 20);
 
-      // خط المنتصف والدائرة
       ctx.beginPath(); ctx.moveTo(10, height / 2); ctx.lineTo(width - 10, height / 2); ctx.stroke();
       ctx.beginPath(); ctx.arc(width / 2, height / 2, width * 0.135, 0, 2 * Math.PI); ctx.stroke();
 
-      // منطقتا الجزاء
       const penW = width * 0.50, penH = height * 0.155;
       const sixW = width * 0.23, sixH = height * 0.055;
       ctx.strokeRect((width - penW) / 2, 10, penW, penH);
@@ -1468,7 +1478,6 @@
       ctx.strokeRect((width - penW) / 2, height - 10 - penH, penW, penH);
       ctx.strokeRect((width - sixW) / 2, height - 10 - sixH, sixW, sixH);
 
-      // مؤشر اتجاه الهجوم أعلى الملعب
       ctx.save();
       ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
       ctx.font = 'bold 10px Cairo, Arial';
@@ -1517,30 +1526,39 @@
     }
 
     // ==========================================
-    // رصد الأحداث على الملعب (دعم ماوس + تاتش دقيق)
+    // رصد الأحداث على الملعب (مربوط بحدود الباقة العادية)
     // ==========================================
     function getDefaultTagPlayer() {
       if (pSelect.value && pSelect.value !== '__ALL__') return pSelect.value;
       return matchConfig.starters[0] || (modalPSelect.options[0] ? modalPSelect.options[0].value : '');
     }
 
-    function openDribbleChoiceModal() { video.pause(); dribblePSelect.value = getDefaultTagPlayer(); dribbleChoiceModal.style.display = 'flex'; }
+    function canAddNewEvent() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) {
+        video.pause();
+        return false;
+      }
+      return true;
+    }
+
+    function openDribbleChoiceModal() { if (!canAddNewEvent()) return; video.pause(); dribblePSelect.value = getDefaultTagPlayer(); dribbleChoiceModal.style.display = 'flex'; }
     function closeDribbleChoiceModal() { dribbleChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startDribblePitch(isOk) { const p = dribblePSelect.value; dribbleChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة', p); }
 
-    function openReceiveChoiceModal() { video.pause(); receiveChoiceModal.style.display = 'flex'; }
+    function openReceiveChoiceModal() { if (!canAddNewEvent()) return; video.pause(); receiveChoiceModal.style.display = 'flex'; }
     function closeReceiveChoiceModal() { receiveChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startReceivePitch(isOk) { receiveChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ'); }
 
-    function openCrossChoiceModal() { video.pause(); crossChoiceModal.style.display = 'flex'; }
+    function openCrossChoiceModal() { if (!canAddNewEvent()) return; video.pause(); crossChoiceModal.style.display = 'flex'; }
     function closeCrossChoiceModal() { crossChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startCrossPitch(isOk) { crossChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ'); }
 
-    function openDuelChoiceModal() { video.pause(); duelChoiceModal.style.display = 'flex'; }
+    function openDuelChoiceModal() { if (!canAddNewEvent()) return; video.pause(); duelChoiceModal.style.display = 'flex'; }
     function closeDuelChoiceModal() { duelChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startDuelPitch(type) { duelChoiceModal.style.display = 'none'; openPitchModal(type); }
 
     function openPitchModal(type, preSelectedPlayer = null) {
+      if (!canAddNewEvent()) return;
       video.pause();
       const time = Math.floor(video.currentTime || 0);
       modalPSelect.value = preSelectedPlayer || getDefaultTagPlayer();
@@ -1574,7 +1592,6 @@
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-      // إحداثيات نسبية دقيقة 0..1 متوافقة مع أي حجم شاشة
       const normX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
       const normY = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
       const drawX = normX * modalCanvas.width;
@@ -1744,7 +1761,6 @@
         else if (ev.type === 'هدف') s.goals++;
       });
 
-      // حساب تقييم الأداء من 10 (أساس 6.0 + مكافآت/خصومات فنية واقعية)
       let rating = null;
       if (list.length > 0) {
         let r = 6.0;
@@ -1835,7 +1851,6 @@
         });
       }
 
-      // تحديث البطاقات البدنية والتقييم
       const eventsCount = filteredEvents.length;
       const estimatedTotalKm = eventsCount > 0 ? ((totalDistanceMeters / 1000) + (eventsCount * 0.24)).toFixed(2) : '0.00';
       const topSpeedVal = eventsCount > 0 ? (24.5 + Math.min(6.5, eventsCount * 0.35)).toFixed(1) : '0.0';
@@ -1894,9 +1909,12 @@
     }
 
     // ==========================================
-    // تصدير PDF مضبوط على A4 + تصدير Excel (CSV)
+    // تصدير PDF مضبوط على A4 + تصدير Excel (CSV) — مربوط بنظام الباقات
     // ==========================================
     async function exportToPDF(scope = 'current') {
+      const label = scope === 'current' ? 'تقرير اللاعبة PDF' : 'التقرير الشامل للفريق PDF';
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', label)) return;
+
       const { jsPDF } = window.jspdf;
       const origVal = pSelect.value;
 
@@ -1960,6 +1978,8 @@
     }
 
     function exportToCSV() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'جدول الإحصائيات Excel (CSV)')) return;
+
       const allPlayers = [...matchConfig.starters, ...matchConfig.subs];
       const headers = ['اللاعبة', 'التقييم /10', 'باص صح', 'باص خطأ', 'دقة التمرير %', 'استلام صح', 'استلام خطأ', 'مراوغة ناجحة', 'مراوغة فاشلة', 'استخلاص', 'فقدان', 'هوائي فائز', 'هوائي خاسر', 'أرضي فائز', 'أرضي خاسر', 'كروس صح', 'كروس خطأ', 'تسديدات', 'أهداف'];
       const rows = [headers.join(',')];
@@ -2056,6 +2076,10 @@
     }
 
     function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
+        ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً');
+        return;
+      }
       if (!pendingRecoveryState) return;
       isRestoring = true;
       const s = pendingRecoveryState;
