@@ -211,9 +211,46 @@
     .alert.success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; }
     
     .dashboard-panel { display: none; }
-    .coach-welcome { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
+    .coach-welcome { text-align: center; margin-bottom: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
     .coach-welcome h2 { font-size: 1.25rem; color: var(--neon-cyan); font-weight: 800; }
     .coach-welcome p { color: #94a3b8; font-size: 0.825rem; margin-top: 0.25rem; }
+
+    /* كارت حالة الباقة (Gold / Free) */
+    .plan-status-card {
+      border-radius: 0.85rem;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .plan-status-card.is-gold {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      color: #fde68a;
+    }
+    .plan-status-card.is-free {
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px dashed rgba(245, 158, 11, 0.55);
+      color: #e2e8f0;
+    }
+    .btn-upgrade-gold-dash {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #070b12;
+      padding: 0.5rem 1rem;
+      border-radius: 0.55rem;
+      font-weight: 900;
+      font-size: 0.82rem;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+      transition: 0.2s;
+    }
+    .btn-upgrade-gold-dash:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
     .analysis-grid { display: flex; flex-direction: column; gap: 0.85rem; }
     .analysis-card { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 0.75rem; text-decoration: none; color: #f8fafc; cursor: pointer; transition: all 0.3s; }
@@ -236,10 +273,10 @@
     .sub-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
     .sub-modal { background: #111827; border: 2px solid #38bdf8; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
     .sub-modal h3 { color: #38bdf8; margin-top: 0; font-size: 22px; }
-    .sub-timer { font-size: 18px; font-weight: 800; color: #f59e0b; margin: 15px 0; background: #1f2937; padding: 10px; border-radius: 8px; direction: rtl; }
-    .sub-modal.expired { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-    .sub-modal.expired h3, .sub-modal.expired .sub-timer { color: #ef4444; }
-    .btn-sub-close { background: #38bdf8; color: #070b12; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.2s; font-family: inherit; }
+    .sub-timer { font-size: 17px; font-weight: 800; color: #f59e0b; margin: 15px 0; background: #1f2937; padding: 10px; border-radius: 8px; direction: rtl; }
+    .sub-modal.expired { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+    .sub-modal.expired h3, .sub-modal.expired .sub-timer { color: #fbbf24; }
+    .btn-sub-close { background: #38bdf8; color: #070b12; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.2s; font-family: inherit; width: 100%; }
     .btn-sub-close:hover { background: #0284c7; color: #fff; }
 
     .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-top: 15px; background: linear-gradient(135deg, #16a34a, #22c55e); color: white; text-decoration: none; border-radius: 0.6rem; font-weight: 800; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
@@ -296,7 +333,7 @@
       <div id="auth-panel" style="display: none;">
         <div class="tabs">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</button>
-          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">مستخدم جديد</button>
+          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">حساب مجاني جديد</button>
         </div>
 
         <div id="alert-box" class="alert"></div>
@@ -313,8 +350,8 @@
           <div class="form-group">
             <label>التخصص (سيتم تفعيل أدواتك بناءً عليه)</label>
             <select id="reg-specialty" required>
-              <option value="headcoach">مدير فني (Head Coach)</option>
               <option value="analyst">محلل أداء (Performance Analyst)</option>
+              <option value="headcoach">مدير فني (Head Coach)</option>
               <option value="gkcoach">مدرب حراس مرمى (GK Coach)</option>
               <option value="referee">حكم / خبير تحكيمي (Referee)</option>
             </select>
@@ -322,11 +359,11 @@
 
           <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="reg-email" required dir="ltr" placeholder="coach@ziada.com"></div>
           <div class="form-group"><label>كلمة المرور (6 أحرف على الأقل)</label><input type="password" id="reg-password" required minlength="6" dir="ltr" placeholder="••••••••"></div>
-          <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب الآن</button>
+          <button type="submit" class="submit-btn btn-register-style" id="reg-btn-text">إنشاء الحساب والبدء فوراً</button>
         </form>
 
-        <div class="contact-hint">للاشتراك، التجديد، أو الدعم الفني:</div>
-        <a href="https://wa.me/201027482686" target="_blank" class="whatsapp-btn">
+        <div class="contact-hint">للاشتراك في باقة Gold، التجديد، أو الدعم الفني:</div>
+        <a href="https://wa.me/201027482686" id="authWhatsappLink" target="_blank" class="whatsapp-btn">
           <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> تواصل مع الإدارة عبر واتساب
         </a>
       </div>
@@ -336,6 +373,10 @@
           <h2 id="welcome-name">أهلاً بك يا كوتش</h2>
           <p>أدواتك المتاحة للعمل:</p>
         </div>
+
+        <!-- كارت حالة الباقة (Gold / Free) -->
+        <div id="planStatusCard" class="plan-status-card"></div>
+
         <div class="analysis-grid">
           <a href="head_coach.html" id="card-headcoach" class="analysis-card" style="border-color: #ec4899;"><div class="icon-box headcoach-icon">👔</div><div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني</h3></div></a>
           <a href="tactical.html" id="card-tactical" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
@@ -344,7 +385,7 @@
           <a href="referee.html" id="card-referee" class="analysis-card" style="border-color: #8b5cf6;"><div class="icon-box referee-icon">⚖️</div><div class="card-info"><h3 style="color: #a78bfa;">تحليل الحكام والقانون</h3></div></a>
           <a href="goalkeeper.html" id="card-goalkeeper" class="analysis-card" style="border-color: #10b981;"><div class="icon-box gk-icon">🧤</div><div class="card-info"><h3 style="color: #34d399;">استوديو حراس المرمى</h3></div></a>
           
-          <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة</h3></div></a>
+          <a href="admin.html" id="admin-card" class="analysis-card" style="display: none; border-color: #f59e0b;"><div class="icon-box admin-icon">⚙️</div><div class="card-info"><h3 style="color: var(--neon-gold);">لوحة تحكم الإدارة والباقات</h3></div></a>
         </div>
         <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
       </div>
@@ -356,8 +397,8 @@
       <p class="hud-desc">نظام القيادة والتحليل التكتيكي الذكي للجيل القادم. تتبع البيانات اللحظية، قراءة تحركات اللاعبين، ورسم الخطط الاستراتيجية بأعلى دقة تكنولوجية.</p>
       
       <div class="hud-stats-grid">
-        <div class="stat-box"><div class="number">99.9%</div><div class="label">دقة التحليل</div></div>
-        <div class="stat-box"><div class="number">LIVE</div><div class="label">تتبع لحظي</div></div>
+        <div class="stat-box"><div class="number">FREE</div><div class="label">تجربة فورية</div></div>
+        <div class="stat-box"><div class="number">GOLD</div><div class="label">تصدير Full HD</div></div>
         <div class="stat-box"><div class="number">PRO</div><div class="label">نسخة النخبة</div></div>
       </div>
     </div>
@@ -365,7 +406,7 @@
 
   <div class="sub-overlay" id="subOverlay">
     <div class="sub-modal" id="subModalBox">
-      <h3><i class="fa-solid fa-hourglass-half"></i> حالة الاشتراك</h3>
+      <h3><i class="fa-solid fa-crown" style="color:#f59e0b;"></i> حالة الاشتراك</h3>
       <div class="sub-timer" id="subTimerText">جاري الحساب...</div>
       <button class="btn-sub-close" id="btnSubClose" onclick="closeSubModal()">متابعة للمنصة</button>
     </div>
@@ -384,7 +425,44 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    const DEFAULT_PLAN_CONFIG = {
+      autoApproveFree: true,
+      skipEmailVerifyForFree: true,
+      freeUnlockAllTools: true,
+      freeBlockVideoExport: true,
+      freeBlockPdfExport: true,
+      freeBlockImageExport: false,
+      freeBlockAutoSave: false,
+      maxTacticalClips: 3,
+      maxIndividualEvents: 5,
+      maxAnimFrames: 2,
+      maxRefCases: 2,
+      maxLiveClips: 2,
+      whatsappNumber: '201027482686',
+      goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، وعدد غير محدود من اللقطات والحالات.'
+    };
+
+    let globalPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG);
+    try {
+      const cachedCfg = JSON.parse(localStorage.getItem('ziada_plan_config') || 'null');
+      if (cachedCfg) globalPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG, cachedCfg);
+    } catch (e) {}
+
     let isRegistering = false;
+
+    async function fetchPlanConfig() {
+      try {
+        const snap = await db.collection('settings').doc('plan_config').get();
+        if (snap.exists) {
+          globalPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG, snap.data());
+        }
+        localStorage.setItem('ziada_plan_config', JSON.stringify(globalPlanConfig));
+        const phone = String(globalPlanConfig.whatsappNumber || '201027482686').replace(/[^\d]/g, '');
+        const waEl = document.getElementById('authWhatsappLink');
+        if (waEl) waEl.href = `https://wa.me/${phone}`;
+      } catch (e) {}
+      return globalPlanConfig;
+    }
 
     // عرض فوري للوحة التحكم لو المستخدم مسجل دخول مسبقاً (لمنع الوميض نهائياً)
     (function instantRestoreUI() {
@@ -419,45 +497,65 @@
     }
 
     async function validateUserAccess(user, userData) {
-      if (isRegistering) return false;
-      if (userData.role !== 'admin' && !userData.createdByAdmin && !user.emailVerified) {
+      if (isRegistering) return { ok: false };
+      const cfg = globalPlanConfig;
+      const isFreePlan = userData.plan === 'free';
+
+      const skipVerify = userData.role === 'admin' || userData.createdByAdmin || (isFreePlan && cfg.skipEmailVerifyForFree);
+      if (!skipVerify && !user.emailVerified) {
         showAlert('برجاء تفعيل بريدك الإلكتروني أولاً عبر الرابط المرسل إليك.', 'error');
-        return false;
+        return { ok: false };
       }
       if (userData.status === 'pending' && userData.role !== 'admin') {
-        showAlert('حسابك قيد المراجعة. يرجى انتظار التفعيل.', 'error');
-        return false;
+        showAlert('حسابك قيد المراجعة أو موقوف مؤقتاً. يرجى التواصل مع الإدارة.', 'error');
+        return { ok: false };
       }
-      if (userData.role !== 'admin' && userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
+
+      let effectivePlan = 'gold';
+      let expiredGold = false;
+
+      if (userData.role === 'admin') {
+        effectivePlan = 'gold';
+      } else if (isFreePlan) {
+        effectivePlan = 'free';
+      } else if (userData.subscriptionEnd && userData.subscriptionEnd !== 'unlimited') {
         const trueToday = await getGlobalInternetDate();
         if (trueToday > userData.subscriptionEnd) {
-          showAlert('عفواً، لقد انتهت مدة اشتراكك. يرجى التواصل مع الإدارة للتجديد.', 'error');
-          return false;
+          effectivePlan = 'free';
+          expiredGold = true;
         }
       }
-      if (userData.role !== 'admin' && userData.status === 'approved' && !userData.allowMultiDevice) {
+
+      if (userData.role !== 'admin' && effectivePlan === 'gold' && userData.status === 'approved' && !userData.allowMultiDevice) {
         const currentLocalDevice = getDeviceFingerprint();
         if (!userData.currentDeviceId) {
           await db.collection('users').doc(user.uid).update({ currentDeviceId: currentLocalDevice });
         } else if (userData.currentDeviceId !== currentLocalDevice) {
-          showAlert('غير مسموح لك بتسجيل الدخول من أكثر من جهاز.', 'error');
-          return false;
+          showAlert('غير مسموح لك بتسجيل الدخول لباقة Gold من أكثر من جهاز. تواصل مع الإدارة لفك الجهاز.', 'error');
+          return { ok: false };
         }
       }
-      return true;
+
+      return { ok: true, effectivePlan, expiredGold };
     }
 
     auth.onAuthStateChanged(async (user) => {
       if (isRegistering) return;
+      await fetchPlanConfig();
+
       if (user) {
         try {
           const userDoc = await db.collection('users').doc(user.uid).get();
           if (userDoc.exists) {
             const userData = userDoc.data();
-            const isValid = await validateUserAccess(user, userData);
-            if (isValid) {
-              localStorage.setItem('ziada_active_user', JSON.stringify(userData));
-              showDashboard(userData, false);
+            const res = await validateUserAccess(user, userData);
+            if (res.ok) {
+              const enrichedUser = Object.assign({}, userData, {
+                effectivePlan: res.effectivePlan,
+                expiredGold: !!res.expiredGold
+              });
+              localStorage.setItem('ziada_active_user', JSON.stringify(enrichedUser));
+              showDashboard(enrichedUser, false);
             } else {
               localStorage.removeItem('ziada_active_user');
               await auth.signOut();
@@ -469,7 +567,6 @@
             showAuthPanel();
           }
         } catch (error) {
-          // في حالة انقطاع الإنترنت: السماح بالعمل من البيانات المحفوظة محلياً
           const cachedUser = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
           if (cachedUser && cachedUser.uid === user.uid) {
             showDashboard(cachedUser, true);
@@ -495,8 +592,37 @@
       document.getElementById('auth-panel').style.display = 'none';
       document.getElementById('dashboard-panel').style.display = 'block';
       document.getElementById('welcome-name').textContent = `أهلاً بك يا كوتش: ${user.name || ''}`;
-      
-      const p = user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+
+      const planCard = document.getElementById('planStatusCard');
+      const phone = String(globalPlanConfig.whatsappNumber || '201027482686').replace(/[^\d]/g, '');
+      const waUpgradeUrl = `https://wa.me/${phone}?text=${encodeURIComponent(`مرحباً إدارة Ziada Analysis ⚽\nأرغب في الترقية إلى باقة Gold ⭐\nالاسم: ${user.name || ''}\nالبريد الإلكتروني: ${user.email || ''}`)}`;
+
+      const isUserGold = user.role === 'admin' || user.effectivePlan === 'gold' || (!user.effectivePlan && user.plan !== 'free');
+
+      if (user.role === 'admin') {
+        planCard.style.display = 'none';
+      } else if (isUserGold) {
+        planCard.className = 'plan-status-card is-gold';
+        planCard.style.display = 'flex';
+        const subInfo = user.subscriptionEnd === 'unlimited' ? 'مفتوح مدى الحياة' : (user.subscriptionEnd ? `ساري حتى ${user.subscriptionEnd}` : 'مفعل');
+        planCard.innerHTML = `<div style="font-weight:900; font-size:0.86rem;">⭐ حسابك على باقة Gold (صلاحية كاملة)</div><div style="font-size:0.75rem; color:#cbd5e1;">${subInfo}</div>`;
+      } else {
+        planCard.className = 'plan-status-card is-free';
+        planCard.style.display = 'flex';
+        const msg = user.expiredGold
+          ? 'انتهت مدة باقة Gold — تعمل الآن على الباقة العادية (Free)'
+          : '🆓 أنت على الباقة العادية (تجريبية بحدود)';
+        planCard.innerHTML = `
+          <div style="font-weight:800; font-size:0.8rem;">${msg}</div>
+          <a href="${waUpgradeUrl}" target="_blank" class="btn-upgrade-gold-dash"><i class="fa-solid fa-crown"></i> ترقية حسابك لـ Gold الآن</a>
+        `;
+      }
+
+      const unlockAllForFree = !isUserGold && globalPlanConfig.freeUnlockAllTools;
+      const p = unlockAllForFree
+        ? { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }
+        : (user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true });
+
       document.getElementById('card-headcoach').style.display = p.headCoach ? 'flex' : 'none';
       document.getElementById('card-tactical').style.display = p.tactical ? 'flex' : 'none';
       document.getElementById('card-individual').style.display = p.individual ? 'flex' : 'none';
@@ -544,7 +670,7 @@
       btn.textContent = 'جاري التحقق الأمني...';
       try {
         await auth.signInWithEmailAndPassword(
-          document.getElementById('login-email').value,
+          document.getElementById('login-email').value.trim(),
           document.getElementById('login-password').value
         );
       } catch (error) {
@@ -561,10 +687,14 @@
       isRegistering = true;
       let createdUser = null;
 
+      await fetchPlanConfig();
+      const cfg = globalPlanConfig;
       const specialty = document.getElementById('reg-specialty').value;
       let initPermissions = { headCoach: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
-      
-      if (specialty === 'headcoach') {
+
+      if (cfg.freeUnlockAllTools) {
+        initPermissions = { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+      } else if (specialty === 'headcoach') {
         initPermissions.headCoach = true;
       } else if (specialty === 'analyst') {
         initPermissions.tactical = true; initPermissions.individual = true; initPermissions.live = true;
@@ -574,25 +704,39 @@
         initPermissions.referee = true;
       }
 
+      const initStatus = cfg.autoApproveFree ? 'approved' : 'pending';
+
       try {
-        const cred = await auth.createUserWithEmailAndPassword(
-          document.getElementById('reg-email').value,
-          document.getElementById('reg-password').value
-        );
+        const email = document.getElementById('reg-email').value.trim();
+        const name = document.getElementById('reg-name').value.trim();
+        const cred = await auth.createUserWithEmailAndPassword(email, document.getElementById('reg-password').value);
         createdUser = cred.user;
-        await db.collection('users').doc(createdUser.uid).set({
+
+        const newUserDoc = {
           uid: createdUser.uid,
-          name: document.getElementById('reg-name').value,
-          email: document.getElementById('reg-email').value,
+          name: name,
+          email: email,
           role: 'coach',
-          status: 'pending',
+          plan: 'free',
+          status: initStatus,
           permissions: initPermissions,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        await createdUser.sendEmailVerification();
-        showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
-        document.getElementById('register-form').reset();
-        await auth.signOut();
+        };
+        await db.collection('users').doc(createdUser.uid).set(newUserDoc);
+
+        if (cfg.autoApproveFree && cfg.skipEmailVerifyForFree) {
+          const activeObj = Object.assign({}, newUserDoc, { effectivePlan: 'free', expiredGold: false });
+          localStorage.setItem('ziada_active_user', JSON.stringify(activeObj));
+          document.getElementById('register-form').reset();
+          isRegistering = false;
+          showDashboard(activeObj, true);
+        } else {
+          await createdUser.sendEmailVerification();
+          showAlert('تم الإنشاء بنجاح! برجاء مراجعة بريدك الإلكتروني والضغط على رابط التفعيل.', 'success');
+          document.getElementById('register-form').reset();
+          await auth.signOut();
+          isRegistering = false;
+        }
       } catch (error) {
         if (createdUser && error.code !== 'auth/email-already-in-use' && error.code !== 'auth/weak-password') {
           try { await createdUser.delete(); } catch(e) {}
@@ -600,43 +744,46 @@
         if (error.code === 'auth/email-already-in-use') showAlert('هذا البريد مستخدم بالفعل.', 'error');
         else if (error.code === 'auth/weak-password') showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل.', 'error');
         else showAlert('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
-        await auth.signOut();
-      } finally {
+        try { await auth.signOut(); } catch(e) {}
         isRegistering = false;
-        btn.textContent = 'إنشاء الحساب الآن';
+      } finally {
+        btn.textContent = 'إنشاء الحساب والبدء فوراً';
       }
     }
 
     function checkSubscription(userData) {
-      if (userData.role === 'admin' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return;
-      const distance = new Date(userData.subscriptionEnd + "T23:59:59").getTime() - new Date().getTime();
+      if (userData.role === 'admin') return;
+      if (sessionStorage.getItem('ziada_sub_shown')) return;
+
       const overlay = document.getElementById('subOverlay');
       const modalBox = document.getElementById('subModalBox');
       const timerText = document.getElementById('subTimerText');
       const btnClose = document.getElementById('btnSubClose');
 
+      if (userData.expiredGold) {
+        sessionStorage.setItem('ziada_sub_shown', '1');
+        modalBox.classList.add('expired');
+        overlay.style.display = 'flex';
+        timerText.innerHTML = 'انتهى اشتراك باقة Gold! تم تحويلك للباقة العادية (Free) مؤقتاً.';
+        btnClose.innerText = 'متابعة للمنصة أو التجديد';
+        btnClose.style.background = '#f59e0b';
+        btnClose.style.color = '#070b12';
+        btnClose.onclick = closeSubModal;
+        return;
+      }
+
+      if (userData.effectivePlan !== 'gold' || userData.subscriptionEnd === 'unlimited' || !userData.subscriptionEnd) return;
+      const distance = new Date(userData.subscriptionEnd + "T23:59:59").getTime() - new Date().getTime();
+
       if (distance > 0) {
-        if (sessionStorage.getItem('ziada_sub_shown')) return;
         sessionStorage.setItem('ziada_sub_shown', '1');
         modalBox.classList.remove('expired');
         overlay.style.display = 'flex';
-        timerText.innerHTML = `متبقي: <span style="font-size:26px;">${Math.floor(distance / (1000 * 60 * 60 * 24))}</span> أيام و <span style="font-size:26px;">${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}</span> ساعات`;
+        timerText.innerHTML = `متبقي في باقة Gold:<br><span style="font-size:26px;">${Math.floor(distance / (1000 * 60 * 60 * 24))}</span> أيام و <span style="font-size:26px;">${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}</span> ساعات`;
         btnClose.innerText = "متابعة للمنصة";
         btnClose.style.background = "#38bdf8";
         btnClose.style.color = "#070b12";
         btnClose.onclick = closeSubModal;
-      } else {
-        modalBox.classList.add('expired');
-        overlay.style.display = 'flex';
-        timerText.innerHTML = "انتهى اشتراكك! يرجى التجديد.";
-        btnClose.innerText = "تسجيل الخروج والتواصل للتجديد";
-        btnClose.style.background = "#ef4444";
-        btnClose.style.color = "#fff";
-        btnClose.onclick = function() {
-          alert("يرجى التواصل مع الإدارة لتجديد الاشتراك.");
-          handleLogout();
-          closeSubModal();
-        };
       }
     }
   </script>
