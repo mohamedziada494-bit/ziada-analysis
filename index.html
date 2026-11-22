@@ -264,6 +264,7 @@
     .admin-icon { background: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
     .gk-icon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
     .headcoach-icon { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+    .perfdev-icon { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
     
     .card-info h3 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; }
 
@@ -352,6 +353,7 @@
             <select id="reg-specialty" required>
               <option value="analyst">محلل أداء (Performance Analyst)</option>
               <option value="headcoach">مدير فني (Head Coach)</option>
+              <option value="perfdev">مطور أداء فردي (Performance Developer)</option>
               <option value="gkcoach">مدرب حراس مرمى (GK Coach)</option>
               <option value="referee">حكم / خبير تحكيمي (Referee)</option>
             </select>
@@ -379,6 +381,7 @@
 
         <div class="analysis-grid">
           <a href="head_coach.html" id="card-headcoach" class="analysis-card" style="border-color: #ec4899;"><div class="icon-box headcoach-icon">👔</div><div class="card-info"><h3 style="color: #f472b6;">استوديو المدير الفني</h3></div></a>
+          <a href="performance_dev.html" id="card-perfdev" class="analysis-card" style="border-color: #f97316;"><div class="icon-box perfdev-icon">⚡</div><div class="card-info"><h3 style="color: #fb923c;">استوديو مطور الأداء الفردي والتدريب الذهني</h3></div></a>
           <a href="tactical.html" id="card-tactical" class="analysis-card"><div class="icon-box tactical-icon">📋</div><div class="card-info"><h3>التحليل التكتيكي</h3></div></a>
           <a href="individual.html" id="card-individual" class="analysis-card"><div class="icon-box individual-icon">🎯</div><div class="card-info"><h3>التحليل الفردي للأداء</h3></div></a>
           <a href="live.html" id="card-live" class="analysis-card"><div class="icon-box live-icon">⏱️</div><div class="card-info"><h3>التحليل المباشر للمباريات</h3></div></a>
@@ -597,9 +600,10 @@
       const phone = String(globalPlanConfig.whatsappNumber || '201027482686').replace(/[^\d]/g, '');
       const waUpgradeUrl = `https://wa.me/${phone}?text=${encodeURIComponent(`مرحباً إدارة Ziada Analysis ⚽\nأرغب في الترقية إلى باقة Gold ⭐\nالاسم: ${user.name || ''}\nالبريد الإلكتروني: ${user.email || ''}`)}`;
 
-      const isUserGold = user.role === 'admin' || user.effectivePlan === 'gold' || (!user.effectivePlan && user.plan !== 'free');
+      const isAdmin = user.role === 'admin';
+      const isUserGold = isAdmin || user.effectivePlan === 'gold' || (!user.effectivePlan && user.plan !== 'free');
 
-      if (user.role === 'admin') {
+      if (isAdmin) {
         planCard.style.display = 'none';
       } else if (isUserGold) {
         planCard.className = 'plan-status-card is-gold';
@@ -619,18 +623,18 @@
       }
 
       const unlockAllForFree = !isUserGold && globalPlanConfig.freeUnlockAllTools;
-      const p = unlockAllForFree
-        ? { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true }
-        : (user.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true });
+      const allPerms = { headCoach: true, performanceDev: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+      const p = (isAdmin || unlockAllForFree) ? allPerms : (user.permissions || allPerms);
 
       document.getElementById('card-headcoach').style.display = p.headCoach ? 'flex' : 'none';
+      document.getElementById('card-perfdev').style.display = p.performanceDev ? 'flex' : 'none';
       document.getElementById('card-tactical').style.display = p.tactical ? 'flex' : 'none';
       document.getElementById('card-individual').style.display = p.individual ? 'flex' : 'none';
       document.getElementById('card-live').style.display = p.live ? 'flex' : 'none';
       document.getElementById('card-referee').style.display = p.referee ? 'flex' : 'none';
       document.getElementById('card-goalkeeper').style.display = p.goalkeeper ? 'flex' : 'none';
 
-      document.getElementById('admin-card').style.display = user.role === 'admin' ? 'flex' : 'none';
+      document.getElementById('admin-card').style.display = isAdmin ? 'flex' : 'none';
       if (!skipSubModal) checkSubscription(user);
     }
     
@@ -690,12 +694,14 @@
       await fetchPlanConfig();
       const cfg = globalPlanConfig;
       const specialty = document.getElementById('reg-specialty').value;
-      let initPermissions = { headCoach: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
+      let initPermissions = { headCoach: false, performanceDev: false, tactical: false, individual: false, live: false, referee: false, goalkeeper: false };
 
       if (cfg.freeUnlockAllTools) {
-        initPermissions = { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+        initPermissions = { headCoach: true, performanceDev: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
       } else if (specialty === 'headcoach') {
         initPermissions.headCoach = true;
+      } else if (specialty === 'perfdev') {
+        initPermissions.performanceDev = true;
       } else if (specialty === 'analyst') {
         initPermissions.tactical = true; initPermissions.individual = true; initPermissions.live = true;
       } else if (specialty === 'gkcoach') {

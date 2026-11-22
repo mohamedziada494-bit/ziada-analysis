@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ziada Analysis - استوديو مطور الأداء والتدريب الذهني (Pro Max)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="plan-guard.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --card-bg: #111827;
+      --panel-bg: #0b1220;
+      --border-color: #1f2937;
+      --primary: #f97316;
+      --cyan: #38bdf8;
+      --accent: #facc15;
+      --danger: #ef4444;
+      --success: #10b981;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --pitch-green: #15803d;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      padding: 12px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .main-wrapper { max-width: 1520px; margin: 0 auto; }
+
+    /* الشريط العلوي */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 12px;
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .autosave-badge {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+      color: #4ade80; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 12px; border-radius: 20px;
+    }
+    .autosave-badge.saving { color: var(--accent); background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.35); }
+    .btn-top {
+      background: #1f2937; color: var(--primary); border: 1px solid var(--primary);
+      padding: 6px 15px; border-radius: 8px; cursor: pointer; font-weight: 800; text-decoration: none;
+      font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+    }
+    .btn-top:hover { background: var(--primary); color: #070b12; }
+
+    /* التبويبات الـ 4 */
+    .tabs-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tab-btn {
+      background: #1f2937; border: 1px solid #374151; color: #e2e8f0;
+      padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13.5px;
+      transition: 0.25s; display: inline-flex; align-items: center; gap: 7px;
+    }
+    .tab-btn:hover { border-color: var(--primary); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ea580c, #f97316); color: #fff;
+      border-color: var(--primary); box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.28s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .input-ui {
+      width: 100%; background: #070b12; color: #fff; border: 1px solid #334155;
+      border-radius: 7px; padding: 6px 9px; font-size: 12.5px; outline: none;
+    }
+    .input-ui:focus { border-color: var(--primary); }
+    .btn-action {
+      background: var(--primary); color: #fff; border: none; padding: 8px 15px; border-radius: 8px;
+      font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13px; transition: 0.2s;
+    }
+    .btn-action:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* =========================================
+       التاب 1: تصميم الوحدات + قوالب + مؤقت HIIT
+       ========================================= */
+    .presets-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 9px 14px; margin-bottom: 10px;
+    }
+    .preset-chip {
+      background: #1e293b; color: #f8fafc; border: 1px solid #475569; padding: 5px 11px;
+      border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex;
+      align-items: center; gap: 5px; transition: 0.2s;
+    }
+    .preset-chip:hover { border-color: var(--primary); color: var(--primary); }
+
+    .workspace-grid { display: grid; grid-template-columns: 270px 1fr; gap: 14px; align-items: stretch; }
+    .tools-panel {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 10px; display: flex; flex-direction: column; gap: 10px;
+      height: 76vh; min-height: 510px; overflow-y: auto; user-select: none;
+    }
+    .tools-title {
+      color: var(--primary); font-weight: 800; font-size: 14px; text-align: center;
+      border-bottom: 1px solid #374151; padding-bottom: 8px; position: sticky; top: 0; background: var(--card-bg); z-index: 5;
+    }
+    .team-title { font-size: 12px; color: #fff; background: #374151; padding: 5px; border-radius: 6px; text-align: center; margin-bottom: 7px; font-weight: 700; }
+    .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .draggable-source {
+      background: #1f2937; border: 1px solid #374151; color: #fff; padding: 7px 4px; border-radius: 8px;
+      cursor: grab; font-weight: 700; font-size: 10.5px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; gap: 4px; transition: 0.2s; text-align: center;
+    }
+    .draggable-source:hover { background: #374151; border-color: var(--primary); transform: translateY(-1px); }
+
+    .pitch-container { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .pitch-controls {
+      display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px;
+      background: var(--card-bg); padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-color);
+    }
+    .ctrl-sep { width: 1px; height: 22px; background: #334155; margin: 0 2px; }
+    .pitch-btn { background: #1f2937; color: #e2e8f0; border: 1px solid #374151; padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .pitch-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .draw-btn {
+      background: #1e293b; color: #cbd5e1; border: 1px solid #475569; padding: 5px 9px; border-radius: 6px;
+      font-weight: 700; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .draw-btn.active, .draw-btn:hover { background: var(--accent); color: #070b12; border-color: var(--accent); }
+    .draw-btn.btn-danger-soft { color: #fca5a5; border-color: rgba(239, 68, 68, 0.45); }
+    .draw-btn.btn-danger-soft:hover { background: var(--danger); color: #fff; }
+
+    .color-palette { display: inline-flex; align-items: center; gap: 5px; background: #0b1220; padding: 4px 8px; border-radius: 20px; border: 1px solid #334155; }
+    .color-dot { width: 17px; height: 17px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+    .color-dot.active { border-color: #fff; transform: scale(1.18); }
+
+    .selected-bar {
+      display: none; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px;
+      background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid var(--cyan); padding: 7px 14px; border-radius: 10px;
+    }
+    .selected-bar.visible { display: flex; }
+    .selected-bar span { font-size: 12px; font-weight: 800; color: var(--cyan); }
+    .sel-btn { background: #0f172a; color: #f8fafc; border: 1px solid #475569; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+    .sel-btn.del { border-color: var(--danger); color: #fca5a5; }
+
+    .pitch-area {
+      background-color: var(--pitch-green);
+      background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 44px, rgba(0,0,0,0.05) 44px, rgba(0,0,0,0.05) 88px);
+      border: 3px solid rgba(255, 255, 255, 0.9); border-radius: 10px;
+      height: 55vh; min-height: 390px; position: relative; overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.35); touch-action: none; user-select: none;
+    }
+    .tactical-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; touch-action: none; }
+    .tactical-links { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+    .pitch-area.mode-draw .tactical-canvas { pointer-events: auto; cursor: crosshair; }
+    .pitch-area.mode-draw .drill-item { pointer-events: none; }
+    .pitch-area.mode-link .drill-item { cursor: crosshair; outline: 2px dashed var(--accent); outline-offset: 2px; }
+
+    .pitch-lines { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .pitch-dim-badge {
+      position: absolute; bottom: 10px; right: 12px; z-index: 5; pointer-events: none;
+      background: rgba(2, 6, 23, 0.72); border: 1px solid rgba(250, 204, 21, 0.65); color: #facc15;
+      padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 800; direction: ltr;
+    }
+    .grid-box { display: none; position: absolute; inset: 8%; border: 2px dashed rgba(255,255,255,0.75); }
+    .grid-h { display: none; position: absolute; top: 50%; left: 8%; right: 8%; border-top: 1.5px dashed rgba(255,255,255,0.45); }
+    .grid-v { display: none; position: absolute; left: 50%; top: 8%; bottom: 8%; border-left: 1.5px dashed rgba(255,255,255,0.45); }
+    .center-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18%; aspect-ratio: 1; border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; }
+    .center-spot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+    .half-way-line { position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: rgba(255,255,255,0.85); }
+    .penalty-box-top { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 48%; height: 17%; border: 2px solid rgba(255,255,255,0.85); border-top: none; }
+    .six-yard-box-top { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 22%; height: 6%; border: 2px solid rgba(255,255,255,0.85); border-top: none; }
+    .penalty-box-bottom { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 48%; height: 17%; border: 2px solid rgba(255,255,255,0.85); border-bottom: none; }
+    .six-yard-box-bottom { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 22%; height: 6%; border: 2px solid rgba(255,255,255,0.85); border-bottom: none; }
+    .goal-net { display: none; }
+
+    .view-grid .center-circle, .view-grid .half-way-line, .view-grid .penalty-box-top, .view-grid .six-yard-box-top, .view-grid .penalty-box-bottom, .view-grid .six-yard-box-bottom { display: none; }
+    .view-grid .grid-box, .view-grid .grid-h, .view-grid .grid-v { display: block; }
+    .view-penalty .penalty-box-bottom, .view-penalty .six-yard-box-bottom, .view-penalty .center-circle, .view-penalty .center-spot, .view-penalty .half-way-line { display: none; }
+    .view-penalty .penalty-box-top { width: 64%; height: 52%; }
+    .view-penalty .six-yard-box-top { width: 28%; height: 20%; }
+    .view-penalty .goal-net { display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 24%; height: 6%; border: 3px solid #facc15; border-top: none; background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.28) 8px, rgba(255,255,255,0.28) 10px); }
+
+    .drill-item { position: absolute; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.55)); transform-origin: center; touch-action: none; border-radius: 8px; }
+    .drill-item.selected { box-shadow: 0 0 0 3px var(--cyan), 0 0 16px rgba(56, 189, 248, 0.85); }
+    .drill-item.linked { box-shadow: 0 0 0 3px var(--accent), 0 0 18px var(--accent); }
+    .drill-item .delete-btn { display: none; position: absolute; top: -9px; right: -9px; background: var(--danger); color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: 800; text-align: center; line-height: 16px; cursor: pointer; border: 1px solid #fff; z-index: 25; }
+    .drill-item:hover .delete-btn, .drill-item.selected .delete-btn { display: block; }
+
+    .load-grid { display: grid; grid-template-columns: 1.3fr 1.1fr repeat(4, 0.8fr); gap: 8px; background: var(--card-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); }
+    .load-field { display: flex; flex-direction: column; gap: 4px; }
+    .load-field label { font-size: 11px; font-weight: 800; color: var(--primary); }
+    .drill-details { width: 100%; background: #111827; color: #fff; border: 1px solid #374151; border-radius: 10px; padding: 9px 12px; font-size: 13px; resize: vertical; min-height: 62px; outline: none; }
+
+    /* مؤقت الملعب (HIIT / Interval Timer) */
+    .hiit-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b); border: 1px solid #6366f1;
+      border-radius: 10px; padding: 10px 14px; margin-top: 10px;
+    }
+    .hiit-display {
+      font-family: monospace; font-size: 26px; font-weight: 900; padding: 4px 16px;
+      border-radius: 8px; background: #020617; border: 2px solid #38bdf8; color: #38bdf8; direction: ltr;
+    }
+    .hiit-display.work { border-color: #10b981; color: #4ade80; }
+    .hiit-display.rest { border-color: #f59e0b; color: #fbbf24; }
+    .hiit-inputs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; font-weight: 700; }
+    .hiit-inputs input { width: 64px; text-align: center; }
+
+    .anim-bar { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .anim-btn { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 7px 13px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+    .anim-btn.record { background: #0ea5e9; color: #070b12; }
+    .anim-btn.play { background: var(--primary); }
+    .anim-btn.stop { background: #f59e0b; color: #070b12; display: none; }
+    .speed-select { background: #1f2937; color: #fff; border: 1px solid var(--primary); padding: 6px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+    .action-bar { padding: 12px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+    /* =========================================
+       التاب 2: محرك SwitchedOn الذهني + ربط الـ QR
+       ========================================= */
+    .so-layout { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; align-items: start; }
+    .so-card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px;
+      padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .so-card-title {
+      font-size: 14.5px; font-weight: 900; color: var(--primary);
+      border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .so-modes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .so-mode-btn {
+      background: #0b1220; border: 1.5px solid #334155; color: #cbd5e1; padding: 10px 6px;
+      border-radius: 10px; font-size: 11.5px; font-weight: 800; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s;
+    }
+    .so-mode-btn i { font-size: 17px; }
+    .so-mode-btn.active { background: rgba(249, 115, 22, 0.18); border-color: var(--primary); color: #fff; box-shadow: 0 0 12px rgba(249, 115, 22, 0.3); }
+
+    .so-colors-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .so-color-toggle {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 20px;
+      border: 2px solid #334155; background: #0b1220; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; opacity: 0.45;
+    }
+    .so-color-toggle.active { opacity: 1; border-color: #fff; }
+    .so-swatch { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+
+    .so-settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    /* صندوق ربط التليفونات بالـ QR */
+    .qr-sync-panel {
+      background: linear-gradient(160deg, #0b1220, #131c31);
+      border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .qr-box-wrap {
+      display: none; flex-direction: column; align-items: center; gap: 10px;
+      background: #070b12; border: 1px dashed var(--cyan); border-radius: 12px; padding: 14px; text-align: center;
+    }
+    #qrCodeCanvasBox { background: #fff; padding: 12px; border-radius: 10px; display: inline-block; }
+    .room-code-pill {
+      font-family: monospace; font-size: 20px; font-weight: 900; letter-spacing: 3px;
+      color: var(--accent); background: #1e293b; padding: 4px 16px; border-radius: 8px; direction: ltr;
+    }
+    .stations-list { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; width: 100%; }
+    .station-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px;
+      background: rgba(16, 185, 129, 0.16); border: 1px solid #10b981; color: #4ade80; font-size: 12px; font-weight: 800;
+    }
+    .station-chip.active-fire { background: var(--primary); border-color: #fff; color: #fff; animation: pulseStation 0.8s infinite; }
+    @keyframes pulseStation { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+
+    .so-stats-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .so-stat-box { background: #070b12; border: 1px solid #1e293b; border-radius: 9px; padding: 9px; text-align: center; }
+    .so-stat-box small { display: block; color: var(--text-muted); font-size: 11px; font-weight: 700; }
+    .so-stat-box b { font-size: 20px; font-weight: 900; color: var(--cyan); direction: ltr; display: inline-block; }
+
+    /* شاشة العرض الكامل لـ SwitchedOn (Single & Station Receiver) */
+    .so-fullscreen-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9800; background: #020617;
+      flex-direction: column; justify-content: center; align-items: center; user-select: none; cursor: pointer;
+    }
+    .so-fs-top {
+      position: absolute; top: 14px; left: 16px; right: 16px;
+      display: flex; justify-content: space-between; align-items: center; z-index: 10;
+    }
+    .so-fs-badge {
+      background: rgba(2, 6, 23, 0.72); border: 1px solid rgba(255,255,255,0.3); color: #fff;
+      padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 800;
+    }
+    .so-fs-stimulus {
+      font-size: clamp(4.5rem, 20vw, 15rem); font-weight: 900; color: #ffffff;
+      text-align: center; line-height: 1.1; text-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      padding: 20px;
+    }
+    .so-fs-sub {
+      font-size: clamp(1.3rem, 4vw, 2.5rem); font-weight: 800; color: rgba(255,255,255,0.92);
+      margin-top: 12px; text-align: center; background: rgba(0,0,0,0.3); padding: 6px 22px; border-radius: 999px;
+    }
+    .so-fs-hint {
+      position: absolute; bottom: 20px; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.45); padding: 7px 18px; border-radius: 20px;
+    }
+
+    /* واجهة تليفون البوابة المستقبلة عبر QR (?rxRoom=) */
+    #stationReceiverUI {
+      display: none; position: fixed; inset: 0; z-index: 9990; background: #070b12;
+      flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;
+    }
+
+    /* =========================================
+       التاب 3: مقارنة الفيديو (قبل وبعد + زوايا الحركة)
+       ========================================= */
+    .bio-toolbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    .bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .bio-grid.single-mode { grid-template-columns: 1fr; }
+    .bio-grid.single-mode #bioPaneB { display: none; }
+    .bio-pane {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .bio-pane-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .bio-stage {
+      position: relative; width: 100%; height: 46vh; min-height: 240px; background: #000;
+      border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; touch-action: none;
+    }
+    .bio-stage video { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .bio-stage canvas { position: absolute; z-index: 10; cursor: crosshair; touch-action: none; }
+    .bio-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; background: #0b1220; padding: 7px 10px; border-radius: 8px; }
+    .bio-seek { flex: 1; min-width: 100px; accent-color: var(--primary); cursor: pointer; }
+
+    /* =========================================
+       التاب 4: خطة التطوير الفردي (IDP Pro)
+       ========================================= */
+    .idp-toolbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--card-bg); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 12px;
+    }
+    .idp-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 14px; align-items: start; }
+    .idp-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .idp-section-title { font-size: 14px; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+    .idp-avatar-row { display: flex; align-items: center; gap: 14px; background: #0b1220; padding: 10px 14px; border-radius: 10px; border: 1px solid #1e293b; }
+    .idp-avatar-circle {
+      width: 68px; height: 68px; border-radius: 50%; border: 3px solid var(--primary); background: #1e293b;
+      overflow: hidden; display: flex; justify-content: center; align-items: center; flex-shrink: 0; cursor: pointer;
+    }
+    .idp-avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .profile-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .skills-list { display: flex; flex-direction: column; gap: 8px; }
+    .skill-row { background: #0b1220; border: 1px solid #1e293b; border-radius: 9px; padding: 8px 11px; display: flex; flex-direction: column; gap: 5px; }
+    .skill-row-top { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 800; }
+    .skill-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .slider-wrap { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--text-muted); font-weight: 700; }
+    .slider-wrap input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-wrap.base input[type="range"] { accent-color: #64748b; }
+
+    .idp-kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi-box { background: #0b1220; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; text-align: center; }
+    .kpi-box small { color: var(--text-muted); font-size: 11px; font-weight: 700; display: block; }
+    .kpi-box b { font-size: 22px; font-weight: 900; color: var(--cyan); direction: ltr; display: inline-block; }
+    .radar-wrap { display: flex; justify-content: center; align-items: center; background: #0b1220; border: 1px solid #1e293b; border-radius: 10px; padding: 8px; }
+    #idpRadarCanvas { max-width: 100%; height: auto; }
+    .radar-legend { display: flex; justify-content: center; gap: 16px; font-size: 12px; font-weight: 700; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; vertical-align: middle; margin-left: 5px; }
+
+    .tests-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .tests-table th { background: #0b1220; color: var(--primary); padding: 7px; border-bottom: 1px solid #334155; }
+    .tests-table td { padding: 6px 5px; border-bottom: 1px solid #1f2937; text-align: center; }
+    .tests-table input { width: 100%; background: #070b12; color: #fff; border: 1px solid #334155; border-radius: 5px; padding: 4px 6px; font-size: 12px; text-align: center; }
+
+    /* النوافذ المنبثقة */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.86); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid rgba(249, 115, 22, 0.5); border-radius: 16px; padding: 24px; width: 100%; max-width: 430px; text-align: center; box-shadow: 0 20px 55px rgba(0,0,0,0.85); }
+    .modal-card h3 { color: var(--primary); font-size: 18px; margin-bottom: 10px; }
+    .modal-card p { color: #cbd5e1; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px; }
+    .recovery-meta { background: #070b12; border: 1px solid #1f2937; border-radius: 10px; padding: 12px; margin-bottom: 18px; font-size: 13px; color: #e2e8f0; line-height: 1.9; }
+    .modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .modal-btns button { flex: 1; padding: 10px 14px; border-radius: 8px; border: none; font-weight: 800; font-size: 13.5px; cursor: pointer; }
+    .btn-resume { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+    .btn-fresh { background: #334155; color: #f8fafc; }
+    .progress-track { width: 100%; height: 10px; background: #1f2937; border-radius: 999px; overflow: hidden; margin: 14px 0 8px; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f97316, #38bdf8); transition: width 0.1s; }
+
+    .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f172a; color: #fff; border: 1px solid var(--primary); padding: 9px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; z-index: 9950; opacity: 0; transition: 0.3s; pointer-events: none; }
+    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 1024px) {
+      body { padding: 8px; }
+      .workspace-grid, .so-layout, .bio-grid, .idp-grid { grid-template-columns: 1fr; }
+      .pitch-container { order: 1; }
+      .tools-panel { order: 2; height: auto; min-height: 0; max-height: 290px; }
+      .tools-grid { grid-template-columns: repeat(4, 1fr); }
+      .so-modes-grid { grid-template-columns: repeat(2, 1fr); }
+      .load-grid { grid-template-columns: repeat(2, 1fr); }
+      .pitch-area { height: 48vh; min-height: 340px; }
+      .ctrl-sep { display: none; }
+      .tab-btn { flex: 1; justify-content: center; padding: 8px 10px; font-size: 12px; }
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 18px; direction: rtl; }
+      .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 12px; padding-bottom: 8px; }
+      .print-meta-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
+      .print-meta-table th, .print-meta-table td { border: 1px solid #334155; padding: 6px 8px; text-align: center; color: #000; }
+      .print-meta-table th { background: #e2e8f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .print-notes { margin-top: 12px; border: 1px solid #000; padding: 11px; background: #f8fafc; font-size: 13px; white-space: pre-wrap; color: #000; }
+      .print-img { width: 100%; max-height: 430px; object-fit: contain; border: 2px solid #000; margin-top: 10px; display: block; margin-inline: auto; }
+    }
+  </style>
+
+  <!-- كود حماية الواجهة (Capture Phase) -->
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault(), true);
+    document.addEventListener('keydown', e => {
+      const forbiddenKeys = ['U', 'S', 'P'];
+      const devKeys = ['I', 'J', 'C'];
+      if (
+        e.key === 'F12' || e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
+      ) {
+        e.preventDefault(); e.stopPropagation(); return false;
+      }
+    }, true);
+  </script>
+</head>
+<body>
+
+  <!-- التحقق من الجلسة (يُعفى منه تليفون البوابة عند الدخول عبر QR ?rxRoom=) -->
+  <script>
+    const URL_PARAMS = new URLSearchParams(window.location.search);
+    const JOIN_RX_ROOM = URL_PARAMS.get('rxRoom');
+    if (!JOIN_RX_ROOM) {
+      (function checkSession() {
+        try {
+          const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
+          if (!u || !u.uid) { window.location.href = 'index.html'; return; }
+          const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+          if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.performanceDev === false) {
+            alert('ليس لديك صلاحية الدخول لاستوديو مطور الأداء.');
+            window.location.href = 'index.html';
+          }
+        } catch (e) { window.location.href = 'index.html'; }
+      })();
+    }
+  </script>
+
+  <!-- ==================== واجهة تليفون البوابة عند مسح QR Code ==================== -->
+  <div id="stationReceiverUI">
+    <div id="stationJoinCard" class="modal-card" style="max-width:410px; border-color:var(--cyan);">
+      <div style="font-size:42px; margin-bottom:6px;">📱⚡</div>
+      <h3 style="color:var(--cyan);">ربط بوابة رد الفعل (SwitchedOn Sync)</h3>
+      <p style="font-size:13px;">تم الاتصال بغرفة الكابتن: <b id="stJoinRoomCode" style="color:var(--accent); direction:ltr;"></b></p>
+      <div class="load-field" style="text-align:right; margin-bottom:14px;">
+        <label>اسم أو رقم هذه البوابة (التليفون):</label>
+        <input type="text" id="stNameInput" class="input-ui" value="بوابة 1" placeholder="مثال: بوابة يمين / رقم 1">
+      </div>
+      <button class="btn-action" style="width:100%; justify-content:center; padding:12px; font-size:15px; background:linear-gradient(135deg,#059669,#10b981);" onclick="confirmJoinStation()">
+        <i class="fa-solid fa-wifi"></i> تفعيل شاشة البوابة والبدء
+      </button>
+    </div>
+  </div>
+
+  <!-- شاشة العرض الكامل لـ SwitchedOn (تعمل للموبايل الواحد وللبوابات المتصلة) -->
+  <div class="so-fullscreen-overlay" id="soFullscreen" onclick="handleStimulusTap()">
+    <div class="so-fs-top" onclick="event.stopPropagation()">
+      <span class="so-fs-badge" id="soFsStatus">جاهز...</span>
+      <span class="so-fs-badge" id="soFsCounter">0 / 0</span>
+      <button class="btn-action" style="background:rgba(239,68,68,0.9); padding:6px 14px; font-size:12.5px;" onclick="stopSwitchedOn()">
+        <i class="fa-solid fa-xmark"></i> إنهاء
+      </button>
+    </div>
+    <div class="so-fs-stimulus" id="soFsStimulus">استعد</div>
+    <div class="so-fs-sub" id="soFsSub" style="display:none;"></div>
+    <div class="so-fs-hint" id="soFsHint">اضغط على الشاشة فور الاستجابة لتسجيل زمن رد الفعل</div>
+  </div>
+
+  <!-- منطقة طباعة PDF -->
+  <div id="printArea" style="display: none;">
+    <div class="print-header">
+      <h1 id="printMainTitle" style="color:#000;">Ziada Analysis | مطور الأداء الفردي</h1>
+      <h3 id="printDate" style="color:#334155;"></h3>
+    </div>
+    <div id="printMetaWrap"></div>
+    <img id="printVisualImg" class="print-img" src="">
+    <div class="print-notes" id="printNotesText"></div>
+  </div>
+
+  <!-- نافذة استرجاع المشروع -->
+  <div class="modal-overlay" id="recoveryModal">
+    <div class="modal-card">
+      <h3><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع مطور أداء سابق</h3>
+      <p>يوجد شغل محفوظ تلقائياً قبل إغلاق الصفحة. هل تريد استكمال العمل أم البدء من جديد؟</p>
+      <div class="recovery-meta" id="recoveryMetaInfo"></div>
+      <div class="modal-btns">
+        <button class="btn-resume" onclick="restoreSavedProject()"><i class="fa-solid fa-rotate-left"></i> استكمال القديم</button>
+        <button class="btn-fresh" onclick="startFreshProject()"><i class="fa-solid fa-file-circle-plus"></i> بدء جديد</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تقدم تصدير الفيديو -->
+  <div class="modal-overlay" id="exportProgressModal">
+    <div class="modal-card">
+      <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير فيديو التمرين Full HD</h3>
+      <p>تسجيل مباشر بسرعة 60 إطار/ثانية وبأعلى نقاء...</p>
+      <div class="progress-track"><div class="progress-fill" id="exportProgressFill"></div></div>
+      <div id="exportPercentText" style="font-weight:800; color:var(--cyan); font-size:15px;">0%</div>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toastMsg"></div>
+
+  <div class="main-wrapper" id="appUI">
+    <header class="top-nav">
+      <span class="brand-title"><i class="fa-solid fa-bolt"></i> Ziada Analysis | استوديو مطور الأداء والتدريب الذهني (Pro Max)</span>
+      <div class="nav-actions">
+        <span class="autosave-badge" id="autosaveBadge"><i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً</span>
+        <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> الرئيسية</a>
+      </div>
+    </header>
+
+    <div class="tabs-container">
+      <button class="tab-btn active" id="tabBtn-drill" onclick="switchTab('drill', this)"><i class="fa-solid fa-dumbbell"></i> وحدات التطوير والمؤقت</button>
+      <button class="tab-btn" id="tabBtn-switchedon" onclick="switchTab('switchedon', this)"><i class="fa-solid fa-brain"></i> التدريب الذهني (SwitchedOn + QR)</button>
+      <button class="tab-btn" id="tabBtn-video" onclick="switchTab('video', this)"><i class="fa-solid fa-code-compare"></i> مقارنة الفيديو والزوايا</button>
+      <button class="tab-btn" id="tabBtn-idp" onclick="switchTab('idp', this)"><i class="fa-solid fa-chart-pie"></i> خطة التطوير الفردي (IDP)</button>
+    </div>
+
+    <!-- ==================== التاب 1: تصميم الوحدات والمؤقت ==================== -->
+    <div id="drillTab" class="tab-content active">
+      <div class="presets-bar">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <span style="font-size:12px; font-weight:800; color:var(--accent);"><i class="fa-solid fa-wand-magic-sparkles"></i> قوالب جاهزة:</span>
+          <button class="preset-chip" onclick="loadDrillPreset('rebounder')"><i class="fa-solid fa-repeat"></i> استلام ولوحة ارتداد</button>
+          <button class="preset-chip" onclick="loadDrillPreset('slalom_finish')"><i class="fa-solid fa-bullseye"></i> سلالوم + إنهاء 18</button>
+          <button class="preset-chip" onclick="loadDrillPreset('rondo')"><i class="fa-solid fa-circle-nodes"></i> روندو ومهارة ضيقة</button>
+          <button class="preset-chip" onclick="loadDrillPreset('1v1_mini')"><i class="fa-solid fa-bolt"></i> 1v1 على مرميين</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:12px; font-weight:700; color:var(--text-muted);">مساحة التمرين:</span>
+          <input type="text" id="pitchDimensions" class="input-ui" style="width:115px; text-align:center;" value="15م × 15م" oninput="updatePitchDimBadge(); scheduleAutoSave();">
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <aside class="tools-panel">
+          <div class="tools-title">مكتبة أدوات مطور الأداء</div>
+          <div>
+            <div class="team-title" style="background:#c2410c;">اللاعب المستهدف والطاقم</div>
+            <div class="tools-grid" id="peopleGrid"></div>
+          </div>
+          <div>
+            <div class="team-title" style="background:#1e3a8a;">أدوات التطوير والرشاقة</div>
+            <div class="tools-grid" id="devEquipGrid"></div>
+          </div>
+        </aside>
+
+        <div class="pitch-container">
+          <div class="pitch-controls" id="drillControls">
+            <button class="pitch-btn active" data-view="grid" onclick="setPitchView('grid', this)">مربع مهارات</button>
+            <button class="pitch-btn" data-view="penalty" onclick="setPitchView('penalty', this)">منطقة الإنهاء 18</button>
+            <button class="pitch-btn" data-view="full" onclick="setPitchView('full', this)">ملعب كامل</button>
+            <span class="ctrl-sep"></span>
+            <button class="draw-btn active" data-mode="drag" onclick="setMode('drag', this)"><i class="fa-solid fa-hand"></i> تحريك</button>
+            <button class="draw-btn" data-mode="link" onclick="setMode('link', this)"><i class="fa-solid fa-link"></i> ربط</button>
+            <button class="draw-btn" data-mode="draw-pen" onclick="setMode('draw-pen', this)"><i class="fa-solid fa-pen"></i> قلم</button>
+            <button class="draw-btn" data-mode="draw-pass" onclick="setMode('draw-pass', this)"><i class="fa-solid fa-arrow-right-long"></i> تمرير</button>
+            <button class="draw-btn" data-mode="draw-run" onclick="setMode('draw-run', this)"><i class="fa-solid fa-arrow-right-dots"></i> تحرك</button>
+            <button class="draw-btn" data-mode="draw-dribble" onclick="setMode('draw-dribble', this)"><i class="fa-solid fa-wave-square"></i> مراوغة</button>
+            <button class="draw-btn" data-mode="draw-highlight" onclick="setMode('draw-highlight', this)"><i class="fa-solid fa-highlighter"></i> مساحة</button>
+            <span class="ctrl-sep"></span>
+            <div class="color-palette">
+              <div class="color-dot active" style="background:#facc15;" onclick="setDrawColor('#facc15', this)"></div>
+              <div class="color-dot" style="background:#ffffff;" onclick="setDrawColor('#ffffff', this)"></div>
+              <div class="color-dot" style="background:#f97316;" onclick="setDrawColor('#f97316', this)"></div>
+              <div class="color-dot" style="background:#38bdf8;" onclick="setDrawColor('#38bdf8', this)"></div>
+            </div>
+            <button class="draw-btn" onclick="undoDrawing()"><i class="fa-solid fa-rotate-left"></i> تراجع</button>
+            <button class="draw-btn btn-danger-soft" onclick="clearDrawings()"><i class="fa-solid fa-eraser"></i> مسح</button>
+          </div>
+
+          <div class="selected-bar" id="selectedBar">
+            <span>عنصر محدد:</span>
+            <button class="sel-btn" onclick="renameSelectedItem()"><i class="fa-solid fa-pen-to-square"></i> الرقم/الاسم</button>
+            <button class="sel-btn" onclick="rotateSelectedItem(45)"><i class="fa-solid fa-rotate-right"></i> تدوير 45°</button>
+            <button class="sel-btn" onclick="scaleSelectedItem(0.2)"><i class="fa-solid fa-plus"></i> تكبير</button>
+            <button class="sel-btn" onclick="scaleSelectedItem(-0.2)"><i class="fa-solid fa-minus"></i> تصغير</button>
+            <button class="sel-btn del" onclick="deleteSelectedItem()"><i class="fa-solid fa-trash"></i> حذف</button>
+          </div>
+
+          <div class="pitch-area view-grid mode-drag" id="devPitch" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <svg class="tactical-links" id="devLinksLayer"></svg>
+            <canvas class="tactical-canvas" id="devCanvasLayer"></canvas>
+            <div class="pitch-dim-badge" id="pitchDimBadge">15م × 15م</div>
+            <div class="pitch-lines">
+              <div class="grid-box"></div><div class="grid-h"></div><div class="grid-v"></div>
+              <div class="center-circle"></div><div class="center-spot"></div><div class="half-way-line"></div>
+              <div class="penalty-box-top"></div><div class="six-yard-box-top"></div>
+              <div class="penalty-box-bottom"></div><div class="six-yard-box-bottom"></div>
+              <div class="goal-net"></div>
+            </div>
+          </div>
+
+          <div class="load-grid">
+            <div class="load-field"><label>اسم الوحدة:</label><input type="text" id="drillTitle" class="input-ui" placeholder="مثال: استلام ودوران تحت ضغط" oninput="scheduleAutoSave()"></div>
+            <div class="load-field">
+              <label>المهارة المستهدفة:</label>
+              <select id="drillFocus" class="input-ui" onchange="scheduleAutoSave()">
+                <option value="الاستلام والتوجيه (First Touch)">الاستلام والتوجيه</option>
+                <option value="الإنهاء والتسديد (Finishing)">الإنهاء والتسديد</option>
+                <option value="المراوغة 1v1 والتفوق">المراوغة 1v1</option>
+                <option value="المسح البصري والقرار (Scanning)">المسح البصري والقرار</option>
+                <option value="تطوير القدم الضعيفة">القدم الضعيفة</option>
+                <option value="السرعة والرشاقة ورد الفعل">السرعة والرشاقة</option>
+              </select>
+            </div>
+            <div class="load-field"><label>المجموعات:</label><input type="text" id="drillSets" class="input-ui" value="4 مجموعات" oninput="scheduleAutoSave()"></div>
+            <div class="load-field"><label>التكرار/الزمن:</label><input type="text" id="drillReps" class="input-ui" value="30 ثانية" oninput="scheduleAutoSave()"></div>
+            <div class="load-field"><label>الراحة:</label><input type="text" id="drillRest" class="input-ui" value="45 ثانية" oninput="scheduleAutoSave()"></div>
+            <div class="load-field">
+              <label>الشدة:</label>
+              <select id="drillIntensity" class="input-ui" onchange="scheduleAutoSave()">
+                <option value="منخفضة">منخفضة</option>
+                <option value="متوسطة">متوسطة</option>
+                <option value="عالية" selected>عالية</option>
+                <option value="قصوى">قصوى</option>
+              </select>
+            </div>
+          </div>
+
+          <textarea class="drill-details" id="drillNotes" placeholder="النقاط التصحيحية (Coaching Points)..." oninput="scheduleAutoSave()"></textarea>
+        </div>
+      </div>
+
+      <!-- مؤقت الملعب (HIIT / Interval Timer) -->
+      <div class="hiit-bar">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <b style="color:#a5b4fc; font-size:13.5px;"><i class="fa-solid fa-stopwatch"></i> مؤقت الملعب (HIIT):</b>
+          <div class="hiit-display" id="hiitDisplay">00:30</div>
+          <span id="hiitPhaseLabel" style="font-size:12.5px; font-weight:800; color:#cbd5e1;">جاهز (مجموعة 1/4)</span>
+        </div>
+        <div class="hiit-inputs">
+          <label>عمل(ث): <input type="number" id="hiitWorkSec" class="input-ui" value="30" min="5"></label>
+          <label>راحة(ث): <input type="number" id="hiitRestSec" class="input-ui" value="15" min="5"></label>
+          <label>مجموعات: <input type="number" id="hiitSetsCount" class="input-ui" value="4" min="1"></label>
+          <button class="btn-action" id="hiitStartBtn" style="background:var(--success); padding:6px 14px;" onclick="toggleHIITTimer()"><i class="fa-solid fa-play"></i> ابدأ</button>
+          <button class="btn-action" style="background:#334155; padding:6px 11px;" onclick="resetHIITTimer()"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+      </div>
+
+      <div class="anim-bar">
+        <button class="anim-btn record" onclick="saveFrame()"><i class="fa-solid fa-camera"></i> حفظ إطار الحركة</button>
+        <select id="animSpeed" class="speed-select" onchange="scheduleAutoSave()">
+          <option value="1200">بطيء جداً</option>
+          <option value="850">بطيء</option>
+          <option value="550" selected>عادي</option>
+          <option value="300">سريع</option>
+        </select>
+        <span style="color:#fff; font-size:13px;">الإطارات: <span id="frameCount" style="color:var(--primary); font-weight:800;">0</span></span>
+        <button class="anim-btn play" id="playAnimBtn" onclick="playAnimation()"><i class="fa-solid fa-play"></i> تشغيل الحركة</button>
+        <button class="anim-btn stop" id="stopAnimBtn" onclick="stopAnimation()"><i class="fa-solid fa-stop"></i> إيقاف</button>
+        <button class="anim-btn" style="background:#b91c1c;" onclick="clearFrames()"><i class="fa-solid fa-trash-can"></i> مسح الإطارات</button>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-action" style="background:#4b5563;" onclick="clearPitch()"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
+        <button class="btn-action" style="background:var(--accent); color:#070b12;" onclick="exportDrillPDF()"><i class="fa-solid fa-file-pdf"></i> كارت التمرين (PDF)</button>
+        <button class="btn-action" style="background:var(--success);" onclick="printPitch()"><i class="fa-solid fa-image"></i> حفظ كصورة HD</button>
+        <button class="btn-action" onclick="exportVideo()"><i class="fa-solid fa-video"></i> تصدير فيديو HD</button>
+      </div>
+    </div>
+
+    <!-- ==================== التاب 2: التدريب الذهني ورد الفعل (SwitchedOn + QR Sync) ==================== -->
+    <div id="switchedonTab" class="tab-content">
+      <div class="so-layout">
+        <!-- إعدادات المحفزات الذهنية (SwitchedOn Core) -->
+        <div class="so-card">
+          <div class="so-card-title">
+            <span><i class="fa-solid fa-brain"></i> 1. إعدادات التدريب الذهني وسرعة رد الفعل (SwitchedOn)</span>
+          </div>
+
+          <div class="so-modes-grid" id="soModesGrid">
+            <button class="so-mode-btn active" data-somode="colors" onclick="setSoMode('colors', this)"><i class="fa-solid fa-palette" style="color:#ef4444;"></i> ألوان</button>
+            <button class="so-mode-btn" data-somode="numbers" onclick="setSoMode('numbers', this)"><i class="fa-solid fa-hashtag" style="color:#38bdf8;"></i> أرقام 1-9</button>
+            <button class="so-mode-btn" data-somode="arrows" onclick="setSoMode('arrows', this)"><i class="fa-solid fa-arrows-up-down-left-right" style="color:#10b981;"></i> اتجاهات</button>
+            <button class="so-mode-btn" data-somode="shapes" onclick="setSoMode('shapes', this)"><i class="fa-solid fa-shapes" style="color:#facc15;"></i> أشكال</button>
+            <button class="so-mode-btn" data-somode="stroop" onclick="setSoMode('stroop', this)"><i class="fa-solid fa-eye-low-vision" style="color:#ec4899;"></i> تأثير ستروب</button>
+            <button class="so-mode-btn" data-somode="math" onclick="setSoMode('math', this)"><i class="fa-solid fa-calculator" style="color:#a855f7;"></i> حساب ذهني</button>
+            <button class="so-mode-btn" data-somode="gonogo" onclick="setSoMode('gonogo', this)"><i class="fa-solid fa-traffic-light" style="color:#4ade80;"></i> انطلق/توقف</button>
+            <button class="so-mode-btn" data-somode="dual" onclick="setSoMode('dual', this)"><i class="fa-solid fa-layer-group" style="color:#f97316;"></i> مهمة مزدوجة</button>
+          </div>
+
+          <div>
+            <label style="font-size:12px; font-weight:800; color:var(--cyan); display:block; margin-bottom:6px;">الألوان المفعلة في التمرين (تطابق ألوان الأقماع):</label>
+            <div class="so-colors-row" id="soColorsRow">
+              <button class="so-color-toggle active" data-col="#ef4444" data-name="أحمر" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#ef4444;"></span> أحمر</button>
+              <button class="so-color-toggle active" data-col="#2563eb" data-name="أزرق" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#2563eb;"></span> أزرق</button>
+              <button class="so-color-toggle active" data-col="#16a34a" data-name="أخضر" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#16a34a;"></span> أخضر</button>
+              <button class="so-color-toggle active" data-col="#eab308" data-name="أصفر" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#eab308;"></span> أصفر</button>
+              <button class="so-color-toggle" data-col="#9333ea" data-name="بنفسجي" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#9333ea;"></span> بنفسجي</button>
+              <button class="so-color-toggle" data-col="#f97316" data-name="برتقالي" onclick="toggleSoColor(this)"><span class="so-swatch" style="background:#f97316;"></span> برتقالي</button>
+            </div>
+          </div>
+
+          <div class="so-settings-grid">
+            <div class="load-field">
+              <label>طريقة الانتقال للإشارة التالية:</label>
+              <select id="soTriggerType" class="input-ui">
+                <option value="auto" selected>توقيت تلقائي (ثابت أو عشوائي)</option>
+                <option value="tap">عند لمس الشاشة (قياس رد الفعل بالملي ثانية)</option>
+              </select>
+            </div>
+            <div class="load-field">
+              <label>عدد التكرارات (الإشارات):</label>
+              <input type="number" id="soTotalReps" class="input-ui" value="20" min="3" max="200">
+            </div>
+            <div class="load-field">
+              <label>أقل فاصل زمني (ثانية):</label>
+              <input type="number" id="soMinSec" class="input-ui" value="1.5" step="0.1" min="0.4">
+            </div>
+            <div class="load-field">
+              <label>أقصى فاصل زمني (ثانية - للعشوائي):</label>
+              <input type="number" id="soMaxSec" class="input-ui" value="3.0" step="0.1" min="0.5">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px; font-weight:700; color:#e2e8f0;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="soBeepEnabled" checked> صوت تنبيه (Beep)</label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="soVoiceEnabled"> نطق الإشارة صوتياً (عربي)</label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="soDarkGap" checked> فاصل أسود قصير بين الإشارات</label>
+          </div>
+
+          <div class="so-stats-strip">
+            <div class="so-stat-box"><small>متوسط رد الفعل</small><b id="soAvgMs">-</b></div>
+            <div class="so-stat-box"><small>أسرع استجابة</small><b id="soBestMs" style="color:#4ade80;">-</b></div>
+            <div class="so-stat-box"><small>إجمالي الاستجابات</small><b id="soRepsDone" style="color:var(--accent);">0</b></div>
+          </div>
+
+          <button class="btn-action" style="width:100%; justify-content:center; padding:13px; font-size:15px; background:linear-gradient(135deg,#ea580c,#f97316);" onclick="startSwitchedOnSingle()">
+            <i class="fa-solid fa-play"></i> تشغيل على هذا الجهاز (شاشة كاملة)
+          </button>
+        </div>
+
+        <!-- 2. ربط التليفونات معاً عبر QR Code (Multi-Phone BlazePod / SwitchedOn Sync) -->
+        <div class="so-card">
+          <div class="so-card-title">
+            <span><i class="fa-solid fa-qrcode" style="color:var(--cyan);"></i> 2. ربط التليفونات معاً عبر QR Code (بوابات رد فعل)</span>
+          </div>
+
+          <div class="qr-sync-panel">
+            <p style="font-size:12.5px; color:#cbd5e1; line-height:1.7;">
+              وزّع 2 أو 3 أو 4 تليفونات في زوايا الملعب (زي BlazePod و SwitchedOn Pro)؛ امسح الـ <b>QR Code</b> بكاميرا كل تليفون ليتصل فوراً بدون تسجيل دخول، وتحكم فيهم كلهم لايف من جهازك!
+            </p>
+
+            <div class="so-settings-grid">
+              <div class="load-field">
+                <label>نظام تشغيل التليفونات المتصلة:</label>
+                <select id="qrSyncPattern" class="input-ui">
+                  <option value="random_gate">تتابع عشوائي (تليفون واحد ينور في كل مرة)</option>
+                  <option value="mirror">الكل معاً (كل التليفونات نفس الإشارة)</option>
+                  <option value="split_decoy">تحدي التوزيع (بوابة خضراء صحيحة والباقي خداع)</option>
+                </select>
+              </div>
+              <div class="load-field">
+                <label>إدارة الغرفة:</label>
+                <button class="btn-action" id="btnCreateQrRoom" style="width:100%; justify-content:center; background:linear-gradient(135deg,#0284c7,#2563eb);" onclick="createQRReactionRoom()">
+                  <i class="fa-solid fa-qrcode"></i> إنشاء غرفة و QR
+                </button>
+              </div>
+            </div>
+
+            <div class="qr-box-wrap" id="qrBoxWrap">
+              <div style="font-size:12.5px; font-weight:800; color:var(--cyan);">امسح الكود بكاميرا التليفونات الأخرى للربط الفوري:</div>
+              <div id="qrCodeCanvasBox"></div>
+              <div class="room-code-pill" id="qrRoomCodeDisplay">----</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                <button class="preset-chip" onclick="copyQRRoomLink()"><i class="fa-solid fa-copy"></i> نسخ رابط الانضمام</button>
+                <button class="preset-chip" style="border-color:var(--danger); color:#fca5a5;" onclick="closeQRReactionRoom()"><i class="fa-solid fa-power-off"></i> إغلاق الغرفة</button>
+              </div>
+
+              <div style="width:100%; border-top:1px solid #1f2937; padding-top:10px; margin-top:4px;">
+                <div style="font-size:12px; font-weight:800; color:#4ade80; margin-bottom:7px;">
+                  التليفونات المتصلة حالياً (<span id="connectedStationsCount">0</span>):
+                </div>
+                <div class="stations-list" id="connectedStationsList">
+                  <span style="font-size:12px; color:var(--text-muted);">في انتظار مسح الـ QR من أي تليفون...</span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:8px; width:100%; margin-top:6px;">
+                <button class="btn-action" id="btnStartMultiSession" style="flex:1; justify-content:center; background:linear-gradient(135deg,#059669,#10b981);" onclick="toggleMultiPhoneSession()">
+                  <i class="fa-solid fa-bolt"></i> بدء التشغيل على كل التليفونات
+                </button>
+                <button class="btn-action" style="background:#f59e0b; color:#070b12;" onclick="fireManualMultiPulse()" title="إرسال إشارة يدوية فورية الآن">
+                  <i class="fa-solid fa-paper-plane"></i> نبضة يدوية
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== التاب 3: مقارنة الفيديو (قبل/بعد) + زوايا الحركة ==================== -->
+    <div id="videoTab" class="tab-content">
+      <div class="bio-toolbar">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button class="pitch-btn active" id="bioModeDual" onclick="setBioLayout('dual', this)"><i class="fa-solid fa-table-columns"></i> مقارنة (قبل / بعد)</button>
+          <button class="pitch-btn" id="bioModeSingle" onclick="setBioLayout('single', this)"><i class="fa-solid fa-square"></i> فيديو واحد</button>
+          <span class="ctrl-sep"></span>
+          <button class="draw-btn active" data-biotool="angle" onclick="setBioTool('angle', this)"><i class="fa-solid fa-compass-drafting"></i> زاوية (° 3 نقط)</button>
+          <button class="draw-btn" data-biotool="arrow" onclick="setBioTool('arrow', this)"><i class="fa-solid fa-arrow-right"></i> سهم</button>
+          <button class="draw-btn" data-biotool="line" onclick="setBioTool('line', this)"><i class="fa-solid fa-minus"></i> خط استقامة</button>
+          <button class="draw-btn" data-biotool="circle" onclick="setBioTool('circle', this)"><i class="fa-regular fa-circle"></i> دائرة</button>
+          <button class="draw-btn" data-biotool="pen" onclick="setBioTool('pen', this)"><i class="fa-solid fa-pen"></i> قلم حر</button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button class="btn-action" style="background:#0284c7; padding:6px 12px; font-size:12px;" onclick="syncPlayBothVideos()"><i class="fa-solid fa-play"></i> تشغيل متزامن</button>
+          <button class="btn-action" style="background:#334155; padding:6px 10px; font-size:12px;" onclick="setBothBioSpeed(0.25)">0.25x</button>
+          <button class="btn-action" style="background:#334155; padding:6px 10px; font-size:12px;" onclick="setBothBioSpeed(0.5)">0.5x</button>
+          <button class="btn-action" style="background:#334155; padding:6px 10px; font-size:12px;" onclick="setBothBioSpeed(1)">1x</button>
+          <button class="btn-action" style="background:var(--success); padding:6px 13px; font-size:12px;" onclick="exportBioComparisonHD()"><i class="fa-solid fa-camera"></i> حفظ صورة المقارنة HD</button>
+        </div>
+      </div>
+
+      <div class="bio-grid" id="bioGrid">
+        <!-- فيديو قبل التطوير -->
+        <div class="bio-pane" id="bioPaneA">
+          <div class="bio-pane-head">
+            <b style="color:#f87171; font-size:14px;"><i class="fa-solid fa-clock-rotate-left"></i> قبل التطوير (Before)</b>
+            <div style="display:flex; gap:6px;">
+              <label class="preset-chip" style="cursor:pointer; border-color:var(--primary); color:var(--primary);">
+                <i class="fa-solid fa-upload"></i> رفع فيديو
+                <input type="file" accept="video/*" style="display:none;" onchange="loadBioVideo('A', event)">
+              </label>
+              <button class="preset-chip" onclick="undoBioDraw('A')"><i class="fa-solid fa-rotate-left"></i></button>
+              <button class="preset-chip" style="color:#fca5a5;" onclick="clearBioDraw('A')"><i class="fa-solid fa-eraser"></i></button>
+            </div>
+          </div>
+          <div class="bio-stage" id="bioStageA">
+            <video id="bioVideoA" playsinline muted></video>
+            <canvas id="bioCanvasA"></canvas>
+          </div>
+          <div class="bio-controls">
+            <button class="preset-chip" onclick="toggleBioPlay('A')"><i class="fa-solid fa-play"></i></button>
+            <button class="preset-chip" onclick="stepBioFrame('A', -1)">-1F</button>
+            <input type="range" id="bioSeekA" class="bio-seek" min="0" max="100" value="0" step="0.05" oninput="seekBio('A', this.value)">
+            <button class="preset-chip" onclick="stepBioFrame('A', 1)">+1F</button>
+            <span id="bioTimeA" style="font-size:11.5px; color:var(--cyan); font-weight:800; direction:ltr;">00:00</span>
+          </div>
+        </div>
+
+        <!-- فيديو بعد التطوير -->
+        <div class="bio-pane" id="bioPaneB">
+          <div class="bio-pane-head">
+            <b style="color:#4ade80; font-size:14px;"><i class="fa-solid fa-arrow-trend-up"></i> بعد التطوير (After)</b>
+            <div style="display:flex; gap:6px;">
+              <label class="preset-chip" style="cursor:pointer; border-color:var(--success); color:#4ade80;">
+                <i class="fa-solid fa-upload"></i> رفع فيديو
+                <input type="file" accept="video/*" style="display:none;" onchange="loadBioVideo('B', event)">
+              </label>
+              <button class="preset-chip" onclick="undoBioDraw('B')"><i class="fa-solid fa-rotate-left"></i></button>
+              <button class="preset-chip" style="color:#fca5a5;" onclick="clearBioDraw('B')"><i class="fa-solid fa-eraser"></i></button>
+            </div>
+          </div>
+          <div class="bio-stage" id="bioStageB">
+            <video id="bioVideoB" playsinline muted></video>
+            <canvas id="bioCanvasB"></canvas>
+          </div>
+          <div class="bio-controls">
+            <button class="preset-chip" onclick="toggleBioPlay('B')"><i class="fa-solid fa-play"></i></button>
+            <button class="preset-chip" onclick="stepBioFrame('B', -1)">-1F</button>
+            <input type="range" id="bioSeekB" class="bio-seek" min="0" max="100" value="0" step="0.05" oninput="seekBio('B', this.value)">
+            <button class="preset-chip" onclick="stepBioFrame('B', 1)">+1F</button>
+            <span id="bioTimeB" style="font-size:11.5px; color:var(--cyan); font-weight:800; direction:ltr;">00:00</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">
+        💡 لاستخدام <b>أداة الزاوية (°)</b>: اضغط 3 نقط متتالية فوق الفيديو (النقطة الأولى ← نقطة المفصل/الركبة ← النقطة الثالثة) لقياس الزاوية بالدرجات تلقائياً.
+      </div>
+    </div>
+
+    <!-- ==================== التاب 4: خطة التطوير الفردي (IDP Pro) ==================== -->
+    <div id="idpTab" class="tab-content">
+      <div class="idp-toolbar">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1;">
+          <label style="font-size:13px; font-weight:800; color:var(--primary);">ملف اللاعب:</label>
+          <select id="idpProfileSelect" class="input-ui" style="max-width:230px;" onchange="switchIDPProfile(this.value)"></select>
+          <button class="btn-action" style="padding:6px 12px; font-size:12px; background:#0284c7;" onclick="addNewIDPProfile()"><i class="fa-solid fa-user-plus"></i> لاعب جديد</button>
+          <button class="btn-action" style="padding:6px 12px; font-size:12px; background:#991b1b;" onclick="deleteCurrentIDPProfile()"><i class="fa-solid fa-trash"></i> حذف</button>
+        </div>
+        <button class="btn-action" style="background:var(--accent); color:#070b12;" onclick="exportIDPPDF()"><i class="fa-solid fa-file-pdf"></i> طباعة تقرير التطوير (IDP PDF)</button>
+      </div>
+
+      <div class="idp-grid">
+        <div class="idp-card">
+          <div class="idp-section-title">
+            <span><i class="fa-solid fa-id-badge"></i> بطاقة اللاعب وقالب المركز</span>
+            <select id="idpRolePreset" class="input-ui" style="width:155px; font-size:11.5px;" onchange="changeIDPRolePreset(this.value)">
+              <option value="general">شامل (عام)</option>
+              <option value="striker">مهاجم (ST)</option>
+              <option value="winger">جناح (Winger)</option>
+              <option value="midfielder">خط وسط (CM)</option>
+              <option value="defender">مدافع (CB / FB)</option>
+            </select>
+          </div>
+
+          <div class="idp-avatar-row">
+            <div class="idp-avatar-circle" onclick="document.getElementById('idpPhotoInput').click()" title="اضغط لرفع صورة اللاعب">
+              <img id="idpAvatarImg" src="">
+              <i class="fa-solid fa-camera" id="idpAvatarIcon" style="font-size:22px; color:#94a3b8;"></i>
+            </div>
+            <input type="file" id="idpPhotoInput" accept="image/*" style="display:none;" onchange="handleIDPPhotoUpload(event)">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:800; color:#fff;">صورة اللاعب الرسمية</div>
+              <div style="font-size:11.5px; color:var(--text-muted);">اضغط على الدائرة لإضافة صورة تظهر في تقرير التطوير PDF</div>
+            </div>
+          </div>
+
+          <div class="profile-form-grid">
+            <div class="load-field"><label>اسم اللاعب:</label><input type="text" id="idpName" class="input-ui" oninput="updateActiveIDPFromUI()"></div>
+            <div class="load-field"><label>المركز والرقم:</label><input type="text" id="idpPosition" class="input-ui" oninput="updateActiveIDPFromUI()"></div>
+            <div class="load-field"><label>الفريق:</label><input type="text" id="idpTeam" class="input-ui" oninput="updateActiveIDPFromUI()"></div>
+            <div class="load-field">
+              <label>القدم المفضلة:</label>
+              <select id="idpFoot" class="input-ui" onchange="updateActiveIDPFromUI()">
+                <option value="اليمنى">اليمنى</option><option value="اليسرى">اليسرى</option><option value="كلتا القدمين">كلتا القدمين</option>
+              </select>
+            </div>
+            <div class="load-field"><label>أبرز نقطة قوة:</label><input type="text" id="idpStrength" class="input-ui" oninput="updateActiveIDPFromUI()"></div>
+            <div class="load-field"><label>الهدف الأساسي للتطوير:</label><input type="text" id="idpGoal" class="input-ui" oninput="updateActiveIDPFromUI()"></div>
+          </div>
+
+          <div class="idp-section-title" style="margin-top:4px;"><span><i class="fa-solid fa-sliders"></i> تقييم الـ 8 مهارات (قبل مقابل الحالي)</span></div>
+          <div class="skills-list" id="idpSkillsContainer"></div>
+        </div>
+
+        <div class="idp-card">
+          <div class="idp-section-title"><span><i class="fa-solid fa-chart-pie"></i> رادار التطور والاختبارات البدنية</span></div>
+          <div class="idp-kpi-row">
+            <div class="kpi-box"><small>التقييم المبدئي</small><b id="kpiBaseline" style="color:#94a3b8;">0.0</b></div>
+            <div class="kpi-box"><small>المستوى الحالي</small><b id="kpiCurrent" style="color:var(--primary);">0.0</b></div>
+            <div class="kpi-box"><small>نسبة التطور</small><b id="kpiGrowth" style="color:var(--success);">+0%</b></div>
+          </div>
+
+          <div class="radar-wrap"><canvas id="idpRadarCanvas" width="520" height="400"></canvas></div>
+          <div class="radar-legend">
+            <span><i class="leg-dot" style="background:rgba(148,163,184,0.7); border:1px dashed #cbd5e1;"></i> قبل التطوير</span>
+            <span><i class="leg-dot" style="background:rgba(249,115,22,0.85);"></i> المستوى الحالي</span>
+          </div>
+
+          <!-- جدول الاختبارات البدنية والمهارية -->
+          <div class="idp-section-title" style="margin-top:2px;">
+            <span><i class="fa-solid fa-stopwatch-20"></i> قياسات الاختبارات البدنية والمهارية</span>
+            <button class="preset-chip" style="font-size:11px; padding:3px 9px;" onclick="addCustomTestRow()"><i class="fa-solid fa-plus"></i> اختبار جديد</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tests-table">
+              <thead>
+                <tr><th style="text-align:right;">الاختبار</th><th style="width:76px;">قبل</th><th style="width:76px;">الحالي</th><th style="width:70px;">التطور</th></tr>
+              </thead>
+              <tbody id="idpTestsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="idp-section-title" style="margin-top:4px;"><span><i class="fa-solid fa-list-check"></i> خطة العمل الأسبوعية والواجبات</span></div>
+          <textarea id="idpPlanNotes" class="drill-details" style="min-height:105px;" placeholder="اكتب خطة الجلسات الأسبوعية..." oninput="updateActiveIDPFromUI()"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 0. تهيئة Firebase لنظام ربط التليفونات بالـ QR
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
+      authDomain: "ziada-analysis-82e34.firebaseapp.com",
+      projectId: "ziada-analysis-82e34",
+      storageBucket: "ziada-analysis-82e34.firebasestorage.app",
+      messagingSenderId: "763163562341",
+      appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Web Audio للصافرة والتنبيهات بدون ملفات خارجية
+    let audioCtx = null;
+    function playTone(freq = 880, durMs = 130, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durMs / 1000);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + durMs / 1000);
+      } catch (e) {}
+    }
+
+    function speakArabic(text) {
+      try {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'ar-EG'; u.rate = 1.15;
+        window.speechSynthesis.speak(u);
+      } catch (e) {}
+    }
+
+    let wakeLock = null;
+    async function acquireWakeLock() {
+      try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    }
+    function releaseWakeLock() {
+      try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2300);
+    }
+
+    // ==========================================
+    // 1. وضع البوابة المستقبلة عبر QR Code (?rxRoom=XXXX)
+    // ==========================================
+    let stationRoomId = null, stationId = null, stationName = 'بوابة 1';
+    let stationUnsub = null, lastHandledCmdId = null, stationCmdShownAt = 0;
+
+    if (JOIN_RX_ROOM) {
+      document.getElementById('appUI').style.display = 'none';
+      document.getElementById('stationReceiverUI').style.display = 'flex';
+      document.getElementById('stJoinRoomCode').textContent = JOIN_RX_ROOM;
+      document.getElementById('stNameInput').value = 'بوابة ' + (Math.floor(Math.random() * 6) + 1);
+    }
+
+    async function confirmJoinStation() {
+      stationRoomId = JOIN_RX_ROOM;
+      stationName = document.getElementById('stNameInput').value.trim() || 'بوابة 1';
+      stationId = 'st_' + Math.random().toString(36).substring(2, 8);
+      playTone(900, 120);
+      await acquireWakeLock();
+
+      try {
+        await db.collection('reaction_rooms').doc(stationRoomId).set({
+          stations: { [stationId]: { name: stationName, joinedAt: Date.now() } }
+        }, { merge: true });
+
+        document.getElementById('stationReceiverUI').style.display = 'none';
+        const fs = document.getElementById('soFullscreen');
+        fs.style.display = 'flex';
+        fs.style.background = '#0b1220';
+        document.getElementById('soFsStatus').textContent = `📡 متصل: ${stationName}`;
+        document.getElementById('soFsCounter').textContent = `غرفة: ${stationRoomId}`;
+        document.getElementById('soFsStimulus').textContent = 'في انتظار إشارة الكابتن...';
+        document.getElementById('soFsStimulus').style.fontSize = 'clamp(2rem, 7vw, 4rem)';
+        document.getElementById('soFsSub').style.display = 'none';
+        document.getElementById('soFsHint').textContent = 'المس الشاشة فور ظهور الإشارة لتسجيل زمن رد الفعل';
+
+        stationUnsub = db.collection('reaction_rooms').doc(stationRoomId).onSnapshot(snap => {
+          if (!snap.exists) return;
+          const data = snap.data();
+          const cmd = data.activeCommand;
+          if (!cmd || cmd.cmdId === lastHandledCmdId) return;
+          lastHandledCmdId = cmd.cmdId;
+
+          if (cmd.action === 'STOP') {
+            fs.style.background = '#0b1220';
+            document.getElementById('soFsStimulus').style.fontSize = 'clamp(2rem, 7vw, 4rem)';
+            document.getElementById('soFsStimulus').style.color = '#fff';
+            document.getElementById('soFsStimulus').textContent = 'انتهت الجولة ✓';
+            document.getElementById('soFsSub').style.display = 'none';
+            playTone(500, 220);
+            return;
+          }
+
+          if (cmd.targetStation === 'ALL' || cmd.targetStation === stationId) {
+            renderStimulusOnFullscreen(cmd.stimulus, cmd.beep, cmd.voice);
+            stationCmdShownAt = performance.now();
+            document.getElementById('soFsCounter').textContent = `تكرار ${cmd.repNum || ''}`;
+          } else if (cmd.decoyForOthers) {
+            renderStimulusOnFullscreen({ bg: '#dc2626', text: '✖', textColor: '#fff', sub: 'توقف — بوابة أخرى', speak: '' }, false, false);
+            stationCmdShownAt = 0;
+          } else {
+            fs.style.background = '#020617';
+            document.getElementById('soFsStimulus').style.fontSize = 'clamp(1.6rem, 5vw, 3rem)';
+            document.getElementById('soFsStimulus').style.color = '#334155';
+            document.getElementById('soFsStimulus').textContent = stationName;
+            document.getElementById('soFsSub').style.display = 'none';
+            stationCmdShownAt = 0;
+          }
+        });
+      } catch (err) {
+        alert('تعذر الاتصال بالغرفة (تأكد من إضافة قاعدة reaction_rooms في Firebase): ' + err.message);
+      }
+    }
+
+    // ==========================================
+    // 2. المتغيرات العامة وحالة الاستوديو (للمدرب)
+    // ==========================================
+    const AUTOSAVE_KEY = 'ziada_autosave_perfdev_v2';
+    const devPitch = document.getElementById('devPitch');
+
+    let currentTab = 'drill', currentPitchView = 'grid', currentMode = 'drag', currentDrawColor = '#facc15';
+    let itemIdCounter = 0, selectedElement = null, linkStartNode = null;
+    let tacticalLinks = [], drawings = [], frames = [];
+    let animPlaying = false, animStopReq = false;
+    let autosaveTimer = null, isRestoring = false;
+
+    function clampPercent(val) { return Math.max(2, Math.min(98, val)); }
+
+    function switchTab(tabId, btnEl) {
+      currentTab = tabId;
+      deselectAll();
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      (btnEl || document.getElementById('tabBtn-' + tabId)).classList.add('active');
+      document.getElementById(tabId + 'Tab').classList.add('active');
+      if (tabId === 'drill') setTimeout(() => { resizeCanvas(); renderTacticalLinks(); }, 60);
+      else if (tabId === 'video') setTimeout(() => { syncBioCanvas('A'); syncBioCanvas('B'); }, 80);
+      else if (tabId === 'idp') drawIDPRadar();
+      scheduleAutoSave();
+    }
+
+    // ==========================================
+    // 3. التاب 1: أدوات الملعب والقوالب ومؤقت HIIT
+    // ==========================================
+    const svgTemplates = {
+      targetPlayer: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#f97316" stroke="#facc15" stroke-width="7"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num || '★'}</text></svg>`,
+      devCoach: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#0f172a" stroke="#38bdf8" stroke-width="6"/><text class="p-text" x="50" y="64" font-size="36" font-family="Cairo, Arial" font-weight="bold" fill="#38bdf8" text-anchor="middle">${num || 'C'}</text></svg>`,
+      playerBlue: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#3b82f6" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num || 'P'}</text></svg>`,
+      playerRed: (num) => `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#ef4444" stroke="#fff" stroke-width="5"/><text class="p-text" x="50" y="64" font-size="38" font-family="Cairo, Arial" font-weight="bold" fill="#fff" text-anchor="middle">${num || 'D'}</text></svg>`,
+      gk: () => `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="14" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="14" fill="#fff" stroke="#000" stroke-width="3"/></svg>`,
+      ball: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#fff" stroke="#000" stroke-width="5"/><polygon points="50,18 76,38 66,70 34,70 24,38" fill="#111"/></svg>`,
+      miniGoal: () => `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="24" viewBox="0 0 120 60"><rect x="8" y="8" width="104" height="44" fill="rgba(255,255,255,0.22)" stroke="#fff" stroke-width="6"/><line x1="34" y1="8" x2="34" y2="52" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><line x1="60" y1="8" x2="60" y2="52" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><line x1="86" y1="8" x2="86" y2="52" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><line x1="8" y1="30" x2="112" y2="30" stroke="rgba(255,255,255,0.5)" stroke-width="2"/></svg>`,
+      rebounder: () => `<svg xmlns="http://www.w3.org/2000/svg" width="46" height="18" viewBox="0 0 120 40"><rect x="6" y="10" width="108" height="18" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="5"/><line x1="16" y1="19" x2="104" y2="19" stroke="#facc15" stroke-width="3" stroke-dasharray="10 6"/></svg>`,
+      pole: () => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="36" viewBox="0 0 40 100"><ellipse cx="20" cy="88" rx="14" ry="7" fill="#111"/><rect x="15" y="10" width="10" height="78" rx="4" fill="#facc15" stroke="#000" stroke-width="2"/><rect x="15" y="25" width="10" height="12" fill="#ef4444"/><rect x="15" y="55" width="10" height="12" fill="#ef4444"/></svg>`,
+      ring: () => `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="#38bdf8" stroke-width="11"/></svg>`,
+      ladder: () => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="44" viewBox="0 0 100 120"><rect x="26" y="8" width="48" height="104" fill="none" stroke="#facc15" stroke-width="6"/><line x1="26" y1="30" x2="74" y2="30" stroke="#facc15" stroke-width="5"/><line x1="26" y1="52" x2="74" y2="52" stroke="#facc15" stroke-width="5"/><line x1="26" y1="74" x2="74" y2="74" stroke="#facc15" stroke-width="5"/><line x1="26" y1="96" x2="74" y2="96" stroke="#facc15" stroke-width="5"/></svg>`,
+      hurdle: () => `<svg xmlns="http://www.w3.org/2000/svg" width="38" height="22" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#f97316"/><rect x="15" y="20" width="10" height="28" fill="#111"/><rect x="75" y="20" width="10" height="28" fill="#111"/></svg>`,
+      mannequin: () => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="36" viewBox="0 0 100 100"><path d="M 30 92 L 30 50 Q 50 22 70 50 L 70 92 Z" fill="#ef4444" stroke="#fff" stroke-width="4"/><circle cx="50" cy="24" r="15" fill="#ef4444" stroke="#fff" stroke-width="4"/></svg>`,
+      coneRed: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="5"/></svg>`,
+      coneYellow: () => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#facc15" stroke="#000" stroke-width="4"/></svg>`,
+      marker: () => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="20" viewBox="0 0 100 80"><ellipse cx="50" cy="45" rx="42" ry="20" fill="#38bdf8" stroke="#fff" stroke-width="4"/></svg>`
+    };
+    function getSvgByType(t, n) { return svgTemplates[t] ? svgTemplates[t](n || '') : svgTemplates.ball(); }
+
+    function buildPalette() {
+      const people = [['targetPlayer','10','لاعب مستهدف'],['devCoach','C','مطور الأداء'],['playerBlue','1','مساعد'],['playerRed','X','مدافع'],['gk','','حارس'],['ball','','كرة']];
+      const equip = [['miniGoal','','مرمى صغير'],['rebounder','','لوحة ارتداد'],['pole','','عمود سلالوم'],['ring','','حلقة سرعة'],['ladder','','سلم توافق'],['hurdle','','حاجز'],['mannequin','','شاخص'],['coneRed','','قمع أحمر'],['coneYellow','','قمع أصفر'],['marker','','ماركر']];
+      const pG = document.getElementById('peopleGrid'), eG = document.getElementById('devEquipGrid');
+      people.forEach(([t,n,l]) => pG.innerHTML += `<div class="draggable-source" draggable="true" data-type="${t}" data-num="${n}">${getSvgByType(t,n)}<span>${l}</span></div>`);
+      equip.forEach(([t,n,l]) => eG.innerHTML += `<div class="draggable-source" draggable="true" data-type="${t}" data-num="${n}">${getSvgByType(t,n)}<span>${l}</span></div>`);
+
+      document.querySelectorAll('.draggable-source').forEach(el => {
+        el.addEventListener('dragstart', e => e.dataTransfer.setData('application/json', JSON.stringify({ type: el.dataset.type, num: el.dataset.num || '' })));
+        el.addEventListener('click', () => {
+          const created = createDrillItem(el.dataset.type, el.dataset.num || '', clampPercent(50 + Math.random()*14 - 7), clampPercent(50 + Math.random()*14 - 7));
+          selectElement(created); showToast('تمت الإضافة للملعب ✓'); scheduleAutoSave();
+        });
+      });
+    }
+    buildPalette();
+
+    function updatePitchDimBadge() {
+      const val = document.getElementById('pitchDimensions').value.trim();
+      const b = document.getElementById('pitchDimBadge');
+      b.style.display = val ? 'block' : 'none';
+      b.textContent = val;
+    }
+
+    function loadDrillPreset(name) {
+      if (devPitch.querySelectorAll('.drill-item').length > 0 && !confirm('سيتم استبدال العناصر الحالية بالقالب الجاهز، متابعة؟')) return;
+      deselectAll();
+      devPitch.querySelectorAll('.drill-item').forEach(e => e.remove());
+      drawings = []; tacticalLinks = []; frames = [];
+      document.getElementById('frameCount').innerText = '0';
+
+      if (name === 'rebounder') {
+        setPitchView('grid');
+        document.getElementById('pitchDimensions').value = '12م × 12م';
+        document.getElementById('drillTitle').value = 'الاستلام والتوجيه + لوحة الارتداد';
+        document.getElementById('drillFocus').value = 'الاستلام والتوجيه (First Touch)';
+        createDrillItem('rebounder', '', 50, 22, null, 1.4, 0);
+        createDrillItem('targetPlayer', '10', 50, 52, null, 1.4, 0);
+        createDrillItem('ball', '', 50, 42, null, 1.2, 0);
+        createDrillItem('mannequin', '', 50, 68, null, 1.3, 0);
+        createDrillItem('miniGoal', '', 20, 82, null, 1.3, -35);
+        createDrillItem('miniGoal', '', 80, 82, null, 1.3, 35);
+        createDrillItem('devCoach', 'C', 50, 88, null, 1.3, 0);
+        drawings.push({ type: 'draw-pass', color: '#facc15', sx: 0.50, sy: 0.48, ex: 0.50, ey: 0.27 });
+        drawings.push({ type: 'draw-dribble', color: '#38bdf8', sx: 0.50, sy: 0.55, ex: 0.72, ey: 0.76 });
+      } else if (name === 'slalom_finish') {
+        setPitchView('penalty');
+        document.getElementById('pitchDimensions').value = '20م × 16م';
+        document.getElementById('drillTitle').value = 'سلالوم ورشاقة + إنهاء تحت ضغط';
+        document.getElementById('drillFocus').value = 'الإنهاء والتسديد (Finishing)';
+        createDrillItem('gk', '', 50, 10, null, 1.4, 0);
+        createDrillItem('pole', '', 35, 75, null, 1.3, 0);
+        createDrillItem('pole', '', 43, 66, null, 1.3, 0);
+        createDrillItem('pole', '', 35, 57, null, 1.3, 0);
+        createDrillItem('hurdle', '', 65, 72, null, 1.3, 0);
+        createDrillItem('hurdle', '', 65, 58, null, 1.3, 0);
+        createDrillItem('targetPlayer', '9', 35, 88, null, 1.4, 0);
+        createDrillItem('devCoach', 'C', 78, 42, null, 1.3, 0);
+        createDrillItem('ball', '', 72, 42, null, 1.2, 0);
+        drawings.push({ type: 'draw-dribble', color: '#facc15', sx: 0.35, sy: 0.84, ex: 0.40, ey: 0.45 });
+        drawings.push({ type: 'draw-pass', color: '#ffffff', sx: 0.72, sy: 0.42, ex: 0.46, ey: 0.40 });
+        drawings.push({ type: 'draw-pass', color: '#f97316', sx: 0.46, sy: 0.38, ex: 0.44, ey: 0.12 });
+      } else if (name === 'rondo') {
+        setPitchView('grid');
+        document.getElementById('pitchDimensions').value = '10م × 10م';
+        document.getElementById('drillTitle').value = 'روندو 4v1 لرفع سرعة القرار والمسح';
+        document.getElementById('drillFocus').value = 'المسح البصري والقرار (Scanning)';
+        [[22,22],[78,22],[22,78],[78,78]].forEach(([x,y]) => createDrillItem('coneYellow','',x,y,null,1.2,0));
+        createDrillItem('targetPlayer', '10', 50, 22, null, 1.35, 0);
+        createDrillItem('playerBlue', '6', 50, 78, null, 1.3, 0);
+        createDrillItem('playerBlue', '8', 22, 50, null, 1.3, 0);
+        createDrillItem('playerBlue', '7', 78, 50, null, 1.3, 0);
+        createDrillItem('playerRed', 'X', 50, 50, null, 1.3, 0);
+        createDrillItem('ball', '', 50, 30, null, 1.2, 0);
+      } else if (name === '1v1_mini') {
+        setPitchView('grid');
+        document.getElementById('pitchDimensions').value = '18م × 14م';
+        document.getElementById('drillTitle').value = 'مواجهة 1v1 والمراوغة نحو المرميين';
+        document.getElementById('drillFocus').value = 'المراوغة 1v1 والتفوق';
+        createDrillItem('miniGoal', '', 28, 14, null, 1.35, 0);
+        createDrillItem('miniGoal', '', 72, 14, null, 1.35, 0);
+        createDrillItem('targetPlayer', '11', 50, 82, null, 1.4, 0);
+        createDrillItem('ball', '', 50, 74, null, 1.2, 0);
+        createDrillItem('playerRed', '2', 50, 46, null, 1.35, 0);
+        createDrillItem('devCoach', 'C', 14, 50, null, 1.25, 0);
+        drawings.push({ type: 'draw-dribble', color: '#facc15', sx: 0.50, sy: 0.72, ex: 0.68, ey: 0.25 });
+      }
+      updatePitchDimBadge();
+      renderCanvas();
+      scheduleAutoSave();
+      showToast('تم تحميل القالب الجاهز ✓');
+    }
+
+    function getClientPos(e) {
+      if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+    function allowDrop(e) { e.preventDefault(); }
+    function drop(e) {
+      e.preventDefault();
+      const raw = e.dataTransfer.getData('application/json'); if (!raw) return;
+      const { type, num } = JSON.parse(raw);
+      const rect = devPitch.getBoundingClientRect(), pos = getClientPos(e);
+      const created = createDrillItem(type, num, clampPercent(((pos.x - rect.left) / rect.width) * 100), clampPercent(((pos.y - rect.top) / rect.height) * 100));
+      selectElement(created); scheduleAutoSave();
+    }
+
+    function applyItemTransform(el) {
+      el.style.transform = `translate(-50%, -50%) rotate(${parseFloat(el.dataset.rot || 0)}deg) scale(${parseFloat(el.dataset.scale || 1.3)})`;
+    }
+    function createDrillItem(type, num, xPct, yPct, customId = null, scaleVal = 1.3, rotVal = 0, customText = null) {
+      itemIdCounter++;
+      const item = document.createElement('div');
+      item.className = 'drill-item';
+      item.id = customId || `dev_item_${Date.now()}_${itemIdCounter}`;
+      item.dataset.type = type; item.dataset.num = num || ''; item.dataset.scale = scaleVal; item.dataset.rot = rotVal;
+      item.innerHTML = `${getSvgByType(type, num)}<div class="delete-btn" onclick="removeNode(event, this)">×</div>`;
+      if (customText !== null) { const t = item.querySelector('.p-text'); if (t) t.textContent = customText; }
+      item.style.left = `${xPct}%`; item.style.top = `${yPct}%`;
+      applyItemTransform(item);
+      item.addEventListener('mousedown', handleItemStart);
+      item.addEventListener('touchstart', handleItemStart, { passive: false });
+      item.addEventListener('dblclick', e => { e.stopPropagation(); selectElement(item); renameSelectedItem(); });
+      item.addEventListener('wheel', e => {
+        e.preventDefault();
+        item.dataset.scale = Math.max(0.6, Math.min(3.5, parseFloat(item.dataset.scale || 1.3) + (e.deltaY < 0 ? 0.15 : -0.15))).toFixed(2);
+        applyItemTransform(item); scheduleAutoSave();
+      }, { passive: false });
+      devPitch.appendChild(item);
+      return item;
+    }
+
+    function removeNode(e, btn) { if (e) e.stopPropagation(); const n = btn.parentElement; if (selectedElement === n) deselectAll(); tacticalLinks = tacticalLinks.filter(l => l.n1 !== n.id && l.n2 !== n.id); n.remove(); renderTacticalLinks(); scheduleAutoSave(); }
+    function selectElement(el) { deselectAll(); if (!el) return; selectedElement = el; el.classList.add('selected'); document.getElementById('selectedBar').classList.add('visible'); }
+    function deselectAll() { if (selectedElement) selectedElement.classList.remove('selected'); selectedElement = null; document.getElementById('selectedBar').classList.remove('visible'); }
+    function renameSelectedItem() { if (!selectedElement) return; const t = selectedElement.querySelector('.p-text'); if (!t) return showToast('تعديل الرقم متاح للاعبين فقط'); const v = prompt('الرقم أو الاسم:', t.textContent); if (v !== null && v.trim()) { t.textContent = v.trim(); scheduleAutoSave(); } }
+    function rotateSelectedItem(deg) { if (!selectedElement) return; selectedElement.dataset.rot = (parseFloat(selectedElement.dataset.rot || 0) + deg) % 360; applyItemTransform(selectedElement); scheduleAutoSave(); }
+    function scaleSelectedItem(d) { if (!selectedElement) return; selectedElement.dataset.scale = Math.max(0.6, Math.min(3.5, parseFloat(selectedElement.dataset.scale || 1.3) + d)).toFixed(2); applyItemTransform(selectedElement); scheduleAutoSave(); }
+    function deleteSelectedItem() { if (!selectedElement) return; const n = selectedElement; deselectAll(); tacticalLinks = tacticalLinks.filter(l => l.n1 !== n.id && l.n2 !== n.id); n.remove(); renderTacticalLinks(); scheduleAutoSave(); }
+    devPitch.addEventListener('mousedown', e => { if (e.target === devPitch || e.target.classList.contains('pitch-lines')) deselectAll(); });
+
+    function setPitchView(view, btnEl = null) {
+      currentPitchView = view;
+      document.querySelectorAll('#drillControls .pitch-btn[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+      devPitch.classList.remove('view-grid', 'view-penalty', 'view-full'); devPitch.classList.add(`view-${view}`);
+      setTimeout(() => { resizeCanvas(); renderTacticalLinks(); }, 100); scheduleAutoSave();
+    }
+    function setMode(mode, btnEl) {
+      currentMode = mode;
+      document.querySelectorAll('#drillControls .draw-btn[data-mode]').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      devPitch.classList.remove('mode-drag', 'mode-link', 'mode-draw'); devPitch.classList.add(`mode-${mode.split('-')[0]}`);
+      linkStartNode = null; devPitch.querySelectorAll('.drill-item').forEach(n => n.classList.remove('linked'));
+      if (mode !== 'drag') deselectAll();
+    }
+    function setDrawColor(color, dotEl) { currentDrawColor = color; document.querySelectorAll('.color-dot').forEach(d => d.classList.toggle('active', d === dotEl)); }
+
+    let activeItem = null, dragStartClient = { x: 0, y: 0 }, dragStartPct = { x: 0, y: 0 }, hasMoved = false;
+    function handleItemStart(e) {
+      if (e.target.classList.contains('delete-btn')) return;
+      if (e.type === 'touchstart') e.preventDefault();
+      if (currentMode === 'drag') {
+        activeItem = this; activeItem.style.zIndex = 100; hasMoved = false;
+        const pos = getClientPos(e); dragStartClient = { x: pos.x, y: pos.y };
+        dragStartPct = { x: parseFloat(activeItem.style.left) || 50, y: parseFloat(activeItem.style.top) || 50 };
+        document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchmove', dragMove, { passive: false }); document.addEventListener('touchend', dragEnd);
+      } else if (currentMode === 'link') {
+        if (!linkStartNode) { linkStartNode = this; this.classList.add('linked'); }
+        else {
+          if (linkStartNode.id !== this.id && !tacticalLinks.some(l => (l.n1 === linkStartNode.id && l.n2 === this.id) || (l.n1 === this.id && l.n2 === linkStartNode.id))) {
+            tacticalLinks.push({ n1: linkStartNode.id, n2: this.id }); renderTacticalLinks(); scheduleAutoSave();
+          }
+          linkStartNode.classList.remove('linked'); linkStartNode = null;
+        }
+      }
+    }
+    function dragMove(e) {
+      if (!activeItem) return; if (e.type === 'touchmove') e.preventDefault();
+      const pos = getClientPos(e), dx = pos.x - dragStartClient.x, dy = pos.y - dragStartClient.y;
+      if (Math.hypot(dx, dy) > 4) hasMoved = true;
+      const r = devPitch.getBoundingClientRect();
+      activeItem.style.left = `${clampPercent(dragStartPct.x + (dx / r.width) * 100).toFixed(2)}%`;
+      activeItem.style.top = `${clampPercent(dragStartPct.y + (dy / r.height) * 100).toFixed(2)}%`;
+      renderTacticalLinks();
+    }
+    function dragEnd() {
+      if (activeItem) { activeItem.style.zIndex = 10; if (!hasMoved) selectElement(activeItem); else scheduleAutoSave(); }
+      activeItem = null;
+      document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd);
+      document.removeEventListener('touchmove', dragMove); document.removeEventListener('touchend', dragEnd);
+    }
+
+    const dCanvas = document.getElementById('devCanvasLayer');
+    let isDrawing = false, activeStroke = null;
+    function getNormPos(e) { const r = dCanvas.getBoundingClientRect(), p = getClientPos(e); return { x: Math.max(0, Math.min(1, (p.x - r.left) / r.width)), y: Math.max(0, Math.min(1, (p.y - r.top) / r.height)) }; }
+    function onDrawStart(e) { if (!currentMode.startsWith('draw')) return; if (e.type === 'touchstart') e.preventDefault(); const p = getNormPos(e); isDrawing = true; activeStroke = currentMode === 'draw-pen' ? { type: currentMode, color: currentDrawColor, points: [p] } : { type: currentMode, color: currentDrawColor, sx: p.x, sy: p.y, ex: p.x, ey: p.y }; }
+    function onDrawMove(e) { if (!isDrawing || !activeStroke) return; if (e.type === 'touchmove') e.preventDefault(); const p = getNormPos(e); if (activeStroke.type === 'draw-pen') activeStroke.points.push(p); else { activeStroke.ex = p.x; activeStroke.ey = p.y; } renderCanvas(activeStroke); }
+    function onDrawEnd() { if (!isDrawing || !activeStroke) return; isDrawing = false; const valid = activeStroke.type === 'draw-pen' ? activeStroke.points.length > 1 : Math.hypot(activeStroke.ex - activeStroke.sx, activeStroke.ey - activeStroke.sy) > 0.01; if (valid) { drawings.push(activeStroke); scheduleAutoSave(); } activeStroke = null; renderCanvas(); }
+    dCanvas.addEventListener('mousedown', onDrawStart); dCanvas.addEventListener('mousemove', onDrawMove); window.addEventListener('mouseup', onDrawEnd);
+    dCanvas.addEventListener('touchstart', onDrawStart, { passive: false }); dCanvas.addEventListener('touchmove', onDrawMove, { passive: false }); dCanvas.addEventListener('touchend', onDrawEnd);
+
+    function drawArrowHead(ctx, x1, y1, x2, y2, size = 14) {
+      const a = Math.atan2(y2 - y1, x2 - x1);
+      ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - size * Math.cos(a - Math.PI / 6), y2 - size * Math.sin(a - Math.PI / 6));
+      ctx.moveTo(x2, y2); ctx.lineTo(x2 - size * Math.cos(a + Math.PI / 6), y2 - size * Math.sin(a + Math.PI / 6)); ctx.stroke();
+    }
+    function drawShapeOnCtx(ctx, d, w, h, sf = 1) {
+      ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; const color = d.color || '#facc15';
+      if (d.type === 'draw-pen' && d.points?.length > 1) {
+        ctx.beginPath(); ctx.moveTo(d.points[0].x * w, d.points[0].y * h);
+        for (let i = 1; i < d.points.length; i++) ctx.lineTo(d.points[i].x * w, d.points[i].y * h);
+        ctx.strokeStyle = color; ctx.lineWidth = 3.5 * sf; ctx.stroke();
+      } else if (d.type === 'draw-pass') {
+        const sx = d.sx*w, sy = d.sy*h, ex = d.ex*w, ey = d.ey*h;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.strokeStyle = color; ctx.lineWidth = 3.5 * sf; ctx.stroke();
+        drawArrowHead(ctx, sx, sy, ex, ey, 14 * sf);
+      } else if (d.type === 'draw-run') {
+        const sx = d.sx*w, sy = d.sy*h, ex = d.ex*w, ey = d.ey*h;
+        ctx.beginPath(); ctx.setLineDash([9*sf, 7*sf]); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey);
+        ctx.strokeStyle = color; ctx.lineWidth = 3.5 * sf; ctx.stroke(); ctx.setLineDash([]);
+        drawArrowHead(ctx, sx, sy, ex, ey, 14 * sf);
+      } else if (d.type === 'draw-dribble') {
+        const sx = d.sx*w, sy = d.sy*h, ex = d.ex*w, ey = d.ey*h, dx = ex - sx, dy = ey - sy, len = Math.hypot(dx, dy);
+        if (len > 5) {
+          const ux = dx/len, uy = dy/len, px = -uy, py = ux, stepLen = 14*sf, steps = Math.max(2, Math.floor((len - 14*sf)/stepLen)), amp = 6.5*sf;
+          ctx.beginPath(); ctx.moveTo(sx, sy);
+          for (let i = 1; i <= steps; i++) ctx.lineTo(sx + ux*i*stepLen + px*(i%2===0?1:-1)*amp, sy + uy*i*stepLen + py*(i%2===0?1:-1)*amp);
+          ctx.lineTo(ex, ey); ctx.strokeStyle = color; ctx.lineWidth = 3.2 * sf; ctx.stroke();
+          drawArrowHead(ctx, sx, sy, ex, ey, 14 * sf);
+        }
+      } else if (d.type === 'draw-highlight') {
+        const sx = d.sx*w, sy = d.sy*h, ex = d.ex*w, ey = d.ey*h;
+        ctx.beginPath(); ctx.arc(sx, sy, Math.hypot(ex - sx, ey - sy), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(250,204,21,0.3)'; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 2 * sf; ctx.stroke();
+      }
+      ctx.restore();
+    }
+    function renderCanvas(preview = null) {
+      if (!dCanvas.width || !dCanvas.height) return;
+      const ctx = dCanvas.getContext('2d'); ctx.clearRect(0, 0, dCanvas.width, dCanvas.height);
+      drawings.forEach(d => drawShapeOnCtx(ctx, d, dCanvas.width, dCanvas.height, 1));
+      if (preview) drawShapeOnCtx(ctx, preview, dCanvas.width, dCanvas.height, 1);
+    }
+    function undoDrawing() { if (drawings.length) { drawings.pop(); renderCanvas(); scheduleAutoSave(); } }
+    function clearDrawings() { drawings = []; tacticalLinks = []; renderCanvas(); renderTacticalLinks(); scheduleAutoSave(); }
+    function resizeCanvas() { const r = devPitch.getBoundingClientRect(); if (r.width > 0 && r.height > 0) { dCanvas.width = r.width; dCanvas.height = r.height; renderCanvas(); } }
+    function renderTacticalLinks() {
+      const svg = document.getElementById('devLinksLayer'), pr = devPitch.getBoundingClientRect(); if (!pr.width || !pr.height) return;
+      let html = '';
+      tacticalLinks.forEach(l => {
+        const n1 = document.getElementById(l.n1), n2 = document.getElementById(l.n2);
+        if (n1 && n2) {
+          const r1 = n1.getBoundingClientRect(), r2 = n2.getBoundingClientRect();
+          html += `<line x1="${r1.left - pr.left + r1.width/2}" y1="${r1.top - pr.top + r1.height/2}" x2="${r2.left - pr.left + r2.width/2}" y2="${r2.top - pr.top + r2.height/2}" stroke="#facc15" stroke-width="3" stroke-dasharray="8 5" />`;
+        }
+      });
+      svg.innerHTML = html;
+    }
+    function clearPitch() { if (!confirm('تنظيف الملعب بالكامل؟')) return; deselectAll(); devPitch.querySelectorAll('.drill-item').forEach(e => e.remove()); clearFrames(true); clearDrawings(); scheduleAutoSave(); }
+
+    // مؤقت الملعب (HIIT Timer)
+    let hiitInterval = null, hiitRunning = false, hiitPhase = 'work', hiitSecLeft = 30, hiitCurSet = 1, hiitMaxSets = 4;
+    function updateHIITDisplay() {
+      const m = Math.floor(hiitSecLeft / 60).toString().padStart(2, '0');
+      const s = (hiitSecLeft % 60).toString().padStart(2, '0');
+      const d = document.getElementById('hiitDisplay');
+      d.textContent = `${m}:${s}`;
+      d.className = 'hiit-display ' + (hiitRunning ? hiitPhase : '');
+      document.getElementById('hiitPhaseLabel').textContent = hiitRunning
+        ? (hiitPhase === 'work' ? `🔥 عمل — مجموعة ${hiitCurSet}/${hiitMaxSets}` : `😮‍💨 راحة — مجموعة ${hiitCurSet}/${hiitMaxSets}`)
+        : `جاهز (مجموعة ${hiitCurSet}/${hiitMaxSets})`;
+    }
+    function toggleHIITTimer() {
+      const btn = document.getElementById('hiitStartBtn');
+      if (hiitRunning) {
+        clearInterval(hiitInterval); hiitRunning = false;
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> استكمال'; btn.style.background = 'var(--success)';
+        updateHIITDisplay();
+        return;
+      }
+      const w = Math.max(5, parseInt(document.getElementById('hiitWorkSec').value) || 30);
+      const r = Math.max(5, parseInt(document.getElementById('hiitRestSec').value) || 15);
+      hiitMaxSets = Math.max(1, parseInt(document.getElementById('hiitSetsCount').value) || 4);
+      if (hiitSecLeft <= 0 || hiitCurSet > hiitMaxSets) { hiitPhase = 'work'; hiitSecLeft = w; hiitCurSet = 1; }
+      hiitRunning = true; playTone(1100, 260); acquireWakeLock();
+      btn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; btn.style.background = 'var(--accent)';
+      updateHIITDisplay();
+      hiitInterval = setInterval(() => {
+        hiitSecLeft--;
+        if (hiitSecLeft <= 3 && hiitSecLeft > 0) playTone(660, 90);
+        if (hiitSecLeft <= 0) {
+          if (hiitPhase === 'work') {
+            if (hiitCurSet >= hiitMaxSets) {
+              clearInterval(hiitInterval); hiitRunning = false; playTone(1300, 450);
+              btn.innerHTML = '<i class="fa-solid fa-play"></i> ابدأ'; btn.style.background = 'var(--success)';
+              document.getElementById('hiitPhaseLabel').textContent = 'انتهى التمرين بنجاح ✓';
+              releaseWakeLock(); return;
+            }
+            hiitPhase = 'rest'; hiitSecLeft = r; playTone(520, 300);
+          } else {
+            hiitCurSet++; hiitPhase = 'work'; hiitSecLeft = w; playTone(1100, 260);
+          }
+        }
+        updateHIITDisplay();
+      }, 1000);
+    }
+    function resetHIITTimer() {
+      clearInterval(hiitInterval); hiitRunning = false; hiitPhase = 'work'; hiitCurSet = 1;
+      hiitMaxSets = Math.max(1, parseInt(document.getElementById('hiitSetsCount').value) || 4);
+      hiitSecLeft = Math.max(5, parseInt(document.getElementById('hiitWorkSec').value) || 30);
+      const btn = document.getElementById('hiitStartBtn');
+      btn.innerHTML = '<i class="fa-solid fa-play"></i> ابدأ'; btn.style.background = 'var(--success)';
+      updateHIITDisplay();
+    }
+
+    // أنيميشن وتصدير التاب 1 Full HD 60fps
+    function saveFrame() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxAnimFrames', frames.length, 'إطارات حركة')) return;
+      const items = devPitch.querySelectorAll('.drill-item');
+      if (!items.length) return alert('أضف عناصر إلى الملعب أولاً.');
+      const arr = []; items.forEach(it => arr.push({ id: it.id, left: parseFloat(it.style.left) || 50, top: parseFloat(it.style.top) || 50 }));
+      frames.push(arr); document.getElementById('frameCount').innerText = frames.length; showToast(`تم حفظ الإطار ${frames.length} ✓`); scheduleAutoSave();
+    }
+    function clearFrames(silent = false) { stopAnimation(); frames = []; document.getElementById('frameCount').innerText = '0'; if (!silent) scheduleAutoSave(); }
+    function stopAnimation() { if (animPlaying) animStopReq = true; }
+    function easeInOutQuad(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
+    async function playAnimation() {
+      if (frames.length < 2) return alert('احفظ إطارين على الأقل لتشغيل الحركة!');
+      if (animPlaying) return; deselectAll(); animPlaying = true; animStopReq = false;
+      document.getElementById('playAnimBtn').style.display = 'none'; document.getElementById('stopAnimBtn').style.display = 'inline-flex';
+      const dur = parseInt(document.getElementById('animSpeed').value) || 550;
+      frames[0].forEach(p => { const el = document.getElementById(p.id); if (el) { el.style.left = `${p.left}%`; el.style.top = `${p.top}%`; } });
+      renderTacticalLinks(); await new Promise(r => setTimeout(r, 140));
+      for (let i = 0; i < frames.length - 1; i++) {
+        if (animStopReq) break;
+        const fA = frames[i], fB = frames[i + 1];
+        await new Promise(resolve => {
+          const t0 = performance.now();
+          function step(now) {
+            if (animStopReq) { resolve(); return; }
+            const rawT = Math.min(1, (now - t0) / dur), t = easeInOutQuad(rawT);
+            fA.forEach(pA => {
+              const pB = fB.find(x => x.id === pA.id) || pA, el = document.getElementById(pA.id);
+              if (el) { el.style.left = `${pA.left + (pB.left - pA.left)*t}%`; el.style.top = `${pA.top + (pB.top - pA.top)*t}%`; }
+            });
+            renderTacticalLinks();
+            if (rawT < 1) requestAnimationFrame(step); else resolve();
+          }
+          requestAnimationFrame(step);
+        });
+      }
+      animPlaying = false; animStopReq = false;
+      document.getElementById('playAnimBtn').style.display = 'inline-flex'; document.getElementById('stopAnimBtn').style.display = 'none';
+    }
+
+    function loadImageSafe(src) { return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
+    function drawDevPitchHD(ctx, w, h, view) {
+      ctx.fillStyle = '#15803d'; ctx.fillRect(0, 0, w, h);
+      const sh = h / 10; for (let i = 0; i < 10; i++) { ctx.fillStyle = i%2===0 ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.045)'; ctx.fillRect(0, i*sh, w, sh); }
+      const lw = Math.max(3, w * 0.0024), pad = lw * 1.5;
+      ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.92)'; ctx.fillStyle = '#fff'; ctx.lineWidth = lw;
+      ctx.strokeRect(pad, pad, w - pad*2, h - pad*2);
+      if (view === 'grid') {
+        ctx.setLineDash([12, 8]); ctx.strokeRect(w*0.08, h*0.08, w*0.84, h*0.84);
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.beginPath(); ctx.moveTo(w*0.08, h/2); ctx.lineTo(w*0.92, h/2); ctx.moveTo(w/2, h*0.08); ctx.lineTo(w/2, h*0.92); ctx.stroke(); ctx.setLineDash([]);
+      } else if (view === 'penalty') {
+        ctx.strokeRect(w*0.18, pad, w*0.64, h*0.52); ctx.strokeRect(w*0.36, pad, w*0.28, h*0.20);
+        ctx.strokeStyle = '#facc15'; ctx.lineWidth = lw*1.6; ctx.strokeRect(w*0.38, pad, w*0.24, h*0.06);
+      } else {
+        ctx.beginPath(); ctx.moveTo(pad, h/2); ctx.lineTo(w-pad, h/2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(w/2, h/2, w*0.09, 0, Math.PI*2); ctx.stroke();
+        ctx.strokeRect(w*0.26, pad, w*0.48, h*0.17); ctx.strokeRect(w*0.39, pad, w*0.22, h*0.06);
+        ctx.strokeRect(w*0.26, h-pad-h*0.17, w*0.48, h*0.17); ctx.strokeRect(w*0.39, h-pad-h*0.06, w*0.22, h*0.06);
+      }
+      ctx.restore();
+    }
+    async function prepareAssets() {
+      const assets = [];
+      for (const el of devPitch.querySelectorAll('.drill-item')) {
+        const svgEl = el.querySelector('svg'), ow = svgEl ? (parseFloat(svgEl.getAttribute('width'))||30) : 30, oh = svgEl ? (parseFloat(svgEl.getAttribute('height'))||30) : 30;
+        let img = null;
+        if (svgEl) {
+          const clone = svgEl.cloneNode(true); clone.setAttribute('xmlns','http://www.w3.org/2000/svg'); clone.setAttribute('width', ow*5); clone.setAttribute('height', oh*5);
+          img = await loadImageSafe('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone)));
+        }
+        assets.push({ id: el.id, left: parseFloat(el.style.left)||50, top: parseFloat(el.style.top)||50, scale: parseFloat(el.dataset.scale||1.3), rot: parseFloat(el.dataset.rot||0), origW: ow, origH: oh, img });
+      }
+      return assets;
+    }
+    function renderFrameHD(ctx, w, h, sf, assets, posMap) {
+      drawDevPitchHD(ctx, w, h, currentPitchView);
+      if (tacticalLinks.length) {
+        ctx.save(); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3*sf; ctx.setLineDash([9*sf, 5*sf]);
+        tacticalLinks.forEach(l => { const p1 = posMap[l.n1], p2 = posMap[l.n2]; if (p1 && p2) { ctx.beginPath(); ctx.moveTo((p1.left/100)*w, (p1.top/100)*h); ctx.lineTo((p2.left/100)*w, (p2.top/100)*h); ctx.stroke(); } });
+        ctx.restore();
+      }
+      drawings.forEach(d => drawShapeOnCtx(ctx, d, w, h, sf));
+      assets.forEach(a => {
+        if (!a.img) return;
+        const p = posMap[a.id] || { left: a.left, top: a.top }, cx = (p.left/100)*w, cy = (p.top/100)*h, dw = a.origW*a.scale*sf, dh = a.origH*a.scale*sf;
+        ctx.save(); ctx.translate(cx, cy); if (a.rot) ctx.rotate(a.rot * Math.PI / 180);
+        ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6*sf; ctx.shadowOffsetY = 3*sf;
+        ctx.drawImage(a.img, -dw/2, -dh/2, dw, dh); ctx.restore();
+      });
+      const dimTxt = document.getElementById('pitchDimensions').value.trim();
+      if (dimTxt) {
+        ctx.save(); ctx.font = `800 ${Math.round(14*sf)}px Cairo, Arial`;
+        const tw = ctx.measureText(dimTxt).width;
+        ctx.fillStyle = 'rgba(2,6,23,0.75)'; ctx.fillRect(w - tw - 42*sf, h - 42*sf, tw + 24*sf, 28*sf);
+        ctx.fillStyle = '#facc15'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText(dimTxt, w - 30*sf, h - 28*sf); ctx.restore();
+      }
+      ctx.save(); ctx.font = `800 ${Math.round(13*sf)}px Cairo, Arial`; ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText('Ziada Performance Dev Pro', 18*sf, h - 12*sf); ctx.restore();
+    }
+    function getHDConfig() { const r = devPitch.getBoundingClientRect(), w = 1920; let h = Math.round(w*(r.height/r.width)); if (h%2!==0) h++; return { w, h, sf: w/r.width }; }
+    async function renderStaticDataUrl() {
+      deselectAll(); const { w, h, sf } = getHDConfig(), assets = await prepareAssets(), posMap = {};
+      assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      renderFrameHD(c.getContext('2d'), w, h, sf, assets, posMap); return c.toDataURL('image/png');
+    }
+    async function printPitch() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة وحدة التطوير الفردي HD')) return;
+      const a = document.createElement('a'); a.download = `Ziada_PerfDev_HD_${Date.now()}.png`; a.href = await renderStaticDataUrl(); a.click();
+      showToast('تم حفظ الصورة بجودة Full HD ✓');
+    }
+    async function exportDrillPDF() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'كارت وحدة التطوير الفردي PDF')) return;
+      const url = await renderStaticDataUrl();
+      document.getElementById('printMainTitle').innerText = document.getElementById('drillTitle').value.trim() || 'Ziada Analysis | بطاقة وحدة التطوير الفردي';
+      document.getElementById('printDate').innerText = `التاريخ: ${new Date().toLocaleDateString('ar-EG', { dateStyle: 'full' })} — المساحة: ${document.getElementById('pitchDimensions').value}`;
+      document.getElementById('printMetaWrap').innerHTML = `<table class="print-meta-table"><tr><th>المهارة المستهدفة</th><th>المجموعات</th><th>التكرار/الزمن</th><th>الراحة</th><th>الشدة</th></tr><tr><td><b>${escapeHtml(document.getElementById('drillFocus').value)}</b></td><td>${escapeHtml(document.getElementById('drillSets').value)}</td><td>${escapeHtml(document.getElementById('drillReps').value)}</td><td>${escapeHtml(document.getElementById('drillRest').value)}</td><td>${escapeHtml(document.getElementById('drillIntensity').value)}</td></tr></table>`;
+      document.getElementById('printVisualImg').src = url;
+      document.getElementById('printNotesText').innerText = 'النقاط التصحيحية:\n' + (document.getElementById('drillNotes').value || 'لا توجد ملاحظات إضافية.');
+      document.getElementById('appUI').style.display = 'none'; document.getElementById('printArea').style.display = 'block';
+      setTimeout(() => { window.print(); document.getElementById('printArea').style.display = 'none'; document.getElementById('appUI').style.display = 'block'; resizeCanvas(); renderTacticalLinks(); }, 300);
+    }
+    async function exportVideo() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو تدريب مطور الأداء Full HD')) return;
+      if (frames.length < 2) return alert('الرجاء حفظ إطارين على الأقل لتصدير الفيديو.');
+      deselectAll();
+      const modal = document.getElementById('exportProgressModal'), fill = document.getElementById('exportProgressFill'), pctTxt = document.getElementById('exportPercentText');
+      modal.style.display = 'flex'; fill.style.width = '0%'; pctTxt.textContent = '0%';
+      const { w, h, sf } = getHDConfig(), assets = await prepareAssets(), speedMs = parseInt(document.getElementById('animSpeed').value) || 550;
+      const vC = document.createElement('canvas'); vC.width = w; vC.height = h; const vCtx = vC.getContext('2d');
+      const mimes = ['video/webm;codecs=h264','video/webm;codecs=vp8','video/webm','video/mp4'];
+      const mimeType = mimes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
+      const recorder = new MediaRecorder(vC.captureStream(60), mimeType ? { mimeType, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 });
+      const chunks = []; recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
+      const startHold = 350, wpHold = 100, endHold = 700, segs = frames.length - 1, totalMs = startHold + segs*speedMs + Math.max(0, segs-1)*wpHold + endHold;
+      function getPosAt(el) {
+        const map = {}; assets.forEach(a => map[a.id] = { left: a.left, top: a.top });
+        let fA = frames[0], fB = frames[0], t = 0;
+        if (el >= totalMs - endHold) { fA = frames[frames.length-1]; fB = fA; }
+        else if (el > startHold) {
+          let cur = el - startHold;
+          for (let i = 0; i < segs; i++) {
+            if (cur <= speedMs) { fA = frames[i]; fB = frames[i+1]; t = easeInOutQuad(cur/speedMs); break; }
+            cur -= speedMs; if (i < segs - 1) { if (cur <= wpHold) { fA = frames[i+1]; fB = fA; break; } cur -= wpHold; }
+          }
+        }
+        fA.forEach(pA => { const pB = fB.find(x => x.id === pA.id) || pA; map[pA.id] = { left: pA.left + (pB.left - pA.left)*t, top: pA.top + (pB.top - pA.top)*t }; });
+        return map;
+      }
+      renderFrameHD(vCtx, w, h, sf, assets, getPosAt(0));
+      const t0 = performance.now(); recorder.start();
+      await new Promise(resolve => {
+        function tick(now) {
+          const el = now - t0; renderFrameHD(vCtx, w, h, sf, assets, getPosAt(Math.min(el, totalMs)));
+          const pct = Math.min(99, Math.round((el/totalMs)*100)); fill.style.width = `${pct}%`; pctTxt.textContent = `${pct}%`;
+          if (el < totalMs) requestAnimationFrame(tick); else resolve();
+        }
+        requestAnimationFrame(tick);
+      });
+      const dur = Math.round(performance.now() - t0);
+      recorder.onstop = () => {
+        const raw = new Blob(chunks, { type: mimeType || 'video/webm' });
+        const done = b => {
+          const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+          a.download = `Ziada_PerfDev_HD_${Date.now()}.${mimeType.includes('mp4')?'mp4':'webm'}`; a.click();
+          fill.style.width = '100%'; pctTxt.textContent = '100%';
+          setTimeout(() => { modal.style.display = 'none'; showToast('تم تصدير الفيديو Full HD ✓'); }, 350);
+        };
+        if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) ysFixWebmDuration(raw, dur, done); else done(raw);
+      };
+      recorder.stop();
+    }
+
+    // ==========================================
+    // 4. التاب 2: محرك SwitchedOn الذهني + مزامنة الـ QR
+    // ==========================================
+    let soActiveMode = 'colors';
+    let soRunningSingle = false, soTimerId = null, soCurrentRep = 0, soTargetReps = 20;
+    let soStimulusShownAt = 0, soReactionTimes = [];
+
+    function setSoMode(mode, btn) {
+      soActiveMode = mode;
+      document.querySelectorAll('#soModesGrid .so-mode-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+    function toggleSoColor(btn) {
+      const actives = document.querySelectorAll('#soColorsRow .so-color-toggle.active');
+      if (btn.classList.contains('active') && actives.length <= 2) return showToast('اترك لونين على الأقل');
+      btn.classList.toggle('active');
+    }
+    function getSelectedSoColors() {
+      const arr = [];
+      document.querySelectorAll('#soColorsRow .so-color-toggle.active').forEach(b => arr.push({ hex: b.dataset.col, name: b.dataset.name }));
+      return arr.length ? arr : [{ hex: '#ef4444', name: 'أحمر' }, { hex: '#2563eb', name: 'أزرق' }];
+    }
+
+    function generateStimulus() {
+      const cols = getSelectedSoColors();
+      const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+      const col = pick(cols);
+
+      if (soActiveMode === 'colors') {
+        return { bg: col.hex, text: col.name, textColor: '#ffffff', sub: '', speak: col.name };
+      }
+      if (soActiveMode === 'numbers') {
+        const n = Math.floor(Math.random() * 9) + 1;
+        return { bg: col.hex, text: String(n), textColor: '#ffffff', sub: '', speak: String(n) };
+      }
+      if (soActiveMode === 'arrows') {
+        const dirs = [
+          { sym: '⬆️', name: 'أمام' }, { sym: '⬇️', name: 'خلف' }, { sym: '⬅️', name: 'يسار' }, { sym: '➡️', name: 'يمين' },
+          { sym: '↗️', name: 'أمام يمين' }, { sym: '↖️', name: 'أمام يسار' }
+        ];
+        const d = pick(dirs);
+        return { bg: '#0f172a', text: d.sym, textColor: '#38bdf8', sub: d.name, speak: d.name };
+      }
+      if (soActiveMode === 'shapes') {
+        const shapes = [{ sym: '●', name: 'دائرة' }, { sym: '▲', name: 'مثلث' }, { sym: '■', name: 'مربع' }, { sym: '★', name: 'نجمة' }];
+        const s = pick(shapes);
+        return { bg: '#020617', text: s.sym, textColor: col.hex, sub: `${s.name} ${col.name}`, speak: s.name };
+      }
+      if (soActiveMode === 'stroop') {
+        const wordCol = pick(cols);
+        let bgCol = pick(cols);
+        if (cols.length > 1) { while (bgCol.hex === wordCol.hex) bgCol = pick(cols); }
+        return { bg: bgCol.hex, text: wordCol.name, textColor: '#ffffff', sub: 'تفاعل مع لون الخلفية وليس الكلمة!', speak: bgCol.name };
+      }
+      if (soActiveMode === 'math') {
+        const a = Math.floor(Math.random() * 6) + 1, b = Math.floor(Math.random() * 6) + 1;
+        const isEven = (a + b) % 2 === 0;
+        return { bg: '#0f172a', text: `${a} + ${b}`, textColor: '#facc15', sub: 'زوجي = يمين | فردي = يسار', speak: `${a} زائد ${b}`, meta: isEven ? 'زوجي' : 'فردي' };
+      }
+      if (soActiveMode === 'gonogo') {
+        const isGo = Math.random() > 0.3;
+        return isGo
+          ? { bg: '#16a34a', text: 'انطلق!', textColor: '#ffffff', sub: 'GO ⚡', speak: 'انطلق' }
+          : { bg: '#dc2626', text: 'توقف!', textColor: '#ffffff', sub: 'NO-GO ✋', speak: 'توقف' };
+      }
+      // dual-task
+      const num = Math.floor(Math.random() * 4) + 1;
+      const side = Math.random() > 0.5 ? 'يمين ➡️' : '⬅️ يسار';
+      return { bg: col.hex, text: `${num}`, textColor: '#ffffff', sub: `${col.name} + ${side}`, speak: `${col.name} ${num}` };
+    }
+
+    function renderStimulusOnFullscreen(stim, beep, voice) {
+      const fs = document.getElementById('soFullscreen');
+      const el = document.getElementById('soFsStimulus');
+      const sub = document.getElementById('soFsSub');
+      fs.style.background = stim.bg || '#020617';
+      el.style.fontSize = 'clamp(4.5rem, 20vw, 14rem)';
+      el.style.color = stim.textColor || '#ffffff';
+      el.textContent = stim.text || '';
+      if (stim.sub) { sub.style.display = 'inline-block'; sub.textContent = stim.sub; }
+      else sub.style.display = 'none';
+      if (beep) playTone(980, 140);
+      if (voice && stim.speak) speakArabic(stim.speak);
+    }
+
+    function updateSoStatsUI() {
+      const n = soReactionTimes.length;
+      document.getElementById('soRepsDone').textContent = n;
+      if (n > 0) {
+        const avg = Math.round(soReactionTimes.reduce((a, b) => a + b, 0) / n);
+        const best = Math.min(...soReactionTimes);
+        document.getElementById('soAvgMs').textContent = `${avg} ms`;
+        document.getElementById('soBestMs').textContent = `${best} ms`;
+      }
+    }
+
+    function startSwitchedOnSingle() {
+      soRunningSingle = true;
+      soCurrentRep = 0;
+      soTargetReps = Math.max(3, parseInt(document.getElementById('soTotalReps').value) || 20);
+      soReactionTimes = [];
+      acquireWakeLock();
+      const fs = document.getElementById('soFullscreen');
+      fs.style.display = 'flex'; fs.style.background = '#020617';
+      document.getElementById('soFsStatus').textContent = '⚡ SwitchedOn نشط';
+      document.getElementById('soFsCounter').textContent = `0 / ${soTargetReps}`;
+      document.getElementById('soFsStimulus').textContent = '3';
+      document.getElementById('soFsSub').style.display = 'none';
+      const trig = document.getElementById('soTriggerType').value;
+      document.getElementById('soFsHint').textContent = trig === 'tap'
+        ? 'المس الشاشة فور الاستجابة لتسجيل زمن رد الفعل والانتقال للتالي'
+        : 'التشغيل التلقائي نشط — يمكنك اللمس أيضاً لتسجيل زمن الاستجابة';
+
+      let cd = 3; playTone(660, 110);
+      soTimerId = setInterval(() => {
+        cd--;
+        if (cd > 0) { document.getElementById('soFsStimulus').textContent = String(cd); playTone(660, 110); }
+        else { clearInterval(soTimerId); nextSingleStimulus(); }
+      }, 850);
+    }
+
+    function nextSingleStimulus() {
+      if (!soRunningSingle) return;
+      if (soCurrentRep >= soTargetReps) {
+        playTone(1300, 380);
+        document.getElementById('soFullscreen').style.background = '#0f172a';
+        document.getElementById('soFsStimulus').style.fontSize = 'clamp(2.5rem, 8vw, 5rem)';
+        document.getElementById('soFsStimulus').style.color = '#4ade80';
+        document.getElementById('soFsStimulus').textContent = 'أحسنت! انتهت الجولة ✓';
+        const avg = soReactionTimes.length ? Math.round(soReactionTimes.reduce((a,b)=>a+b,0)/soReactionTimes.length) : 0;
+        document.getElementById('soFsSub').style.display = avg ? 'inline-block' : 'none';
+        document.getElementById('soFsSub').textContent = avg ? `متوسط رد الفعل: ${avg} ms` : '';
+        soRunningSingle = false;
+        updateSoStatsUI();
+        return;
+      }
+
+      const darkGap = document.getElementById('soDarkGap').checked;
+      const fire = () => {
+        if (!soRunningSingle) return;
+        soCurrentRep++;
+        document.getElementById('soFsCounter').textContent = `${soCurrentRep} / ${soTargetReps}`;
+        const stim = generateStimulus();
+        renderStimulusOnFullscreen(stim, document.getElementById('soBeepEnabled').checked, document.getElementById('soVoiceEnabled').checked);
+        soStimulusShownAt = performance.now();
+
+        if (document.getElementById('soTriggerType').value === 'auto') {
+          const minS = Math.max(0.4, parseFloat(document.getElementById('soMinSec').value) || 1.5);
+          const maxS = Math.max(minS, parseFloat(document.getElementById('soMaxSec').value) || 3.0);
+          const waitMs = (minS + Math.random() * (maxS - minS)) * 1000;
+          soTimerId = setTimeout(nextSingleStimulus, waitMs);
+        }
+      };
+
+      if (darkGap && soCurrentRep > 0) {
+        document.getElementById('soFullscreen').style.background = '#020617';
+        document.getElementById('soFsStimulus').textContent = '';
+        document.getElementById('soFsSub').style.display = 'none';
+        soTimerId = setTimeout(fire, 280);
+      } else fire();
+    }
+
+    async function handleStimulusTap() {
+      // 1. وضع البوابة المستقبلة عبر QR
+      if (JOIN_RX_ROOM && stationRoomId && stationCmdShownAt > 0) {
+        const rt = Math.round(performance.now() - stationCmdShownAt);
+        stationCmdShownAt = 0;
+        playTone(1250, 90);
+        document.getElementById('soFullscreen').style.background = '#052e16';
+        document.getElementById('soFsStimulus').style.fontSize = 'clamp(2.4rem, 9vw, 5rem)';
+        document.getElementById('soFsStimulus').style.color = '#4ade80';
+        document.getElementById('soFsStimulus').textContent = `✓ ${rt} ms`;
+        document.getElementById('soFsSub').style.display = 'none';
+        try {
+          await db.collection('reaction_rooms').doc(stationRoomId).update({
+            lastResponse: { cmdId: lastHandledCmdId, stationId, stationName, reactionMs: rt, respondedAt: Date.now() }
+          });
+        } catch (e) {}
+        return;
+      }
+
+      // 2. وضع الجهاز الواحد
+      if (soRunningSingle && soStimulusShownAt > 0) {
+        const rt = Math.round(performance.now() - soStimulusShownAt);
+        soStimulusShownAt = 0;
+        soReactionTimes.push(rt);
+        updateSoStatsUI();
+        document.getElementById('soFsStatus').textContent = `⚡ آخر استجابة: ${rt} ms`;
+        if (document.getElementById('soTriggerType').value === 'tap') {
+          playTone(1200, 75);
+          clearTimeout(soTimerId);
+          nextSingleStimulus();
+        }
+      }
+    }
+
+    function stopSwitchedOn() {
+      soRunningSingle = false;
+      clearTimeout(soTimerId); clearInterval(soTimerId);
+      document.getElementById('soFullscreen').style.display = 'none';
+      releaseWakeLock();
+      if (JOIN_RX_ROOM) {
+        if (stationUnsub) stationUnsub();
+        document.getElementById('stationReceiverUI').style.display = 'flex';
+      }
+    }
+
+    // ---- نظام ربط التليفونات عبر QR (Master Controller) ----
+    let masterRoomId = null, masterUnsub = null, connectedStations = {};
+    let multiSessionRunning = false, multiRepCounter = 0, multiLastCmdId = null, multiLastHandledResp = null, multiTimerId = null;
+
+    async function createQRReactionRoom() {
+      masterRoomId = 'ZD-' + Math.floor(1000 + Math.random() * 9000);
+      connectedStations = {};
+      try {
+        await db.collection('reaction_rooms').doc(masterRoomId).set({
+          createdAt: Date.now(),
+          stations: {},
+          activeCommand: null,
+          lastResponse: null
+        });
+
+        const baseUrl = window.location.href.split('?')[0];
+        const joinUrl = `${baseUrl}?rxRoom=${masterRoomId}`;
+        const qrBox = document.getElementById('qrCodeCanvasBox');
+        qrBox.innerHTML = '';
+        new QRCode(qrBox, { text: joinUrl, width: 170, height: 170, colorDark: '#020617', colorLight: '#ffffff' });
+
+        document.getElementById('qrRoomCodeDisplay').textContent = masterRoomId;
+        document.getElementById('qrBoxWrap').style.display = 'flex';
+        document.getElementById('btnCreateQrRoom').innerHTML = '<i class="fa-solid fa-rotate"></i> تجديد الغرفة';
+
+        if (masterUnsub) masterUnsub();
+        masterUnsub = db.collection('reaction_rooms').doc(masterRoomId).onSnapshot(snap => {
+          if (!snap.exists) return;
+          const data = snap.data();
+          connectedStations = data.stations || {};
+          renderConnectedStations();
+
+          // استقبال زمن رد الفعل من التليفونات عند لمس الشاشة
+          const resp = data.lastResponse;
+          if (resp && resp.cmdId === multiLastCmdId && resp.cmdId !== multiLastHandledResp) {
+            multiLastHandledResp = resp.cmdId;
+            if (resp.reactionMs) {
+              soReactionTimes.push(resp.reactionMs);
+              updateSoStatsUI();
+              showToast(`✓ ${resp.stationName}: ${resp.reactionMs} ms`);
+            }
+            if (multiSessionRunning && document.getElementById('soTriggerType').value === 'tap') {
+              clearTimeout(multiTimerId);
+              const delayMs = Math.max(300, (parseFloat(document.getElementById('soMinSec').value) || 1) * 500);
+              multiTimerId = setTimeout(sendNextMultiCommand, delayMs);
+            }
+          }
+        });
+        showToast(`تم إنشاء الغرفة ${masterRoomId} — امسح الـ QR بالتليفونات ✓`);
+      } catch (err) {
+        alert('تأكد من إضافة قاعدة reaction_rooms في Firebase Firestore Rules:\n' + err.message);
+      }
+    }
+
+    function renderConnectedStations(activeId = null) {
+      const ids = Object.keys(connectedStations);
+      document.getElementById('connectedStationsCount').textContent = ids.length;
+      const list = document.getElementById('connectedStationsList');
+      if (!ids.length) {
+        list.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">في انتظار مسح الـ QR من أي تليفون...</span>';
+        return;
+      }
+      list.innerHTML = ids.map(id => `<span class="station-chip ${activeId === id || activeId === 'ALL' ? 'active-fire' : ''}"><i class="fa-solid fa-mobile-screen"></i> ${escapeHtml(connectedStations[id].name)}</span>`).join('');
+    }
+
+    function copyQRRoomLink() {
+      if (!masterRoomId) return;
+      const url = `${window.location.href.split('?')[0]}?rxRoom=${masterRoomId}`;
+      navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الربط — أرسله أو امسح الـ QR ✓'));
+    }
+
+    async function closeQRReactionRoom() {
+      if (multiSessionRunning) toggleMultiPhoneSession();
+      if (masterUnsub) { masterUnsub(); masterUnsub = null; }
+      if (masterRoomId) {
+        try { await db.collection('reaction_rooms').doc(masterRoomId).delete(); } catch (e) {}
+      }
+      masterRoomId = null; connectedStations = {};
+      document.getElementById('qrBoxWrap').style.display = 'none';
+      showToast('تم إغلاق الغرفة');
+    }
+
+    async function sendNextMultiCommand() {
+      if (!masterRoomId) return;
+      const stationIds = Object.keys(connectedStations);
+      if (!stationIds.length) {
+        if (multiSessionRunning) toggleMultiPhoneSession();
+        return alert('لا توجد تليفونات متصلة بالغرفة بعد! امسح الـ QR أولاً.');
+      }
+      const targetReps = Math.max(3, parseInt(document.getElementById('soTotalReps').value) || 20);
+      if (multiSessionRunning && multiRepCounter >= targetReps) {
+        toggleMultiPhoneSession();
+        await db.collection('reaction_rooms').doc(masterRoomId).update({ activeCommand: { cmdId: 'stop_' + Date.now(), action: 'STOP' } });
+        showToast('انتهت جولة التليفونات بنجاح ✓');
+        return;
+      }
+
+      multiRepCounter++;
+      const pattern = document.getElementById('qrSyncPattern').value;
+      const cmdId = 'cmd_' + Date.now() + '_' + multiRepCounter;
+      multiLastCmdId = cmdId;
+      let targetStation = 'ALL', decoyForOthers = false;
+      let stim = generateStimulus();
+
+      if (pattern === 'random_gate') {
+        targetStation = stationIds[Math.floor(Math.random() * stationIds.length)];
+      } else if (pattern === 'split_decoy') {
+        targetStation = stationIds[Math.floor(Math.random() * stationIds.length)];
+        decoyForOthers = true;
+        stim = { bg: '#16a34a', text: '✔ انطلق', textColor: '#ffffff', sub: 'البوابة الصحيحة', speak: 'انطلق' };
+      }
+
+      renderConnectedStations(targetStation);
+      await db.collection('reaction_rooms').doc(masterRoomId).update({
+        activeCommand: {
+          cmdId, targetStation, decoyForOthers, stimulus: stim, repNum: multiRepCounter,
+          beep: document.getElementById('soBeepEnabled').checked,
+          voice: document.getElementById('soVoiceEnabled').checked
+        }
+      });
+
+      if (multiSessionRunning && document.getElementById('soTriggerType').value === 'auto') {
+        const minS = Math.max(0.5, parseFloat(document.getElementById('soMinSec').value) || 1.5);
+        const maxS = Math.max(minS, parseFloat(document.getElementById('soMaxSec').value) || 3.0);
+        multiTimerId = setTimeout(sendNextMultiCommand, (minS + Math.random() * (maxS - minS)) * 1000);
+      }
+    }
+
+    function toggleMultiPhoneSession() {
+      const btn = document.getElementById('btnStartMultiSession');
+      if (multiSessionRunning) {
+        multiSessionRunning = false; clearTimeout(multiTimerId);
+        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> بدء التشغيل على كل التليفونات';
+        btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+        renderConnectedStations(null);
+      } else {
+        if (!Object.keys(connectedStations).length) return alert('قم بمسح الـ QR من تليفون واحد على الأقل أولاً!');
+        multiSessionRunning = true; multiRepCounter = 0; soReactionTimes = [];
+        btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف الجلسة';
+        btn.style.background = '#dc2626';
+        sendNextMultiCommand();
+      }
+    }
+
+    function fireManualMultiPulse() { sendNextMultiCommand(); }
+
+    // ==========================================
+    // 5. التاب 3: مقارنة الفيديو (قبل/بعد) + أداة الزاوية بالدرجات (°)
+    // ==========================================
+    let bioTool = 'angle';
+    const bioState = {
+      A: { shapes: [], anglePts: [], drawing: false, cur: null },
+      B: { shapes: [], anglePts: [], drawing: false, cur: null }
+    };
+
+    function setBioLayout(mode, btn) {
+      document.getElementById('bioModeDual').classList.toggle('active', mode === 'dual');
+      document.getElementById('bioModeSingle').classList.toggle('active', mode === 'single');
+      document.getElementById('bioGrid').classList.toggle('single-mode', mode === 'single');
+      setTimeout(() => { syncBioCanvas('A'); syncBioCanvas('B'); }, 80);
+    }
+    function setBioTool(t, btn) {
+      bioTool = t; bioState.A.anglePts = []; bioState.B.anglePts = [];
+      document.querySelectorAll('.bio-toolbar .draw-btn[data-biotool]').forEach(b => b.classList.toggle('active', b.dataset.biotool === t));
+    }
+
+    function loadBioVideo(side, e) {
+      const f = e.target.files[0]; if (!f) return;
+      const v = document.getElementById('bioVideo' + side);
+      v.src = URL.createObjectURL(f); v.load();
+      v.onloadedmetadata = () => syncBioCanvas(side);
+      v.ontimeupdate = () => {
+        if (v.duration) document.getElementById('bioSeek' + side).value = (v.currentTime / v.duration) * 100;
+        const m = Math.floor(v.currentTime / 60).toString().padStart(2,'0'), s = Math.floor(v.currentTime % 60).toString().padStart(2,'0');
+        document.getElementById('bioTime' + side).textContent = `${m}:${s}`;
+      };
+    }
+
+    function syncBioCanvas(side) {
+      const v = document.getElementById('bioVideo' + side), stage = document.getElementById('bioStage' + side), c = document.getElementById('bioCanvas' + side);
+      const cw = stage.clientWidth, ch = stage.clientHeight; if (!cw || !ch) return;
+      const vr = (v.videoWidth && v.videoHeight) ? (v.videoWidth / v.videoHeight) : (16 / 9);
+      const br = cw / ch;
+      let dw, dh, ox, oy;
+      if (br > vr) { dh = ch; dw = ch * vr; ox = (cw - dw) / 2; oy = 0; }
+      else { dw = cw; dh = cw / vr; ox = 0; oy = (ch - dh) / 2; }
+      c.style.left = `${ox}px`; c.style.top = `${oy}px`; c.style.width = `${dw}px`; c.style.height = `${dh}px`;
+      c.width = Math.round(dw); c.height = Math.round(dh);
+      renderBioCanvas(side);
+    }
+    window.addEventListener('resize', () => { if (currentTab === 'video') { syncBioCanvas('A'); syncBioCanvas('B'); } });
+
+    function toggleBioPlay(s) { const v = document.getElementById('bioVideo' + s); if (v.src) v.paused ? v.play() : v.pause(); }
+    function stepBioFrame(s, dir) { const v = document.getElementById('bioVideo' + s); if (v.src) { v.pause(); v.currentTime = Math.max(0, Math.min(v.duration || 999, v.currentTime + dir * 0.04)); } }
+    function seekBio(s, val) { const v = document.getElementById('bioVideo' + s); if (v.duration) v.currentTime = (val / 100) * v.duration; }
+    function syncPlayBothVideos() {
+      const vA = document.getElementById('bioVideoA'), vB = document.getElementById('bioVideoB');
+      const shouldPlay = (vA.src && vA.paused) || (vB.src && vB.paused);
+      if (vA.src) shouldPlay ? vA.play() : vA.pause();
+      if (vB.src) shouldPlay ? vB.play() : vB.pause();
+    }
+    function setBothBioSpeed(rate) {
+      document.getElementById('bioVideoA').playbackRate = rate;
+      document.getElementById('bioVideoB').playbackRate = rate;
+      showToast(`سرعة المقارنة: ${rate}x`);
+    }
+
+    function drawBioShape(ctx, sh, W, H, sf = 1) {
+      ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (sh.type === 'angle' && sh.pts.length === 3) {
+        const [p1, v, p2] = sh.pts.map(p => ({ x: p.x * W, y: p.y * H }));
+        ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3.5 * sf;
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(v.x, v.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        [p1, v, p2].forEach(pt => { ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(pt.x, pt.y, 5 * sf, 0, Math.PI * 2); ctx.fill(); });
+        const a1 = Math.atan2(p1.y - v.y, p1.x - v.x), a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+        let deg = Math.abs((a2 - a1) * 180 / Math.PI); if (deg > 180) deg = 360 - deg;
+        const txt = `${Math.round(deg)}°`;
+        ctx.font = `900 ${Math.round(16 * sf)}px Cairo, Arial`;
+        const tw = ctx.measureText(txt).width;
+        ctx.fillStyle = 'rgba(2,6,23,0.88)'; ctx.fillRect(v.x - tw/2 - 8*sf, v.y - 32*sf, tw + 16*sf, 24*sf);
+        ctx.strokeStyle = '#facc15'; ctx.lineWidth = 1.5*sf; ctx.strokeRect(v.x - tw/2 - 8*sf, v.y - 32*sf, tw + 16*sf, 24*sf);
+        ctx.fillStyle = '#facc15'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(txt, v.x, v.y - 19 * sf);
+      } else if (sh.type === 'line' || sh.type === 'arrow') {
+        const x1 = sh.x1*W, y1 = sh.y1*H, x2 = sh.x2*W, y2 = sh.y2*H;
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5*sf;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        if (sh.type === 'arrow') drawArrowHead(ctx, x1, y1, x2, y2, 14*sf);
+      } else if (sh.type === 'circle') {
+        const x1 = sh.x1*W, y1 = sh.y1*H, x2 = sh.x2*W, y2 = sh.y2*H;
+        ctx.strokeStyle = '#f97316'; ctx.lineWidth = 3.5*sf;
+        ctx.beginPath(); ctx.arc(x1, y1, Math.hypot(x2 - x1, y2 - y1), 0, Math.PI*2); ctx.stroke();
+      } else if (sh.type === 'pen' && sh.pts.length > 1) {
+        ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3.5*sf;
+        ctx.beginPath(); ctx.moveTo(sh.pts[0].x*W, sh.pts[0].y*H);
+        for (let i = 1; i < sh.pts.length; i++) ctx.lineTo(sh.pts[i].x*W, sh.pts[i].y*H);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function renderBioCanvas(side) {
+      const c = document.getElementById('bioCanvas' + side), ctx = c.getContext('2d'), st = bioState[side];
+      if (!c.width || !c.height) return;
+      ctx.clearRect(0, 0, c.width, c.height);
+      st.shapes.forEach(sh => drawBioShape(ctx, sh, c.width, c.height, 1));
+      if (st.cur) drawBioShape(ctx, st.cur, c.width, c.height, 1);
+      // نقاط الزاوية أثناء التحديد
+      if (st.anglePts.length > 0) {
+        ctx.save(); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2.5;
+        st.anglePts.forEach((p, idx) => {
+          ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(p.x*c.width, p.y*c.height, 6, 0, Math.PI*2); ctx.fill();
+          if (idx === 1) { ctx.beginPath(); ctx.moveTo(st.anglePts[0].x*c.width, st.anglePts[0].y*c.height); ctx.lineTo(p.x*c.width, p.y*c.height); ctx.stroke(); }
+        });
+        ctx.restore();
+      }
+    }
+
+    ['A', 'B'].forEach(side => {
+      const c = document.getElementById('bioCanvas' + side), st = bioState[side];
+      const getP = e => { const r = c.getBoundingClientRect(), p = getClientPos(e); return { x: Math.max(0, Math.min(1, (p.x - r.left)/r.width)), y: Math.max(0, Math.min(1, (p.y - r.top)/r.height)) }; };
+      const down = e => {
+        if (e.type === 'touchstart') e.preventDefault();
+        document.getElementById('bioVideo' + side).pause();
+        const p = getP(e);
+        if (bioTool === 'angle') {
+          st.anglePts.push(p);
+          if (st.anglePts.length === 3) { st.shapes.push({ type: 'angle', pts: [...st.anglePts] }); st.anglePts = []; }
+          renderBioCanvas(side); return;
+        }
+        st.drawing = true;
+        st.cur = bioTool === 'pen' ? { type: 'pen', pts: [p] } : { type: bioTool, x1: p.x, y1: p.y, x2: p.x, y2: p.y };
+      };
+      const move = e => {
+        if (!st.drawing || !st.cur) return; if (e.type === 'touchmove') e.preventDefault();
+        const p = getP(e);
+        if (st.cur.type === 'pen') st.cur.pts.push(p); else { st.cur.x2 = p.x; st.cur.y2 = p.y; }
+        renderBioCanvas(side);
+      };
+      const up = () => { if (!st.drawing || !st.cur) return; st.drawing = false; st.shapes.push(st.cur); st.cur = null; renderBioCanvas(side); };
+      c.addEventListener('mousedown', down); c.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+      c.addEventListener('touchstart', down, { passive: false }); c.addEventListener('touchmove', move, { passive: false }); c.addEventListener('touchend', up);
+    });
+
+    function undoBioDraw(s) { bioState[s].anglePts = []; bioState[s].shapes.pop(); renderBioCanvas(s); }
+    function clearBioDraw(s) { bioState[s].anglePts = []; bioState[s].shapes = []; renderBioCanvas(s); }
+
+    function exportBioComparisonHD() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة مقارنة الفيديو والزوايا HD')) return;
+      const vA = document.getElementById('bioVideoA'), vB = document.getElementById('bioVideoB');
+      const isSingle = document.getElementById('bioGrid').classList.contains('single-mode');
+      if (!vA.videoWidth && !vB.videoWidth) return alert('ارفع فيديو واحد على الأقل أولاً.');
+
+      const outC = document.createElement('canvas');
+      outC.width = 1920; outC.height = isSingle ? 1080 : 620;
+      const ctx = outC.getContext('2d');
+      ctx.fillStyle = '#070b12'; ctx.fillRect(0, 0, outC.width, outC.height);
+
+      const drawPane = (v, side, x, y, w, h, title, titleCol) => {
+        ctx.fillStyle = '#000'; ctx.fillRect(x, y, w, h);
+        if (v.videoWidth) {
+          const vr = v.videoWidth / v.videoHeight, br = w / h;
+          let dw = w, dh = h, ox = x, oy = y;
+          if (br > vr) { dh = h; dw = h * vr; ox = x + (w - dw)/2; } else { dw = w; dh = w / vr; oy = y + (h - dh)/2; }
+          ctx.drawImage(v, ox, oy, dw, dh);
+          ctx.save(); ctx.translate(ox, oy);
+          bioState[side].shapes.forEach(sh => drawBioShape(ctx, sh, dw, dh, dw / 700));
+          ctx.restore();
+        }
+        ctx.fillStyle = 'rgba(2,6,23,0.8)'; ctx.fillRect(x + 14, y + 14, 210, 38);
+        ctx.fillStyle = titleCol; ctx.font = '800 20px Cairo, Arial'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText(title, x + 210, y + 33);
+      };
+
+      if (isSingle) drawPane(vA, 'A', 20, 20, 1880, 1040, 'تحليل زوايا الحركة', '#38bdf8');
+      else {
+        drawPane(vA, 'A', 20, 20, 930, 580, 'قبل التطوير (Before)', '#f87171');
+        drawPane(vB, 'B', 970, 20, 930, 580, 'بعد التطوير (After)', '#4ade80');
+      }
+      const a = document.createElement('a'); a.download = `Ziada_Biomechanics_HD_${Date.now()}.png`; a.href = outC.toDataURL('image/png'); a.click();
+      showToast('تم حفظ صورة المقارنة والزوايا HD ✓');
+    }
+
+    // ==========================================
+    // 6. التاب 4: خطة التطوير الفردي (IDP Pro + صورة + مراكز + اختبارات)
+    // ==========================================
+    const ROLE_SKILLS = {
+      general: ['الاستلام والتوجيه','دقة التمرير','المراوغة 1v1','الإنهاء والتسديد','القدم الضعيفة','المسح البصري','السرعة والرشاقة','التحرك بدون كرة'],
+      striker: ['الإنهاء من لمسة','التحرك داخل الـ 18','اللعب بالظهر للمرمى','الضربات الرأسية','القدم الضعيفة','استغلال أنصاف الفرص','الانفجار والسرعة','الضغط الأول'],
+      winger: ['المراوغة 1v1','العرضيات المتقنة','الدخول للعمق والتسديد','الاستلام على الخط','السرعة القصوى','تغيير الاتجاه','القدم الضعيفة','الارتداد الدفاعي'],
+      midfielder: ['المسح البصري (Scanning)','الاستلام تحت ضغط','التمرير كاسر الخطوط','التحكم في الإيقاع','تغيير اللعب','القدم الضعيفة','التغطية والافتكاك','التحمل البدني'],
+      defender: ['التمركز والعمق','التغطية العكسية','الالتحام الهوائي','المواجهة 1v1 دفاعياً','بناء الهجمة بالتمرير','قيادة الخط والتوجيه','سرعة الارتداد','استخلاص الكرة']
+    };
+
+    function makeDefaultIDP(name = 'لاعب جديد #10') {
+      return {
+        id: 'idp_' + Date.now() + '_' + Math.floor(Math.random()*999),
+        rolePreset: 'general', name, position: 'صانع ألعاب #10', team: 'الفريق الأول', foot: 'اليمنى',
+        photo: '', strength: 'التحكم بالكرة في المساحات الضيقة', goal: 'رفع سرعة القرار والمسح البصري', notes: '',
+        base: [5,6,5,5,4,5,6,5], cur: [7,8,7,7,6,8,7,7],
+        tests: [
+          { name: 'سبرنت 10 متر (ثانية)', before: '1.92', current: '1.78', lowerBetter: true },
+          { name: 'سبرنت 30 متر (ثانية)', before: '4.35', current: '4.12', lowerBetter: true },
+          { name: 'اختبار رشاقة T-Test (ث)', before: '10.4', current: '9.7', lowerBetter: true },
+          { name: 'دقة القدم الضعيفة (%)', before: '55', current: '78', lowerBetter: false },
+          { name: 'زمن رد الفعل الذهني (ms)', before: '620', current: '460', lowerBetter: true }
+        ]
+      };
+    }
+
+    let idpProfiles = [makeDefaultIDP()];
+    let activeIdpId = idpProfiles[0].id;
+    function getActiveIDP() { return idpProfiles.find(p => p.id === activeIdpId) || idpProfiles[0]; }
+    function getActiveSkillsList() { const p = getActiveIDP(); return ROLE_SKILLS[p.rolePreset || 'general'] || ROLE_SKILLS.general; }
+
+    function renderIDPProfileDropdown() {
+      const sel = document.getElementById('idpProfileSelect');
+      sel.innerHTML = idpProfiles.map(p => `<option value="${p.id}">${escapeHtml(p.name || 'لاعب')} (${escapeHtml(p.position || '-')})</option>`).join('');
+      sel.value = activeIdpId;
+    }
+
+    function handleIDPPhotoUpload(e) {
+      const f = e.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas'); c.width = 200; c.height = 200;
+          const m = Math.min(img.width, img.height);
+          c.getContext('2d').drawImage(img, (img.width-m)/2, (img.height-m)/2, m, m, 0, 0, 200, 200);
+          getActiveIDP().photo = c.toDataURL('image/jpeg', 0.85);
+          loadActiveIDPToUI(); scheduleAutoSave();
+        };
+        img.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+    }
+
+    function changeIDPRolePreset(val) { getActiveIDP().rolePreset = val; loadActiveIDPToUI(); scheduleAutoSave(); }
+
+    function loadActiveIDPToUI() {
+      const p = getActiveIDP(); if (!p) return;
+      document.getElementById('idpRolePreset').value = p.rolePreset || 'general';
+      document.getElementById('idpName').value = p.name || '';
+      document.getElementById('idpPosition').value = p.position || '';
+      document.getElementById('idpTeam').value = p.team || '';
+      document.getElementById('idpFoot').value = p.foot || 'اليمنى';
+      document.getElementById('idpStrength').value = p.strength || '';
+      document.getElementById('idpGoal').value = p.goal || '';
+      document.getElementById('idpPlanNotes').value = p.notes || '';
+
+      const avImg = document.getElementById('idpAvatarImg'), avIco = document.getElementById('idpAvatarIcon');
+      if (p.photo) { avImg.src = p.photo; avImg.style.display = 'block'; avIco.style.display = 'none'; }
+      else { avImg.style.display = 'none'; avIco.style.display = 'block'; }
+
+      const skills = getActiveSkillsList();
+      document.getElementById('idpSkillsContainer').innerHTML = skills.map((lbl, i) => {
+        const b = p.base[i] ?? 5, c = p.cur[i] ?? 7, diff = +(c - b).toFixed(1);
+        const dTxt = diff > 0 ? `<span style="color:#4ade80;">+${diff}</span>` : (diff < 0 ? `<span style="color:#f87171;">${diff}</span>` : '<span style="color:#94a3b8;">0</span>');
+        return `<div class="skill-row"><div class="skill-row-top"><span>${lbl}</span><span>التغير: ${dTxt}</span></div><div class="skill-sliders"><div class="slider-wrap base"><span>قبل: <b id="lb_b_${i}">${b}</b>/10</span><input type="range" min="1" max="10" step="0.5" value="${b}" oninput="onSkillSlide('base',${i},this.value)"></div><div class="slider-wrap"><span style="color:var(--primary);">الحالي: <b id="lb_c_${i}">${c}</b>/10</span><input type="range" min="1" max="10" step="0.5" value="${c}" oninput="onSkillSlide('cur',${i},this.value)"></div></div></div>`;
+      }).join('');
+
+      renderIDPTestsTable();
+      drawIDPRadar();
+    }
+
+    function renderIDPTestsTable() {
+      const p = getActiveIDP(); if (!Array.isArray(p.tests)) p.tests = [];
+      document.getElementById('idpTestsBody').innerHTML = p.tests.map((t, idx) => {
+        const bNum = parseFloat(t.before), cNum = parseFloat(t.current);
+        let diffHtml = '-';
+        if (!isNaN(bNum) && !isNaN(cNum)) {
+          const d = +(cNum - bNum).toFixed(2);
+          const good = t.lowerBetter ? d < 0 : d > 0;
+          diffHtml = `<b style="color:${d===0?'#94a3b8':(good?'#4ade80':'#f87171')}; direction:ltr; display:inline-block;">${d > 0 ? '+' + d : d}</b>`;
+        }
+        return `<tr>
+          <td><input type="text" style="text-align:right;" value="${escapeHtml(t.name)}" oninput="updateTestCell(${idx},'name',this.value)"></td>
+          <td><input type="text" value="${escapeHtml(t.before)}" oninput="updateTestCell(${idx},'before',this.value)"></td>
+          <td><input type="text" value="${escapeHtml(t.current)}" oninput="updateTestCell(${idx},'current',this.value)"></td>
+          <td>${diffHtml}</td>
+        </tr>`;
+      }).join('');
+    }
+    function updateTestCell(idx, field, val) { getActiveIDP().tests[idx][field] = val; if (field !== 'name') renderIDPTestsTable(); scheduleAutoSave(); }
+    function addCustomTestRow() {
+      const name = prompt('اسم الاختبار الجديد (مثال: وثب عمودي سم):'); if (!name || !name.trim()) return;
+      getActiveIDP().tests.push({ name: name.trim(), before: '', current: '', lowerBetter: false });
+      renderIDPTestsTable(); scheduleAutoSave();
+    }
+
+    function onSkillSlide(which, idx, val) {
+      const p = getActiveIDP(); p[which][idx] = parseFloat(val);
+      document.getElementById(which === 'base' ? `lb_b_${idx}` : `lb_c_${idx}`).innerText = val;
+      drawIDPRadar(); scheduleAutoSave();
+    }
+    function updateActiveIDPFromUI() {
+      const p = getActiveIDP();
+      p.name = document.getElementById('idpName').value; p.position = document.getElementById('idpPosition').value;
+      p.team = document.getElementById('idpTeam').value; p.foot = document.getElementById('idpFoot').value;
+      p.strength = document.getElementById('idpStrength').value; p.goal = document.getElementById('idpGoal').value;
+      p.notes = document.getElementById('idpPlanNotes').value;
+      renderIDPProfileDropdown(); scheduleAutoSave();
+    }
+    function switchIDPProfile(id) { activeIdpId = id; loadActiveIDPToUI(); scheduleAutoSave(); }
+    function addNewIDPProfile() { const n = prompt('اسم اللاعب الجديد:', `لاعب #${idpProfiles.length + 1}`); if (!n?.trim()) return; const np = makeDefaultIDP(n.trim()); idpProfiles.push(np); activeIdpId = np.id; renderIDPProfileDropdown(); loadActiveIDPToUI(); scheduleAutoSave(); }
+    function deleteCurrentIDPProfile() { if (idpProfiles.length <= 1) return alert('يجب بقاء ملف واحد على الأقل.'); if (!confirm('حذف ملف هذا اللاعب؟')) return; idpProfiles = idpProfiles.filter(p => p.id !== activeIdpId); activeIdpId = idpProfiles[0].id; renderIDPProfileDropdown(); loadActiveIDPToUI(); scheduleAutoSave(); }
+
+    function drawIDPRadar(targetCanvas = null, lightTheme = false) {
+      const p = getActiveIDP(), skills = getActiveSkillsList();
+      const c = targetCanvas || document.getElementById('idpRadarCanvas'), ctx = c.getContext('2d');
+      const W = c.width, H = c.height, cx = W/2, cy = H/2, maxR = 122, n = skills.length;
+      ctx.clearRect(0, 0, W, H); if (lightTheme) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); }
+
+      const sumB = p.base.reduce((a,b)=>a+(b||0), 0), sumC = p.cur.reduce((a,b)=>a+(b||0), 0);
+      const avgB = sumB/n, avgC = sumC/n, growth = avgB > 0 ? Math.round(((avgC - avgB)/avgB)*100) : 0;
+      if (!targetCanvas) {
+        document.getElementById('kpiBaseline').innerText = avgB.toFixed(1);
+        document.getElementById('kpiCurrent').innerText = avgC.toFixed(1);
+        document.getElementById('kpiGrowth').innerText = (growth >= 0 ? '+' : '') + growth + '%';
+        document.getElementById('kpiGrowth').style.color = growth >= 0 ? '#10b981' : '#ef4444';
+      }
+
+      for (let lvl = 1; lvl <= 5; lvl++) {
+        const r = (maxR * lvl)/5; ctx.beginPath();
+        for (let i = 0; i < n; i++) { const ang = -Math.PI/2 + (i*2*Math.PI)/n, x = cx+r*Math.cos(ang), y = cy+r*Math.sin(ang); if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+        ctx.closePath(); ctx.strokeStyle = lightTheme ? 'rgba(15,23,42,0.16)' : 'rgba(148,163,184,0.22)'; ctx.lineWidth = 1.2; ctx.stroke();
+      }
+      ctx.font = '800 11.5px Cairo, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (let i = 0; i < n; i++) {
+        const ang = -Math.PI/2 + (i*2*Math.PI)/n;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + maxR*Math.cos(ang), cy + maxR*Math.sin(ang));
+        ctx.strokeStyle = lightTheme ? 'rgba(15,23,42,0.18)' : 'rgba(148,163,184,0.25)'; ctx.stroke();
+        ctx.fillStyle = lightTheme ? '#0f172a' : '#e2e8f0';
+        ctx.fillText(skills[i], cx + 172*Math.cos(ang), cy + 150*Math.sin(ang));
+      }
+      const poly = (arr, st, fl, dash) => {
+        ctx.save(); ctx.beginPath();
+        for (let i = 0; i < n; i++) { const r = (Math.max(0, Math.min(10, arr[i]||0))/10)*maxR, ang = -Math.PI/2 + (i*2*Math.PI)/n; const x = cx+r*Math.cos(ang), y = cy+r*Math.sin(ang); if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+        ctx.closePath(); ctx.fillStyle = fl; ctx.fill(); if (dash) ctx.setLineDash([6,4]); ctx.strokeStyle = st; ctx.lineWidth = 2.6; ctx.stroke(); ctx.restore();
+      };
+      poly(p.base, '#94a3b8', 'rgba(148,163,184,0.22)', true);
+      poly(p.cur, '#f97316', 'rgba(249,115,22,0.34)', false);
+    }
+
+    function exportIDPPDF() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'تقرير التطوير الفردي للاعب IDP PDF')) return;
+      const p = getActiveIDP(), skills = getActiveSkillsList();
+      const pc = document.createElement('canvas'); pc.width = 520; pc.height = 400; drawIDPRadar(pc, true);
+      document.getElementById('printMainTitle').innerText = `خطة التطوير الفردي (IDP) — ${p.name || 'اللاعب'}`;
+      document.getElementById('printDate').innerText = `التاريخ: ${new Date().toLocaleDateString('ar-EG', { dateStyle: 'full' })}`;
+      const avatarHtml = p.photo ? `<img src="${p.photo}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #f97316;">` : '-';
+      const testRows = (p.tests || []).map(t => `<tr><td>${escapeHtml(t.name)}</td><td>${escapeHtml(t.before||'-')}</td><td><b>${escapeHtml(t.current||'-')}</b></td></tr>`).join('');
+      document.getElementById('printMetaWrap').innerHTML = `
+        <table class="print-meta-table"><tr><th>الصورة</th><th>اللاعب</th><th>المركز</th><th>الفريق</th><th>القدم</th><th>التطور العام</th></tr>
+        <tr><td>${avatarHtml}</td><td><b>${escapeHtml(p.name)}</b></td><td>${escapeHtml(p.position)}</td><td>${escapeHtml(p.team)}</td><td>${escapeHtml(p.foot)}</td><td><b>${document.getElementById('kpiGrowth').innerText} (${document.getElementById('kpiCurrent').innerText}/10)</b></td></tr></table>
+        <table class="print-meta-table"><tr><th>الاختبار البدني/المهاري</th><th>قبل التطوير</th><th>المستوى الحالي</th></tr>${testRows}</table>`;
+      document.getElementById('printVisualImg').src = pc.toDataURL('image/png');
+      document.getElementById('printNotesText').innerText = `نقطة القوة: ${p.strength || '-'}\nالهدف الأساسي: ${p.goal || '-'}\n\nخطة العمل الأسبوعية:\n${p.notes || '-'}`;
+      document.getElementById('appUI').style.display = 'none'; document.getElementById('printArea').style.display = 'block';
+      setTimeout(() => { window.print(); document.getElementById('printArea').style.display = 'none'; document.getElementById('appUI').style.display = 'block'; }, 300);
+    }
+
+    // ==========================================
+    // 7. نظام الحفظ التلقائي واسترجاع المشروع
+    // ==========================================
+    function collectState() {
+      const drillItems = [];
+      devPitch.querySelectorAll('.drill-item').forEach(el => {
+        const t = el.querySelector('.p-text');
+        drillItems.push({ id: el.id, type: el.dataset.type, num: el.dataset.num||'', customText: t?t.textContent:null, left: parseFloat(el.style.left)||50, top: parseFloat(el.style.top)||50, scale: parseFloat(el.dataset.scale||1.3), rot: parseFloat(el.dataset.rot||0) });
+      });
+      return {
+        savedAt: new Date().toISOString(), currentTab, currentPitchView,
+        pitchDimensions: document.getElementById('pitchDimensions').value,
+        drillTitle: document.getElementById('drillTitle').value,
+        drillFocus: document.getElementById('drillFocus').value,
+        drillSets: document.getElementById('drillSets').value,
+        drillReps: document.getElementById('drillReps').value,
+        drillRest: document.getElementById('drillRest').value,
+        drillIntensity: document.getElementById('drillIntensity').value,
+        drillNotes: document.getElementById('drillNotes').value,
+        animSpeed: document.getElementById('animSpeed').value,
+        drillItems, tacticalLinks, drawings, frames, idpProfiles, activeIdpId
+      };
+    }
+    function hasMeaningfulData(s) { return s && (s.drillItems?.length > 0 || s.drawings?.length > 0 || s.drillTitle?.trim() || s.idpProfiles?.length > 1); }
+    function saveProjectNow() {
+      if (isRestoring || JOIN_RX_ROOM) return;
+      const badge = document.getElementById('autosaveBadge');
+      try { const s = collectState(); if (!hasMeaningfulData(s)) localStorage.removeItem(AUTOSAVE_KEY); else localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(s)); } catch (e) {}
+      badge.classList.remove('saving'); badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
+    }
+    function scheduleAutoSave() {
+      if (isRestoring || JOIN_RX_ROOM) return;
+      const badge = document.getElementById('autosaveBadge'); badge.classList.add('saving'); badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      clearTimeout(autosaveTimer); autosaveTimer = setTimeout(saveProjectNow, 450);
+    }
+    window.addEventListener('beforeunload', saveProjectNow);
+
+    let pendingRecoveryState = null;
+    if (!JOIN_RX_ROOM) {
+      try {
+        const raw = localStorage.getItem(AUTOSAVE_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (hasMeaningfulData(s)) {
+            pendingRecoveryState = s;
+            document.getElementById('recoveryMetaInfo').innerHTML = `
+              <div><b>آخر حفظ:</b> ${new Date(s.savedAt).toLocaleString('ar-EG')}</div>
+              <div><b>أدوات التمرين:</b> ${s.drillItems?.length||0} | <b>الإطارات:</b> ${s.frames?.length||0}</div>
+              <div><b>ملفات اللاعبين (IDP):</b> ${s.idpProfiles?.length||1}</div>`;
+            document.getElementById('recoveryModal').style.display = 'flex';
+          }
+        }
+      } catch (e) { localStorage.removeItem(AUTOSAVE_KEY); }
+    }
+
+    function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً'); return; }
+      if (!pendingRecoveryState) return;
+      isRestoring = true; const s = pendingRecoveryState;
+      devPitch.querySelectorAll('.drill-item').forEach(e => e.remove());
+      (s.drillItems || []).forEach(it => createDrillItem(it.type, it.num, it.left, it.top, it.id, it.scale||1.3, it.rot||0, it.customText));
+      if (s.pitchDimensions) { document.getElementById('pitchDimensions').value = s.pitchDimensions; updatePitchDimBadge(); }
+      document.getElementById('drillTitle').value = s.drillTitle || '';
+      if (s.drillFocus) document.getElementById('drillFocus').value = s.drillFocus;
+      if (s.drillSets) document.getElementById('drillSets').value = s.drillSets;
+      if (s.drillReps) document.getElementById('drillReps').value = s.drillReps;
+      if (s.drillRest) document.getElementById('drillRest').value = s.drillRest;
+      if (s.drillIntensity) document.getElementById('drillIntensity').value = s.drillIntensity;
+      document.getElementById('drillNotes').value = s.drillNotes || '';
+      if (s.animSpeed) document.getElementById('animSpeed').value = s.animSpeed;
+      tacticalLinks = s.tacticalLinks || []; drawings = s.drawings || []; frames = s.frames || [];
+      document.getElementById('frameCount').innerText = frames.length;
+      if (s.idpProfiles?.length) { idpProfiles = s.idpProfiles; activeIdpId = s.activeIdpId || idpProfiles[0].id; }
+      renderIDPProfileDropdown(); loadActiveIDPToUI();
+      setPitchView(s.currentPitchView || 'grid'); switchTab(s.currentTab || 'drill');
+      document.getElementById('recoveryModal').style.display = 'none'; isRestoring = false;
+      setTimeout(() => { resizeCanvas(); renderTacticalLinks(); }, 120);
+      showToast('تم استرجاع مشروع مطور الأداء بالكامل ✓');
+    }
+    function startFreshProject() { localStorage.removeItem(AUTOSAVE_KEY); pendingRecoveryState = null; document.getElementById('recoveryModal').style.display = 'none'; }
+
+    // تهيئة أولية
+    if (!JOIN_RX_ROOM) {
+      updatePitchDimBadge();
+      renderIDPProfileDropdown();
+      loadActiveIDPToUI();
+      setTimeout(() => { resizeCanvas(); renderTacticalLinks(); }, 200);
+    }
+  </script>
+</body>
+</html>

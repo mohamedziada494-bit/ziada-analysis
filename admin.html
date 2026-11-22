@@ -236,6 +236,7 @@
       <h3 style="color:#ec4899; margin-bottom:16px;"><i class="fa-solid fa-sliders"></i> تخصيص أدوات المشترك</h3>
       <div class="perm-list">
         <label class="perm-item"><input type="checkbox" id="perm-headCoach"> 👔 استوديو المدير الفني</label>
+        <label class="perm-item"><input type="checkbox" id="perm-performanceDev"> ⚡ استوديو مطور الأداء الفردي</label>
         <label class="perm-item"><input type="checkbox" id="perm-tactical"> 📋 التحليل التكتيكي المتقدم</label>
         <label class="perm-item"><input type="checkbox" id="perm-individual"> 🎯 التحليل الفردي للأداء</label>
         <label class="perm-item"><input type="checkbox" id="perm-live"> ⏱️ التحليل المباشر للمباريات</label>
@@ -289,6 +290,7 @@
             <option value="vip">باقة شاملة (جميع الأدوات)</option>
             <option value="analyst">محلل أداء (تاكتيكال + فردي + مباشر)</option>
             <option value="headcoach">مدير فني (استوديو المدير الفني)</option>
+            <option value="perfdev">مطور أداء فردي (استوديو مطور الأداء والتدريب الذهني)</option>
             <option value="gkcoach">مدرب حراس مرمى (استوديو الحراس)</option>
             <option value="referee">حكم / خبير تحكيمي (تحليل الحكام)</option>
           </select>
@@ -296,6 +298,7 @@
 
         <div class="perm-grid">
           <label class="perm-item"><input type="checkbox" id="new-perm-headCoach"> 👔 المدير الفني</label>
+          <label class="perm-item"><input type="checkbox" id="new-perm-performanceDev"> ⚡ مطور الأداء</label>
           <label class="perm-item"><input type="checkbox" id="new-perm-tactical"> 📋 التكتيكي</label>
           <label class="perm-item"><input type="checkbox" id="new-perm-individual"> 🎯 الفردي</label>
           <label class="perm-item"><input type="checkbox" id="new-perm-live"> ⏱️ المباشر</label>
@@ -732,19 +735,21 @@
 
     function applySpecialtyPreset() {
       const preset = document.getElementById('newUserPreset').value;
-      const setP = (hc, tac, ind, live, ref, gk) => {
+      const setP = (hc, perf, tac, ind, live, ref, gk) => {
         document.getElementById('new-perm-headCoach').checked = hc;
+        document.getElementById('new-perm-performanceDev').checked = perf;
         document.getElementById('new-perm-tactical').checked = tac;
         document.getElementById('new-perm-individual').checked = ind;
         document.getElementById('new-perm-live').checked = live;
         document.getElementById('new-perm-referee').checked = ref;
         document.getElementById('new-perm-goalkeeper').checked = gk;
       };
-      if (preset === 'analyst') setP(false, true, true, true, false, false);
-      else if (preset === 'headcoach') setP(true, false, false, false, false, false);
-      else if (preset === 'gkcoach') setP(false, false, false, false, false, true);
-      else if (preset === 'referee') setP(false, false, false, false, true, false);
-      else if (preset === 'vip') setP(true, true, true, true, true, true);
+      if (preset === 'analyst') setP(false, false, true, true, true, false, false);
+      else if (preset === 'headcoach') setP(true, false, false, false, false, false, false);
+      else if (preset === 'perfdev') setP(false, true, false, false, false, false, false);
+      else if (preset === 'gkcoach') setP(false, false, false, false, false, false, true);
+      else if (preset === 'referee') setP(false, false, false, false, false, true, false);
+      else if (preset === 'vip') setP(true, true, true, true, true, true, true);
     }
 
     function toggleNewExpireDate() {
@@ -781,6 +786,7 @@
 
       const permissions = {
         headCoach: document.getElementById('new-perm-headCoach').checked,
+        performanceDev: document.getElementById('new-perm-performanceDev').checked,
         tactical: document.getElementById('new-perm-tactical').checked,
         individual: document.getElementById('new-perm-individual').checked,
         live: document.getElementById('new-perm-live').checked,
@@ -875,7 +881,6 @@
       const u = usersDataMap[uid];
       const today = new Date().toISOString().split('T')[0];
 
-      // تجهيز الباقة الافتراضية على Gold لتسهيل الترقية مع إمكانية التحويل لـ Free
       document.getElementById('manageUserPlan').value = 'gold';
       toggleGoldFieldsInManage();
       
@@ -977,9 +982,10 @@
     function openPermissionsModal(uid) {
       currentUserIdToManage = uid;
       const u = usersDataMap[uid];
-      const p = u.permissions || { headCoach: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
+      const p = u.permissions || { headCoach: true, performanceDev: true, tactical: true, individual: true, live: true, referee: true, goalkeeper: true };
 
       document.getElementById('perm-headCoach').checked = p.headCoach || false;
+      document.getElementById('perm-performanceDev').checked = p.performanceDev || false;
       document.getElementById('perm-tactical').checked = p.tactical || false;
       document.getElementById('perm-individual').checked = p.individual || false;
       document.getElementById('perm-live').checked = p.live || false;
@@ -992,6 +998,7 @@
     async function savePermissions() {
       const newPerms = {
         headCoach: document.getElementById('perm-headCoach').checked,
+        performanceDev: document.getElementById('perm-performanceDev').checked,
         tactical: document.getElementById('perm-tactical').checked,
         individual: document.getElementById('perm-individual').checked,
         live: document.getElementById('perm-live').checked,
