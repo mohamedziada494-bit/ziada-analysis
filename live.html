@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="plan-guard.js"></script>
 
   <style>
     :root {
@@ -515,13 +516,14 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحليل المباشر -->
+  <!-- التحقق من الجلسة وصلاحية التحليل المباشر (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
         const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
         if (!u || !u.uid) { window.location.href = 'index.html'; return; }
-        if (u.role !== 'admin' && u.permissions && u.permissions.live === false) {
+        const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+        if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.live === false) {
           alert('ليس لديك صلاحية الدخول لنظام التحليل المباشر.');
           window.location.href = 'index.html';
         }
@@ -863,7 +865,6 @@
 
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
       isCameraMode = true;
-      // كتم صوت الفيديو المعروض محلياً لمنع الصفارة والصدى أثناء التسجيل
       liveVideo.muted = true;
       liveVideo.srcObject = currentStream;
       await liveVideo.play();
@@ -940,7 +941,7 @@
     }
 
     // ==========================================
-    // تسجيل المباراة الكاملة بجودة عالية
+    // تسجيل المباراة الكاملة بجودة عالية (مربوط بنظام الباقات)
     // ==========================================
     function toggleFullMatchRecord() {
       if (!currentStream) {
@@ -984,6 +985,8 @@
         };
         mainRecorder.stop();
       } else {
+        if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تسجيل المباراة الكاملة لايف HD')) return;
+
         const cfg = getBestRecorderConfig();
         const opts = { videoBitsPerSecond: cfg.videoBitsPerSecond };
         if (cfg.mimeType) opts.mimeType = cfg.mimeType;
@@ -1021,7 +1024,7 @@
     }
 
     // ==========================================
-    // التقطيع الفوري للقطات بجودة عالية
+    // التقطيع الفوري للقطات بجودة عالية (مربوط بحدود الباقة)
     // ==========================================
     function triggerInstantExport(categoryName) {
       if (!currentStream) {
@@ -1029,13 +1032,14 @@
         if (!currentStream) return alert('الرجاء فتح الكاميرا أو تشغيل فيديو أولاً للتقطيع!');
       }
 
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', liveClips.length, 'لقطات لايف')) return;
+
       const durSec = parseInt(document.getElementById('clipDurationSelect').value) || 8;
       const durMs = durSec * 1000;
       const half = document.getElementById('matchHalfSelect').value;
       const currentMatchTime = isFullRecording ? timerText.innerText : new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       const clipId = 'clip_' + Date.now() + '_' + Math.floor(Math.random() * 999);
 
-      // إضافة صف مؤقت أثناء التسجيل
       const pendingObj = { id: clipId, time: currentMatchTime, half, tag: categoryName, durationSec: durSec, status: 'recording' };
       liveClips.push(pendingObj);
       renderClipsTable();
@@ -1081,6 +1085,16 @@
       };
     }
 
+    function downloadLiveClip(idx) {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تحميل لقطة اللايف')) return;
+      const c = liveClips[idx];
+      if (!c || !c.url) return;
+      const a = document.createElement('a');
+      a.href = c.url;
+      a.download = `Live_${c.tag.replace(/\s+/g, '_')}_${Date.now()}.${c.ext || 'webm'}`;
+      a.click();
+    }
+
     function renderClipsTable() {
       const tbody = document.getElementById('liveLogBody');
       document.getElementById('clipsCount').innerText = liveClips.length;
@@ -1101,7 +1115,7 @@
               ? `<span class="status-badge"><i class="fa-solid fa-spinner fa-spin"></i> جاري تسجيل اللقطة (${c.durationSec}ث)...</span>`
               : `<div class="action-btns-row">
                    <button class="btn-preview" onclick="openClipPreview(${actualIdx})"><i class="fa-solid fa-play"></i> معاينة</button>
-                   <a href="${c.url}" download="Live_${c.tag.replace(/\s+/g, '_')}_${Date.now()}.${c.ext || 'webm'}" class="btn-download"><i class="fa-solid fa-download"></i> تحميل</a>
+                   <button class="btn-download" onclick="downloadLiveClip(${actualIdx})"><i class="fa-solid fa-download"></i> تحميل</button>
                    <button class="btn-del" onclick="deleteLiveClip(${actualIdx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
                  </div>`
             }
@@ -1237,6 +1251,10 @@
     })();
 
     function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
+        ZiadaPlan.requireGold('استرجاع جلسة اللايف المحفوظة تلقائياً');
+        return;
+      }
       if (!pendingRecovery) return;
       const s = pendingRecovery;
       document.getElementById('teamAName').value = s.teamA || 'فريقنا';
