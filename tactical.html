@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="plan-guard.js"></script>
 
   <style>
     :root {
@@ -940,13 +941,14 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحليل التكتيكي -->
+  <!-- التحقق من الجلسة وصلاحية التحليل التكتيكي (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
         const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
         if (!u || !u.uid) { window.location.href = 'index.html'; return; }
-        if (u.role !== 'admin' && u.permissions && u.permissions.tactical === false) {
+        const freeUnlocked = window.ZiadaPlan && !ZiadaPlan.isGold() && ZiadaPlan.getConfig().freeUnlockAllTools;
+        if (u.role !== 'admin' && !freeUnlocked && u.permissions && u.permissions.tactical === false) {
           alert('ليس لديك صلاحية الدخول لاستوديو التحليل التكتيكي.');
           window.location.href = 'index.html';
         }
@@ -1449,7 +1451,7 @@
     }
 
     // ==========================================
-    // 3. مشغل الفيديو الرئيسي والتقطيع
+    // 3. مشغل الفيديو الرئيسي والتقطيع (مربوط بحدود الباقة)
     // ==========================================
     function loadMatchVideo(e) {
       const file = e.target.files[0];
@@ -1534,6 +1536,10 @@
     function handleTagClick(catName, badgeClass, btnEl) {
       if (!video.src) return alert('يرجى اختيار فيديو المباراة أولاً!');
       if (captureMode === 'auto') {
+        if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxTacticalClips', clips.length, 'لقطات تكتيكية')) {
+          video.pause();
+          return;
+        }
         const cur = video.currentTime;
         saveNewClip(catName, badgeClass, Math.max(0, cur - 5), Math.min(video.duration || cur + 5, cur + 5));
         showToast(`تم قص لقطة: ${catName} ✓`);
@@ -1542,6 +1548,10 @@
           stopManualRecording();
         } else {
           if (activeManualRecording) stopManualRecording();
+          if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxTacticalClips', clips.length, 'لقطات تكتيكية')) {
+            video.pause();
+            return;
+          }
           startManualRecording(catName, badgeClass, btnEl);
         }
       }
@@ -1821,7 +1831,6 @@
       studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
     }
 
-    // تجميع الرسومات القريبة زمنياً (ضمن 0.15 ثانية) في وقفة تحليلية واحدة
     function getPauseGroupsForClip(clip) {
       if (!clip || !clip.shapes || clip.shapes.length === 0) return [];
       const sorted = [...clip.shapes].sort((a, b) => a.triggerTime - b.triggerTime);
@@ -1860,7 +1869,6 @@
       }
       studioTimeDisp.innerText = `${formatTime(studioVideo.currentTime)} / ${formatTime(currentStudioClip.end)}`;
 
-      // فحص الوصول لنقطة وقفة تحليلية أثناء التشغيل
       if (!studioVideo.paused) {
         const groups = getPauseGroupsForClip(currentStudioClip);
         const cur = studioVideo.currentTime;
@@ -1871,7 +1879,6 @@
             return;
           }
         }
-        // أثناء تشغيل الفيديو العادي: الكانفس نظيف تماماً بدون رسومات
         if (!activeShape) sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
       }
     });
@@ -1905,7 +1912,6 @@
           clearInterval(freezeTimer);
           freezeTimer = null;
           freezeBadge.style.display = 'none';
-          // مسح الرسومات نهائياً واستكمال الفيديو نظيف
           sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
           isFreezeActive = false;
           activeFreezingTime = null;
@@ -1957,7 +1963,6 @@
 
     function toggleStudioPlay() {
       if (isFreezeActive) {
-        // السماح بتخطي الوقفة فوراً لو ضغط تشغيل
         resetFreezeState();
         studioVideo.play();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
@@ -2070,7 +2075,6 @@
         return;
       }
 
-      // وضع التحديد لتعديل رسمة مثبتة سابقاً على هذا الفريم
       if (activeStudioTool === 'select') {
         const cur = studioVideo.currentTime;
         const frameShapes = currentStudioClip.shapes.filter(s => Math.abs(s.triggerTime - cur) <= 0.15);
@@ -2110,7 +2114,6 @@
         return;
       }
 
-      // اعتماد أي رسمة سابقة غير مثبتة قبل البدء في رسمة جديدة
       if (activeShape && !currentStudioClip.shapes.includes(activeShape)) {
         confirmShape();
       }
@@ -2202,7 +2205,6 @@
         return;
       }
 
-      // تحديث أبعاد الشكل لحظياً أثناء السحب للرسم!
       if (isDrawing && activeShape) {
         if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker', 'offside_barrier'].includes(activeShape.type)) {
           activeShape.x2 = nx; activeShape.y2 = ny;
@@ -2518,16 +2520,13 @@
       } else if (shape.type === 'teleport') {
         const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
         const rx = shape.radiusX * W, ry = shape.radiusY * H;
-        // موقع اللاعب الأصلي
         ctx.strokeStyle = 'rgba(168,85,247,0.75)'; ctx.lineWidth = 2.8 * sf; ctx.setLineDash([6 * sf, 5 * sf]);
         ctx.beginPath(); ctx.ellipse(x1, y1, rx * 0.85, ry * 0.85, 0, 0, Math.PI * 2); ctx.stroke();
-        // مسار الانتقال
         const cpx = (x1 + x2) / 2, cpy = Math.min(y1, y2) - 45 * sf;
         ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3.5 * sf;
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
         ctx.setLineDash([]);
         drawArrowTip(ctx, Math.atan2(y2 - cpy, x2 - cpx), x2, y2, 16 * sf, '#c084fc');
-        // الموقع البديل المتوهج
         ctx.fillStyle = 'rgba(168,85,247,0.32)'; ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 3.5 * sf;
         ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 16 * sf;
         ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -2594,10 +2593,8 @@
       } else if (shape.type === 'ball_trajectory') {
         const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
         const cpx = (x1 + x2) / 2, cpy = Math.min(y1, y2) - (shape.arcHeight || 0.16) * H;
-        // ظل المسار على الأرض
         ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 3 * sf; ctx.setLineDash([6 * sf, 6 * sf]);
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        // قوس الكرة في الهواء
         ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4.5 * sf; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 14 * sf;
         ctx.setLineDash([10 * sf, 6 * sf]);
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
@@ -2608,7 +2605,6 @@
         const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
         ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 5 * sf; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 14 * sf;
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        // علامة X للحظر في المنتصف
         const xr = 16 * sf;
         ctx.fillStyle = '#9f1239'; ctx.beginPath(); ctx.arc(mx, my, xr * 1.2, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5 * sf;
@@ -2645,8 +2641,9 @@
       ctx.restore();
     }
 
-    // حفظ لقطة شاشة Full HD من الاستوديو
+    // حفظ لقطة شاشة Full HD من الاستوديو (مربوط بنظام الباقات)
     function captureStudioSnapshotHD() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة اللقطة التكتيكية HD')) return;
       if (!currentStudioClip || !studioVideo.videoWidth) return;
       const c = document.createElement('canvas');
       c.width = studioVideo.videoWidth;
@@ -2685,7 +2682,7 @@
     });
 
     // ==========================================
-    // 7. محرك تصدير الفيديو الاحترافي (سريع + Full HD + وقفة نظيفة)
+    // 7. محرك تصدير الفيديو الاحترافي (مربوط بنظام الباقات)
     // ==========================================
     function updateExportUI() {
       const ovMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
@@ -2716,7 +2713,6 @@
     }
 
     function getFastestHDMime() {
-      // أولوية للكوديك الأسرع (Hardware Accelerated) بدلاً من VP9 البطيء
       const candidates = [
         'video/webm;codecs=h264',
         'video/webm;codecs=vp8',
@@ -2737,7 +2733,6 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // إطار نيون احترافي
       const sf = W / 1280;
       ctx.strokeStyle = 'rgba(56,189,248,0.45)';
       ctx.lineWidth = 3 * sf;
@@ -2764,6 +2759,7 @@
     }
 
     async function runExportEngine() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تصدير فيديو التحليل التكتيكي HD')) return;
       if (isExportRunning) return;
       if (clips.length === 0) return alert('لا توجد حالات مقطوعة لتصديرها!');
       if (!video.src) return alert('يرجى تحميل فيديو المباراة أولاً!');
@@ -2818,7 +2814,6 @@
         eCanvas.height = outH;
         const eCtx = eCanvas.getContext('2d');
 
-        // كانفس مؤقت لتثبيت لقطة الوقفة التحليلية بدون إعادة فك تشفير الفيديو
         const frozenBuffer = document.createElement('canvas');
         frozenBuffer.width = outW;
         frozenBuffer.height = outH;
@@ -2868,7 +2863,6 @@
             const c = group.clips[i];
             statusMsg.innerText = `جاري التصدير (${i + 1}/${group.clips.length}): ${c.category}`;
 
-            // فاصل عنوان تكتيكي 1.3 ثانية
             if (useTitleCards && (group.clips.length > 1 || typeMode === 'merged_full')) {
               drawTitleSlate(eCtx, outW, outH, matchTitle, c.category, `لقطة ${i + 1} من ${group.clips.length}  |  ${formatTime(c.start)}`);
               await new Promise(resolveSlate => {
@@ -2901,7 +2895,6 @@
                   await new Promise(r => { rVideo.onseeked = r; });
                 }
 
-                // رسم الفريم + جميع رسومات هذه الوقفة مرة واحدة في الـ Buffer
                 fCtx.clearRect(0, 0, outW, outH);
                 fCtx.drawImage(rVideo, 0, 0, outW, outH);
                 pg.shapes.forEach(sh => drawSingleShape(fCtx, sh, outW, outH, rVideo));
@@ -2912,7 +2905,6 @@
                   eCtx.drawImage(frozenBuffer, 0, 0);
                   if (now - t0 >= freezeMs) {
                     freezing = false;
-                    // استكمال الفيديو نظيفاً تماماً بدون أي رسم
                     rVideo.play().then(() => requestAnimationFrame(renderLoop)).catch(() => resolveClip());
                   } else {
                     requestAnimationFrame(freezeTick);
@@ -2929,17 +2921,14 @@
                 }
                 if (freezing) return;
 
-                // فحص الوصول لنقطة وقفة تحليلية
                 if (nextPauseIdx < pauseGroups.length && rVideo.currentTime >= pauseGroups[nextPauseIdx].time) {
                   const pg = pauseGroups[nextPauseIdx++];
                   handleFreeze(pg);
                   return;
                 }
 
-                // رسم الفيديو الخام نظيفاً
                 eCtx.drawImage(rVideo, 0, 0, outW, outH);
 
-                // تحديث شريط التقدم بسلاسة
                 const clipFrac = Math.max(0, Math.min(1, (rVideo.currentTime - c.start) / Math.max(0.1, c.end - c.start)));
                 const totalPct = Math.min(99, Math.round(((i + clipFrac) / group.clips.length) * 100));
                 progressFill.style.width = `${totalPct}%`;
@@ -2951,7 +2940,6 @@
             });
           }
 
-          // إيقاف المسجل وانتظار اكتمال الحفظ قبل الانتقال للملف التالي
           const realDuration = Date.now() - exportStartTime;
           await new Promise(resolveSave => {
             recorder.onstop = async () => {
@@ -3070,6 +3058,10 @@
     })();
 
     function restoreSavedProject() {
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
+        ZiadaPlan.requireGold('استرجاع المشروع التكتيكي المحفوظ تلقائياً');
+        return;
+      }
       if (!pendingRecoveryState) return;
       const s = pendingRecoveryState;
       document.getElementById('matchTitleInput').value = s.matchTitle || '';
