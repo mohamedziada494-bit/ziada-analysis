@@ -2,9 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ziada Analysis - استوديو التحليل والرسم وتصدير الحالات المتقدم الشامل</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
   <style>
     :root {
       --bg-dark: #070b12;
@@ -19,32 +25,216 @@
       --text-muted: #94a3b8;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text); padding: 12px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
 
-    .main-wrapper { max-width: 1580px; margin: auto; display: flex; flex-direction: column; gap: 12px; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      padding: 12px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    .top-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); }
-    .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+    .main-wrapper {
+      max-width: 1580px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* الشريط العلوي */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .autosave-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #4ade80;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .autosave-badge.saving {
+      color: var(--accent);
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .btn-top {
+      background: #1f2937;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 6px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      transition: 0.2s;
+    }
     .btn-top:hover { background: var(--primary); color: #070b12; }
 
-    .workspace-grid { display: grid; grid-template-columns: 325px 1fr 310px; gap: 14px; }
+    /* بانر إعادة ربط الفيديو بعد الاسترجاع */
+    .relink-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid var(--accent);
+      color: #fde68a;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .relink-banner button {
+      background: var(--accent);
+      color: #070b12;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 800;
+      cursor: pointer;
+    }
 
-    .tagging-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 7px; max-height: 85vh; overflow-y: auto; }
-    
-    .mode-switch-card { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 4px; display: flex; flex-direction: column; gap: 8px; }
-    .mode-switch-title { font-size: 12px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+    /* شبكة مساحة العمل */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 315px 1fr 300px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    /* 1. لوحة التقطيع والحالات */
+    .tagging-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .mode-switch-card {
+      background: #070b12;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 9px;
+      margin-bottom: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .mode-switch-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
     .mode-buttons-row { display: flex; gap: 6px; }
-    .btn-mode { flex: 1; padding: 8px 4px; border-radius: 6px; border: 1px solid var(--border-color); background: #1f2937; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .btn-mode.active { background: #0284c7; color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+    .btn-mode {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: #1f2937;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .btn-mode.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
 
-    .panel-heading { font-size: 13px; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .panel-heading {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    .btn-tag { flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; color: #fff; background: #1f2937; text-align: right; }
-    .btn-tag:hover { filter: brightness(1.15); }
-    .btn-tag.recording-active { background: #b91c1c !important; border-color: #ef4444 !important; animation: pulseRecord 1.2s infinite; }
-    @keyframes pulseRecord { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    .tags-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-tag {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s;
+      color: #fff;
+      background: #1f2937;
+      text-align: right;
+    }
+    .btn-tag:hover { filter: brightness(1.15); transform: translateX(-2px); }
+    .btn-tag.recording-active {
+      background: #b91c1c !important;
+      border-color: #ef4444 !important;
+      animation: pulseRecord 1.2s infinite;
+    }
+    @keyframes pulseRecord {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
 
     .tag-att { border-right: 4px solid #3b82f6; }
     .tag-ind { border-right: 4px solid #8b5cf6; }
@@ -61,136 +251,723 @@
     .tag-counter-attack { border-right: 4px solid #0ea5e9; }
     .tag-key-pass { border-right: 4px solid #84cc16; }
     .tag-cross-box { border-right: 4px solid #e879f9; }
+    .tag-custom { border-right: 4px solid #d946ef; }
 
     .custom-action-row { display: flex; align-items: center; gap: 6px; width: 100%; }
-    .tag-custom { border-right: 4px solid #d946ef; }
-    .btn-del-custom { background: #991b1b; color: #fee2e2; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-    .btn-del-custom:hover { background: #b91c1c; transform: scale(1.05); }
+    .btn-del-custom {
+      background: #991b1b;
+      color: #fee2e2;
+      border: 1px solid #ef4444;
+      padding: 9px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-del-custom:hover { background: #b91c1c; }
 
-    .video-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .video-viewport { position: relative; width: 100%; height: 56vh; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    /* 2. مشغل الفيديو الرئيسي */
+    .video-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+    .match-upload-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #070b12;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .upload-video-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      height: 54vh;
+      min-height: 260px;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #1e293b;
+    }
     video { width: 100%; height: 100%; object-fit: contain; }
 
-    .video-controls-row { display: flex; align-items: center; justify-content: space-between; background: #070b12; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 12px; }
-    .time-txt { font-size: 13px; font-weight: 800; color: var(--primary); direction: ltr; min-width: 95px; text-align: center; }
-    
-    /* التعديل هنا: إضافة appearance: none بجانب -webkit-appearance */
-    .seek-bar { flex: 1; -webkit-appearance: none; appearance: none; height: 8px; background: #374151; border-radius: 5px; outline: none; cursor: pointer; }
-    .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); }
+    .video-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: #070b12;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      gap: 8px;
+    }
+    .time-txt {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--primary);
+      direction: ltr;
+      min-width: 96px;
+      text-align: center;
+    }
+    .seek-bar {
+      flex: 1;
+      min-width: 140px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 7px;
+      background: #374151;
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+    }
+    .seek-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
 
-    .btn-ctrl { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
-    .btn-ctrl:hover { background: #374151; }
+    .btn-ctrl {
+      background: #1f2937;
+      color: #fff;
+      border: 1px solid #334155;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-ctrl:hover { background: #334155; border-color: var(--primary); }
+    .speed-chip {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 4px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .speed-chip.active { background: var(--accent); color: #070b12; border-color: var(--accent); }
 
-    .studio-launch-bar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #6366f1; padding: 12px 20px; border-radius: 10px; margin-top: 5px; }
-    .btn-open-studio { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
+    .studio-launch-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 1px solid #6366f1;
+      padding: 12px 18px;
+      border-radius: 10px;
+    }
+    .btn-open-studio {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.45);
+      transition: 0.2s;
+    }
     .btn-open-studio:hover { transform: scale(1.03); }
 
-    .export-side-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
-    .export-box-title { font-size: 13.5px; font-weight: 800; color: #10b981; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-
-    .export-step-box { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .export-step-label { font-size: 11px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-    .export-radio-group { display: flex; flex-direction: column; gap: 6px; }
-    .export-radio-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #cbd5e1; padding: 6px; border-radius: 6px; background: #111827; border: 1px solid transparent; transition: 0.2s; }
-    .export-radio-item:hover, .export-radio-item.selected { border-color: var(--primary); background: #1e293b; color: #fff; }
+    /* 3. لوحة التصدير الذكية */
+    .export-side-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .export-box-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #10b981;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .export-step-box {
+      background: #070b12;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .export-step-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .export-radio-group { display: flex; flex-direction: column; gap: 5px; }
+    .export-radio-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #cbd5e1;
+      padding: 6px;
+      border-radius: 6px;
+      background: #111827;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+    .export-radio-item:hover, .export-radio-item.selected {
+      border-color: var(--primary);
+      background: #1e293b;
+      color: #fff;
+    }
     .export-radio-item input { accent-color: var(--primary); }
 
-    .btn-export-action { width: 100%; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: 0.2s; }
-    .btn-export-action:hover { filter: brightness(1.15); transform: translateY(-2px); }
+    .btn-export-action {
+      width: 100%;
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      border: none;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+      transition: 0.2s;
+    }
+    .btn-export-action:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .btn-export-action:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-cancel-export {
+      width: 100%;
+      background: #991b1b;
+      color: #fff;
+      border: 1px solid #ef4444;
+      padding: 7px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: none;
+    }
 
-    .export-progress-wrap { display: none; flex-direction: column; gap: 6px; background: #070b12; border: 1px solid #10b981; border-radius: 8px; padding: 10px; }
+    .export-progress-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      background: #070b12;
+      border: 1px solid #10b981;
+      border-radius: 8px;
+      padding: 10px;
+    }
     .progress-bar-bg { width: 100%; height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #10b981); transition: width 0.15s; }
-    .progress-status-txt { font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; }
+    .progress-status-txt { font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; gap: 6px; }
 
-    .clips-library-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-top: 10px; }
-    .clips-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px; }
-    .clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; max-height: 270px; overflow-y: auto; }
-    .clip-card { background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; }
-    .clip-card-header { display: flex; justify-content: space-between; align-items: center; }
-    .clip-card-actions { display: flex; gap: 6px; margin-top: 4px; }
-    .btn-clip-mini { flex: 1; padding: 5px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    /* مكتبة الحالات المسجلة */
+    .clips-library-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px;
+    }
+    .clips-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .clips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .clip-card {
+      background: #070b12;
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .clip-card-header { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .clip-card-actions { display: flex; gap: 5px; margin-top: 4px; }
+    .btn-clip-mini {
+      flex: 1;
+      padding: 5px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
     .btn-clip-play { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
+    .btn-clip-studio { background: #312e81; color: #f472b6; border: 1px solid #6366f1; }
     .btn-clip-edit { background: #854d0e; color: #fef08a; }
     .btn-clip-del { background: #991b1b; color: #fee2e2; }
 
-    .modal-clip-editor { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    /* مودال تعديل اللقطة */
+    .modal-clip-editor {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.86);
+      z-index: 2500;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      padding: 16px;
+    }
     .modal-clip-editor.active { display: flex; }
-    .clip-editor-box { background: var(--card-bg); border: 1.5px solid var(--primary); border-radius: 12px; width: 440px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-    .editor-field-row { display: flex; flex-direction: column; gap: 6px; }
+    .clip-editor-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--primary);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+    }
+    .editor-field-row { display: flex; flex-direction: column; gap: 5px; }
+    .editor-field-row label { font-size: 12px; font-weight: 700; color: #cbd5e1; }
     .editor-time-actions { display: flex; gap: 6px; }
-    .btn-time-sync { background: #1f2937; color: var(--primary); border: 1px solid var(--border-color); border-radius: 5px; padding: 5px 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
-    .btn-time-sync:hover { background: var(--primary); color: #000; }
+    .btn-time-sync {
+      background: #1f2937;
+      color: var(--primary);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+    }
+    .btn-time-sync:hover { background: var(--primary); color: #070b12; }
 
-    .studio-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 7, 18, 0.98); z-index: 1000; flex-direction: column; padding: 12px; backdrop-filter: blur(8px); }
+    /* ==========================================
+       استوديو الرسم التكتيكي (Fullscreen Modal)
+       ========================================== */
+    .studio-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.98);
+      z-index: 1000;
+      flex-direction: column;
+      padding: 10px;
+      backdrop-filter: blur(8px);
+    }
     .studio-modal-overlay.active { display: flex; }
 
-    .studio-header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; }
-    .studio-layout-grid { flex: 1; display: grid; grid-template-columns: 280px 1fr 265px; gap: 12px; overflow: hidden; }
+    .studio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 9px 16px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .studio-title { font-size: 14.5px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .studio-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-    .studio-clips-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-    .cat-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
-    .cat-header { display: flex; justify-content: space-between; align-items: center; background: #1e293b; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
-    .cat-header i { color: #10b981; }
-    .studio-clip-item { background: #070b12; border: 1px solid #374151; border-radius: 6px; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; margin-right: 10px; }
-    .studio-clip-item.active-selected { border-color: var(--primary); background: rgba(56, 189, 248, 0.1); }
-    .studio-clip-item .clip-time { font-size: 13px; color: var(--success); font-weight: bold; display: flex; align-items: center; gap: 8px; }
-    .studio-clip-item .clip-icons { display: flex; gap: 10px; color: #64748b; font-size: 12px; }
-    .studio-clip-item:hover .clip-icons { color: #fff; }
+    .studio-layout-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 270px 1fr 255px;
+      gap: 10px;
+      overflow: hidden;
+      min-height: 0;
+    }
 
-    .studio-player-center { display: flex; flex-direction: column; gap: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; position: relative; }
-    .studio-video-viewport { position: relative; flex: 1; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-    #studioPlayerVideo { width: 100%; height: 100%; object-fit: contain; }
-    #studioInteractiveCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; z-index: 10; }
+    .studio-clips-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    .cat-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 6px; }
+    .cat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    .studio-clip-item {
+      background: #070b12;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 7px 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.2s;
+      margin-right: 6px;
+    }
+    .studio-clip-item.active-selected {
+      border-color: var(--primary);
+      background: rgba(56, 189, 248, 0.14);
+    }
+    .studio-clip-item .clip-time {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      direction: ltr;
+    }
+
+    .studio-player-center {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+    }
+    .studio-video-viewport {
+      position: relative;
+      flex: 1;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 240px;
+      touch-action: none;
+    }
+    #studioPlayerVideo { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    #studioInteractiveCanvas {
+      position: absolute;
+      cursor: crosshair;
+      z-index: 10;
+      touch-action: none;
+    }
 
     .freeze-countdown-badge {
-      position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff; font-size: 13px; font-weight: 800; padding: 8px 18px; border-radius: 30px;
-      display: none; align-items: center; gap: 8px; z-index: 60; box-shadow: 0 0 20px rgba(56, 189, 248, 0.7); border: 2px solid #fff;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 16px;
+      border-radius: 30px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 60;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+      border: 2px solid #fff;
     }
 
     .shape-floating-toolbar {
-      position: absolute; display: none; background: rgba(15, 23, 42, 0.95);
-      border: 1.5px solid var(--primary); border-radius: 30px; padding: 6px 12px;
-      gap: 10px; align-items: center; z-index: 50; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.5);
-      transform: translate(-50%, -120%);
+      position: absolute;
+      display: none;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1.5px solid var(--primary);
+      border-radius: 30px;
+      padding: 5px 10px;
+      gap: 7px;
+      align-items: center;
+      z-index: 50;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.85), 0 0 15px rgba(56, 189, 248, 0.45);
+      transform: translate(-50%, -100%);
     }
-    .shape-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; font-size: 14px; }
-    .shape-btn:hover { transform: scale(1.15); }
-    .btn-shape-ok { background: #10b981; color: #fff; width: 38px; height: 38px; font-size: 18px; }
-    .btn-shape-del { background: #ef4444; color: #fff; width: 38px; height: 38px; font-size: 18px; }
-    
-    .btn-shape-scale-up { background: #3b82f6; } .btn-shape-scale-down { background: #475569; }
-    .btn-shape-edit { background: #f59e0b; } .btn-shape-move { background: #0284c7; }
-    .btn-shape-move.active { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
-    .btn-shape-track { background: #8b5cf6; } .btn-shape-track.active { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
+    .shape-btn {
+      background: #334155;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 31px;
+      height: 31px;
+      border-radius: 50%;
+      transition: 0.2s;
+      font-size: 13px;
+    }
+    .shape-btn:hover { transform: scale(1.12); }
+    .btn-shape-ok { background: #10b981; width: 35px; height: 35px; font-size: 16px; }
+    .btn-shape-del { background: #ef4444; width: 35px; height: 35px; font-size: 16px; }
+    .btn-shape-scale-up { background: #3b82f6; }
+    .btn-shape-scale-down { background: #475569; }
+    .btn-shape-edit { background: #f59e0b; color: #070b12; }
+    .btn-shape-move { background: #0284c7; }
+    .btn-shape-move.active { background: #f59e0b; color: #070b12; box-shadow: 0 0 10px #f59e0b; }
 
-    .studio-tools-sidebar { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
-    .tool-btn { width: 100%; background: #0f172a; border: 1px solid var(--border-color); color: #e2e8f0; padding: 8px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .studio-tools-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-y: auto;
+    }
+    .tool-btn {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: #e2e8f0;
+      padding: 7px 9px;
+      border-radius: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+      text-align: right;
+    }
     .tool-btn:hover { background: #1e293b; color: #fff; }
-    .tool-btn.active { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-    .input-field { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: #070b12; color: #fff; font-size: 13px; font-family: inherit; }
+    .tool-btn.active {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #070b12;
+      color: #fff;
+      font-size: 12.5px;
+      font-family: inherit;
+      outline: none;
+    }
+    .input-field:focus { border-color: var(--primary); }
+
+    /* نافذة استرجاع المشروع */
+    .recovery-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.88);
+      backdrop-filter: blur(5px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .recovery-card {
+      background: #111827;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.85);
+    }
+    .recovery-card h3 { color: var(--primary); font-size: 18px; margin-bottom: 10px; }
+    .recovery-card p { color: #cbd5e1; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px; }
+    .recovery-meta {
+      background: #070b12;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.9;
+    }
+    .modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .modal-btns button {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+    .btn-resume { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+    .btn-fresh { background: #334155; color: #f8fafc; }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0f172a;
+      color: #fff;
+      border: 1px solid var(--primary);
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 9500;
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+    }
+    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* التجاوب الكامل مع الشاشات الصغيرة والموبايل */
+    @media (max-width: 1120px) {
+      body { padding: 8px; }
+      .workspace-grid { grid-template-columns: 1fr; }
+      .video-box { order: 1; }
+      .tagging-panel { order: 2; max-height: none; }
+      .tags-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .export-side-panel { order: 3; max-height: none; }
+      .video-viewport { height: 38vh; min-height: 215px; }
+
+      .studio-layout-grid { grid-template-columns: 1fr; overflow-y: auto; }
+      .studio-player-center { order: 1; min-height: 46vh; }
+      .studio-tools-sidebar {
+        order: 2;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        overflow-y: visible;
+      }
+      .studio-clips-sidebar { order: 3; max-height: 220px; }
+    }
   </style>
 
-  <!-- كود حماية الواجهة ومنع أدوات المطورين -->
+  <!-- كود حماية الواجهة (Capture Phase) -->
   <script>
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F12' || e.keyCode === 123) {
+    document.addEventListener('contextmenu', e => e.preventDefault(), true);
+    document.addEventListener('keydown', e => {
+      const forbiddenKeys = ['U', 'S', 'P'];
+      const devKeys = ['I', 'J', 'C'];
+      if (
+        e.key === 'F12' || e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
+      ) {
         e.preventDefault();
+        e.stopPropagation();
+        return false;
       }
-      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-        e.preventDefault();
-      }
-      if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-        e.preventDefault();
-      }
-    });
+    }, true);
   </script>
 </head>
 <body>
+
+  <!-- التحقق من الجلسة وصلاحية التحليل التكتيكي -->
+  <script>
+    (function checkSession() {
+      try {
+        const u = JSON.parse(localStorage.getItem('ziada_active_user') || 'null');
+        if (!u || !u.uid) { window.location.href = 'index.html'; return; }
+        if (u.role !== 'admin' && u.permissions && u.permissions.tactical === false) {
+          alert('ليس لديك صلاحية الدخول لاستوديو التحليل التكتيكي.');
+          window.location.href = 'index.html';
+        }
+      } catch (e) { window.location.href = 'index.html'; }
+    })();
+  </script>
+
+  <!-- نافذة استرجاع المشروع السابق -->
+  <div class="recovery-overlay" id="recoveryModal">
+    <div class="recovery-card">
+      <h3><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع تحليل سابق</h3>
+      <p>يوجد مشروع تكتيكي محفوظ تلقائياً قبل إغلاق الصفحة. هل تريد استكمال العمل من نفس النقطة أم البدء من جديد؟</p>
+      <div class="recovery-meta" id="recoveryMetaInfo"></div>
+      <div class="modal-btns">
+        <button class="btn-resume" onclick="restoreSavedProject()"><i class="fa-solid fa-rotate-left"></i> استكمال المشروع القديم</button>
+        <button class="btn-fresh" onclick="startFreshProject()"><i class="fa-solid fa-file-circle-plus"></i> بدء مشروع جديد</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toastMsg"></div>
 
   <div class="main-wrapper">
     <header class="top-nav">
@@ -198,10 +975,20 @@
         <i class="fa-solid fa-layer-group"></i>
         <span>Ziada Analysis | استوديو التحليل والرسم وتصدير الحالات المتقدم</span>
       </div>
-      <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية</a>
+      <div class="nav-actions">
+        <span class="autosave-badge" id="autosaveBadge"><i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً</span>
+        <a href="index.html" class="btn-top"><i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية</a>
+      </div>
     </header>
 
+    <!-- بانر تذكير إعادة اختيار الفيديو بعد استرجاع المشروع -->
+    <div class="relink-banner" id="relinkBanner">
+      <span id="relinkBannerText"></span>
+      <button onclick="document.getElementById('videoFile').click()"><i class="fa-solid fa-folder-open"></i> اختيار ملف الفيديو الآن</button>
+    </div>
+
     <div class="workspace-grid">
+      <!-- 1. لوحة أزرار الحالات التكتيكية -->
       <aside class="tagging-panel">
         <div class="mode-switch-card">
           <div class="mode-switch-title">
@@ -225,24 +1012,25 @@
           <small id="currentModeLabel" style="color: var(--primary);">تلقائي 5ث قبل/بعد</small>
         </div>
 
-        <button class="btn-tag tag-att" id="btn_att" onclick="handleTagClick('إجراءات الهجوم', 'tag-att', this)"><span>إجراءات الهجوم <b class="count-badge" data-cat="إجراءات الهجوم">(0)</b></span> <i class="fa-solid fa-angles-left"></i></button>
-        <button class="btn-tag tag-ind" id="btn_ind" onclick="handleTagClick('حالات فردية', 'tag-ind', this)"><span>حالات فردية <b class="count-badge" data-cat="حالات فردية">(0)</b></span> <i class="fa-solid fa-user-ninja"></i></button>
-        <button class="btn-tag tag-def" id="btn_def" onclick="handleTagClick('إجراءات الدفاع', 'tag-def', this)"><span>إجراءات الدفاع <b class="count-badge" data-cat="إجراءات الدفاع">(0)</b></span> <i class="fa-solid fa-shield-halved"></i></button>
-        <button class="btn-tag tag-goal" id="btn_goal" onclick="handleTagClick('أهداف', 'tag-goal', this)"><span>أهداف ⚽ <b class="count-badge" data-cat="أهداف">(0)</b></span> <i class="fa-solid fa-fire"></i></button>
-        <button class="btn-tag tag-set-att" id="btn_set_att" onclick="handleTagClick('كرات ثابتة هجومية', 'tag-set-att', this)"><span>كرات ثابتة هجومية <b class="count-badge" data-cat="كرات ثابتة هجومية">(0)</b></span> <i class="fa-solid fa-flag"></i></button>
-        <button class="btn-tag tag-set-def" id="btn_set_def" onclick="handleTagClick('كرات ثابتة دفاعية', 'tag-set-def', this)"><span>كرات ثابتة دفاعية <b class="count-badge" data-cat="كرات ثابتة دفاعية">(0)</b></span> <i class="fa-solid fa-hand-fist"></i></button>
-        <button class="btn-tag tag-buildup" id="btn_buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة <b class="count-badge" data-cat="بناء الهجمة">(0)</b></span> <i class="fa-solid fa-cubes"></i></button>
-        <button class="btn-tag tag-press" id="btn_press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي <b class="count-badge" data-cat="الضغط العالي">(0)</b></span> <i class="fa-solid fa-gauge-high"></i></button>
-        <button class="btn-tag tag-opp-trick" id="btn_opp_trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم <b class="count-badge" data-cat="طريقة لعب الخصم (تركاية في الملعب)">(0)</b></span> <i class="fa-solid fa-lightbulb"></i></button>
-        
-        <button class="btn-tag tag-first-ball" id="btn_first_ball" onclick="handleTagClick('الكرة الأولى (First Ball)', 'tag-first-ball', this)"><span>الكرة الأولى (First Ball) <b class="count-badge" data-cat="الكرة الأولى (First Ball)">(0)</b></span> <i class="fa-solid fa-plane-up"></i></button>
-        <button class="btn-tag tag-second-ball" id="btn_second_ball" onclick="handleTagClick('الكرة الثانية (Second Ball)', 'tag-second-ball', this)"><span>الكرة الثانية (Second Ball) <b class="count-badge" data-cat="الكرة الثانية (Second Ball)">(0)</b></span> <i class="fa-solid fa-bullseye"></i></button>
-        <button class="btn-tag tag-counter-press" id="btn_counter_press" onclick="handleTagClick('الضغط العكسي (Counter-Press)', 'tag-counter-press', this)"><span>الضغط العكسي <b class="count-badge" data-cat="الضغط العكسي (Counter-Press)">(0)</b></span> <i class="fa-solid fa-bolt"></i></button>
-        <button class="btn-tag tag-counter-attack" id="btn_counter_attack" onclick="handleTagClick('هجمة مرتدة (Counter-Attack)', 'tag-counter-attack', this)"><span>هجمة مرتدة <b class="count-badge" data-cat="هجمة مرتدة (Counter-Attack)">(0)</b></span> <i class="fa-solid fa-running"></i></button>
-        <button class="btn-tag tag-key-pass" id="btn_key_pass" onclick="handleTagClick('تمريرة مفتاحية (Key Pass)', 'tag-key-pass', this)"><span>تمريرة مفتاحية <b class="count-badge" data-cat="تمريرة مفتاحية (Key Pass)">(0)</b></span> <i class="fa-solid fa-key"></i></button>
-        <button class="btn-tag tag-cross-box" id="btn_cross_box" onclick="handleTagClick('عرضيات ودخول المنطقة (Cross & Box)', 'tag-cross-box', this)"><span>عُرضيات ودخول المنطقة <b class="count-badge" data-cat="عرضيات ودخول المنطقة (Cross & Box)">(0)</b></span> <i class="fa-solid fa-box-open"></i></button>
+        <div class="tags-list">
+          <button class="btn-tag tag-att" onclick="handleTagClick('إجراءات الهجوم', 'tag-att', this)"><span>إجراءات الهجوم <b class="count-badge" data-cat="إجراءات الهجوم">(0)</b></span> <i class="fa-solid fa-angles-left"></i></button>
+          <button class="btn-tag tag-ind" onclick="handleTagClick('حالات فردية', 'tag-ind', this)"><span>حالات فردية <b class="count-badge" data-cat="حالات فردية">(0)</b></span> <i class="fa-solid fa-user-ninja"></i></button>
+          <button class="btn-tag tag-def" onclick="handleTagClick('إجراءات الدفاع', 'tag-def', this)"><span>إجراءات الدفاع <b class="count-badge" data-cat="إجراءات الدفاع">(0)</b></span> <i class="fa-solid fa-shield-halved"></i></button>
+          <button class="btn-tag tag-goal" onclick="handleTagClick('أهداف', 'tag-goal', this)"><span>أهداف ⚽ <b class="count-badge" data-cat="أهداف">(0)</b></span> <i class="fa-solid fa-fire"></i></button>
+          <button class="btn-tag tag-set-att" onclick="handleTagClick('كرات ثابتة هجومية', 'tag-set-att', this)"><span>كرات ثابتة هجومية <b class="count-badge" data-cat="كرات ثابتة هجومية">(0)</b></span> <i class="fa-solid fa-flag"></i></button>
+          <button class="btn-tag tag-set-def" onclick="handleTagClick('كرات ثابتة دفاعية', 'tag-set-def', this)"><span>كرات ثابتة دفاعية <b class="count-badge" data-cat="كرات ثابتة دفاعية">(0)</b></span> <i class="fa-solid fa-hand-fist"></i></button>
+          <button class="btn-tag tag-buildup" onclick="handleTagClick('بناء الهجمة', 'tag-buildup', this)"><span>بناء الهجمة <b class="count-badge" data-cat="بناء الهجمة">(0)</b></span> <i class="fa-solid fa-cubes"></i></button>
+          <button class="btn-tag tag-press" onclick="handleTagClick('الضغط العالي', 'tag-press', this)"><span>الضغط العالي <b class="count-badge" data-cat="الضغط العالي">(0)</b></span> <i class="fa-solid fa-gauge-high"></i></button>
+          <button class="btn-tag tag-opp-trick" onclick="handleTagClick('طريقة لعب الخصم (تركاية في الملعب)', 'tag-opp-trick', this)"><span>طريقة لعب الخصم <b class="count-badge" data-cat="طريقة لعب الخصم (تركاية في الملعب)">(0)</b></span> <i class="fa-solid fa-lightbulb"></i></button>
+          <button class="btn-tag tag-first-ball" onclick="handleTagClick('الكرة الأولى (First Ball)', 'tag-first-ball', this)"><span>الكرة الأولى <b class="count-badge" data-cat="الكرة الأولى (First Ball)">(0)</b></span> <i class="fa-solid fa-plane-up"></i></button>
+          <button class="btn-tag tag-second-ball" onclick="handleTagClick('الكرة الثانية (Second Ball)', 'tag-second-ball', this)"><span>الكرة الثانية <b class="count-badge" data-cat="الكرة الثانية (Second Ball)">(0)</b></span> <i class="fa-solid fa-bullseye"></i></button>
+          <button class="btn-tag tag-counter-press" onclick="handleTagClick('الضغط العكسي (Counter-Press)', 'tag-counter-press', this)"><span>الضغط العكسي <b class="count-badge" data-cat="الضغط العكسي (Counter-Press)">(0)</b></span> <i class="fa-solid fa-bolt"></i></button>
+          <button class="btn-tag tag-counter-attack" onclick="handleTagClick('هجمة مرتدة (Counter-Attack)', 'tag-counter-attack', this)"><span>هجمة مرتدة <b class="count-badge" data-cat="هجمة مرتدة (Counter-Attack)">(0)</b></span> <i class="fa-solid fa-running"></i></button>
+          <button class="btn-tag tag-key-pass" onclick="handleTagClick('تمريرة مفتاحية (Key Pass)', 'tag-key-pass', this)"><span>تمريرة مفتاحية <b class="count-badge" data-cat="تمريرة مفتاحية (Key Pass)">(0)</b></span> <i class="fa-solid fa-key"></i></button>
+          <button class="btn-tag tag-cross-box" onclick="handleTagClick('عرضيات ودخول المنطقة (Cross & Box)', 'tag-cross-box', this)"><span>عرضيات ودخول المنطقة <b class="count-badge" data-cat="عرضيات ودخول المنطقة (Cross & Box)">(0)</b></span> <i class="fa-solid fa-box-open"></i></button>
+        </div>
 
-        <div style="margin-top: 10px; background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="margin-top: 8px; background: #070b12; border: 1px solid var(--border-color); border-radius: 8px; padding: 9px; display: flex; flex-direction: column; gap: 7px;">
           <div style="font-size: 11.5px; font-weight: 800; color: #d946ef; display: flex; align-items: center; gap: 5px;">
             <i class="fa-solid fa-user-gear"></i>
             <span>إجراء مخصص لحسابي فقط:</span>
@@ -253,28 +1041,43 @@
           </button>
         </div>
         <div id="customActionsContainer" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;"></div>
-        <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
-          <input type="file" id="videoFile" accept="video/*" class="input-field" onchange="loadMatchVideo(event)">
-        </div>
       </aside>
 
       <!-- 2. مشغل الفيديو الرئيسي -->
       <main class="video-box">
+        <div class="match-upload-row">
+          <label class="upload-video-btn">
+            <i class="fa-solid fa-video"></i> اختيار فيديو المباراة
+            <input type="file" id="videoFile" accept="video/*" onchange="loadMatchVideo(event)" style="display:none;">
+          </label>
+          <input type="text" id="matchTitleInput" class="input-field" style="max-width:260px;" placeholder="اسم المباراة (يظهر في الفواصل)" oninput="scheduleAutoSave()">
+          <span id="videoFileNameLabel" style="font-size:12px; color:var(--text-muted); font-weight:700;">لم يتم اختيار فيديو</span>
+        </div>
+
         <div class="video-viewport">
           <video id="matchVideo" playsinline></video>
         </div>
+
         <div class="video-controls-row">
           <span class="time-txt" id="currentTimeDisp">00:00 / 00:00</span>
-          <button class="btn-ctrl" onclick="seekRelative(-5)"><i class="fa-solid fa-backward"></i> -5ث</button>
+          <button class="btn-ctrl" onclick="seekRelative(-5)">-5ث</button>
+          <button class="btn-ctrl" onclick="stepMainFrame(-1)" title="فريم للخلف"><i class="fa-solid fa-backward-step"></i></button>
           <input type="range" id="seekSlider" class="seek-bar" min="0" max="100" value="0" step="0.05">
-          <button class="btn-ctrl" onclick="seekRelative(5)">+5ث <i class="fa-solid fa-forward"></i></button>
+          <button class="btn-ctrl" onclick="stepMainFrame(1)" title="فريم للأمام"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn-ctrl" onclick="seekRelative(5)">+5ث</button>
           <button class="btn-ctrl" id="mainPlayBtn" onclick="togglePlay()"><i class="fa-solid fa-play"></i> تشغيل</button>
+          <div style="display:flex; gap:3px;">
+            <button class="speed-chip" onclick="setMainSpeed(0.5, this)">0.5x</button>
+            <button class="speed-chip active" onclick="setMainSpeed(1, this)">1x</button>
+            <button class="speed-chip" onclick="setMainSpeed(1.5, this)">1.5x</button>
+            <button class="speed-chip" onclick="setMainSpeed(2, this)">2x</button>
+          </div>
         </div>
 
         <div class="studio-launch-bar">
           <div>
-            <b style="color: #fff; font-size: 14px;"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f472b6;"></i> استوديو الرسم التكتيكي</b>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">تعديل اللقطات وإضافة الرسومات التكتيكية مع وقفة الـ 4 ثوانٍ</p>
+            <b style="color: #fff; font-size: 14px;"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f472b6;"></i> استوديو الرسم التكتيكي الأوروبي</b>
+            <p style="font-size: 12px; color: #cbd5e1; margin-top: 2px;">13 أداة تحليلية احترافية مع وقفة تلقائية للرسم واستكمال نظيف للفيديو</p>
           </div>
           <button class="btn-open-studio" onclick="openStudioFullscreen()">
             <span>فتح استوديو الرسم التكتيكي</span>
@@ -291,14 +1094,11 @@
         </div>
 
         <div class="export-step-box">
-          <div class="export-step-label">
-            <i class="fa-solid fa-palette"></i>
-            <span>1. نمط الفيديو المُصدر:</span>
-          </div>
+          <div class="export-step-label"><i class="fa-solid fa-palette"></i> <span>1. نمط الفيديو المُصدر:</span></div>
           <div class="export-radio-group">
             <label class="export-radio-item selected" id="lblOverlayYes">
               <input type="radio" name="exportOverlayMode" value="with_overlay" checked onchange="updateExportUI()">
-              <span>تصدير بالرسم (وقفة 4ث للتحليل)</span>
+              <span>تصدير بالرسم (وقفة تحليلية ثم فيديو نظيف)</span>
             </label>
             <label class="export-radio-item" id="lblOverlayNo">
               <input type="radio" name="exportOverlayMode" value="no_overlay" onchange="updateExportUI()">
@@ -308,10 +1108,7 @@
         </div>
 
         <div class="export-step-box">
-          <div class="export-step-label">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>2. نوع ملف التصدير:</span>
-          </div>
+          <div class="export-step-label"><i class="fa-solid fa-layer-group"></i> <span>2. نوع ملف التصدير:</span></div>
           <div class="export-radio-group">
             <label class="export-radio-item selected" id="lblTypeMerged">
               <input type="radio" name="exportTypeMode" value="merged_full" checked onchange="updateExportUI()">
@@ -319,22 +1116,41 @@
             </label>
             <label class="export-radio-item" id="lblTypeCategory">
               <input type="radio" name="exportTypeMode" value="category_separate" onchange="updateExportUI()">
-              <span>تصدير كل إجراء لوحده (أو تصنيف محدد)</span>
+              <span>تصدير تصنيف محدد أو كل حالة منفصلة</span>
             </label>
           </div>
         </div>
 
         <div class="export-step-box" id="categorySelectBox" style="display: none;">
-          <div class="export-step-label">
-            <i class="fa-solid fa-filter"></i>
-            <span>اختر الإجراء المراد تصديره بمفرده:</span>
-          </div>
+          <div class="export-step-label"><i class="fa-solid fa-filter"></i> <span>اختر الإجراء المطلوب:</span></div>
           <select id="exportCategorySelect" class="input-field"></select>
+        </div>
+
+        <div class="export-step-box">
+          <div class="export-step-label"><i class="fa-solid fa-sliders"></i> <span>3. الجودة وإعدادات الوقفة:</span></div>
+          <select id="exportQualitySelect" class="input-field" onchange="scheduleAutoSave()">
+            <option value="720" selected>720p HD (سريع جداً ومثالي لواتساب)</option>
+            <option value="1080">1080p Full HD (أعلى نقاء للشاشات)</option>
+          </select>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <label style="font-size:11.5px; color:#cbd5e1; white-space:nowrap;">مدة الوقفة:</label>
+            <select id="freezeDurationSelect" class="input-field" onchange="scheduleAutoSave()">
+              <option value="3">3 ثوانٍ</option>
+              <option value="4" selected>4 ثوانٍ (مثالي)</option>
+              <option value="5">5 ثوانٍ</option>
+            </select>
+          </div>
+          <label style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#cbd5e1; cursor:pointer;">
+            <input type="checkbox" id="includeTitleCards" checked onchange="scheduleAutoSave()"> إضافة فواصل عناوين بين الحالات
+          </label>
         </div>
 
         <button class="btn-export-action" id="startExportBtn" onclick="runExportEngine()">
           <i class="fa-solid fa-download"></i>
-          <span>تصدير وحفظ الفيديو في الجهاز</span>
+          <span>تصدير وحفظ الفيديو الآن</span>
+        </button>
+        <button class="btn-cancel-export" id="cancelExportBtn" onclick="cancelExportEngine()">
+          <i class="fa-solid fa-stop"></i> إيقاف التصدير
         </button>
 
         <div class="export-progress-wrap" id="exportProgressWrap">
@@ -349,65 +1165,100 @@
       </aside>
     </div>
 
-    <!-- شبكة استعراض الحالات -->
+    <!-- مكتبة الحالات المسجلة -->
     <section class="clips-library-section">
       <div class="clips-header">
-        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-folder-open"></i> الحالات المسجلة (إمكانية التعديل والقص المباشر)</h3>
+        <h3 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-folder-open"></i> الحالات المسجلة (<span id="totalClipsCount">0</span> حالة)</h3>
+        <button class="btn-ctrl" style="color:#fca5a5; border-color:rgba(239,68,68,0.4);" onclick="clearAllClips()"><i class="fa-solid fa-trash"></i> مسح كل الحالات</button>
       </div>
       <div class="clips-grid" id="clipsGrid"></div>
     </section>
   </div>
 
-  <!-- نافذة الاستوديو التكتيكي -->
+  <!-- مودال تعديل اللقطة (التوقيت والتصنيف) -->
+  <div class="modal-clip-editor" id="modalClipEditor" onclick="if(event.target === this) closeClipEditor()">
+    <div class="clip-editor-box">
+      <h3 style="color:var(--primary); font-size:16px;"><i class="fa-solid fa-scissors"></i> تعديل توقيت وتصنيف اللقطة</h3>
+      <div class="editor-field-row">
+        <label>التصنيف / الإجراء:</label>
+        <input type="text" id="editClipCategory" class="input-field">
+      </div>
+      <div class="editor-field-row">
+        <label>وقت البداية (بالثواني):</label>
+        <div class="editor-time-actions">
+          <input type="number" step="0.1" id="editClipStart" class="input-field" style="flex:1;">
+          <button class="btn-time-sync" onclick="syncEditorTime('start')"><i class="fa-solid fa-crosshairs"></i> من المشغل الحالي</button>
+        </div>
+      </div>
+      <div class="editor-field-row">
+        <label>وقت النهاية (بالثواني):</label>
+        <div class="editor-time-actions">
+          <input type="number" step="0.1" id="editClipEnd" class="input-field" style="flex:1;">
+          <button class="btn-time-sync" onclick="syncEditorTime('end')"><i class="fa-solid fa-crosshairs"></i> من المشغل الحالي</button>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:4px;">
+        <button class="btn-export-action" style="padding:9px;" onclick="saveEditedClip()"><i class="fa-solid fa-check"></i> حفظ التعديلات</button>
+        <button class="btn-ctrl" style="flex:0.6; justify-content:center;" onclick="closeClipEditor()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== نافذة الاستوديو التكتيكي ==================== -->
   <div class="studio-modal-overlay" id="studioModal">
     <header class="studio-header">
       <div class="studio-title">
         <i class="fa-solid fa-palette" style="color: #ec4899;"></i>
-        <span>استوديو التحليل التكتيكي | الحالة: <b id="studioActiveTitle" style="color:#fff;">اختر فيديو</b></span>
+        <span>استوديو التحليل التكتيكي | الحالة: <b id="studioActiveTitle" style="color:#fff;">اختر حالة</b></span>
       </div>
-      <button class="btn-top" onclick="closeStudioFullscreen()"><i class="fa-solid fa-xmark"></i> إغلاق والعودة</button>
+      <div class="studio-header-actions">
+        <button class="btn-ctrl" style="border-color:var(--success); color:#4ade80;" onclick="captureStudioSnapshotHD()"><i class="fa-solid fa-camera"></i> حفظ صورة HD</button>
+        <button class="btn-ctrl" style="border-color:var(--danger); color:#fca5a5;" onclick="clearCurrentFrameShapes()"><i class="fa-solid fa-eraser"></i> مسح رسوم هذا الفريم</button>
+        <button class="btn-top" onclick="closeStudioFullscreen()"><i class="fa-solid fa-xmark"></i> إغلاق والعودة</button>
+      </div>
     </header>
 
     <div class="studio-layout-grid">
-      <!-- القائمة الجانبية للتصنيفات مرتبة حسب طلب الكوتش -->
-      <aside class="studio-clips-sidebar" id="studioClipsVerticalList">
-        <!-- سيتم توليد الجروبات هنا -->
-      </aside>
+      <!-- القائمة الجانبية للحالات -->
+      <aside class="studio-clips-sidebar" id="studioClipsVerticalList"></aside>
 
+      <!-- المشغل التفاعلي والكانفس -->
       <main class="studio-player-center">
         <div class="studio-video-viewport" id="studioViewport">
           <video id="studioPlayerVideo" playsinline></video>
           <canvas id="studioInteractiveCanvas"></canvas>
-          
+
           <div class="freeze-countdown-badge" id="freezeBadge">
             <i class="fa-solid fa-hand-holding-hand"></i>
             <span>وقفة تحليلية: <b id="freezeTimerText">4</b> ثوانٍ</span>
           </div>
 
-          <!-- شريط أزرار الرسم بعد التحديث (صح وغلط) يظهر فوراً حول الرسمة -->
+          <!-- شريط التحكم العائم حول الرسمة -->
           <div class="shape-floating-toolbar" id="shapeFloatingToolbar">
-            <button class="shape-btn btn-shape-ok" title="تثبيت واعتماد الرسمة (صح)" onclick="confirmShape()"><i class="fa-solid fa-check"></i></button>
-            <button class="shape-btn btn-shape-scale-up" title="تكبير / تطويل (+)" onclick="scaleActiveShape(1.15)"><i class="fa-solid fa-plus"></i></button>
-            <button class="shape-btn btn-shape-scale-down" title="تصغير / تقصير (-)" onclick="scaleActiveShape(0.85)"><i class="fa-solid fa-minus"></i></button>
-            <button class="shape-btn btn-shape-edit" id="btnShapeEdit" title="تعديل الملاحظة أو أرقام وأسماء اللاعبين" onclick="editShapeLabel()"><i class="fa-solid fa-pen"></i></button>
-            <button class="shape-btn btn-shape-move" id="btnShapeMove" title="تحريك وتعديل مكان العنصر" onclick="toggleMoveMode()"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
-            <button class="shape-btn btn-shape-track" id="btnShapeTrack" title="تتبع اللاعب مع حركة الفيديو" onclick="toggleTrackMode()"><i class="fa-solid fa-crosshairs"></i></button>
-            <button class="shape-btn btn-shape-del" title="إلغاء الرسمة (غلط)" onclick="deleteActiveShape()"><i class="fa-solid fa-xmark"></i></button>
+            <button class="shape-btn btn-shape-ok" title="تثبيت واعتماد الرسمة (Enter)" onclick="confirmShape()"><i class="fa-solid fa-check"></i></button>
+            <button class="shape-btn btn-shape-scale-up" title="تكبير (+)" onclick="scaleActiveShape(1.15)"><i class="fa-solid fa-plus"></i></button>
+            <button class="shape-btn btn-shape-scale-down" title="تصغير (-)" onclick="scaleActiveShape(0.85)"><i class="fa-solid fa-minus"></i></button>
+            <button class="shape-btn btn-shape-edit" id="btnShapeEdit" title="تعديل النص/الرقم" onclick="editShapeLabel()"><i class="fa-solid fa-pen"></i></button>
+            <button class="shape-btn btn-shape-move" id="btnShapeMove" title="تحريك مكان الرسمة" onclick="toggleMoveMode()"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
+            <button class="shape-btn btn-shape-del" title="حذف الرسمة" onclick="deleteActiveShape()"><i class="fa-solid fa-xmark"></i></button>
           </div>
         </div>
 
         <div class="video-controls-row">
           <span class="time-txt" id="studioTimeDisp">00:00 / 00:00</span>
-          <button class="btn-ctrl" onclick="seekStudioRelative(-3)"><i class="fa-solid fa-backward"></i> -3ث</button>
-          <!-- شريط التقديم والتأخير اللحظي فريم بفريم (step=0.01) -->
+          <button class="btn-ctrl" onclick="seekStudioRelative(-2)">-2ث</button>
+          <button class="btn-ctrl" onclick="stepStudioFrame(-1)" title="فريم للخلف"><i class="fa-solid fa-backward-step"></i></button>
           <input type="range" id="studioSeekSlider" class="seek-bar" min="0" max="100" value="0" step="0.01">
-          <button class="btn-ctrl" onclick="seekStudioRelative(3)">+3ث <i class="fa-solid fa-forward"></i></button>
+          <button class="btn-ctrl" onclick="stepStudioFrame(1)" title="فريم للأمام"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn-ctrl" onclick="seekStudioRelative(2)">+2ث</button>
           <button class="btn-ctrl" id="studioPlayBtn" onclick="toggleStudioPlay()"><i class="fa-solid fa-play"></i> تشغيل</button>
         </div>
       </main>
 
+      <!-- شريط الأدوات التكتيكية الأوروبية الـ 13 -->
       <aside class="studio-tools-sidebar">
-        <div style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 3px;">🎨 الأدوات التكتيكية الأوروبية:</div>
+        <div style="font-size: 11.5px; font-weight: 800; color: var(--primary); margin-bottom: 3px;">🎨 الأدوات التكتيكية الأوروبية:</div>
+        <button class="tool-btn" id="tool_select" onclick="setStudioTool('select')"><i class="fa-solid fa-arrow-pointer" style="color:#94a3b8;"></i> تحديد وتعديل رسمة سابقة</button>
         <button class="tool-btn active" id="tool_spotlight" onclick="setStudioTool('spotlight')"><i class="fa-solid fa-lightbulb" style="color:#ffffff;"></i> ضوء تسليط مخروطي أبيض</button>
         <button class="tool-btn" id="tool_player_ring" onclick="setStudioTool('player_ring')"><i class="fa-solid fa-circle-dot" style="color:#38bdf8;"></i> حلقة إبراز اللاعب (3D Ring)</button>
         <button class="tool-btn" id="tool_arrow_pass" onclick="setStudioTool('arrow_pass')"><i class="fa-solid fa-arrow-left-long" style="color:#38bdf8;"></i> سهم تمرير أرضي نيون</button>
@@ -415,88 +1266,91 @@
         <button class="tool-btn" id="tool_teleport" onclick="setStudioTool('teleport')"><i class="fa-solid fa-person-walking-arrow-right" style="color:#a855f7;"></i> نقل لاعب (تمركز بديل Ghost)</button>
         <button class="tool-btn" id="tool_chain_formation" onclick="setStudioTool('chain_formation')"><i class="fa-solid fa-diagram-project" style="color:#ef4444;"></i> منطقة تشكيل لاعبين (Chain)</button>
         <button class="tool-btn" id="tool_vision_cone" onclick="setStudioTool('vision_cone')"><i class="fa-solid fa-eye" style="color:#10b981;"></i> مجال رؤية اللاعب (Vision Cone)</button>
-        <button class="tool-btn" id="tool_space_zone" onclick="setStudioTool('space_zone')"><i class="fa-solid fa-vector-square" style="color:#f59e0b;"></i> تسليط على مساحة تكتيكية 🔲</button>
-        <button class="tool-btn" id="tool_distance_line" onclick="setStudioTool('distance_line')"><i class="fa-solid fa-ruler-horizontal" style="color:#06b6d4;"></i> مقياس المسافة بين اللاعبين 📏</button>
-        <button class="tool-btn" id="tool_ball_trajectory" onclick="setStudioTool('ball_trajectory')"><i class="fa-solid fa-volleyball" style="color:#fbbf24;"></i> مسار كرة ساقطة في الهواء 🌈</button>
-        <button class="tool-btn" id="tool_passing_blocker" onclick="setStudioTool('passing_blocker')"><i class="fa-solid fa-ban" style="color:#f43f5e;"></i> حائط حظر زاوية التمرير 🚫</button>
-        <button class="tool-btn" id="tool_offside_barrier" onclick="setStudioTool('offside_barrier')"><i class="fa-solid fa-grip-lines-vertical" style="color:#eab308;"></i> خط التسلل والعمق الدفاعي 🧱</button>
-        <button class="tool-btn" id="tool_magnifier_zoom" onclick="setStudioTool('magnifier_zoom')"><i class="fa-solid fa-magnifying-glass" style="color:#a855f7;"></i> عدسة تكبير تفصيلية 🔍</button>
+        <button class="tool-btn" id="tool_space_zone" onclick="setStudioTool('space_zone')"><i class="fa-solid fa-vector-square" style="color:#f59e0b;"></i> تسليط على مساحة تكتيكية</button>
+        <button class="tool-btn" id="tool_distance_line" onclick="setStudioTool('distance_line')"><i class="fa-solid fa-ruler-horizontal" style="color:#06b6d4;"></i> مقياس المسافة بين اللاعبين</button>
+        <button class="tool-btn" id="tool_ball_trajectory" onclick="setStudioTool('ball_trajectory')"><i class="fa-solid fa-volleyball" style="color:#fbbf24;"></i> مسار كرة ساقطة في الهواء</button>
+        <button class="tool-btn" id="tool_passing_blocker" onclick="setStudioTool('passing_blocker')"><i class="fa-solid fa-ban" style="color:#f43f5e;"></i> حائط حظر زاوية التمرير</button>
+        <button class="tool-btn" id="tool_offside_barrier" onclick="setStudioTool('offside_barrier')"><i class="fa-solid fa-grip-lines-vertical" style="color:#eab308;"></i> خط التسلل والعمق الدفاعي</button>
+        <button class="tool-btn" id="tool_magnifier_zoom" onclick="setStudioTool('magnifier_zoom')"><i class="fa-solid fa-magnifying-glass" style="color:#a855f7;"></i> عدسة تكبير تفصيلية (Zoom)</button>
       </aside>
     </div>
   </div>
 
   <canvas id="exportRenderCanvas" style="display: none;"></canvas>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+  <script>
+    // ==========================================
+    // 1. تهيئة Firebase الحقيقي للمنصة (الأزرار المخصصة)
+    // ==========================================
     const firebaseConfig = {
-      apiKey: "AIzaSyD-ziada-analysis-demo-key",
-      authDomain: "ziada-analysis.firebaseapp.com",
-      projectId: "ziada-analysis",
-      storageBucket: "ziada-analysis.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456:web:abcdef"
+      apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
+      authDomain: "ziada-analysis-82e34.firebaseapp.com",
+      projectId: "ziada-analysis-82e34",
+      storageBucket: "ziada-analysis-82e34.firebasestorage.app",
+      messagingSenderId: "763163562341",
+      appId: "1:763163562341:web:a4ca77775d3ea05a0b518c"
     };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const activeUserCache = JSON.parse(localStorage.getItem('ziada_active_user') || '{}');
+    let currentUserUid = activeUserCache.uid || 'local_coach';
 
-    let currentUserUid = "guest_user";
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUserUid = user.uid;
-        loadUserCustomActions();
-      } else {
-        currentUserUid = "local_coach_" + (localStorage.getItem('ziada_guest_id') || Math.random().toString(36).substring(2));
-        localStorage.setItem('ziada_guest_id', currentUserUid);
-        loadUserCustomActions();
-      }
+    auth.onAuthStateChanged((user) => {
+      if (user) currentUserUid = user.uid;
+      loadUserCustomActions();
     });
 
-    window.addNewCustomAction = async function() {
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    async function addNewCustomAction() {
       const input = document.getElementById('customActionInput');
       const actionName = input.value.trim();
-      if (!actionName) return alert("يرجى كتابة اسم الإجراء المخصص أولاً!");
+      if (!actionName) return alert('يرجى كتابة اسم الإجراء المخصص أولاً!');
 
       try {
-        await addDoc(collection(db, "custom_actions"), { uid: currentUserUid, name: actionName, createdAt: Date.now() });
-        input.value = ""; loadUserCustomActions(); alert("تم حفظ الإجراء لحسابك الشخصي بنجاح!");
+        await db.collection('custom_actions').add({ uid: currentUserUid, name: actionName, createdAt: Date.now() });
+        input.value = '';
+        await loadUserCustomActions();
+        showToast('تم حفظ الإجراء لحسابك الشخصي ✓');
       } catch (e) {
-        let localActions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
+        const localActions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
         localActions.push({ id: 'loc_' + Date.now(), name: actionName });
         localStorage.setItem('custom_actions_' + currentUserUid, JSON.stringify(localActions));
-        input.value = ""; loadUserCustomActions();
+        input.value = '';
+        await loadUserCustomActions();
+        showToast('تم حفظ الإجراء محلياً ✓');
       }
-    };
+    }
 
-    window.deleteCustomAction = async function(actionId) {
-      if (!confirm("هل أنت متأكد من حذف هذا الإجراء المخصص؟")) return;
+    async function deleteCustomAction(actionId) {
+      if (!confirm('هل أنت متأكد من حذف هذا الإجراء المخصص؟')) return;
       try {
         if (actionId.startsWith('loc_')) {
           let localActions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
           localActions = localActions.filter(a => a.id !== actionId);
           localStorage.setItem('custom_actions_' + currentUserUid, JSON.stringify(localActions));
         } else {
-          await deleteDoc(doc(db, "custom_actions", actionId));
+          await db.collection('custom_actions').doc(actionId).delete();
         }
         loadUserCustomActions();
-      } catch (err) { alert("حدث خطأ أثناء الحذف!"); }
-    };
+      } catch (err) {
+        alert('حدث خطأ أثناء الحذف.');
+      }
+    }
 
     async function loadUserCustomActions() {
       const container = document.getElementById('customActionsContainer');
       container.innerHTML = '';
-      
       let actions = [];
       try {
-        const q = query(collection(db, "custom_actions"), where("uid", "==", currentUserUid));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((docSnap) => { actions.push({ id: docSnap.id, ...docSnap.data() }); });
+        const snap = await db.collection('custom_actions').where('uid', '==', currentUserUid).get();
+        snap.forEach(docSnap => actions.push({ id: docSnap.id, ...docSnap.data() }));
       } catch (err) {
         actions = JSON.parse(localStorage.getItem('custom_actions_' + currentUserUid) || '[]');
       }
@@ -504,29 +1358,38 @@
       actions.forEach(act => {
         const row = document.createElement('div');
         row.className = 'custom-action-row';
-        row.innerHTML = `
-          <button class="btn-tag tag-custom" onclick="handleTagClick('${act.name}', 'tag-custom', this)">
-            <span>${act.name} <b class="count-badge" data-cat="${act.name}">(0)</b></span> <i class="fa-solid fa-star"></i>
-          </button>
-          <button class="btn-del-custom" title="حذف هذا الإجراء" onclick="deleteCustomAction('${act.id}')">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        `;
+
+        const btn = document.createElement('button');
+        btn.className = 'btn-tag tag-custom';
+        btn.innerHTML = `<span>${escapeHtml(act.name)} <b class="count-badge" data-cat="${escapeHtml(act.name)}">(0)</b></span> <i class="fa-solid fa-star"></i>`;
+        btn.onclick = () => handleTagClick(act.name, 'tag-custom', btn);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-del-custom';
+        delBtn.title = 'حذف هذا الإجراء';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        delBtn.onclick = () => deleteCustomAction(act.id);
+
+        row.appendChild(btn);
+        row.appendChild(delBtn);
         container.appendChild(row);
       });
-      window.updateCounters && window.updateCounters();
+      updateCounters();
     }
-  </script>
 
-  <script>
+    // ==========================================
+    // 2. المتغيرات الأساسية وحالة المنصة
+    // ==========================================
+    const AUTOSAVE_KEY = 'ziada_autosave_tactical_v1';
+
     const video = document.getElementById('matchVideo');
     const studioVideo = document.getElementById('studioPlayerVideo');
+    const studioViewport = document.getElementById('studioViewport');
     const sCanvas = document.getElementById('studioInteractiveCanvas');
     const sCtx = sCanvas.getContext('2d');
-    
+
     const floatingToolbar = document.getElementById('shapeFloatingToolbar');
     const btnShapeMove = document.getElementById('btnShapeMove');
-    const btnShapeTrack = document.getElementById('btnShapeTrack');
     const btnShapeEdit = document.getElementById('btnShapeEdit');
     const freezeBadge = document.getElementById('freezeBadge');
     const freezeTimerText = document.getElementById('freezeTimerText');
@@ -534,11 +1397,9 @@
     const seekSlider = document.getElementById('seekSlider');
     const timeDisp = document.getElementById('currentTimeDisp');
     const mainPlayBtn = document.getElementById('mainPlayBtn');
-
     const studioSeekSlider = document.getElementById('studioSeekSlider');
     const studioTimeDisp = document.getElementById('studioTimeDisp');
     const studioPlayBtn = document.getElementById('studioPlayBtn');
-
     const clipsGrid = document.getElementById('clipsGrid');
     const studioClipsList = document.getElementById('studioClipsVerticalList');
 
@@ -554,37 +1415,71 @@
     let isDrawing = false;
     let isMoving = false;
     let isResizing = false;
-    let dragStartX = 0, dragStartY = 0;
+    let dragStartNX = 0, dragStartNY = 0;
     let activeShape = null;
-    let mouseHoverX = 0, mouseHoverY = 0;
+    let mouseHoverNX = 0, mouseHoverNY = 0;
 
     let isFreezeActive = false;
     let freezeTimer = null;
     let activeFreezingTime = null;
-    let lastCheckedTime = 0;
+    let triggeredPausesInPlay = new Set();
 
     let editingClipTarget = null;
+    let loadedVideoName = '';
+    let pendingSeekAfterLoad = null;
+    let lastSavedVideoTime = 0;
+    let autosaveTimer = null;
 
-    function loadMatchVideo(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      video.src = url;
-      studioVideo.src = url;
-      video.onloadedmetadata = updateTimeDisplay;
+    let isExportRunning = false;
+    let exportCancelRequested = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2300);
     }
 
     function formatTime(s) {
-      if (isNaN(s) || !isFinite(s)) return "00:00";
+      if (isNaN(s) || !isFinite(s) || s < 0) return '00:00';
       const m = Math.floor(s / 60);
       const sec = Math.floor(s % 60);
       return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    // ==========================================
+    // 3. مشغل الفيديو الرئيسي والتقطيع
+    // ==========================================
+    function loadMatchVideo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      loadedVideoName = file.name;
+      document.getElementById('videoFileNameLabel').textContent = file.name;
+      document.getElementById('relinkBanner').style.display = 'none';
+
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      studioVideo.src = url;
+      video.onloadedmetadata = () => {
+        if (pendingSeekAfterLoad !== null && pendingSeekAfterLoad < video.duration) {
+          video.currentTime = pendingSeekAfterLoad;
+          showToast(`تم العودة للدقيقة ${formatTime(pendingSeekAfterLoad)} ✓`);
+          pendingSeekAfterLoad = null;
+        }
+        updateTimeDisplay();
+        scheduleAutoSave();
+      };
     }
 
     function updateTimeDisplay() {
       timeDisp.innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration || 0)}`;
       if (!isSeekingMain && video.duration) {
         seekSlider.value = (video.currentTime / video.duration) * 100;
+      }
+      if (Math.abs(video.currentTime - lastSavedVideoTime) >= 4) {
+        lastSavedVideoTime = video.currentTime;
+        scheduleAutoSave();
       }
     }
 
@@ -595,12 +1490,12 @@
     seekSlider.addEventListener('input', () => {
       isSeekingMain = true;
       if (video.duration) {
-        const targetTime = (seekSlider.value / 100) * video.duration;
-        timeDisp.innerText = `${formatTime(targetTime)} / ${formatTime(video.duration)}`;
+        const target = (seekSlider.value / 100) * video.duration;
+        timeDisp.innerText = `${formatTime(target)} / ${formatTime(video.duration)}`;
       }
     });
     seekSlider.addEventListener('change', () => {
-      if (video.duration) { video.currentTime = (seekSlider.value / 100) * video.duration; }
+      if (video.duration) video.currentTime = (seekSlider.value / 100) * video.duration;
       isSeekingMain = false;
     });
     seekSlider.addEventListener('mouseup', () => { isSeekingMain = false; });
@@ -610,28 +1505,38 @@
       if (!video.duration) return;
       video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + sec));
     }
-
-    function togglePlay() {
-      if (video.paused) { video.play(); mainPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; } 
-      else { video.pause(); mainPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; }
+    function stepMainFrame(dir) {
+      if (!video.duration) return;
+      video.pause();
+      video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + dir * 0.04));
     }
-
+    function setMainSpeed(rate, btnEl) {
+      video.playbackRate = rate;
+      document.querySelectorAll('.speed-chip').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+    }
+    function togglePlay() {
+      if (!video.src) return;
+      video.paused ? video.play() : video.pause();
+    }
     video.addEventListener('play', () => { mainPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; });
     video.addEventListener('pause', () => { mainPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; });
 
-    window.setCaptureMode = function(mode) {
+    function setCaptureMode(mode) {
       if (activeManualRecording) stopManualRecording();
       captureMode = mode;
       document.getElementById('modeAutoBtn').classList.toggle('active', mode === 'auto');
       document.getElementById('modeManualBtn').classList.toggle('active', mode === 'manual');
-      document.getElementById('currentModeLabel').innerText = mode === 'auto' ? "تلقائي 5ث قبل/بعد" : "يدوي: اضغط للبدء ثم للإنهاء";
-    };
+      document.getElementById('currentModeLabel').innerText = mode === 'auto' ? 'تلقائي 5ث قبل/بعد' : 'يدوي: اضغط للبدء ثم للإنهاء';
+      scheduleAutoSave();
+    }
 
-    window.handleTagClick = function(catName, badgeClass, btnEl) {
-      if (!video.src) return alert("يرجى اختيار فيديو المباراة أولاً!");
+    function handleTagClick(catName, badgeClass, btnEl) {
+      if (!video.src) return alert('يرجى اختيار فيديو المباراة أولاً!');
       if (captureMode === 'auto') {
         const cur = video.currentTime;
         saveNewClip(catName, badgeClass, Math.max(0, cur - 5), Math.min(video.duration || cur + 5, cur + 5));
+        showToast(`تم قص لقطة: ${catName} ✓`);
       } else {
         if (activeManualRecording && activeManualRecording.category === catName) {
           stopManualRecording();
@@ -640,12 +1545,13 @@
           startManualRecording(catName, badgeClass, btnEl);
         }
       }
-    };
+    }
 
     function startManualRecording(catName, badgeClass, btnEl) {
-      activeManualRecording = { category: catName, badgeClass: badgeClass, btn: btnEl, originalHtml: btnEl.innerHTML, startTime: video.currentTime };
+      activeManualRecording = { category: catName, badgeClass, btn: btnEl, originalHtml: btnEl.innerHTML, startTime: video.currentTime };
       btnEl.classList.add('recording-active');
-      btnEl.innerHTML = `<span><i class="fa-solid fa-circle-dot"></i> جاري التسجيل...</span> <i class="fa-solid fa-stop"></i>`;
+      btnEl.innerHTML = '<span><i class="fa-solid fa-circle-dot"></i> جاري التسجيل...</span> <i class="fa-solid fa-stop"></i>';
+      if (video.paused) video.play();
     }
 
     function stopManualRecording() {
@@ -654,13 +1560,21 @@
       const start = activeManualRecording.startTime;
       activeManualRecording.btn.classList.remove('recording-active');
       activeManualRecording.btn.innerHTML = activeManualRecording.originalHtml;
-      saveNewClip(activeManualRecording.category, activeManualRecording.badgeClass, Math.min(start, end), Math.max(start, end));
+      const s = Math.min(start, end);
+      const e = Math.max(start, end);
+      if (e - s < 0.4) {
+        showToast('المدة قصيرة جداً، تم تمديدها لـ 3 ثوانٍ');
+        saveNewClip(activeManualRecording.category, activeManualRecording.badgeClass, s, Math.min(video.duration || s + 3, s + 3));
+      } else {
+        saveNewClip(activeManualRecording.category, activeManualRecording.badgeClass, s, e);
+        showToast(`تم حفظ: ${activeManualRecording.category} ✓`);
+      }
       activeManualRecording = null;
     }
 
     function saveNewClip(catName, badgeClass, start, end) {
       clips.push({
-        id: 'c_' + Date.now(),
+        id: 'c_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
         category: catName,
         badgeClass: badgeClass,
         start: parseFloat(start.toFixed(2)),
@@ -669,47 +1583,55 @@
       });
       renderClipsList();
       populateExportCategories();
-      window.updateCounters();
+      updateCounters();
+      scheduleAutoSave();
     }
 
-    window.updateCounters = function() {
+    function updateCounters() {
       const counts = {};
       clips.forEach(c => { counts[c.category] = (counts[c.category] || 0) + 1; });
       document.querySelectorAll('.count-badge').forEach(badge => {
         const cat = badge.getAttribute('data-cat');
         badge.innerText = `(${counts[cat] || 0})`;
       });
-    };
+      document.getElementById('totalClipsCount').innerText = clips.length;
+    }
 
     function renderClipsList() {
       clipsGrid.innerHTML = '';
+      if (clips.length === 0) {
+        clipsGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:20px; font-size:13px;">لم يتم قص أي حالات بعد. اختر فيديو المباراة واضغط على أي حالة من القائمة اليمنى.</div>';
+        return;
+      }
       clips.forEach((c, idx) => {
         const card = document.createElement('div');
         card.className = 'clip-card';
         card.innerHTML = `
           <div class="clip-card-header">
-            <b style="color:#fff; font-size:12.5px;">#${idx + 1} - ${c.category}</b>
-            <small style="color:var(--text-muted);">${formatTime(c.start)} - ${formatTime(c.end)}</small>
+            <b style="color:#fff; font-size:12.5px;">#${idx + 1} - ${escapeHtml(c.category)}</b>
+            <small style="color:var(--primary); direction:ltr; font-weight:800;">${formatTime(c.start)} - ${formatTime(c.end)}</small>
           </div>
-          <div style="font-size:11px; color:#94a3b8;">المدة: ${(c.end - c.start).toFixed(1)} ثانية | رسومات: ${c.shapes ? c.shapes.length : 0}</div>
+          <div style="font-size:11.5px; color:#94a3b8;">المدة: ${(c.end - c.start).toFixed(1)} ثانية | رسومات: <b style="color:#f472b6;">${c.shapes ? c.shapes.length : 0}</b></div>
           <div class="clip-card-actions">
-            <button class="btn-clip-mini btn-clip-play" onclick="previewClip(${idx})"><i class="fa-solid fa-play"></i> تشغيل</button>
+            <button class="btn-clip-mini btn-clip-play" onclick="previewClip(${idx})"><i class="fa-solid fa-play"></i> عرض</button>
+            <button class="btn-clip-mini btn-clip-studio" onclick="openStudioAtClip('${c.id}')"><i class="fa-solid fa-palette"></i> رسم</button>
             <button class="btn-clip-mini btn-clip-edit" onclick="openClipEditor('${c.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
-            <button class="btn-clip-mini btn-clip-del" onclick="deleteClip('${c.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+            <button class="btn-clip-mini btn-clip-del" onclick="deleteClip('${c.id}')"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
         clipsGrid.appendChild(card);
       });
     }
 
-    window.previewClip = function(idx) {
+    function previewClip(idx) {
       const c = clips[idx];
       if (!c) return;
+      if (!video.src) return alert('قم باختيار ملف الفيديو أولاً لتشغيل اللقطة.');
       video.currentTime = c.start;
       video.play();
-    };
+    }
 
-    window.openClipEditor = function(clipId) {
+    function openClipEditor(clipId) {
       const c = clips.find(x => x.id === clipId);
       if (!c) return;
       editingClipTarget = c;
@@ -717,26 +1639,30 @@
       document.getElementById('editClipStart').value = c.start;
       document.getElementById('editClipEnd').value = c.end;
       document.getElementById('modalClipEditor').classList.add('active');
-    };
+    }
 
-    window.closeClipEditor = function() {
+    function closeClipEditor() {
       editingClipTarget = null;
       document.getElementById('modalClipEditor').classList.remove('active');
-    };
+    }
 
-    window.syncEditorTime = function(type) {
+    function syncEditorTime(type) {
+      if (!video.src) return alert('لا يوجد فيديو محمّل في المشغل.');
       const cur = parseFloat(video.currentTime.toFixed(2));
-      if (type === 'start') { document.getElementById('editClipStart').value = cur; } 
-      else { document.getElementById('editClipEnd').value = cur; }
-    };
+      if (type === 'start') document.getElementById('editClipStart').value = cur;
+      else document.getElementById('editClipEnd').value = cur;
+    }
 
-    window.saveEditedClip = function() {
+    function saveEditedClip() {
       if (!editingClipTarget) return;
-      const newCat = document.getElementById('editClipCategory').value;
+      const newCat = document.getElementById('editClipCategory').value.trim();
       const newStart = parseFloat(document.getElementById('editClipStart').value);
       const newEnd = parseFloat(document.getElementById('editClipEnd').value);
 
-      if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) { return alert("يرجى التأكد من أن وقت البداية أقل من وقت النهاية!"); }
+      if (!newCat) return alert('يرجى كتابة اسم التصنيف!');
+      if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) {
+        return alert('يجب أن يكون وقت البداية أقل من وقت النهاية!');
+      }
 
       editingClipTarget.category = newCat;
       editingClipTarget.start = newStart;
@@ -745,69 +1671,131 @@
       closeClipEditor();
       renderClipsList();
       populateExportCategories();
-      window.updateCounters();
-      if (document.getElementById('studioModal').classList.contains('active')) { renderStudioSidebarClips(); }
-      alert("تم تحديث توقيت وتصنيف اللقطة بنجاح!");
-    };
+      updateCounters();
+      if (document.getElementById('studioModal').classList.contains('active')) renderStudioSidebarClips();
+      scheduleAutoSave();
+      showToast('تم تحديث اللقطة بنجاح ✓');
+    }
 
-    window.deleteClip = function(clipId) {
-      if (!confirm("هل أنت متأكد من حذف هذه اللقطة؟")) return;
+    function deleteClip(clipId) {
+      if (!confirm('هل أنت متأكد من حذف هذه اللقطة؟')) return;
       clips = clips.filter(x => x.id !== clipId);
+      if (currentStudioClip && currentStudioClip.id === clipId) {
+        currentStudioClip = clips[0] || null;
+        if (currentStudioClip) selectClipInStudio(currentStudioClip.id);
+        else closeStudioFullscreen();
+      }
       renderClipsList();
       populateExportCategories();
-      window.updateCounters();
-      if (document.getElementById('studioModal').classList.contains('active')) { renderStudioSidebarClips(); }
-    };
+      updateCounters();
+      if (document.getElementById('studioModal').classList.contains('active')) renderStudioSidebarClips();
+      scheduleAutoSave();
+    }
 
-    window.openStudioFullscreen = function() {
-      if (clips.length === 0) return alert("لا توجد حالات مقطوعة حتى الآن!");
+    function clearAllClips() {
+      if (clips.length === 0) return;
+      if (!confirm('هل أنت متأكد من مسح جميع الحالات المسجلة؟')) return;
+      clips = [];
+      currentStudioClip = null;
+      renderClipsList();
+      populateExportCategories();
+      updateCounters();
+      scheduleAutoSave();
+    }
+
+    // ==========================================
+    // 4. استوديو الرسم التكتيكي ومطابقة إحداثيات الفيديو بالمللي
+    // ==========================================
+    function syncStudioCanvasToVideo() {
+      const vw = studioVideo.videoWidth || 1280;
+      const vh = studioVideo.videoHeight || 720;
+      const cw = studioViewport.clientWidth;
+      const ch = studioViewport.clientHeight;
+      if (!cw || !ch) return;
+
+      const videoRatio = vw / vh;
+      const boxRatio = cw / ch;
+      let drawW, drawH, offsetX, offsetY;
+
+      if (boxRatio > videoRatio) {
+        drawH = ch;
+        drawW = ch * videoRatio;
+        offsetX = (cw - drawW) / 2;
+        offsetY = 0;
+      } else {
+        drawW = cw;
+        drawH = cw / videoRatio;
+        offsetX = 0;
+        offsetY = (ch - drawH) / 2;
+      }
+
+      sCanvas.style.left = `${offsetX}px`;
+      sCanvas.style.top = `${offsetY}px`;
+      sCanvas.style.width = `${drawW}px`;
+      sCanvas.style.height = `${drawH}px`;
+      sCanvas.width = Math.round(drawW);
+      sCanvas.height = Math.round(drawH);
+
+      renderLiveScene();
+    }
+
+    studioVideo.addEventListener('loadedmetadata', syncStudioCanvasToVideo);
+    window.addEventListener('resize', () => {
+      if (document.getElementById('studioModal').classList.contains('active')) {
+        syncStudioCanvasToVideo();
+      }
+    });
+
+    function openStudioFullscreen() {
+      if (clips.length === 0) return alert('قم بقص حالة واحدة على الأقل أولاً!');
+      if (!video.src) return alert('قم باختيار فيديو المباراة أولاً!');
+      openStudioAtClip(clips[0].id);
+    }
+
+    function openStudioAtClip(clipId) {
+      if (!video.src) return alert('قم باختيار فيديو المباراة أولاً!');
       video.pause();
       document.getElementById('studioModal').classList.add('active');
-
       setTimeout(() => {
-        resizeStudioCanvas();
+        syncStudioCanvasToVideo();
         renderStudioSidebarClips();
-        selectClipInStudio(clips[0].id);
-      }, 100);
-    };
+        selectClipInStudio(clipId);
+      }, 80);
+    }
 
-    window.closeStudioFullscreen = function() {
+    function closeStudioFullscreen() {
       studioVideo.pause();
       resetFreezeState();
+      activeShape = null;
       hideFloatingToolbar();
       document.getElementById('studioModal').classList.remove('active');
-    };
-
-    function resizeStudioCanvas() {
-      sCanvas.width = sCanvas.parentElement.clientWidth;
-      sCanvas.height = sCanvas.parentElement.clientHeight;
+      renderClipsList();
     }
-    window.addEventListener('resize', () => {
-      if (document.getElementById('studioModal').classList.contains('active')) resizeStudioCanvas();
-    });
 
     function renderStudioSidebarClips() {
       studioClipsList.innerHTML = '';
-      
       const grouped = {};
       clips.forEach(c => {
-        if(!grouped[c.category]) grouped[c.category] = [];
+        if (!grouped[c.category]) grouped[c.category] = [];
         grouped[c.category].push(c);
       });
 
-      for(let cat in grouped) {
+      for (const cat in grouped) {
         const groupDiv = document.createElement('div');
         groupDiv.className = 'cat-group';
-        groupDiv.innerHTML = `<div class="cat-header"><label><i class="fa-solid fa-circle-check"></i> ${cat} (${grouped[cat].length})</label> <i class="fa-solid fa-caret-down"></i></div>`;
-        
+        groupDiv.innerHTML = `<div class="cat-header"><span><i class="fa-solid fa-folder" style="color:#10b981;"></i> ${escapeHtml(cat)} (${grouped[cat].length})</span></div>`;
+
         grouped[cat].forEach(c => {
           const item = document.createElement('div');
           item.className = `studio-clip-item ${currentStudioClip && currentStudioClip.id === c.id ? 'active-selected' : ''}`;
           item.onclick = () => selectClipInStudio(c.id);
-          
+          const shapesCount = c.shapes ? c.shapes.length : 0;
           item.innerHTML = `
-            <div class="clip-time"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> ${formatTime(c.start)} - ${formatTime(c.end)}</div>
-            <div class="clip-icons"><i class="fa-solid fa-thumbs-up"></i><i class="fa-solid fa-thumbs-down"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-comment"></i><i class="fa-solid fa-trash" onclick="event.stopPropagation(); deleteClip('${c.id}')"></i></div>
+            <div class="clip-time"><i class="fa-solid fa-play-circle"></i> ${formatTime(c.start)} - ${formatTime(c.end)}</div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:11.5px; color:#f472b6;">
+              ${shapesCount > 0 ? `<span title="عدد الرسومات"><i class="fa-solid fa-palette"></i> ${shapesCount}</span>` : ''}
+              <i class="fa-solid fa-trash" style="color:#94a3b8;" onclick="event.stopPropagation(); deleteClip('${c.id}')"></i>
+            </div>
           `;
           groupDiv.appendChild(item);
         });
@@ -819,24 +1807,41 @@
       const c = clips.find(x => x.id === clipId);
       if (!c) return;
       currentStudioClip = c;
+      activeShape = null;
       resetFreezeState();
       hideFloatingToolbar();
+      triggeredPausesInPlay.clear();
 
-      document.getElementById('studioActiveTitle').innerText = `${c.category}`;
+      document.getElementById('studioActiveTitle').innerText = `${c.category} (${formatTime(c.start)} - ${formatTime(c.end)})`;
       renderStudioSidebarClips();
 
       studioVideo.currentTime = c.start;
-      lastCheckedTime = c.start;
+      syncStudioCanvasToVideo();
       studioVideo.play();
       studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+    }
+
+    // تجميع الرسومات القريبة زمنياً (ضمن 0.15 ثانية) في وقفة تحليلية واحدة
+    function getPauseGroupsForClip(clip) {
+      if (!clip || !clip.shapes || clip.shapes.length === 0) return [];
+      const sorted = [...clip.shapes].sort((a, b) => a.triggerTime - b.triggerTime);
+      const groups = [];
+      sorted.forEach(s => {
+        const last = groups[groups.length - 1];
+        if (last && Math.abs(s.triggerTime - last.time) <= 0.15) {
+          last.shapes.push(s);
+        } else {
+          groups.push({ key: s.triggerTime.toFixed(2), time: s.triggerTime, shapes: [s] });
+        }
+      });
+      return groups;
     }
 
     studioVideo.addEventListener('timeupdate', () => {
       if (!currentStudioClip) return;
 
-      if (isFreezeActive && activeFreezingTime !== null) {
+      if (isFreezeActive) {
         if (!studioVideo.paused) studioVideo.pause();
-        drawAllShapesForTime(activeFreezingTime);
         return;
       }
 
@@ -844,65 +1849,66 @@
         studioVideo.pause();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
         studioVideo.currentTime = currentStudioClip.start;
-        lastCheckedTime = currentStudioClip.start;
+        triggeredPausesInPlay.clear();
+        sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+        return;
       }
 
-      const clipDuration = currentStudioClip.end - currentStudioClip.start;
-      const currentOffset = studioVideo.currentTime - currentStudioClip.start;
-      
-      if (!isSeekingStudio && clipDuration > 0) {
-        studioSeekSlider.value = (currentOffset / clipDuration) * 100;
+      const clipDur = currentStudioClip.end - currentStudioClip.start;
+      if (!isSeekingStudio && clipDur > 0) {
+        studioSeekSlider.value = Math.max(0, Math.min(100, ((studioVideo.currentTime - currentStudioClip.start) / clipDur) * 100));
       }
       studioTimeDisp.innerText = `${formatTime(studioVideo.currentTime)} / ${formatTime(currentStudioClip.end)}`;
 
-      checkTriggerPoint();
-      lastCheckedTime = studioVideo.currentTime;
+      // فحص الوصول لنقطة وقفة تحليلية أثناء التشغيل
+      if (!studioVideo.paused) {
+        const groups = getPauseGroupsForClip(currentStudioClip);
+        const cur = studioVideo.currentTime;
+        for (const g of groups) {
+          if (!triggeredPausesInPlay.has(g.key) && cur >= g.time && cur <= g.time + 0.35) {
+            triggeredPausesInPlay.add(g.key);
+            executeFreezePause(g);
+            return;
+          }
+        }
+        // أثناء تشغيل الفيديو العادي: الكانفس نظيف تماماً بدون رسومات
+        if (!activeShape) sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      }
     });
 
-    function checkTriggerPoint() {
-      if (isFreezeActive || !currentStudioClip) return;
-      const cur = studioVideo.currentTime;
-
-      const matchedShape = currentStudioClip.shapes.find(s => 
-        (lastCheckedTime <= s.triggerTime && cur >= s.triggerTime) || (Math.abs(cur - s.triggerTime) < 0.1)
-      );
-
-      if (matchedShape) {
-        execute4SecondFreeze(matchedShape.triggerTime);
-      }
-    }
-
-    function execute4SecondFreeze(triggerTime) {
+    function executeFreezePause(pauseGroup) {
       isFreezeActive = true;
-      activeFreezingTime = triggerTime;
-
-      studioVideo.currentTime = triggerTime;
+      activeFreezingTime = pauseGroup.time;
       studioVideo.pause();
+      studioVideo.currentTime = pauseGroup.time;
       studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
 
-      drawAllShapesForTime(triggerTime);
+      const drawFrozen = () => {
+        sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+        pauseGroup.shapes.forEach(sh => drawSingleShape(sCtx, sh, sCanvas.width, sCanvas.height, studioVideo));
+      };
+      studioVideo.onseeked = () => {
+        studioVideo.onseeked = null;
+        drawFrozen();
+      };
+      drawFrozen();
 
-      let timeLeft = 4;
+      let timeLeft = parseInt(document.getElementById('freezeDurationSelect').value) || 4;
       freezeBadge.style.display = 'flex';
       freezeTimerText.innerText = timeLeft;
 
       if (freezeTimer) clearInterval(freezeTimer);
-
       freezeTimer = setInterval(() => {
         timeLeft--;
         freezeTimerText.innerText = timeLeft;
-
         if (timeLeft <= 0) {
           clearInterval(freezeTimer);
           freezeTimer = null;
           freezeBadge.style.display = 'none';
-
+          // مسح الرسومات نهائياً واستكمال الفيديو نظيف
           sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
           isFreezeActive = false;
           activeFreezingTime = null;
-
-          studioVideo.currentTime += 0.25;
-          lastCheckedTime = studioVideo.currentTime;
           studioVideo.play();
           studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
         }
@@ -917,546 +1923,1189 @@
       sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
     }
 
-    // ===========================================
-    // ميزة التقديم والتأخير اللحظي في الاستوديو (Scrubbing)
-    // ===========================================
     studioSeekSlider.addEventListener('mousedown', () => { isSeekingStudio = true; resetFreezeState(); });
     studioSeekSlider.addEventListener('touchstart', () => { isSeekingStudio = true; resetFreezeState(); });
-
     studioSeekSlider.addEventListener('input', () => {
       isSeekingStudio = true;
-      if (currentStudioClip) {
-        resetFreezeState();
-        const clipDuration = currentStudioClip.end - currentStudioClip.start;
-        const target = currentStudioClip.start + ((studioSeekSlider.value / 100) * clipDuration);
-        
-        studioVideo.currentTime = target;
-        lastCheckedTime = target;
-        studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
-        drawAllShapesForTime(target);
-      }
-    });
-
-    studioSeekSlider.addEventListener('change', () => {
-      isSeekingStudio = false;
-    });
-
-    window.seekStudioRelative = function(sec) {
       if (!currentStudioClip) return;
       resetFreezeState();
-      studioVideo.currentTime = Math.max(currentStudioClip.start, Math.min(currentStudioClip.end, studioVideo.currentTime + sec));
-      lastCheckedTime = studioVideo.currentTime;
-      drawAllShapesForTime(studioVideo.currentTime);
-    };
+      triggeredPausesInPlay.clear();
+      const dur = currentStudioClip.end - currentStudioClip.start;
+      const target = currentStudioClip.start + ((studioSeekSlider.value / 100) * dur);
+      studioVideo.currentTime = target;
+      studioTimeDisp.innerText = `${formatTime(target)} / ${formatTime(currentStudioClip.end)}`;
+      renderLiveScene();
+    });
+    studioSeekSlider.addEventListener('change', () => { isSeekingStudio = false; });
 
-    window.toggleStudioPlay = function() {
-      if (isFreezeActive) return;
-      if (studioVideo.paused) {
+    function seekStudioRelative(sec) {
+      if (!currentStudioClip) return;
+      resetFreezeState();
+      triggeredPausesInPlay.clear();
+      studioVideo.currentTime = Math.max(currentStudioClip.start, Math.min(currentStudioClip.end, studioVideo.currentTime + sec));
+      renderLiveScene();
+    }
+
+    function stepStudioFrame(dir) {
+      if (!currentStudioClip) return;
+      resetFreezeState();
+      studioVideo.pause();
+      studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+      studioVideo.currentTime = Math.max(currentStudioClip.start, Math.min(currentStudioClip.end, studioVideo.currentTime + dir * 0.04));
+      studioVideo.onseeked = () => { studioVideo.onseeked = null; renderLiveScene(); };
+    }
+
+    function toggleStudioPlay() {
+      if (isFreezeActive) {
+        // السماح بتخطي الوقفة فوراً لو ضغط تشغيل
+        resetFreezeState();
         studioVideo.play();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
+        return;
+      }
+      if (studioVideo.paused) {
+        if (activeShape) confirmShape();
         hideFloatingToolbar();
+        studioVideo.play();
+        studioPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف';
       } else {
         studioVideo.pause();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
-        drawAllShapesForTime(studioVideo.currentTime);
+        renderLiveScene();
       }
-    };
+    }
 
-    const allToolBtnIds = [
-      'tool_spotlight', 'tool_player_ring', 'tool_arrow_pass', 'tool_arrow_curve',
-      'tool_teleport', 'tool_chain_formation', 'tool_vision_cone', 'tool_space_zone',
-      'tool_distance_line', 'tool_ball_trajectory', 'tool_passing_blocker',
-      'tool_offside_barrier', 'tool_magnifier_zoom'
+    // ==========================================
+    // 5. محرك الـ 13 أداة تكتيكية أوروبية (بإحداثيات نسبية 0..1)
+    // ==========================================
+    const allToolIds = [
+      'select', 'spotlight', 'player_ring', 'arrow_pass', 'arrow_curve',
+      'teleport', 'chain_formation', 'vision_cone', 'space_zone',
+      'distance_line', 'ball_trajectory', 'passing_blocker',
+      'offside_barrier', 'magnifier_zoom'
     ];
 
-    window.setStudioTool = function(tool) {
+    function setStudioTool(tool) {
+      if (activeShape && activeShape.type === 'chain_formation' && tool !== 'chain_formation') {
+        confirmShape();
+      }
       activeStudioTool = tool;
-      allToolBtnIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('active', id === `tool_${tool}`);
+      allToolIds.forEach(t => {
+        const el = document.getElementById(`tool_${t}`);
+        if (el) el.classList.toggle('active', t === tool);
       });
       if (!studioVideo.paused) {
         studioVideo.pause();
         studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
       }
-    };
-
-    function isNearResizeHandle(shape, mouseX, mouseY) {
-      if (!shape) return false;
-      let hX = 0, hY = 0;
-      if (shape.type === 'spotlight_cone') {
-        hX = shape.bottomX + shape.radiusX; hY = shape.bottomY;
-      } else if (shape.type === 'player_ring') {
-        hX = shape.x + shape.radiusX; hY = shape.y;
-      } else if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone'].includes(shape.type)) {
-        hX = shape.x2; hY = shape.y2;
-      } else if (shape.type === 'offside_barrier') {
-        hX = shape.x2; hY = shape.y1;
-      } else if (shape.type === 'teleport') {
-        hX = shape.x2 + (shape.radiusX || 28); hY = shape.y2;
-      } else if (shape.type === 'chain_formation') {
-        if (!shape.players || shape.players.length === 0) return false;
-        const lastP = shape.players[shape.players.length - 1];
-        hX = lastP.x + (shape.ringRadius || 24); hY = lastP.y;
-      } else if (shape.type === 'vision_cone') {
-        hX = shape.targetX; hY = shape.targetY;
-      } else if (shape.type === 'magnifier_zoom') {
-        hX = shape.x + shape.radius; hY = shape.y;
-      }
-      return Math.hypot(mouseX - hX, mouseY - hY) < 16;
+      sCanvas.style.cursor = tool === 'select' ? 'pointer' : 'crosshair';
     }
 
-    sCanvas.addEventListener('mousedown', (e) => {
-      if (!currentStudioClip || isFreezeActive) return;
-
+    function getNormPointer(e) {
       const rect = sCanvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      let cx, cy;
+      if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+      else if (e.changedTouches && e.changedTouches.length > 0) { cx = e.changedTouches[0].clientX; cy = e.changedTouches[0].clientY; }
+      else { cx = e.clientX; cy = e.clientY; }
+      const nx = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+      const ny = Math.max(0, Math.min(1, (cy - rect.top) / rect.height));
+      return { nx, ny, px: cx - rect.left, py: cy - rect.top };
+    }
 
-      if (activeShape && isNearResizeHandle(activeShape, mouseX, mouseY)) {
-        isResizing = true; dragStartX = mouseX; dragStartY = mouseY; return;
+    function getResizeHandleNorm(shape) {
+      if (!shape) return null;
+      if (shape.type === 'spotlight_cone') return { x: shape.bottomX + shape.radiusX, y: shape.bottomY };
+      if (shape.type === 'player_ring') return { x: shape.x + shape.radiusX, y: shape.y };
+      if (['arrow_pass', 'arrow_curve', 'distance_line', 'ball_trajectory', 'passing_blocker', 'space_zone', 'offside_barrier'].includes(shape.type)) {
+        return { x: shape.x2, y: shape.y2 };
+      }
+      if (shape.type === 'teleport') return { x: shape.x2 + (shape.radiusX || 0.03), y: shape.y2 };
+      if (shape.type === 'chain_formation' && shape.players.length > 0) {
+        const lp = shape.players[shape.players.length - 1];
+        return { x: lp.x + (shape.ringRadius || 0.025), y: lp.y };
+      }
+      if (shape.type === 'vision_cone') return { x: shape.targetX, y: shape.targetY };
+      if (shape.type === 'magnifier_zoom') return { x: shape.x + shape.radius, y: shape.y };
+      return null;
+    }
+
+    function isNearResizeHandle(shape, px, py) {
+      const h = getResizeHandleNorm(shape);
+      if (!h) return false;
+      return Math.hypot(px - h.x * sCanvas.width, py - h.y * sCanvas.height) < 18;
+    }
+
+    function isPointNearShape(shape, nx, ny) {
+      const W = sCanvas.width, H = sCanvas.height;
+      const px = nx * W, py = ny * H;
+      if (shape.type === 'spotlight_cone') return Math.hypot(px - shape.bottomX * W, py - shape.bottomY * H) < 55;
+      if (shape.type === 'player_ring' || shape.type === 'magnifier_zoom') return Math.hypot(px - shape.x * W, py - shape.y * H) < 55;
+      if (shape.type === 'vision_cone') {
+        const mx = ((shape.originX + shape.targetX) / 2) * W, my = ((shape.originY + shape.targetY) / 2) * H;
+        return Math.hypot(px - mx, py - my) < 60 || Math.hypot(px - shape.originX * W, py - shape.originY * H) < 40;
+      }
+      if (shape.type === 'chain_formation') {
+        return shape.players.some(p => Math.hypot(px - p.x * W, py - p.y * H) < 35);
+      }
+      if (shape.x1 !== undefined && shape.x2 !== undefined) {
+        const mx = ((shape.x1 + shape.x2) / 2) * W, my = ((shape.y1 + shape.y2) / 2) * H;
+        return Math.hypot(px - mx, py - my) < 55 || Math.hypot(px - shape.x1 * W, py - shape.y1 * H) < 35 || Math.hypot(px - shape.x2 * W, py - shape.y2 * H) < 35;
+      }
+      return false;
+    }
+
+    function onStudioPointerDown(e) {
+      if (!currentStudioClip || isFreezeActive) return;
+      if (e.type === 'touchstart') e.preventDefault();
+      const { nx, ny, px, py } = getNormPointer(e);
+
+      if (activeShape && isNearResizeHandle(activeShape, px, py)) {
+        isResizing = true;
+        dragStartNX = nx; dragStartNY = ny;
+        return;
       }
 
       if (isMoving && activeShape) {
-        dragStartX = mouseX; dragStartY = mouseY; return;
+        dragStartNX = nx; dragStartNY = ny;
+        return;
       }
+
+      // وضع التحديد لتعديل رسمة مثبتة سابقاً على هذا الفريم
+      if (activeStudioTool === 'select') {
+        const cur = studioVideo.currentTime;
+        const frameShapes = currentStudioClip.shapes.filter(s => Math.abs(s.triggerTime - cur) <= 0.15);
+        for (let i = frameShapes.length - 1; i >= 0; i--) {
+          if (isPointNearShape(frameShapes[i], nx, ny)) {
+            activeShape = frameShapes[i];
+            isMoving = true;
+            dragStartNX = nx; dragStartNY = ny;
+            showFloatingToolbar(activeShape);
+            btnShapeMove.classList.add('active');
+            renderLiveScene();
+            return;
+          }
+        }
+        activeShape = null;
+        hideFloatingToolbar();
+        renderLiveScene();
+        return;
+      }
+
+      studioVideo.pause();
+      studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
 
       if (activeStudioTool === 'chain_formation') {
-        studioVideo.pause(); studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
         if (!activeShape || activeShape.type !== 'chain_formation') {
-          activeShape = { type: 'chain_formation', players: [{ x: mouseX, y: mouseY, label: '1' }], ringRadius: 24, triggerTime: studioVideo.currentTime, tracked: false };
+          activeShape = {
+            type: 'chain_formation',
+            players: [{ x: nx, y: ny, label: '1' }],
+            ringRadius: 0.025,
+            triggerTime: studioVideo.currentTime
+          };
         } else {
-          const nextNum = activeShape.players.length + 1;
-          activeShape.players.push({ x: mouseX, y: mouseY, label: String(nextNum) });
+          activeShape.players.push({ x: nx, y: ny, label: String(activeShape.players.length + 1) });
         }
-        renderLiveScene(); showFloatingToolbar(activeShape); return;
+        renderLiveScene();
+        showFloatingToolbar(activeShape);
+        return;
       }
 
-      studioVideo.pause(); studioPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل';
+      // اعتماد أي رسمة سابقة غير مثبتة قبل البدء في رسمة جديدة
+      if (activeShape && !currentStudioClip.shapes.includes(activeShape)) {
+        confirmShape();
+      }
       hideFloatingToolbar();
 
-      isDrawing = true; let startX = mouseX; let startY = mouseY;
+      isDrawing = true;
       const curT = studioVideo.currentTime;
 
       if (activeStudioTool === 'spotlight') {
-        activeShape = { type: 'spotlight_cone', bottomX: startX, bottomY: startY, topX: startX, topY: Math.max(20, startY - 220), radiusX: 35, radiusY: 14, triggerTime: curT, tracked: false };
+        activeShape = { type: 'spotlight_cone', bottomX: nx, bottomY: ny, topX: nx, topY: Math.max(0.02, ny - 0.38), radiusX: 0.036, radiusY: 0.022, triggerTime: curT };
       } else if (activeStudioTool === 'player_ring') {
-        activeShape = { type: 'player_ring', x: startX, y: startY, radiusX: 32, radiusY: 13, label: '10', triggerTime: curT, tracked: false };
+        activeShape = { type: 'player_ring', x: nx, y: ny, radiusX: 0.032, radiusY: 0.02, label: '10', triggerTime: curT };
       } else if (activeStudioTool === 'arrow_pass') {
-        activeShape = { type: 'arrow_pass', x1: startX, y1: startY, x2: startX + 15, y2: startY + 15, triggerTime: curT, tracked: false };
+        activeShape = { type: 'arrow_pass', x1: nx, y1: ny, x2: nx + 0.01, y2: ny + 0.01, triggerTime: curT };
       } else if (activeStudioTool === 'arrow_curve') {
-        activeShape = { type: 'arrow_curve', x1: startX, y1: startY, x2: startX + 15, y2: startY + 15, curveHeight: -40, triggerTime: curT, tracked: false };
+        activeShape = { type: 'arrow_curve', x1: nx, y1: ny, x2: nx + 0.01, y2: ny + 0.01, curveOffset: -0.09, triggerTime: curT };
       } else if (activeStudioTool === 'teleport') {
-        activeShape = { type: 'teleport', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, radiusX: 28, radiusY: 12, label: 'تمركز صحيح', triggerTime: curT, tracked: false };
+        activeShape = { type: 'teleport', x1: nx, y1: ny, x2: nx + 0.02, y2: ny + 0.02, radiusX: 0.028, radiusY: 0.018, label: 'تمركز بديل', triggerTime: curT };
       } else if (activeStudioTool === 'vision_cone') {
-        activeShape = { type: 'vision_cone', originX: startX, originY: startY, targetX: startX + 20, targetY: startY - 45, fovAngle: 68 * (Math.PI / 180), label: 'مجال الرؤية', triggerTime: curT, tracked: false };
+        activeShape = { type: 'vision_cone', originX: nx, originY: ny, targetX: nx + 0.02, targetY: ny - 0.05, fovAngle: 62 * (Math.PI / 180), label: 'مجال الرؤية', triggerTime: curT };
       } else if (activeStudioTool === 'space_zone') {
-        activeShape = { type: 'space_zone', x1: startX, y1: startY, x2: startX + 30, y2: startY + 30, label: 'مساحة مستهدفة', triggerTime: curT, tracked: false };
+        activeShape = { type: 'space_zone', x1: nx, y1: ny, x2: nx + 0.02, y2: ny + 0.02, label: 'مساحة خالية', triggerTime: curT };
       } else if (activeStudioTool === 'distance_line') {
-        activeShape = { type: 'distance_line', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, triggerTime: curT, tracked: false };
+        activeShape = { type: 'distance_line', x1: nx, y1: ny, x2: nx + 0.02, y2: ny + 0.02, label: '', triggerTime: curT };
       } else if (activeStudioTool === 'ball_trajectory') {
-        activeShape = { type: 'ball_trajectory', x1: startX, y1: startY, x2: startX + 30, y2: startY + 30, arcHeight: 80, triggerTime: curT, tracked: false };
+        activeShape = { type: 'ball_trajectory', x1: nx, y1: ny, x2: nx + 0.02, y2: ny + 0.02, arcHeight: 0.16, triggerTime: curT };
       } else if (activeStudioTool === 'passing_blocker') {
-        activeShape = { type: 'passing_blocker', x1: startX, y1: startY, x2: startX + 25, y2: startY + 25, label: 'زاوية مغلقة', triggerTime: curT, tracked: false };
+        activeShape = { type: 'passing_blocker', x1: nx, y1: ny, x2: nx + 0.02, y2: ny + 0.02, label: 'زاوية مغلقة', triggerTime: curT };
       } else if (activeStudioTool === 'offside_barrier') {
-        activeShape = { type: 'offside_barrier', x1: startX, y1: startY, x2: startX + 50, y2: startY, label: 'خط التسلل', triggerTime: curT, tracked: false };
+        activeShape = { type: 'offside_barrier', x1: nx, y1: ny, x2: nx + 0.05, y2: ny, label: 'خط التسلل', triggerTime: curT };
       } else if (activeStudioTool === 'magnifier_zoom') {
-        activeShape = { type: 'magnifier_zoom', x: startX, y: startY, radius: 45, zoomScale: 1.6, triggerTime: curT, tracked: false };
+        activeShape = { type: 'magnifier_zoom', x: nx, y: ny, radius: 0.065, zoomScale: 1.85, triggerTime: curT };
       }
 
       renderLiveScene();
-    });
+    }
 
-    sCanvas.addEventListener('mousemove', (e) => {
-      const rect = sCanvas.getBoundingClientRect();
-      const curX = e.clientX - rect.left; const curY = e.clientY - rect.top;
-      mouseHoverX = curX; mouseHoverY = curY;
+    function onStudioPointerMove(e) {
+      if (!currentStudioClip) return;
+      if ((isDrawing || isMoving || isResizing) && e.type === 'touchmove') e.preventDefault();
+      const { nx, ny, px, py } = getNormPointer(e);
+      mouseHoverNX = nx; mouseHoverNY = ny;
 
       if (activeShape && !isDrawing && !isMoving && !isResizing) {
-        sCanvas.style.cursor = isNearResizeHandle(activeShape, curX, curY) ? 'pointer' : (isMoving ? 'move' : 'crosshair');
+        sCanvas.style.cursor = isNearResizeHandle(activeShape, px, py) ? 'nwse-resize' : (activeStudioTool === 'select' ? 'pointer' : 'crosshair');
       }
 
       if (isResizing && activeShape) {
-        if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring') {
-          const centerRefX = (activeShape.type === 'spotlight_cone') ? activeShape.bottomX : activeShape.x;
-          const newRadius = Math.max(18, Math.min(180, Math.abs(curX - centerRefX)));
-          activeShape.radiusX = newRadius; activeShape.radiusY = newRadius * 0.40;
-        } else if (['arrow_pass', 'arrow_curve', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker'].includes(activeShape.type)) {
-          activeShape.x2 = curX; activeShape.y2 = curY;
-        } else if (activeShape.type === 'offside_barrier') {
-          activeShape.x2 = curX;
+        if (activeShape.type === 'spotlight_cone') {
+          const r = Math.max(0.018, Math.min(0.18, Math.abs(nx - activeShape.bottomX)));
+          activeShape.radiusX = r; activeShape.radiusY = r * 0.58;
+        } else if (activeShape.type === 'player_ring') {
+          const r = Math.max(0.018, Math.min(0.15, Math.abs(nx - activeShape.x)));
+          activeShape.radiusX = r; activeShape.radiusY = r * 0.6;
+        } else if (['arrow_pass', 'arrow_curve', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker', 'offside_barrier'].includes(activeShape.type)) {
+          activeShape.x2 = nx; activeShape.y2 = ny;
         } else if (activeShape.type === 'teleport') {
-          const newRad = Math.max(18, Math.min(120, Math.abs(curX - activeShape.x2)));
-          activeShape.radiusX = newRad; activeShape.radiusY = newRad * 0.42;
+          const r = Math.max(0.018, Math.min(0.12, Math.abs(nx - activeShape.x2)));
+          activeShape.radiusX = r; activeShape.radiusY = r * 0.6;
         } else if (activeShape.type === 'chain_formation') {
-          const lastP = activeShape.players[activeShape.players.length - 1];
-          activeShape.ringRadius = Math.max(16, Math.min(60, Math.abs(curX - lastP.x)));
+          const lp = activeShape.players[activeShape.players.length - 1];
+          activeShape.ringRadius = Math.max(0.015, Math.min(0.07, Math.abs(nx - lp.x)));
         } else if (activeShape.type === 'vision_cone') {
-          activeShape.targetX = curX; activeShape.targetY = curY;
+          activeShape.targetX = nx; activeShape.targetY = ny;
         } else if (activeShape.type === 'magnifier_zoom') {
-          activeShape.radius = Math.max(25, Math.min(110, Math.hypot(curX - activeShape.x, curY - activeShape.y)));
+          activeShape.radius = Math.max(0.035, Math.min(0.16, Math.hypot(nx - activeShape.x, (ny - activeShape.y) * (sCanvas.height / sCanvas.width))));
         }
-        renderLiveScene(); positionFloatingToolbar(activeShape); return;
+        renderLiveScene();
+        positionFloatingToolbar(activeShape);
+        return;
       }
 
       if (isMoving && activeShape) {
-        const dx = curX - dragStartX; const dy = curY - dragStartY;
+        const dx = nx - dragStartNX, dy = ny - dragStartNY;
         if (activeShape.type === 'spotlight_cone') {
           activeShape.bottomX += dx; activeShape.bottomY += dy; activeShape.topX += dx; activeShape.topY += dy;
         } else if (activeShape.type === 'player_ring' || activeShape.type === 'magnifier_zoom') {
           activeShape.x += dx; activeShape.y += dy;
-        } else if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker', 'offside_barrier'].includes(activeShape.type)) {
-          activeShape.x1 += dx; activeShape.y1 += dy; activeShape.x2 += dx; activeShape.y2 += dy;
         } else if (activeShape.type === 'chain_formation') {
           activeShape.players.forEach(p => { p.x += dx; p.y += dy; });
         } else if (activeShape.type === 'vision_cone') {
           activeShape.originX += dx; activeShape.originY += dy; activeShape.targetX += dx; activeShape.targetY += dy;
+        } else if (activeShape.x1 !== undefined) {
+          activeShape.x1 += dx; activeShape.y1 += dy; activeShape.x2 += dx; activeShape.y2 += dy;
         }
-        dragStartX = curX; dragStartY = curY;
-        renderLiveScene(); positionFloatingToolbar(activeShape); return;
+        dragStartNX = nx; dragStartNY = ny;
+        renderLiveScene();
+        positionFloatingToolbar(activeShape);
+        return;
       }
 
-      if (isDrawing && activeShape) { renderLiveScene(); }
-    });
+      // تحديث أبعاد الشكل لحظياً أثناء السحب للرسم!
+      if (isDrawing && activeShape) {
+        if (['arrow_pass', 'arrow_curve', 'teleport', 'space_zone', 'distance_line', 'ball_trajectory', 'passing_blocker', 'offside_barrier'].includes(activeShape.type)) {
+          activeShape.x2 = nx; activeShape.y2 = ny;
+        } else if (activeShape.type === 'vision_cone') {
+          activeShape.targetX = nx; activeShape.targetY = ny;
+        } else if (activeShape.type === 'spotlight_cone') {
+          const r = Math.max(0.025, Math.min(0.15, Math.hypot(nx - activeShape.bottomX, ny - activeShape.bottomY)));
+          activeShape.radiusX = r; activeShape.radiusY = r * 0.58;
+        } else if (activeShape.type === 'player_ring') {
+          const r = Math.max(0.022, Math.min(0.12, Math.hypot(nx - activeShape.x, ny - activeShape.y)));
+          activeShape.radiusX = r; activeShape.radiusY = r * 0.6;
+        } else if (activeShape.type === 'magnifier_zoom') {
+          activeShape.radius = Math.max(0.045, Math.min(0.15, Math.hypot(nx - activeShape.x, (ny - activeShape.y) * (sCanvas.height / sCanvas.width))));
+        }
+        renderLiveScene();
+        return;
+      }
 
-    sCanvas.addEventListener('mouseup', () => {
-      if (isResizing) { isResizing = false; return; }
-      if (isMoving) return;
+      if (activeShape && activeShape.type === 'chain_formation') {
+        renderLiveScene();
+      }
+    }
+
+    function onStudioPointerUp() {
+      if (isResizing) { isResizing = false; scheduleAutoSave(); return; }
+      if (isMoving) { isMoving = false; btnShapeMove.classList.remove('active'); scheduleAutoSave(); return; }
       if (activeStudioTool === 'chain_formation') return;
       if (!isDrawing || !activeShape) return;
-      
+
       isDrawing = false;
       showFloatingToolbar(activeShape);
       renderLiveScene();
-    });
+    }
 
-    window.scaleActiveShape = function(factor) {
+    sCanvas.addEventListener('mousedown', onStudioPointerDown);
+    sCanvas.addEventListener('mousemove', onStudioPointerMove);
+    window.addEventListener('mouseup', onStudioPointerUp);
+
+    sCanvas.addEventListener('touchstart', onStudioPointerDown, { passive: false });
+    sCanvas.addEventListener('touchmove', onStudioPointerMove, { passive: false });
+    sCanvas.addEventListener('touchend', onStudioPointerUp);
+
+    function scaleActiveShape(factor) {
       if (!activeShape) return;
-      renderLiveScene(); positionFloatingToolbar(activeShape);
-    };
+      if (activeShape.type === 'spotlight_cone' || activeShape.type === 'player_ring' || activeShape.type === 'teleport') {
+        activeShape.radiusX = Math.max(0.015, Math.min(0.18, activeShape.radiusX * factor));
+        activeShape.radiusY = activeShape.radiusX * 0.6;
+      } else if (activeShape.type === 'magnifier_zoom') {
+        activeShape.radius = Math.max(0.035, Math.min(0.18, activeShape.radius * factor));
+      } else if (activeShape.type === 'chain_formation') {
+        activeShape.ringRadius = Math.max(0.014, Math.min(0.07, activeShape.ringRadius * factor));
+      } else if (activeShape.type === 'vision_cone') {
+        activeShape.fovAngle = Math.max(0.3, Math.min(2.2, activeShape.fovAngle * factor));
+      } else if (activeShape.type === 'arrow_curve') {
+        activeShape.curveOffset = (activeShape.curveOffset || -0.09) * factor;
+      } else if (activeShape.type === 'ball_trajectory') {
+        activeShape.arcHeight = Math.max(0.05, Math.min(0.35, (activeShape.arcHeight || 0.16) * factor));
+      } else if (activeShape.x1 !== undefined && activeShape.x2 !== undefined) {
+        const mx = (activeShape.x1 + activeShape.x2) / 2, my = (activeShape.y1 + activeShape.y2) / 2;
+        activeShape.x1 = mx + (activeShape.x1 - mx) * factor;
+        activeShape.y1 = my + (activeShape.y1 - my) * factor;
+        activeShape.x2 = mx + (activeShape.x2 - mx) * factor;
+        activeShape.y2 = my + (activeShape.y2 - my) * factor;
+      }
+      renderLiveScene();
+      positionFloatingToolbar(activeShape);
+      scheduleAutoSave();
+    }
 
-    function renderLiveScene() {
-      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+    function editShapeLabel() {
+      if (!activeShape) return;
+      if (activeShape.type === 'chain_formation') {
+        const nums = prompt('اكتب أرقام اللاعبين مفصولة بفاصلة (مثال: 4,5,6,2):', activeShape.players.map(p => p.label).join(','));
+        if (nums !== null) {
+          const parts = nums.split(',').map(x => x.trim());
+          activeShape.players.forEach((p, idx) => { if (parts[idx]) p.label = parts[idx]; });
+          renderLiveScene();
+          scheduleAutoSave();
+        }
+        return;
+      }
+      const newLbl = prompt('اكتب الرقم أو الملاحظة التكتيكية:', activeShape.label || '');
+      if (newLbl !== null) {
+        activeShape.label = newLbl.trim();
+        renderLiveScene();
+        scheduleAutoSave();
+      }
+    }
+
+    function confirmShape() {
+      if (!currentStudioClip || !activeShape) return;
+      activeShape.triggerTime = parseFloat(studioVideo.currentTime.toFixed(2));
+      if (!currentStudioClip.shapes.includes(activeShape)) {
+        currentStudioClip.shapes.push(activeShape);
+      }
+      activeShape = null;
+      hideFloatingToolbar();
+      renderLiveScene();
+      renderStudioSidebarClips();
+      scheduleAutoSave();
+      showToast('تم تثبيت الرسمة على هذه اللقطة ✓');
+    }
+
+    function deleteActiveShape() {
+      if (!currentStudioClip || !activeShape) return;
+      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape);
+      activeShape = null;
+      hideFloatingToolbar();
+      renderLiveScene();
+      renderStudioSidebarClips();
+      scheduleAutoSave();
+    }
+
+    function clearCurrentFrameShapes() {
       if (!currentStudioClip) return;
-
       const cur = studioVideo.currentTime;
-      currentStudioClip.shapes.forEach(shape => {
-        // الرسمة تظهر في مكانها طالما الفيديو واقف عليها
-        if (Math.abs(shape.triggerTime - cur) < 0.1 || (isFreezeActive && Math.abs(shape.triggerTime - activeFreezingTime) < 0.1)) {
-          drawSingleShape(sCtx, shape);
-        }
-      });
-
-      if (activeShape) {
-        drawSingleShape(sCtx, activeShape);
-        drawResizeHandle(activeShape);
-
-        if (activeShape.type === 'chain_formation' && activeShape.players.length > 0) {
-          const lastP = activeShape.players[activeShape.players.length - 1];
-          sCtx.save(); sCtx.strokeStyle = 'rgba(239, 68, 68, 0.6)'; sCtx.lineWidth = 2.5; sCtx.setLineDash([5, 5]);
-          sCtx.beginPath(); sCtx.moveTo(lastP.x, lastP.y); sCtx.lineTo(mouseHoverX, mouseHoverY); sCtx.stroke(); sCtx.restore();
-        }
+      const before = currentStudioClip.shapes.length;
+      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => Math.abs(s.triggerTime - cur) > 0.2);
+      activeShape = null;
+      hideFloatingToolbar();
+      renderLiveScene();
+      renderStudioSidebarClips();
+      if (currentStudioClip.shapes.length < before) {
+        scheduleAutoSave();
+        showToast('تم مسح رسومات هذا الفريم');
       }
     }
 
-    function drawAllShapesForTime(time) {
-      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
-      if (!currentStudioClip) return;
-      currentStudioClip.shapes.forEach(shape => {
-        if (Math.abs(shape.triggerTime - time) < 0.1) {
-          drawSingleShape(sCtx, shape);
-        }
-      });
+    function toggleMoveMode() {
+      isMoving = !isMoving;
+      btnShapeMove.classList.toggle('active', isMoving);
     }
 
-    function drawSingleShape(ctx, shape) {
-      if (shape.type === 'spotlight_cone') drawWhiteConicalSpotlight(ctx, shape);
-      else if (shape.type === 'player_ring') drawPlayer3DRing(ctx, shape);
-      else if (shape.type === 'arrow_pass') drawNeonPassingArrow(ctx, shape);
-      else if (shape.type === 'arrow_curve') drawNeonCurvedArrow(ctx, shape);
-      else if (shape.type === 'teleport') drawGhostTeleportClean(ctx, shape);
-      else if (shape.type === 'chain_formation') drawChainFormation(ctx, shape);
-      else if (shape.type === 'vision_cone') drawPlayerVisionCone(ctx, shape);
-      else if (shape.type === 'space_zone') drawSpaceZone(ctx, shape);
-      else if (shape.type === 'distance_line') drawDistanceLine(ctx, shape);
-      else if (shape.type === 'ball_trajectory') drawBallTrajectory(ctx, shape);
-      else if (shape.type === 'passing_blocker') drawPassingBlocker(ctx, shape);
-      else if (shape.type === 'offside_barrier') drawOffsideBarrier(ctx, shape);
-      else if (shape.type === 'magnifier_zoom') drawMagnifierZoom(ctx, shape);
-    }
-
-    function drawResizeHandle(shape) {}
-
-    function drawWhiteConicalSpotlight(ctx, shape) {
-      ctx.save();
-      const topX = shape.topX, topY = shape.topY, bX = shape.bottomX, bY = shape.bottomY, rx = shape.radiusX, ry = shape.radiusY;
-      const beamGrad = ctx.createLinearGradient(topX, topY, bX, bY);
-      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
-      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0.40)');
-      ctx.fillStyle = beamGrad;
-      ctx.beginPath(); ctx.moveTo(topX, topY); ctx.lineTo(bX - rx, bY); ctx.lineTo(bX + rx, bY); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3.5; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 18;
-      ctx.beginPath(); ctx.ellipse(bX, bY, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-      ctx.restore();
-    }
-    function drawPlayer3DRing(ctx, shape) {
-      ctx.save();
-      const x = shape.x, y = shape.y, rx = shape.radiusX, ry = shape.radiusY;
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)'; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
-      ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-      if (shape.label) {
-        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(x, y - 75, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Cairo'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shape.label, x, y - 75);
-      }
-      ctx.restore();
-    }
-    function drawNeonPassingArrow(ctx, shape) {
-      ctx.save();
-      const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2;
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 14;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      ctx.restore();
-    }
-    function drawNeonCurvedArrow(ctx, shape) {} function drawGhostTeleportClean(ctx, shape) {} function drawChainFormation(ctx, shape) {}
-    function drawPlayerVisionCone(ctx, shape) {} function drawSpaceZone(ctx, shape) {
-      ctx.save();
-      ctx.fillStyle='rgba(245,158,11,0.4)';
-      ctx.fillRect(shape.x1, shape.y1, shape.x2-shape.x1, shape.y2-shape.y1);
-      ctx.restore();
-    } function drawDistanceLine(ctx, shape) {} function drawBallTrajectory(ctx, shape) {} function drawPassingBlocker(ctx, shape) {}
-    function drawOffsideBarrier(ctx, shape) {} function drawMagnifierZoom(ctx, shape) {}
-
-    // وضع الأزرار بشكل ذكي فوق الرسمة تماماً لتسهيل الضغط عليها
     function positionFloatingToolbar(shape) {
       if (!shape) return;
-      let posX = 0, posY = 0;
-      
-      if (shape.x2 !== undefined) { posX = shape.x2; posY = shape.y2; }
-      else if (shape.x !== undefined) { posX = shape.x; posY = shape.y; }
-      else if (shape.bottomX !== undefined) { posX = shape.bottomX; posY = shape.bottomY; }
-      else if (shape.originX !== undefined) { posX = shape.targetX; posY = shape.targetY; }
-      
-      posY -= 55; // رفعها فوق الرسمة بمسافة واضحة
+      const W = sCanvas.width, H = sCanvas.height;
+      const cLeft = parseFloat(sCanvas.style.left) || 0;
+      const cTop = parseFloat(sCanvas.style.top) || 0;
+      let ax = 0.5, ay = 0.5;
 
-      const rect = sCanvas.getBoundingClientRect();
-      posX = Math.max(120, Math.min(posX, rect.width - 120));
-      posY = Math.max(60, Math.min(posY, rect.height - 60));
+      if (shape.x !== undefined) { ax = shape.x; ay = shape.y; }
+      else if (shape.bottomX !== undefined) { ax = shape.bottomX; ay = shape.bottomY; }
+      else if (shape.originX !== undefined) { ax = (shape.originX + shape.targetX) / 2; ay = Math.min(shape.originY, shape.targetY); }
+      else if (shape.players && shape.players.length > 0) { ax = shape.players[0].x; ay = shape.players[0].y; }
+      else if (shape.x2 !== undefined) { ax = (shape.x1 + shape.x2) / 2; ay = Math.min(shape.y1, shape.y2); }
 
-      floatingToolbar.style.left = `${posX}px`;
-      floatingToolbar.style.top = `${posY}px`;
+      let px = cLeft + ax * W;
+      let py = cTop + ay * H - 22;
+
+      const vpW = studioViewport.clientWidth;
+      const vpH = studioViewport.clientHeight;
+      px = Math.max(135, Math.min(vpW - 135, px));
+      py = Math.max(54, Math.min(vpH - 16, py));
+
+      floatingToolbar.style.left = `${px}px`;
+      floatingToolbar.style.top = `${py}px`;
     }
 
     function showFloatingToolbar(shape) {
       positionFloatingToolbar(shape);
       floatingToolbar.style.display = 'flex';
       btnShapeMove.classList.remove('active');
-      btnShapeTrack.classList.toggle('active', !!shape.tracked);
       const textEditable = ['player_ring', 'teleport', 'chain_formation', 'vision_cone', 'space_zone', 'distance_line', 'passing_blocker', 'offside_barrier'].includes(shape.type);
       btnShapeEdit.style.display = textEditable ? 'flex' : 'none';
     }
 
-    function hideFloatingToolbar() { floatingToolbar.style.display = 'none'; isMoving = false; isResizing = false; }
-    window.editShapeLabel = function() {};
-    
-    // تأكيد الرسمة وتسجيلها على الفريم الحالي (تظهر طالما الفيديو واقف في الفريم ده)
-    window.confirmShape = function() {
-      if (!currentStudioClip || !activeShape) return;
-      activeShape.triggerTime = studioVideo.currentTime;
-      if (!currentStudioClip.shapes.includes(activeShape)) { 
-        currentStudioClip.shapes.push(activeShape); 
+    function hideFloatingToolbar() {
+      floatingToolbar.style.display = 'none';
+      isMoving = false;
+      isResizing = false;
+    }
+
+    function renderLiveScene() {
+      if (!sCanvas.width || !sCanvas.height) return;
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      if (!currentStudioClip) return;
+
+      const cur = isFreezeActive && activeFreezingTime !== null ? activeFreezingTime : studioVideo.currentTime;
+      currentStudioClip.shapes.forEach(shape => {
+        if (Math.abs(shape.triggerTime - cur) <= 0.15) {
+          drawSingleShape(sCtx, shape, sCanvas.width, sCanvas.height, studioVideo);
+        }
+      });
+
+      if (activeShape) {
+        if (!currentStudioClip.shapes.includes(activeShape)) {
+          drawSingleShape(sCtx, activeShape, sCanvas.width, sCanvas.height, studioVideo);
+        }
+        drawResizeHandle(sCtx, activeShape, sCanvas.width, sCanvas.height);
+
+        if (activeShape.type === 'chain_formation' && activeShape.players.length > 0 && activeStudioTool === 'chain_formation') {
+          const lp = activeShape.players[activeShape.players.length - 1];
+          sCtx.save();
+          sCtx.strokeStyle = 'rgba(239, 68, 68, 0.75)';
+          sCtx.lineWidth = 2.5;
+          sCtx.setLineDash([6, 5]);
+          sCtx.beginPath();
+          sCtx.moveTo(lp.x * sCanvas.width, lp.y * sCanvas.height);
+          sCtx.lineTo(mouseHoverNX * sCanvas.width, mouseHoverNY * sCanvas.height);
+          sCtx.stroke();
+          sCtx.restore();
+        }
       }
-      hideFloatingToolbar(); 
-      activeShape = null; 
-      renderLiveScene(); 
-    };
+    }
 
-    // إلغاء وحذف الرسمة فوراً (زرار الإكس)
-    window.deleteActiveShape = function() { 
-      if (!currentStudioClip || !activeShape) return; 
-      currentStudioClip.shapes = currentStudioClip.shapes.filter(s => s !== activeShape); 
-      activeShape = null; 
-      hideFloatingToolbar(); 
-      renderLiveScene(); 
-    };
+    // ==========================================
+    // 6. دوال رسم الأدوات الـ 13 بدقة Full HD
+    // ==========================================
+    function drawBadgePill(ctx, text, cx, cy, bgCol, borderCol, sf) {
+      if (!text) return;
+      ctx.save();
+      const fs = Math.max(12, Math.round(14 * sf));
+      ctx.font = `800 ${fs}px Cairo, Arial, sans-serif`;
+      const tw = ctx.measureText(text).width;
+      const padX = 10 * sf, bh = fs * 1.65, bw = tw + padX * 2;
+      const x = cx - bw / 2, y = cy - bh / 2, r = 6 * sf;
 
-    window.toggleMoveMode = function() { isMoving = !isMoving; btnShapeMove.classList.toggle('active', isMoving); };
-    window.toggleTrackMode = function() { if (!activeShape) return; activeShape.tracked = !activeShape.tracked; btnShapeTrack.classList.toggle('active', activeShape.tracked); renderLiveScene(); };
+      ctx.beginPath();
+      ctx.moveTo(x + r, y); ctx.lineTo(x + bw - r, y); ctx.quadraticCurveTo(x + bw, y, x + bw, y + r);
+      ctx.lineTo(x + bw, y + bh - r); ctx.quadraticCurveTo(x + bw, y + bh, x + bw - r, y + bh);
+      ctx.lineTo(x + r, y + bh); ctx.quadraticCurveTo(x, y + bh, x, y + bh - r);
+      ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
 
-    window.updateExportUI = function() {
+      ctx.fillStyle = bgCol; ctx.fill();
+      ctx.strokeStyle = borderCol; ctx.lineWidth = 1.8 * sf; ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(text, cx, cy + sf * 0.5);
+      ctx.restore();
+    }
+
+    function drawArrowTip(ctx, angle, tipX, tipY, size, color) {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(tipX, tipY);
+      ctx.lineTo(tipX - size * Math.cos(angle - Math.PI / 6.5), tipY - size * Math.sin(angle - Math.PI / 6.5));
+      ctx.lineTo(tipX - size * Math.cos(angle + Math.PI / 6.5), tipY - size * Math.sin(angle + Math.PI / 6.5));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawResizeHandle(ctx, shape, W, H) {
+      const h = getResizeHandleNorm(shape);
+      if (!h) return;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(h.x * W, h.y * H, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawSingleShape(ctx, shape, W, H, vidSource) {
+      const sf = Math.max(0.75, W / 1000);
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (shape.type === 'spotlight_cone') {
+        const tx = shape.topX * W, ty = shape.topY * H;
+        const bx = shape.bottomX * W, by = shape.bottomY * H;
+        const rx = shape.radiusX * W, ry = shape.radiusY * H;
+        const grad = ctx.createLinearGradient(tx, ty, bx, by);
+        grad.addColorStop(0, 'rgba(255,255,255,0.08)');
+        grad.addColorStop(0.5, 'rgba(255,255,255,0.34)');
+        grad.addColorStop(1, 'rgba(255,255,255,0.52)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.moveTo(tx - rx * 0.28, ty); ctx.lineTo(tx + rx * 0.28, ty); ctx.lineTo(bx + rx, by); ctx.lineTo(bx - rx, by); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3.5 * sf; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 16 * sf;
+        ctx.beginPath(); ctx.ellipse(bx, by, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      } else if (shape.type === 'player_ring') {
+        const x = shape.x * W, y = shape.y * H, rx = shape.radiusX * W, ry = shape.radiusY * H;
+        ctx.fillStyle = 'rgba(56,189,248,0.22)';
+        ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5 * sf; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15 * sf;
+        ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.shadowBlur = 0;
+        if (shape.label) {
+          const rBadge = 15 * sf;
+          ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.2 * sf;
+          ctx.beginPath(); ctx.arc(x, y - ry - 38 * sf, rBadge, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.font = `800 ${Math.round(13 * sf)}px Cairo, Arial`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(shape.label, x, y - ry - 38 * sf + 1);
+        }
+      } else if (shape.type === 'arrow_pass') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5 * sf; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 14 * sf;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - 12 * sf * Math.cos(angle), y2 - 12 * sf * Math.sin(angle)); ctx.stroke();
+        drawArrowTip(ctx, angle, x2, y2, 20 * sf, '#38bdf8');
+      } else if (shape.type === 'arrow_curve') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.hypot(dx, dy) || 1;
+        const curvePx = (shape.curveOffset || -0.09) * W;
+        const cpx = mx - (dy / len) * curvePx;
+        const cpy = my + (dx / len) * curvePx;
+
+        ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5 * sf; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 14 * sf;
+        ctx.setLineDash([12 * sf, 7 * sf]);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+        ctx.setLineDash([]);
+        const endAngle = Math.atan2(y2 - cpy, x2 - cpx);
+        drawArrowTip(ctx, endAngle, x2, y2, 20 * sf, '#ec4899');
+      } else if (shape.type === 'teleport') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        const rx = shape.radiusX * W, ry = shape.radiusY * H;
+        // موقع اللاعب الأصلي
+        ctx.strokeStyle = 'rgba(168,85,247,0.75)'; ctx.lineWidth = 2.8 * sf; ctx.setLineDash([6 * sf, 5 * sf]);
+        ctx.beginPath(); ctx.ellipse(x1, y1, rx * 0.85, ry * 0.85, 0, 0, Math.PI * 2); ctx.stroke();
+        // مسار الانتقال
+        const cpx = (x1 + x2) / 2, cpy = Math.min(y1, y2) - 45 * sf;
+        ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3.5 * sf;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+        ctx.setLineDash([]);
+        drawArrowTip(ctx, Math.atan2(y2 - cpy, x2 - cpx), x2, y2, 16 * sf, '#c084fc');
+        // الموقع البديل المتوهج
+        ctx.fillStyle = 'rgba(168,85,247,0.32)'; ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 3.5 * sf;
+        ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 16 * sf;
+        ctx.beginPath(); ctx.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0;
+        drawBadgePill(ctx, shape.label, x2, y2 - ry - 26 * sf, 'rgba(88,28,135,0.9)', '#c084fc', sf);
+      } else if (shape.type === 'chain_formation' && shape.players.length > 0) {
+        const pts = shape.players.map(p => ({ x: p.x * W, y: p.y * H, label: p.label }));
+        const rx = (shape.ringRadius || 0.025) * W, ry = rx * 0.55;
+        if (pts.length >= 3) {
+          ctx.fillStyle = 'rgba(239,68,68,0.22)';
+          ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+          pts.forEach(p => ctx.lineTo(p.x, p.y));
+          ctx.closePath(); ctx.fill();
+        }
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4 * sf; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 12 * sf;
+        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.stroke();
+        pts.forEach(p => {
+          ctx.fillStyle = 'rgba(239,68,68,0.35)'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5 * sf;
+          ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#fff'; ctx.font = `800 ${Math.round(12 * sf)}px Cairo`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(p.label || '', p.x, p.y + 1);
+        });
+      } else if (shape.type === 'vision_cone') {
+        const ox = shape.originX * W, oy = shape.originY * H;
+        const tx = shape.targetX * W, ty = shape.targetY * H;
+        const len = Math.hypot(tx - ox, ty - oy);
+        const angle = Math.atan2(ty - oy, tx - ox);
+        const half = (shape.fovAngle || 1.05) / 2;
+        const grad = ctx.createRadialGradient(ox, oy, 5, ox, oy, len || 1);
+        grad.addColorStop(0, 'rgba(16,185,129,0.52)');
+        grad.addColorStop(1, 'rgba(16,185,129,0.08)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.arc(ox, oy, len, angle - half, angle + half); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2.5 * sf; ctx.stroke();
+        drawBadgePill(ctx, shape.label, ox + Math.cos(angle) * len * 0.6, oy + Math.sin(angle) * len * 0.6, 'rgba(6,78,59,0.88)', '#34d399', sf);
+      } else if (shape.type === 'space_zone') {
+        const x = Math.min(shape.x1, shape.x2) * W, y = Math.min(shape.y1, shape.y2) * H;
+        const rw = Math.abs(shape.x2 - shape.x1) * W, rh = Math.abs(shape.y2 - shape.y1) * H;
+        ctx.fillStyle = 'rgba(245,158,11,0.28)';
+        ctx.fillRect(x, y, rw, rh);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(x, y, rw, rh); ctx.clip();
+        ctx.strokeStyle = 'rgba(251,191,36,0.35)'; ctx.lineWidth = 2 * sf;
+        for (let d = -rh; d < rw + rh; d += 18 * sf) {
+          ctx.beginPath(); ctx.moveTo(x + d, y); ctx.lineTo(x + d - rh, y + rh); ctx.stroke();
+        }
+        ctx.restore();
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3 * sf; ctx.setLineDash([8 * sf, 5 * sf]);
+        ctx.strokeRect(x, y, rw, rh); ctx.setLineDash([]);
+        drawBadgePill(ctx, shape.label, x + rw / 2, y + rh / 2, 'rgba(120,53,15,0.9)', '#fbbf24', sf);
+      } else if (shape.type === 'distance_line') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 3.5 * sf; ctx.setLineDash([8 * sf, 6 * sf]);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
+        [ [x1, y1], [x2, y2] ].forEach(([px, py]) => {
+          ctx.fillStyle = '#06b6d4'; ctx.beginPath(); ctx.arc(px, py, 6 * sf, 0, Math.PI * 2); ctx.fill();
+        });
+        const distM = shape.label || `${Math.max(1, Math.round(Math.hypot(x2 - x1, y2 - y1) / (26 * sf)))} م`;
+        drawBadgePill(ctx, distM, (x1 + x2) / 2, (y1 + y2) / 2, 'rgba(8,51,68,0.92)', '#22d3ee', sf);
+      } else if (shape.type === 'ball_trajectory') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        const cpx = (x1 + x2) / 2, cpy = Math.min(y1, y2) - (shape.arcHeight || 0.16) * H;
+        // ظل المسار على الأرض
+        ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 3 * sf; ctx.setLineDash([6 * sf, 6 * sf]);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        // قوس الكرة في الهواء
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4.5 * sf; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 14 * sf;
+        ctx.setLineDash([10 * sf, 6 * sf]);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+        ctx.setLineDash([]);
+        drawArrowTip(ctx, Math.atan2(y2 - cpy, x2 - cpx), x2, y2, 18 * sf, '#fbbf24');
+      } else if (shape.type === 'passing_blocker') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 5 * sf; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 14 * sf;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        // علامة X للحظر في المنتصف
+        const xr = 16 * sf;
+        ctx.fillStyle = '#9f1239'; ctx.beginPath(); ctx.arc(mx, my, xr * 1.2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5 * sf;
+        ctx.beginPath(); ctx.moveTo(mx - xr * 0.55, my - xr * 0.55); ctx.lineTo(mx + xr * 0.55, my + xr * 0.55);
+        ctx.moveTo(mx + xr * 0.55, my - xr * 0.55); ctx.lineTo(mx - xr * 0.55, my + xr * 0.55); ctx.stroke();
+        ctx.shadowBlur = 0;
+        drawBadgePill(ctx, shape.label, mx, my - xr * 2.1, 'rgba(136,19,55,0.92)', '#fb7185', sf);
+      } else if (shape.type === 'offside_barrier') {
+        const x1 = shape.x1 * W, y1 = shape.y1 * H, x2 = shape.x2 * W, y2 = shape.y2 * H;
+        ctx.strokeStyle = '#eab308'; ctx.lineWidth = 4 * sf; ctx.shadowColor = '#eab308'; ctx.shadowBlur = 12 * sf;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2 * sf; ctx.setLineDash([5 * sf, 4 * sf]);
+        ctx.beginPath(); ctx.moveTo(x1, y1 - 24 * sf); ctx.lineTo(x1, y1 + 24 * sf);
+        ctx.moveTo(x2, y2 - 24 * sf); ctx.lineTo(x2, y2 + 24 * sf); ctx.stroke(); ctx.setLineDash([]);
+        ctx.shadowBlur = 0;
+        drawBadgePill(ctx, shape.label, (x1 + x2) / 2, (y1 + y2) / 2 - 24 * sf, 'rgba(113,63,18,0.92)', '#fde047', sf);
+      } else if (shape.type === 'magnifier_zoom') {
+        const cx = shape.x * W, cy = shape.y * H, r = shape.radius * W;
+        const zoom = shape.zoomScale || 1.85;
+        if (vidSource && vidSource.videoWidth > 0) {
+          const vw = vidSource.videoWidth, vh = vidSource.videoHeight;
+          const srcW = (r * 2 / zoom) * (vw / W);
+          const srcH = (r * 2 / zoom) * (vh / H);
+          const srcX = shape.x * vw - srcW / 2;
+          const srcY = shape.y * vh - srcH / 2;
+          ctx.save();
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+          ctx.drawImage(vidSource, srcX, srcY, srcW, srcH, cx - r, cy - r, r * 2, r * 2);
+          ctx.restore();
+        }
+        ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 4.5 * sf; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 16 * sf;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // حفظ لقطة شاشة Full HD من الاستوديو
+    function captureStudioSnapshotHD() {
+      if (!currentStudioClip || !studioVideo.videoWidth) return;
+      const c = document.createElement('canvas');
+      c.width = studioVideo.videoWidth;
+      c.height = studioVideo.videoHeight;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(studioVideo, 0, 0, c.width, c.height);
+      const cur = studioVideo.currentTime;
+      currentStudioClip.shapes.forEach(s => {
+        if (Math.abs(s.triggerTime - cur) <= 0.15) drawSingleShape(ctx, s, c.width, c.height, studioVideo);
+      });
+      if (activeShape && !currentStudioClip.shapes.includes(activeShape)) {
+        drawSingleShape(ctx, activeShape, c.width, c.height, studioVideo);
+      }
+      const a = document.createElement('a');
+      a.download = `Ziada_Tactical_Frame_${formatTime(cur).replace(':', '-')}.png`;
+      a.href = c.toDataURL('image/png');
+      a.click();
+      showToast('تم حفظ صورة اللقطة بأعلى دقة ✓');
+    }
+
+    // اختصارات الكيبورد
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+      const inStudio = document.getElementById('studioModal').classList.contains('active');
+      if (inStudio) {
+        if (e.code === 'Space') { e.preventDefault(); toggleStudioPlay(); }
+        else if (e.key === 'Enter' && activeShape) { e.preventDefault(); confirmShape(); }
+        else if (e.key === 'Escape' && activeShape) { e.preventDefault(); deleteActiveShape(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); stepStudioFrame(1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); stepStudioFrame(-1); }
+      } else if (video.src) {
+        if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); seekRelative(5); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); seekRelative(-5); }
+      }
+    });
+
+    // ==========================================
+    // 7. محرك تصدير الفيديو الاحترافي (سريع + Full HD + وقفة نظيفة)
+    // ==========================================
+    function updateExportUI() {
+      const ovMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
       const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
-      const catBox = document.getElementById('categorySelectBox');
+      document.getElementById('lblOverlayYes').classList.toggle('selected', ovMode === 'with_overlay');
+      document.getElementById('lblOverlayNo').classList.toggle('selected', ovMode === 'no_overlay');
       document.getElementById('lblTypeMerged').classList.toggle('selected', typeMode === 'merged_full');
       document.getElementById('lblTypeCategory').classList.toggle('selected', typeMode === 'category_separate');
-      catBox.style.display = (typeMode === 'category_separate') ? 'flex' : 'none';
-    };
+      document.getElementById('categorySelectBox').style.display = (typeMode === 'category_separate') ? 'flex' : 'none';
+    }
 
     function populateExportCategories() {
       const sel = document.getElementById('exportCategorySelect');
+      const prev = sel.value;
       const cats = [...new Set(clips.map(c => c.category))];
       sel.innerHTML = '';
       const allOpt = document.createElement('option');
-      allOpt.value = 'ALL'; allOpt.innerText = '⭐ تصدير كل الإجراءات منفصلة (لكل إجراء ملف)';
+      allOpt.value = 'ALL';
+      allOpt.innerText = '⭐ تصدير كل اللقطات (ملف منفصل لكل لقطة)';
       sel.appendChild(allOpt);
       cats.forEach(cat => {
-        const opt = document.createElement('option'); opt.value = cat; opt.innerText = cat; sel.appendChild(opt);
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = `تصدير تصنيف: ${cat}`;
+        sel.appendChild(opt);
       });
+      if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
     }
 
-    // =====================================
-    // محرك التصدير (Real-time Video Rendering)
-    // =====================================
-    window.runExportEngine = async function() {
-      if (clips.length === 0) return alert("لا توجد حالات مقطوعة لتصديرها!");
-      if (!video.src) return alert("يرجى تحميل فيديو المباراة أولاً!");
-      
+    function getFastestHDMime() {
+      // أولوية للكوديك الأسرع (Hardware Accelerated) بدلاً من VP9 البطيء
+      const candidates = [
+        'video/webm;codecs=h264',
+        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9',
+        'video/webm',
+        'video/mp4'
+      ];
+      for (const m of candidates) {
+        if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m;
+      }
+      return '';
+    }
+
+    function drawTitleSlate(ctx, W, H, matchTitle, categoryTitle, clipNumText) {
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, '#020617');
+      grad.addColorStop(1, '#0f172a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // إطار نيون احترافي
+      const sf = W / 1280;
+      ctx.strokeStyle = 'rgba(56,189,248,0.45)';
+      ctx.lineWidth = 3 * sf;
+      ctx.strokeRect(40 * sf, 40 * sf, W - 80 * sf, H - 80 * sf);
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = `800 ${Math.round(24 * sf)}px Cairo, Arial`;
+      ctx.fillText(matchTitle || 'ZIADA ANALYSIS PRO', W / 2, H * 0.34);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `900 ${Math.round(52 * sf)}px Cairo, Arial`;
+      ctx.fillText(categoryTitle, W / 2, H * 0.50);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = `700 ${Math.round(24 * sf)}px Cairo, Arial`;
+      ctx.fillText(clipNumText, W / 2, H * 0.64);
+    }
+
+    function cancelExportEngine() {
+      exportCancelRequested = true;
+      document.getElementById('exportStatusMsg').innerText = 'جاري الإلغاء...';
+    }
+
+    async function runExportEngine() {
+      if (isExportRunning) return;
+      if (clips.length === 0) return alert('لا توجد حالات مقطوعة لتصديرها!');
+      if (!video.src) return alert('يرجى تحميل فيديو المباراة أولاً!');
+      if (!window.MediaRecorder) return alert('متصفحك لا يدعم تسجيل الفيديو المباشر.');
+
+      video.pause();
+      isExportRunning = true;
+      exportCancelRequested = false;
+
+      const startBtn = document.getElementById('startExportBtn');
+      const cancelBtn = document.getElementById('cancelExportBtn');
+      const progressWrap = document.getElementById('exportProgressWrap');
+      const progressFill = document.getElementById('exportProgressFill');
+      const percentTxt = document.getElementById('exportPercentTxt');
+      const statusMsg = document.getElementById('exportStatusMsg');
+
+      startBtn.disabled = true;
+      cancelBtn.style.display = 'block';
+      progressWrap.style.display = 'flex';
+      progressFill.style.width = '0%';
+      percentTxt.innerText = '0%';
+
       const typeMode = document.querySelector('input[name="exportTypeMode"]:checked').value;
       const selectedCat = document.getElementById('exportCategorySelect').value;
       const overlayMode = document.querySelector('input[name="exportOverlayMode"]:checked').value;
+      const targetHeight = parseInt(document.getElementById('exportQualitySelect').value) || 720;
+      const freezeMs = (parseInt(document.getElementById('freezeDurationSelect').value) || 4) * 1000;
+      const useTitleCards = document.getElementById('includeTitleCards').checked;
+      const matchTitle = document.getElementById('matchTitleInput').value.trim();
 
       let exportGroups = [];
       if (typeMode === 'category_separate' && selectedCat === 'ALL') {
-        // إنشاء ملف منفصل لكل لقطة
-        clips.forEach((c, index) => {
-           exportGroups.push({ groupName: `${c.category}_لقطة_${index + 1}`, clips: [c] });
-        });
+        clips.forEach((c, idx) => exportGroups.push({ groupName: `${c.category}_لقطة_${idx + 1}`, clips: [c] }));
       } else if (typeMode === 'category_separate') {
-        // إنشاء ملف منفصل لكل لقطة من التصنيف المحدد
-        const filteredClips = clips.filter(c => c.category === selectedCat);
-        filteredClips.forEach((c, index) => {
-            exportGroups.push({ groupName: `${selectedCat}_لقطة_${index + 1}`, clips: [c] });
-        });
+        const filtered = clips.filter(c => c.category === selectedCat);
+        if (filtered.length > 0) exportGroups.push({ groupName: selectedCat, clips: filtered });
       } else {
-        exportGroups.push({ groupName: "تقرير_تكتيكي_شامل", clips: [...clips] });
+        exportGroups.push({ groupName: matchTitle ? `${matchTitle}_تقرير_تكتيكي` : 'تقرير_تكتيكي_شامل', clips: [...clips] });
       }
 
-      for (let g = 0; g < exportGroups.length; g++) {
-        const group = exportGroups[g];
-        if (group.clips.length === 0) continue;
+      try {
+        const srcW = video.videoWidth || 1280;
+        const srcH = video.videoHeight || 720;
+        const scale = Math.min(1, targetHeight / srcH);
+        let outW = Math.round(srcW * scale);
+        let outH = Math.round(srcH * scale);
+        if (outW % 2 !== 0) outW++;
+        if (outH % 2 !== 0) outH++;
 
-        let suggestedName = `${group.groupName.replace(/[\s()]/g, '_')}.webm`;
-        let fileHandle = null;
-        if ('showSaveFilePicker' in window) {
-          try {
-            fileHandle = await window.showSaveFilePicker({ suggestedName: suggestedName, types: [{ description: 'فيديو تكتيكي', accept: { 'video/webm': ['.webm'] } }] });
-          } catch(err) { continue; }
-        }
-
-        const progressWrap = document.getElementById('exportProgressWrap');
-        const progressFill = document.getElementById('exportProgressFill');
-        const percentTxt = document.getElementById('exportPercentTxt');
-        const statusMsg = document.getElementById('exportStatusMsg');
-
-        progressWrap.style.display = 'flex';
-        
         const eCanvas = document.getElementById('exportRenderCanvas');
-        eCanvas.width = video.videoWidth || 1280; eCanvas.height = video.videoHeight || 720;
+        eCanvas.width = outW;
+        eCanvas.height = outH;
         const eCtx = eCanvas.getContext('2d');
 
-        const stream = eCanvas.captureStream(30);
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 8000000 });
-        const chunks = [];
-        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-        
-        recorder.start();
+        // كانفس مؤقت لتثبيت لقطة الوقفة التحليلية بدون إعادة فك تشفير الفيديو
+        const frozenBuffer = document.createElement('canvas');
+        frozenBuffer.width = outW;
+        frozenBuffer.height = outH;
+        const fCtx = frozenBuffer.getContext('2d');
 
-        const rVideo = document.createElement('video');
-        rVideo.src = video.src; rVideo.muted = true; rVideo.playsInline = true;
-        await new Promise(r => { rVideo.onloadedmetadata = r; });
+        const mimeType = getFastestHDMime();
+        const bitrate = targetHeight >= 1080 ? 9000000 : 5000000;
 
-        for (let i = 0; i < group.clips.length; i++) {
-          const c = group.clips[i];
-          statusMsg.innerText = `جاري التصدير: ${group.groupName} (${i+1}/${group.clips.length})`;
-          
-          rVideo.currentTime = c.start;
-          await new Promise(r => { rVideo.onseeked = r; });
-          rVideo.play();
+        for (let g = 0; g < exportGroups.length; g++) {
+          if (exportCancelRequested) break;
+          const group = exportGroups[g];
+          if (group.clips.length === 0) continue;
 
-          await new Promise(resolveClip => {
-            function renderFrame() {
-              if (rVideo.currentTime >= c.end) {
+          const ext = (mimeType && mimeType.includes('mp4')) ? 'mp4' : 'webm';
+          const suggestedName = `${group.groupName.replace(/[\s/\\:*?"<>|()]/g, '_')}.${ext}`;
+
+          let fileHandle = null;
+          if ('showSaveFilePicker' in window && exportGroups.length === 1) {
+            try {
+              fileHandle = await window.showSaveFilePicker({
+                suggestedName,
+                types: [{ description: 'فيديو تكتيكي', accept: { 'video/webm': ['.webm'], 'video/mp4': ['.mp4'] } }]
+              });
+            } catch (err) {
+              if (err.name === 'AbortError') break;
+            }
+          }
+
+          const stream = eCanvas.captureStream(30);
+          const recorder = mimeType
+            ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: bitrate })
+            : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
+          const chunks = [];
+          recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+
+          const rVideo = document.createElement('video');
+          rVideo.src = video.src;
+          rVideo.muted = true;
+          rVideo.playsInline = true;
+          await new Promise(r => { rVideo.onloadedmetadata = r; });
+
+          const exportStartTime = Date.now();
+          recorder.start(250);
+
+          for (let i = 0; i < group.clips.length; i++) {
+            if (exportCancelRequested) break;
+            const c = group.clips[i];
+            statusMsg.innerText = `جاري التصدير (${i + 1}/${group.clips.length}): ${c.category}`;
+
+            // فاصل عنوان تكتيكي 1.3 ثانية
+            if (useTitleCards && (group.clips.length > 1 || typeMode === 'merged_full')) {
+              drawTitleSlate(eCtx, outW, outH, matchTitle, c.category, `لقطة ${i + 1} من ${group.clips.length}  |  ${formatTime(c.start)}`);
+              await new Promise(resolveSlate => {
+                const t0 = performance.now();
+                function slateTick(now) {
+                  if (exportCancelRequested || now - t0 >= 1300) { resolveSlate(); return; }
+                  drawTitleSlate(eCtx, outW, outH, matchTitle, c.category, `لقطة ${i + 1} من ${group.clips.length}  |  ${formatTime(c.start)}`);
+                  requestAnimationFrame(slateTick);
+                }
+                requestAnimationFrame(slateTick);
+              });
+            }
+            if (exportCancelRequested) break;
+
+            const pauseGroups = (overlayMode === 'with_overlay') ? getPauseGroupsForClip(c) : [];
+            let nextPauseIdx = 0;
+
+            rVideo.currentTime = c.start;
+            await new Promise(r => { rVideo.onseeked = r; });
+            await rVideo.play();
+
+            await new Promise(resolveClip => {
+              let freezing = false;
+
+              async function handleFreeze(pg) {
+                freezing = true;
                 rVideo.pause();
-                resolveClip();
-                return;
+                if (Math.abs(rVideo.currentTime - pg.time) > 0.06) {
+                  rVideo.currentTime = pg.time;
+                  await new Promise(r => { rVideo.onseeked = r; });
+                }
+
+                // رسم الفريم + جميع رسومات هذه الوقفة مرة واحدة في الـ Buffer
+                fCtx.clearRect(0, 0, outW, outH);
+                fCtx.drawImage(rVideo, 0, 0, outW, outH);
+                pg.shapes.forEach(sh => drawSingleShape(fCtx, sh, outW, outH, rVideo));
+
+                const t0 = performance.now();
+                function freezeTick(now) {
+                  if (exportCancelRequested) { resolveClip(); return; }
+                  eCtx.drawImage(frozenBuffer, 0, 0);
+                  if (now - t0 >= freezeMs) {
+                    freezing = false;
+                    // استكمال الفيديو نظيفاً تماماً بدون أي رسم
+                    rVideo.play().then(() => requestAnimationFrame(renderLoop)).catch(() => resolveClip());
+                  } else {
+                    requestAnimationFrame(freezeTick);
+                  }
+                }
+                requestAnimationFrame(freezeTick);
               }
 
-              eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
-
-              if (overlayMode === 'with_overlay') {
-                const activeS = c.shapes.find(s => Math.abs(s.triggerTime - rVideo.currentTime) < 0.1 && !s._exported);
-                if (activeS) {
+              function renderLoop() {
+                if (exportCancelRequested || rVideo.currentTime >= c.end || rVideo.ended) {
                   rVideo.pause();
-                  
-                  const shapesInSameFrame = c.shapes.filter(s => Math.abs(s.triggerTime - activeS.triggerTime) < 0.1);
-                  shapesInSameFrame.forEach(s => s._exported = true);
-                  
-                  let freezeTimeMs = 0;
-                  let lastFrameTime = performance.now();
-                  
-                  function freezeLoop() {
-                    const now = performance.now();
-                    const dt = now - lastFrameTime;
-                    
-                    if (dt >= (1000 / 30)) { 
-                        freezeTimeMs += dt;
-                        lastFrameTime = now;
-                        
-                        eCtx.drawImage(rVideo, 0, 0, eCanvas.width, eCanvas.height);
-                        const sW = sCanvas.width || eCanvas.width;
-                        const sH = sCanvas.height || eCanvas.height;
-                        
-                        shapesInSameFrame.forEach(s => {
-                          eCtx.save();
-                          eCtx.scale(eCanvas.width / sW, eCanvas.height / sH);
-                          drawSingleShape(eCtx, s);
-                          eCtx.restore();
-                        });
-                    }
-
-                    if (freezeTimeMs >= 4000) { 
-                      rVideo.currentTime = activeS.triggerTime + 0.25; 
-                      rVideo.play();
-                      requestAnimationFrame(renderFrame);
-                    } else {
-                      requestAnimationFrame(freezeLoop);
-                    }
-                  }
-                  
-                  requestAnimationFrame(freezeLoop);
+                  resolveClip();
                   return;
                 }
+                if (freezing) return;
+
+                // فحص الوصول لنقطة وقفة تحليلية
+                if (nextPauseIdx < pauseGroups.length && rVideo.currentTime >= pauseGroups[nextPauseIdx].time) {
+                  const pg = pauseGroups[nextPauseIdx++];
+                  handleFreeze(pg);
+                  return;
+                }
+
+                // رسم الفيديو الخام نظيفاً
+                eCtx.drawImage(rVideo, 0, 0, outW, outH);
+
+                // تحديث شريط التقدم بسلاسة
+                const clipFrac = Math.max(0, Math.min(1, (rVideo.currentTime - c.start) / Math.max(0.1, c.end - c.start)));
+                const totalPct = Math.min(99, Math.round(((i + clipFrac) / group.clips.length) * 100));
+                progressFill.style.width = `${totalPct}%`;
+                percentTxt.innerText = `${totalPct}%`;
+
+                requestAnimationFrame(renderLoop);
+              }
+              requestAnimationFrame(renderLoop);
+            });
+          }
+
+          // إيقاف المسجل وانتظار اكتمال الحفظ قبل الانتقال للملف التالي
+          const realDuration = Date.now() - exportStartTime;
+          await new Promise(resolveSave => {
+            recorder.onstop = async () => {
+              if (exportCancelRequested) { resolveSave(); return; }
+              statusMsg.innerText = 'جاري إنهاء وحفظ الملف...';
+              const rawBlob = new Blob(chunks, { type: mimeType || 'video/webm' });
+              let finalBlob = rawBlob;
+              if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) {
+                finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, realDuration, res));
               }
 
-              requestAnimationFrame(renderFrame);
-            }
-            requestAnimationFrame(renderFrame);
+              if (fileHandle) {
+                const writable = await fileHandle.createWritable();
+                await writable.write(finalBlob);
+                await writable.close();
+              } else {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(finalBlob);
+                a.download = suggestedName;
+                a.click();
+              }
+              resolveSave();
+            };
+            if (recorder.state !== 'inactive') recorder.stop();
+            else resolveSave();
           });
-
-          let pct = Math.round(((i+1)/group.clips.length)*100);
-          progressFill.style.width = `${pct}%`;
-          percentTxt.innerText = `${pct}%`;
         }
 
-        recorder.stop();
-        recorder.onstop = async () => {
-          const rawBlob = new Blob(chunks, { type: 'video/webm' });
-          let finalBlob = rawBlob;
-          if (typeof ysFixWebmDuration !== 'undefined') {
-            finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, 10000, res));
-          }
-          if (fileHandle) {
-            const writable = await fileHandle.createWritable();
-            await writable.write(finalBlob); await writable.close();
-          } else {
-            const a = document.createElement('a'); a.href = URL.createObjectURL(finalBlob); a.download = suggestedName; a.click();
-          }
-          statusMsg.innerText = 'تم التصدير بنجاح! 🚀';
-          
-          clips.forEach(c => c.shapes.forEach(s => s._exported = false));
-        };
+        if (exportCancelRequested) {
+          statusMsg.innerText = 'تم إلغاء التصدير.';
+          showToast('تم إلغاء التصدير');
+        } else {
+          progressFill.style.width = '100%';
+          percentTxt.innerText = '100%';
+          statusMsg.innerText = 'تم التصدير بنجاح بأعلى جودة! 🚀';
+          showToast('تم تصدير الفيديو وحفظه بنجاح ✓');
+        }
+      } catch (err) {
+        alert('حدث خطأ أثناء التصدير: ' + err.message);
+      } finally {
+        isExportRunning = false;
+        startBtn.disabled = false;
+        cancelBtn.style.display = 'none';
       }
-    };
+    }
+
+    // ==========================================
+    // 8. نظام الحفظ التلقائي واسترجاع المشروع
+    // ==========================================
+    function collectTacticalState() {
+      return {
+        savedAt: new Date().toISOString(),
+        matchTitle: document.getElementById('matchTitleInput').value || '',
+        videoFileName: loadedVideoName || '',
+        lastVideoTime: video.src ? video.currentTime : (pendingSeekAfterLoad || 0),
+        captureMode,
+        exportQuality: document.getElementById('exportQualitySelect').value,
+        freezeDuration: document.getElementById('freezeDurationSelect').value,
+        includeTitleCards: document.getElementById('includeTitleCards').checked,
+        clips
+      };
+    }
+
+    function hasMeaningfulState(s) {
+      if (!s) return false;
+      return (s.clips && s.clips.length > 0) || (s.matchTitle && s.matchTitle.trim() !== '');
+    }
+
+    function saveProjectNow() {
+      const badge = document.getElementById('autosaveBadge');
+      try {
+        const s = collectTacticalState();
+        if (!hasMeaningfulState(s)) localStorage.removeItem(AUTOSAVE_KEY);
+        else localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(s));
+      } catch (e) {}
+      badge.classList.remove('saving');
+      badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
+    }
+
+    function scheduleAutoSave() {
+      const badge = document.getElementById('autosaveBadge');
+      badge.classList.add('saving');
+      badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(saveProjectNow, 450);
+    }
+
+    window.addEventListener('beforeunload', saveProjectNow);
+
+    let pendingRecoveryState = null;
+    (function checkSavedProject() {
+      try {
+        const raw = localStorage.getItem(AUTOSAVE_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (!hasMeaningfulState(s)) return;
+
+        pendingRecoveryState = s;
+        const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
+        const totalShapes = (s.clips || []).reduce((acc, c) => acc + (c.shapes ? c.shapes.length : 0), 0);
+        const matchTxt = s.matchTitle ? `<div><b>المباراة:</b> ${escapeHtml(s.matchTitle)}</div>` : '';
+        const vidTxt = s.videoFileName
+          ? `<div><b>الفيديو:</b> ${escapeHtml(s.videoFileName)} (الدقيقة ${formatTime(s.lastVideoTime)})</div>`
+          : '';
+
+        document.getElementById('recoveryMetaInfo').innerHTML = `
+          <div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div>
+          ${matchTxt}
+          <div><i class="fa-solid fa-scissors" style="color:var(--primary);"></i> <b>اللقطات المقطوعة:</b> ${s.clips?.length || 0} | <b>الرسومات:</b> ${totalShapes}</div>
+          ${vidTxt}
+        `;
+        document.getElementById('recoveryModal').style.display = 'flex';
+      } catch (e) {
+        localStorage.removeItem(AUTOSAVE_KEY);
+      }
+    })();
+
+    function restoreSavedProject() {
+      if (!pendingRecoveryState) return;
+      const s = pendingRecoveryState;
+      document.getElementById('matchTitleInput').value = s.matchTitle || '';
+      loadedVideoName = s.videoFileName || '';
+      if (s.exportQuality) document.getElementById('exportQualitySelect').value = s.exportQuality;
+      if (s.freezeDuration) document.getElementById('freezeDurationSelect').value = s.freezeDuration;
+      if (typeof s.includeTitleCards === 'boolean') document.getElementById('includeTitleCards').checked = s.includeTitleCards;
+      setCaptureMode(s.captureMode || 'auto');
+
+      clips = Array.isArray(s.clips) ? s.clips : [];
+      renderClipsList();
+      populateExportCategories();
+      updateCounters();
+
+      if (s.videoFileName) {
+        pendingSeekAfterLoad = s.lastVideoTime || 0;
+        document.getElementById('relinkBannerText').innerHTML =
+          `<i class="fa-solid fa-link"></i> تم استرجاع كل اللقطات والرسومات! أعد اختيار ملف الفيديو <b>(${escapeHtml(s.videoFileName)})</b> للعودة للدقيقة <b>${formatTime(pendingSeekAfterLoad)}</b>.`;
+        document.getElementById('relinkBanner').style.display = 'flex';
+      }
+
+      document.getElementById('recoveryModal').style.display = 'none';
+      showToast('تم استرجاع مشروع التحليل بالكامل ✓');
+    }
+
+    function startFreshProject() {
+      localStorage.removeItem(AUTOSAVE_KEY);
+      pendingRecoveryState = null;
+      document.getElementById('recoveryModal').style.display = 'none';
+      showToast('تم بدء مشروع تحليل جديد');
+    }
+
+    // تهيئة أولية
+    renderClipsList();
+    populateExportCategories();
+    updateCounters();
   </script>
 </body>
 </html>
