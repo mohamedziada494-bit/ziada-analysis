@@ -10,513 +10,106 @@
   <script src="plan-guard.js"></script>
 
   <style>
-    :root {
-      --bg-dark: #070b12;
-      --card-bg: #111827;
-      --panel-bg: #0b1220;
-      --border-color: #1f2937;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --danger: #ef4444;
-      --success: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
+    :root { --bg-dark:#070b12; --card-bg:#111827; --panel-bg:#0b1220; --border-color:#1f2937; --primary:#38bdf8; --accent:#f59e0b; --danger:#ef4444; --success:#10b981; --text:#f8fafc; --text-muted:#94a3b8; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; -webkit-tap-highlight-color:transparent; }
+    body { background-color:var(--bg-dark); color:var(--text); padding:12px; min-height:100vh; overflow-x:hidden; }
+    .main-wrapper { max-width:1440px; margin:auto; display:flex; flex-direction:column; gap:12px; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .top-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--card-bg); padding:12px 18px; border-radius:12px; border:1px solid var(--border-color); }
+    .brand-title { font-size:1.15rem; font-weight:800; color:#f87171; display:flex; align-items:center; gap:10px; }
+    .nav-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .autosave-badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#4ade80; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); padding:5px 12px; border-radius:20px; }
+    .autosave-badge.saving { color:var(--accent); background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.35); }
+    .btn-top { background:#1f2937; color:var(--primary); border:1px solid var(--primary); padding:6px 15px; border-radius:7px; cursor:pointer; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:7px; font-size:13px; transition:0.2s; }
+    .btn-top:hover { background:var(--primary); color:#070b12; }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text);
-      padding: 12px;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    .scoreboard-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:10px; padding:10px 16px; }
+    .score-team-box { display:flex; align-items:center; gap:8px; flex:1; min-width:180px; }
+    .score-input { background:#070b12; color:#fff; border:1px solid #334155; padding:6px 10px; border-radius:6px; font-size:13px; font-weight:700; flex:1; outline:none; }
+    .score-input:focus { border-color:var(--primary); }
+    .score-counter { display:inline-flex; align-items:center; gap:6px; background:#070b12; padding:4px 8px; border-radius:7px; border:1px solid #334155; }
+    .score-counter button { background:#1e293b; color:#fff; border:none; width:24px; height:24px; border-radius:5px; cursor:pointer; font-weight:900; }
+    .score-counter button:hover { background:var(--primary); color:#070b12; }
+    .score-num { font-size:18px; font-weight:900; color:var(--accent); min-width:22px; text-align:center; }
 
-    .main-wrapper {
-      max-width: 1440px;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .source-control-bar { background:var(--card-bg); border:1px solid var(--border-color); border-radius:10px; padding:12px 16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+    .source-group { display:flex; gap:7px; align-items:center; flex:1; min-width:260px; }
+    .input-field { flex:1; padding:8px 12px; border-radius:7px; border:1px solid #334155; background:#070b12; color:#fff; font-size:12.5px; outline:none; }
+    .input-field:focus { border-color:var(--primary); }
+    .quality-select { background:#070b12; color:#fff; border:1px solid #334155; padding:7px 10px; border-radius:7px; font-size:12px; font-weight:700; outline:none; }
+    .btn-source { background:#1f2937; color:#fff; border:1px solid #334155; padding:8px 13px; border-radius:7px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:0.2s; white-space:nowrap; }
+    .btn-source:hover { background:var(--primary); color:#070b12; border-color:var(--primary); }
+    .btn-camera { background:linear-gradient(135deg,#0284c7,#2563eb); border-color:var(--primary); }
+    .btn-camera.active { background:var(--danger); border-color:var(--danger); color:#fff; }
 
-    /* الشريط العلوي */
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: var(--card-bg);
-      padding: 12px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #f87171;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .autosave-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #4ade80;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 5px 12px;
-      border-radius: 20px;
-    }
-    .autosave-badge.saving {
-      color: var(--accent);
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.35);
-    }
-    .btn-top {
-      background: #1f2937;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      padding: 6px 15px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: 800;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      transition: 0.2s;
-    }
-    .btn-top:hover { background: var(--primary); color: #070b12; }
+    .live-viewport-box { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px; }
+    .video-container { position:relative; width:100%; height:56vh; min-height:250px; background:#000; border-radius:10px; overflow:hidden; display:flex; justify-content:center; align-items:center; border:1px solid #1e293b; }
+    video { width:100%; height:100%; object-fit:contain; }
+    .live-rec-indicator { position:absolute; top:12px; right:12px; background:rgba(220,38,38,0.9); color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:800; display:none; align-items:center; gap:6px; z-index:5; animation:pulseRed 1.4s infinite; }
+    .wakelock-pill { position:absolute; top:12px; left:12px; background:rgba(15,23,42,0.85); border:1px solid rgba(16,185,129,0.5); color:#4ade80; padding:3px 10px; border-radius:16px; font-size:11px; font-weight:700; display:none; align-items:center; gap:5px; z-index:5; }
 
-    /* لوحة نتيجة المباراة السريعة */
-    .scoreboard-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 10px 16px;
-    }
-    .score-team-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 180px;
-    }
-    .score-input {
-      background: #070b12;
-      color: #fff;
-      border: 1px solid #334155;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      flex: 1;
-      outline: none;
-    }
-    .score-input:focus { border-color: var(--primary); }
-    .score-counter {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #070b12;
-      padding: 4px 8px;
-      border-radius: 7px;
-      border: 1px solid #334155;
-    }
-    .score-counter button {
-      background: #1e293b;
-      color: #fff;
-      border: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 900;
-    }
-    .score-counter button:hover { background: var(--primary); color: #070b12; }
-    .score-num { font-size: 18px; font-weight: 900; color: var(--accent); min-width: 22px; text-align: center; }
+    .record-control-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#0f172a; padding:12px 18px; border-radius:10px; border:1px solid rgba(239,68,68,0.5); }
+    .record-timer { font-family:monospace; font-size:26px; font-weight:900; color:var(--danger); display:flex; align-items:center; gap:10px; direction:ltr; }
+    .record-options { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .btn-record-main { background:var(--danger); color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:800; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:0.25s; }
+    .btn-record-main:hover { background:#dc2626; }
+    .btn-record-main.recording { background:#b91c1c; animation:pulseRed 1.5s infinite; }
+    @keyframes pulseRed { 0% { box-shadow:0 0 0 0 rgba(239,68,68,0.7); } 50% { box-shadow:0 0 0 10px rgba(239,68,68,0); } 100% { box-shadow:0 0 0 0 rgba(239,68,68,0); } }
 
-    /* شريط مصادر البث وإعدادات الكاميرا */
-    .source-control-bar {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .source-group {
-      display: flex;
-      gap: 7px;
-      align-items: center;
-      flex: 1;
-      min-width: 260px;
-    }
-    .input-field {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 7px;
-      border: 1px solid #334155;
-      background: #070b12;
-      color: #fff;
-      font-size: 12.5px;
-      outline: none;
-    }
-    .input-field:focus { border-color: var(--primary); }
-    .quality-select {
-      background: #070b12;
-      color: #fff;
-      border: 1px solid #334155;
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 700;
-      outline: none;
-    }
-    .btn-source {
-      background: #1f2937;
-      color: #fff;
-      border: 1px solid #334155;
-      padding: 8px 13px;
-      border-radius: 7px;
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-      white-space: nowrap;
-    }
-    .btn-source:hover { background: var(--primary); color: #070b12; border-color: var(--primary); }
-    .btn-camera { background: linear-gradient(135deg, #0284c7, #2563eb); border-color: var(--primary); }
-    .btn-camera.active { background: var(--danger); border-color: var(--danger); color: #fff; }
+    .live-actions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px; }
+    .btn-live-action { background:linear-gradient(135deg,#1e293b,#0f172a); border:1.5px solid var(--border-color); color:#fff; padding:13px 10px; border-radius:10px; font-size:13px; font-weight:800; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.35); }
+    .btn-live-action:hover { transform:translateY(-2px); border-color:var(--primary); filter:brightness(1.18); }
+    .btn-live-action:active { transform:scale(0.96); }
+    .btn-live-action i { font-size:18px; }
+    .action-att { border-color:#3b82f6; } .action-def { border-color:#ef4444; } .action-ind { border-color:#8b5cf6; }
+    .action-set-att { border-color:#06b6d4; } .action-set-def { border-color:#f97316; } .action-counter { border-color:#ec4899; }
+    .action-replay { border-color:#10b981; } .action-goal { border-color:#f59e0b; background:linear-gradient(135deg,#78350f,#451a03); }
 
-    /* منطقة البث والتسجيل */
-    .live-viewport-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .video-container {
-      position: relative;
-      width: 100%;
-      height: 56vh;
-      min-height: 250px;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #1e293b;
-    }
-    video { width: 100%; height: 100%; object-fit: contain; }
+    .live-status-banner { display:none; background:rgba(16,185,129,0.14); border:1px solid var(--success); color:#4ade80; padding:9px 15px; border-radius:8px; font-weight:800; font-size:13px; align-items:center; justify-content:center; gap:10px; }
+    .log-header-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    .log-section { background:#0b1220; border:1px solid var(--border-color); border-radius:10px; max-height:290px; overflow:auto; }
+    .log-table { width:100%; border-collapse:collapse; text-align:right; font-size:13px; min-width:520px; }
+    .log-table th { background:#1f2937; color:var(--primary); padding:10px 12px; position:sticky; top:0; z-index:2; }
+    .log-table td { padding:10px 12px; border-bottom:1px solid var(--border-color); vertical-align:middle; }
+    .action-btns-row { display:flex; gap:6px; flex-wrap:wrap; }
+    .btn-download { background:var(--success); color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:5px; border:none; cursor:pointer; }
+    .btn-preview { background:#0284c7; color:#fff; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:5px; border:none; cursor:pointer; }
+    .btn-del { background:#991b1b; color:#fff; padding:5px 9px; border-radius:6px; font-size:12px; border:none; cursor:pointer; }
+    .status-badge { color:var(--accent); font-weight:700; font-size:12px; }
 
-    .live-rec-indicator {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(220, 38, 38, 0.9);
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      z-index: 5;
-      animation: pulseRed 1.4s infinite;
-    }
-    .wakelock-pill {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      color: #4ade80;
-      padding: 3px 10px;
-      border-radius: 16px;
-      font-size: 11px;
-      font-weight: 700;
-      display: none;
-      align-items: center;
-      gap: 5px;
-      z-index: 5;
-    }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,0.88); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center; padding:16px; }
+    .modal-card { background:#111827; border:1px solid rgba(56,189,248,0.5); border-radius:16px; padding:22px; width:100%; max-width:450px; text-align:center; box-shadow:0 20px 55px rgba(0,0,0,0.85); }
+    .modal-card.preview-wide { max-width:780px; }
+    .modal-card h3 { color:var(--primary); font-size:17px; margin-bottom:10px; }
+    .recovery-meta { background:#070b12; border:1px solid #1f2937; border-radius:10px; padding:12px; margin:14px 0 18px; font-size:13px; color:#e2e8f0; line-height:1.9; }
+    .modal-btns { display:flex; gap:10px; flex-wrap:wrap; }
+    .modal-btns button { flex:1; padding:10px 14px; border-radius:8px; border:none; font-weight:800; font-size:13.5px; cursor:pointer; }
+    .btn-resume { background:linear-gradient(135deg,#059669,#10b981); color:#fff; }
+    .btn-fresh { background:#334155; color:#f8fafc; }
+    .toast-msg { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#0f172a; color:#fff; border:1px solid var(--primary); padding:9px 18px; border-radius:999px; font-size:13px; font-weight:700; z-index:9500; opacity:0; transition:0.3s; pointer-events:none; }
+    .toast-msg.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    /* شريط التسجيل الرئيسي */
-    .record-control-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: #0f172a;
-      padding: 12px 18px;
-      border-radius: 10px;
-      border: 1px solid rgba(239, 68, 68, 0.5);
-    }
-    .record-timer {
-      font-family: monospace;
-      font-size: 26px;
-      font-weight: 900;
-      color: var(--danger);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      direction: ltr;
-    }
-    .record-options {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .btn-record-main {
-      background: var(--danger);
-      color: #fff;
-      border: none;
-      padding: 10px 22px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.25s;
-    }
-    .btn-record-main:hover { background: #dc2626; }
-    .btn-record-main.recording {
-      background: #b91c1c;
-      animation: pulseRed 1.5s infinite;
-    }
-    @keyframes pulseRed {
-      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    }
-
-    /* أزرار التقطيع الفوري */
-    .live-actions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 9px;
-    }
-    .btn-live-action {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1.5px solid var(--border-color);
-      color: #fff;
-      padding: 13px 10px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    }
-    .btn-live-action:hover { transform: translateY(-2px); border-color: var(--primary); filter: brightness(1.18); }
-    .btn-live-action:active { transform: scale(0.96); }
-    .btn-live-action i { font-size: 18px; }
-    .action-att { border-color: #3b82f6; }
-    .action-def { border-color: #ef4444; }
-    .action-ind { border-color: #8b5cf6; }
-    .action-set-att { border-color: #06b6d4; }
-    .action-set-def { border-color: #f97316; }
-    .action-counter { border-color: #ec4899; }
-    .action-replay { border-color: #10b981; }
-    .action-goal { border-color: #f59e0b; background: linear-gradient(135deg, #78350f, #451a03); }
-
-    .live-status-banner {
-      display: none;
-      background: rgba(16, 185, 129, 0.14);
-      border: 1px solid var(--success);
-      color: #4ade80;
-      padding: 9px 15px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 13px;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    /* جدول اللقطات */
-    .log-header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .log-section {
-      background: #0b1220;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      max-height: 290px;
-      overflow: auto;
-    }
-    .log-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; min-width: 520px; }
-    .log-table th { background: #1f2937; color: var(--primary); padding: 10px 12px; position: sticky; top: 0; z-index: 2; }
-    .log-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-    .action-btns-row { display: flex; gap: 6px; flex-wrap: wrap; }
-    .btn-download {
-      background: var(--success);
-      color: #fff;
-      padding: 5px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-preview {
-      background: #0284c7;
-      color: #fff;
-      padding: 5px 11px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-del {
-      background: #991b1b;
-      color: #fff;
-      padding: 5px 9px;
-      border-radius: 6px;
-      font-size: 12px;
-      border: none;
-      cursor: pointer;
-    }
-    .status-badge { color: var(--accent); font-weight: 700; font-size: 12px; }
-
-    /* النوافذ المنبثقة (استرجاع الجلسة + معاينة اللقطة) */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.88);
-      backdrop-filter: blur(5px);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    .modal-card {
-      background: #111827;
-      border: 1px solid rgba(56, 189, 248, 0.5);
-      border-radius: 16px;
-      padding: 22px;
-      width: 100%;
-      max-width: 450px;
-      text-align: center;
-      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.85);
-    }
-    .modal-card.preview-wide { max-width: 780px; }
-    .modal-card h3 { color: var(--primary); font-size: 17px; margin-bottom: 10px; }
-    .recovery-meta {
-      background: #070b12;
-      border: 1px solid #1f2937;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 14px 0 18px;
-      font-size: 13px;
-      color: #e2e8f0;
-      line-height: 1.9;
-    }
-    .modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-    .modal-btns button { flex: 1; padding: 10px 14px; border-radius: 8px; border: none; font-weight: 800; font-size: 13.5px; cursor: pointer; }
-    .btn-resume { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
-    .btn-fresh { background: #334155; color: #f8fafc; }
-
-    .toast-msg {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #0f172a;
-      color: #fff;
-      border: 1px solid var(--primary);
-      padding: 9px 18px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      z-index: 9500;
-      opacity: 0;
-      transition: 0.3s;
-      pointer-events: none;
-    }
-    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 768px) {
-      body { padding: 8px; }
-      .video-container { height: 38vh; min-height: 210px; }
-      .record-timer { font-size: 21px; }
-      .live-actions-grid { grid-template-columns: repeat(2, 1fr); }
-      .btn-live-action { padding: 11px 6px; font-size: 12px; }
+    @media (max-width:768px) {
+      body { padding:8px; }
+      .video-container { height:38vh; min-height:210px; }
+      .record-timer { font-size:21px; }
+      .live-actions-grid { grid-template-columns:repeat(2,1fr); }
+      .btn-live-action { padding:11px 6px; font-size:12px; }
     }
   </style>
 
-  <!-- كود حماية الواجهة (Capture Phase) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), true);
     document.addEventListener('keydown', e => {
-      const forbiddenKeys = ['U', 'S', 'P'];
-      const devKeys = ['I', 'J', 'C'];
-      if (
-        e.key === 'F12' || e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+      const f = ['U','S','P'], d = ['I','J','C'];
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && d.includes(e.key.toUpperCase())) || (e.ctrlKey && f.includes(e.key.toUpperCase()))) {
+        e.preventDefault(); e.stopPropagation(); return false;
       }
     }, true);
   </script>
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحليل المباشر (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
@@ -531,7 +124,6 @@
     })();
   </script>
 
-  <!-- نافذة استرجاع جلسة اللايف السابقة -->
   <div class="modal-overlay" id="recoveryModal">
     <div class="modal-card">
       <h3><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على جلسة لايف محفوظة</h3>
@@ -544,7 +136,6 @@
     </div>
   </div>
 
-  <!-- نافذة المعاينة الفورية للقطة على دكة البدلاء -->
   <div class="modal-overlay" id="clipPreviewModal" onclick="if(event.target === this) closeClipPreview()">
     <div class="modal-card preview-wide">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -559,69 +150,46 @@
 
   <div class="main-wrapper">
     <header class="top-nav">
-      <div class="brand-title">
-        <i class="fa-solid fa-satellite-dish"></i>
-        <span>Ziada Analysis | نظام بث وتحليل اللايف الفوري (Pro)</span>
-      </div>
+      <div class="brand-title"><i class="fa-solid fa-satellite-dish"></i><span>Ziada Analysis | نظام بث وتحليل اللايف الفوري (Pro)</span></div>
       <div class="nav-actions">
         <span class="autosave-badge" id="autosaveBadge"><i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً</span>
         <a href="index.html" class="btn-top"><i class="fa-solid fa-house"></i> الرئيسية</a>
       </div>
     </header>
 
-    <!-- لوحة النتيجة السريعة للمباراة -->
     <div class="scoreboard-bar">
       <div class="score-team-box">
         <input type="text" id="teamAName" class="score-input" value="فريقنا" placeholder="اسم الفريق الأول" oninput="scheduleAutoSave()">
-        <div class="score-counter">
-          <button onclick="changeScore('A', 1)">+</button>
-          <span class="score-num" id="scoreA">0</span>
-          <button onclick="changeScore('A', -1)">-</button>
-        </div>
+        <div class="score-counter"><button onclick="changeScore('A', 1)">+</button><span class="score-num" id="scoreA">0</span><button onclick="changeScore('A', -1)">-</button></div>
       </div>
-
       <select id="matchHalfSelect" class="quality-select" onchange="scheduleAutoSave()">
-        <option value="الشوط الأول">الشوط الأول</option>
-        <option value="الشوط الثاني">الشوط الثاني</option>
-        <option value="أشواط إضافية">أشواط إضافية</option>
+        <option value="الشوط الأول">الشوط الأول</option><option value="الشوط الثاني">الشوط الثاني</option><option value="أشواط إضافية">أشواط إضافية</option>
       </select>
-
       <div class="score-team-box">
-        <div class="score-counter">
-          <button onclick="changeScore('B', 1)">+</button>
-          <span class="score-num" id="scoreB">0</span>
-          <button onclick="changeScore('B', -1)">-</button>
-        </div>
+        <div class="score-counter"><button onclick="changeScore('B', 1)">+</button><span class="score-num" id="scoreB">0</span><button onclick="changeScore('B', -1)">-</button></div>
         <input type="text" id="teamBName" class="score-input" value="المنافس" placeholder="اسم المنافس" oninput="scheduleAutoSave()">
       </div>
     </div>
 
-    <!-- شريط مصادر الفيديو والكاميرا -->
     <div class="source-control-bar">
       <div class="source-group">
-        <i class="fa-solid fa-link" style="color: var(--primary);"></i>
+        <i class="fa-solid fa-link" style="color:var(--primary);"></i>
         <input type="text" id="videoLinkInput" class="input-field" placeholder="الصق رابط فيديو مباشر (MP4 / WebM)...">
         <button class="btn-source" onclick="loadSourceLink()"><i class="fa-solid fa-play"></i> تشغيل</button>
       </div>
-      <div style="display: flex; gap: 7px; flex-wrap: wrap; align-items: center;">
+      <div style="display:flex; gap:7px; flex-wrap:wrap; align-items:center;">
         <select id="camQualitySelect" class="quality-select" title="جودة التصوير والتسجيل" onchange="scheduleAutoSave()">
           <option value="720" selected>جودة 720p HD (6 Mbps)</option>
           <option value="1080">جودة 1080p Full HD (10 Mbps)</option>
         </select>
         <button class="btn-source btn-camera" id="btnToggleCam" onclick="toggleCamera()"><i class="fa-solid fa-video"></i> <span>فتح الكاميرا</span></button>
         <button class="btn-source" id="btnFlipCam" style="display:none;" onclick="flipCamera()" title="تبديل الكاميرا الأمامية والخلفية"><i class="fa-solid fa-camera-rotate"></i> تبديل</button>
-        <label class="btn-source" style="cursor: pointer;">
-          <i class="fa-solid fa-folder-open"></i> فيديو محلي
-          <input type="file" id="localVideoFile" accept="video/*" style="display: none;" onchange="loadLocalVideo(event)">
-        </label>
+        <label class="btn-source" style="cursor:pointer;"><i class="fa-solid fa-folder-open"></i> فيديو محلي<input type="file" id="localVideoFile" accept="video/*" style="display:none;" onchange="loadLocalVideo(event)"></label>
       </div>
     </div>
 
     <main class="live-viewport-box">
-      <div class="live-status-banner" id="liveStatusBanner">
-        <i class="fa-solid fa-circle-notch fa-spin"></i>
-        <span id="liveStatusText">جاري المعالجة...</span>
-      </div>
+      <div class="live-status-banner" id="liveStatusBanner"><i class="fa-solid fa-circle-notch fa-spin"></i><span id="liveStatusText">جاري المعالجة...</span></div>
 
       <div class="video-container">
         <video id="liveVideo" controls playsinline></video>
@@ -629,264 +197,104 @@
         <div class="wakelock-pill" id="wakeLockPill"><i class="fa-solid fa-sun"></i> الشاشة نشطة</div>
       </div>
 
-      <!-- شريط تسجيل المباراة الكاملة ومدة اللقطة -->
       <div class="record-control-bar">
-        <div class="record-timer" id="matchTimer">
-          <i class="fa-regular fa-clock"></i> <span id="timerText">00:00:00</span>
-        </div>
-
+        <div class="record-timer" id="matchTimer"><i class="fa-regular fa-clock"></i> <span id="timerText">00:00:00</span></div>
         <div class="record-options">
           <div style="display:flex; align-items:center; gap:6px;">
             <span style="font-size:12px; color:var(--text-muted); font-weight:700;">مدة اللقطة الفورية:</span>
             <select id="clipDurationSelect" class="quality-select" onchange="scheduleAutoSave()">
-              <option value="8" selected>8 ثوانٍ</option>
-              <option value="12">12 ثانية</option>
-              <option value="15">15 ثانية</option>
-              <option value="20">20 ثانية</option>
+              <option value="8" selected>8 ثوانٍ</option><option value="12">12 ثانية</option><option value="15">15 ثانية</option><option value="20">20 ثانية</option>
             </select>
           </div>
-          <button class="btn-record-main" id="btnRecordMatch" onclick="toggleFullMatchRecord()">
-            <i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة كاملة</span>
-          </button>
+          <button class="btn-record-main" id="btnRecordMatch" onclick="toggleFullMatchRecord()"><i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة كاملة (MP4)</span></button>
         </div>
       </div>
 
-      <!-- أزرار التقطيع الفوري -->
       <div class="live-actions-grid">
-        <button class="btn-live-action action-att" onclick="triggerInstantExport('حالات هجومية')">
-          <i class="fa-solid fa-angles-left" style="color:#3b82f6;"></i>
-          <span>حالات هجومية</span>
-        </button>
-        <button class="btn-live-action action-def" onclick="triggerInstantExport('حالات دفاعية')">
-          <i class="fa-solid fa-shield-halved" style="color:#ef4444;"></i>
-          <span>حالات دفاعية</span>
-        </button>
-        <button class="btn-live-action action-ind" onclick="triggerInstantExport('حالات فردية')">
-          <i class="fa-solid fa-user-ninja" style="color:#8b5cf6;"></i>
-          <span>حالات فردية</span>
-        </button>
-        <button class="btn-live-action action-counter" onclick="triggerInstantExport('هجمة مرتدة')">
-          <i class="fa-solid fa-bolt" style="color:#ec4899;"></i>
-          <span>هجمة مرتدة</span>
-        </button>
-        <button class="btn-live-action action-set-att" onclick="triggerInstantExport('كرات ثابتة هجومية')">
-          <i class="fa-solid fa-flag" style="color:#06b6d4;"></i>
-          <span>كور ثابتة هجومية</span>
-        </button>
-        <button class="btn-live-action action-set-def" onclick="triggerInstantExport('كرات ثابتة دفاعية')">
-          <i class="fa-solid fa-hand-fist" style="color:#f97316;"></i>
-          <span>كور ثابتة دفاعية</span>
-        </button>
-        <button class="btn-live-action action-replay" onclick="triggerInstantExport('تكرار لعبة')">
-          <i class="fa-solid fa-rotate-right" style="color:#10b981;"></i>
-          <span>تكرار لعبة</span>
-        </button>
-        <button class="btn-live-action action-goal" onclick="triggerInstantExport('هدف ⚽')">
-          <i class="fa-solid fa-fire" style="color:#f59e0b;"></i>
-          <span>هدف ⚽</span>
-        </button>
+        <button class="btn-live-action action-att" onclick="triggerInstantExport('حالات هجومية')"><i class="fa-solid fa-angles-left" style="color:#3b82f6;"></i><span>حالات هجومية</span></button>
+        <button class="btn-live-action action-def" onclick="triggerInstantExport('حالات دفاعية')"><i class="fa-solid fa-shield-halved" style="color:#ef4444;"></i><span>حالات دفاعية</span></button>
+        <button class="btn-live-action action-ind" onclick="triggerInstantExport('حالات فردية')"><i class="fa-solid fa-user-ninja" style="color:#8b5cf6;"></i><span>حالات فردية</span></button>
+        <button class="btn-live-action action-counter" onclick="triggerInstantExport('هجمة مرتدة')"><i class="fa-solid fa-bolt" style="color:#ec4899;"></i><span>هجمة مرتدة</span></button>
+        <button class="btn-live-action action-set-att" onclick="triggerInstantExport('كرات ثابتة هجومية')"><i class="fa-solid fa-flag" style="color:#06b6d4;"></i><span>كور ثابتة هجومية</span></button>
+        <button class="btn-live-action action-set-def" onclick="triggerInstantExport('كرات ثابتة دفاعية')"><i class="fa-solid fa-hand-fist" style="color:#f97316;"></i><span>كور ثابتة دفاعية</span></button>
+        <button class="btn-live-action action-replay" onclick="triggerInstantExport('تكرار لعبة')"><i class="fa-solid fa-rotate-right" style="color:#10b981;"></i><span>تكرار لعبة</span></button>
+        <button class="btn-live-action action-goal" onclick="triggerInstantExport('هدف ⚽')"><i class="fa-solid fa-fire" style="color:#f59e0b;"></i><span>هدف ⚽</span></button>
       </div>
 
-      <!-- جدول الحالات المقطوعة -->
       <div class="log-header-bar">
         <h3 style="color:var(--primary); font-size:14.5px;"><i class="fa-solid fa-film"></i> اللقطات المقطوعة (<span id="clipsCount">0</span>)</h3>
         <button class="btn-source" style="border-color:rgba(239,68,68,0.45); color:#fca5a5;" onclick="clearAllClips()"><i class="fa-solid fa-trash"></i> مسح السجل</button>
       </div>
       <div class="log-section">
         <table class="log-table">
-          <thead>
-            <tr>
-              <th>التوقيت / الشوط</th>
-              <th>الحالة (Tag)</th>
-              <th>المدة</th>
-              <th>معاينة وتحميل</th>
-            </tr>
-          </thead>
-          <tbody id="liveLogBody">
-            <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding:18px;">لم يتم تقطيع لقطات حتى الآن. افتح الكاميرا أو ارفع فيديو واضغط على أي حالة.</td></tr>
-          </tbody>
+          <thead><tr><th>التوقيت / الشوط</th><th>الحالة (Tag)</th><th>المدة</th><th>معاينة وتحميل</th></tr></thead>
+          <tbody id="liveLogBody"><tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:18px;">لم يتم تقطيع لقطات حتى الآن. افتح الكاميرا أو ارفع فيديو واضغط على أي حالة.</td></tr></tbody>
         </table>
       </div>
     </main>
   </div>
 
   <script>
-    // ==========================================
-    // المتغيرات العامة
-    // ==========================================
-    const DB_NAME = 'ZiadaLiveStudioDB';
-    const STORE_NAME = 'sessions';
-    const SESSION_KEY = 'live_active_session_v1';
+    const DB_NAME = 'ZiadaLiveStudioDB', STORE_NAME = 'sessions', SESSION_KEY = 'live_active_session_v1';
+    const liveVideo = document.getElementById('liveVideo'), statusBanner = document.getElementById('liveStatusBanner'), statusText = document.getElementById('liveStatusText');
+    const btnCam = document.getElementById('btnToggleCam'), btnFlipCam = document.getElementById('btnFlipCam'), btnRecord = document.getElementById('btnRecordMatch');
+    const timerText = document.getElementById('timerText'), liveRecBadge = document.getElementById('liveRecBadge'), wakeLockPill = document.getElementById('wakeLockPill');
 
-    const liveVideo = document.getElementById('liveVideo');
-    const statusBanner = document.getElementById('liveStatusBanner');
-    const statusText = document.getElementById('liveStatusText');
-    const btnCam = document.getElementById('btnToggleCam');
-    const btnFlipCam = document.getElementById('btnFlipCam');
-    const btnRecord = document.getElementById('btnRecordMatch');
-    const timerText = document.getElementById('timerText');
-    const liveRecBadge = document.getElementById('liveRecBadge');
-    const wakeLockPill = document.getElementById('wakeLockPill');
+    let currentStream = null, isCameraMode = false, currentFacingMode = 'environment', wakeLock = null;
+    let mainRecorder = null, mainChunks = [], isFullRecording = false, matchStartTime = 0, timerInterval = null;
+    let scoreA = 0, scoreB = 0, liveClips = [], autosaveTimer = null;
 
-    let currentStream = null;
-    let isCameraMode = false;
-    let currentFacingMode = 'environment';
-    let wakeLock = null;
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function showToast(msg) { const t = document.getElementById('toastMsg'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2300); }
 
-    let mainRecorder = null;
-    let mainChunks = [];
-    let isFullRecording = false;
-    let matchStartTime = 0;
-    let timerInterval = null;
-
-    let scoreA = 0, scoreB = 0;
-    let liveClips = []; // { id, time, half, tag, durationSec, ext, blob, url }
-    let autosaveTimer = null;
-
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, m => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[m]));
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toastMsg');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('show'), 2300);
-    }
-
-    // ==========================================
-    // منع إطفاء الشاشة أثناء التصوير (Wake Lock API)
-    // ==========================================
     async function requestWakeLock() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-          wakeLockPill.style.display = 'inline-flex';
-          wakeLock.addEventListener('release', () => { wakeLockPill.style.display = 'none'; });
-        }
-      } catch (e) {}
+      try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); wakeLockPill.style.display = 'inline-flex'; wakeLock.addEventListener('release', () => { wakeLockPill.style.display = 'none'; }); } } catch (e) {}
     }
+    function releaseWakeLock() { if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; } wakeLockPill.style.display = 'none'; }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && (isCameraMode || isFullRecording)) requestWakeLock(); });
 
-    function releaseWakeLock() {
-      if (wakeLock) {
-        wakeLock.release().catch(() => {});
-        wakeLock = null;
-      }
-      wakeLockPill.style.display = 'none';
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && (isCameraMode || isFullRecording)) {
-        requestWakeLock();
-      }
-    });
-
-    // ==========================================
-    // لوحة النتيجة
-    // ==========================================
     function changeScore(team, delta) {
-      if (team === 'A') {
-        scoreA = Math.max(0, scoreA + delta);
-        document.getElementById('scoreA').innerText = scoreA;
-      } else {
-        scoreB = Math.max(0, scoreB + delta);
-        document.getElementById('scoreB').innerText = scoreB;
-      }
+      if (team === 'A') { scoreA = Math.max(0, scoreA + delta); document.getElementById('scoreA').innerText = scoreA; }
+      else { scoreB = Math.max(0, scoreB + delta); document.getElementById('scoreB').innerText = scoreB; }
       scheduleAutoSave();
     }
 
-    // ==========================================
-    // مصادر الفيديو والكاميرا الاحترافية
-    // ==========================================
     function initializeStreamFromVideoElement() {
-      if (liveVideo.srcObject) {
-        currentStream = liveVideo.srcObject;
-        return;
-      }
+      if (liveVideo.srcObject) { currentStream = liveVideo.srcObject; return; }
       try {
-        if (typeof liveVideo.captureStream === 'function') {
-          currentStream = liveVideo.captureStream();
-        } else if (typeof liveVideo.mozCaptureStream === 'function') {
-          currentStream = liveVideo.mozCaptureStream();
-        }
-      } catch (err) {
-        currentStream = null;
-      }
+        if (typeof liveVideo.captureStream === 'function') currentStream = liveVideo.captureStream();
+        else if (typeof liveVideo.mozCaptureStream === 'function') currentStream = liveVideo.mozCaptureStream();
+      } catch (err) { currentStream = null; }
     }
-
-    liveVideo.onplay = () => {
-      if (!isCameraMode && (!currentStream || currentStream.getVideoTracks().length === 0)) {
-        initializeStreamFromVideoElement();
-      }
-    };
+    liveVideo.onplay = () => { if (!isCameraMode && (!currentStream || currentStream.getVideoTracks().length === 0)) initializeStreamFromVideoElement(); };
 
     function loadSourceLink() {
-      const url = document.getElementById('videoLinkInput').value.trim();
-      if (!url) return alert('يرجى لصق رابط فيديو صحيح أولاً!');
-      stopAllStreams();
-      liveVideo.muted = false;
-      liveVideo.crossOrigin = 'anonymous';
-      liveVideo.src = url;
-      liveVideo.load();
+      const url = document.getElementById('videoLinkInput').value.trim(); if (!url) return alert('يرجى لصق رابط فيديو صحيح أولاً!');
+      stopAllStreams(); liveVideo.muted = false; liveVideo.crossOrigin = 'anonymous'; liveVideo.src = url; liveVideo.load();
       liveVideo.play().catch(() => alert('تعذر تشغيل الرابط مباشرة. تأكد من أن الرابط مباشر (MP4/WebM) ويدعم CORS.'));
     }
 
     function loadLocalVideo(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      stopAllStreams();
-      liveVideo.muted = false;
-      liveVideo.src = URL.createObjectURL(file);
-      liveVideo.play().catch(() => {});
-      showToast(`تم تحميل: ${file.name}`);
+      const file = e.target.files[0]; if (!file) return;
+      stopAllStreams(); liveVideo.muted = false; liveVideo.src = URL.createObjectURL(file);
+      liveVideo.play().catch(() => {}); showToast(`تم تحميل: ${file.name}`);
     }
 
     async function startCameraStream() {
       const q = parseInt(document.getElementById('camQualitySelect').value) || 720;
-      const idealW = q === 1080 ? 1920 : 1280;
-      const idealH = q === 1080 ? 1080 : 720;
-
       const constraints = {
-        video: {
-          facingMode: { ideal: currentFacingMode },
-          width: { ideal: idealW },
-          height: { ideal: idealH },
-          frameRate: { ideal: 30 }
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
+        video: { facingMode: { ideal: currentFacingMode }, width: { ideal: q === 1080 ? 1920 : 1280 }, height: { ideal: q === 1080 ? 1080 : 720 }, frameRate: { ideal: 30 } },
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
       };
-
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-      isCameraMode = true;
-      liveVideo.muted = true;
-      liveVideo.srcObject = currentStream;
-      await liveVideo.play();
-
-      btnCam.classList.add('active');
-      btnCam.innerHTML = '<i class="fa-solid fa-video-slash"></i> <span>إغلاق الكاميرا</span>';
-      btnFlipCam.style.display = 'inline-flex';
-      requestWakeLock();
-      showToast(`تم تشغيل الكاميرا بدقة ${q}p ✓`);
+      isCameraMode = true; liveVideo.muted = true; liveVideo.srcObject = currentStream; await liveVideo.play();
+      btnCam.classList.add('active'); btnCam.innerHTML = '<i class="fa-solid fa-video-slash"></i> <span>إغلاق الكاميرا</span>';
+      btnFlipCam.style.display = 'inline-flex'; requestWakeLock(); showToast(`تم تشغيل الكاميرا بدقة ${q}p ✓`);
     }
 
     async function toggleCamera() {
-      if (isCameraMode) {
-        stopAllStreams();
-      } else {
-        try {
-          stopAllStreams();
-          await startCameraStream();
-        } catch (err) {
-          alert('تعذر الوصول لكاميرا الجهاز، يرجى السماح بصلاحية الكاميرا والميكروفون في المتصفح.');
-        }
-      }
+      if (isCameraMode) stopAllStreams();
+      else { try { stopAllStreams(); await startCameraStream(); } catch (err) { alert('تعذر الوصول لكاميرا الجهاز، يرجى السماح بصلاحية الكاميرا والميكروفون في المتصفح.'); } }
     }
 
     async function flipCamera() {
@@ -894,43 +302,33 @@
       if (isFullRecording) return alert('أوقف تسجيل المباراة الكاملة أولاً قبل تبديل الكاميرا.');
       currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
       stopAllStreams();
-      try {
-        await startCameraStream();
-      } catch (err) {
-        currentFacingMode = 'environment';
-        alert('تعذر تبديل الكاميرا على هذا الجهاز.');
-      }
+      try { await startCameraStream(); } catch (err) { currentFacingMode = 'environment'; alert('تعذر تبديل الكاميرا على هذا الجهاز.'); }
     }
 
     function stopAllStreams() {
       if (isFullRecording) toggleFullMatchRecord();
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-        currentStream = null;
-      }
-      isCameraMode = false;
-      liveVideo.srcObject = null;
-      liveVideo.src = '';
-      liveVideo.muted = false;
-
-      btnCam.classList.remove('active');
-      btnCam.innerHTML = '<i class="fa-solid fa-video"></i> <span>فتح الكاميرا</span>';
-      btnFlipCam.style.display = 'none';
-      releaseWakeLock();
+      if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
+      isCameraMode = false; liveVideo.srcObject = null; liveVideo.src = ''; liveVideo.muted = false;
+      btnCam.classList.remove('active'); btnCam.innerHTML = '<i class="fa-solid fa-video"></i> <span>فتح الكاميرا</span>';
+      btnFlipCam.style.display = 'none'; releaseWakeLock();
     }
 
     // ==========================================
-    // اختيار أفضل كوديك وجودة عالية للتسجيل
+    // أولوية قصوى لـ MP4 H.264 للتشغيل المباشر في معرض التليفون وواتساب
     // ==========================================
     function getBestRecorderConfig() {
       const q = parseInt(document.getElementById('camQualitySelect').value) || 720;
       const bitrate = q >= 1080 ? 10000000 : 6000000;
       const candidates = [
-        { mime: 'video/webm;codecs=h264,opus', ext: 'webm' },
+        { mime: 'video/mp4;codecs=avc1.42E01E,mp4a.40.2', ext: 'mp4' },
+        { mime: 'video/mp4;codecs=avc1.4d002a,mp4a.40.2', ext: 'mp4' },
+        { mime: 'video/mp4;codecs=h264,aac', ext: 'mp4' },
+        { mime: 'video/mp4;codecs=avc1.42E01E', ext: 'mp4' },
+        { mime: 'video/mp4;codecs=h264', ext: 'mp4' },
+        { mime: 'video/mp4', ext: 'mp4' },
         { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
         { mime: 'video/webm;codecs=vp9,opus', ext: 'webm' },
-        { mime: 'video/webm', ext: 'webm' },
-        { mime: 'video/mp4', ext: 'mp4' }
+        { mime: 'video/webm', ext: 'webm' }
       ];
       for (const c of candidates) {
         if (window.MediaRecorder && MediaRecorder.isTypeSupported(c.mime)) {
@@ -940,8 +338,25 @@
       return { mimeType: '', ext: 'webm', videoBitsPerSecond: bitrate };
     }
 
+    function createSafeRecorder(stream, cfg) {
+      let rec;
+      try {
+        rec = cfg.mimeType
+          ? new MediaRecorder(stream, { mimeType: cfg.mimeType, videoBitsPerSecond: cfg.videoBitsPerSecond })
+          : new MediaRecorder(stream, { videoBitsPerSecond: cfg.videoBitsPerSecond });
+      } catch (e) {
+        try { rec = cfg.mimeType ? new MediaRecorder(stream, { mimeType: cfg.mimeType }) : new MediaRecorder(stream); }
+        catch (e2) { rec = new MediaRecorder(stream); }
+      }
+      const actualMime = rec.mimeType || cfg.mimeType || 'video/webm';
+      const isMp4 = actualMime.includes('mp4');
+      rec._usedMime = isMp4 ? 'video/mp4' : 'video/webm';
+      rec._usedExt = isMp4 ? 'mp4' : 'webm';
+      return rec;
+    }
+
     // ==========================================
-    // تسجيل المباراة الكاملة بجودة عالية (مربوط بنظام الباقات)
+    // تسجيل المباراة الكاملة بجودة عالية (MP4 للتليفون وواتساب)
     // ==========================================
     function toggleFullMatchRecord() {
       if (!currentStream) {
@@ -950,11 +365,9 @@
       }
 
       if (isFullRecording) {
-        clearInterval(timerInterval);
-        isFullRecording = false;
-        liveRecBadge.style.display = 'none';
+        clearInterval(timerInterval); isFullRecording = false; liveRecBadge.style.display = 'none';
         btnRecord.classList.remove('recording');
-        btnRecord.innerHTML = '<i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة كاملة</span>';
+        btnRecord.innerHTML = '<i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة كاملة (MP4)</span>';
         if (!isCameraMode) releaseWakeLock();
 
         const duration = Date.now() - matchStartTime;
@@ -963,7 +376,7 @@
 
         mainRecorder.onstop = async () => {
           statusBanner.style.display = 'flex';
-          statusText.innerText = 'جاري تجهيز وحفظ ملف المباراة الكاملة بأعلى جودة...';
+          statusText.innerText = `جاري تجهيز وحفظ ملف المباراة الكاملة (${usedExt.toUpperCase()})...`;
 
           const rawBlob = new Blob(mainChunks, { type: usedMime });
           let finalBlob = rawBlob;
@@ -974,187 +387,119 @@
           const tA = (document.getElementById('teamAName').value || 'فريقنا').replace(/\s+/g, '_');
           const tB = (document.getElementById('teamBName').value || 'المنافس').replace(/\s+/g, '_');
           const url = URL.createObjectURL(finalBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `Ziada_Match_${tA}_vs_${tB}_${Date.now()}.${usedExt}`;
-          a.click();
+          const a = document.createElement('a'); a.href = url;
+          a.download = `Ziada_Match_${tA}_vs_${tB}_${Date.now()}.${usedExt}`; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 20000);
           mainChunks = [];
 
-          statusText.innerText = 'تم حفظ المباراة الكاملة بنجاح ✓';
+          statusText.innerText = `تم حفظ المباراة الكاملة بنجاح (${usedExt.toUpperCase()}) ✓`;
           setTimeout(() => { statusBanner.style.display = 'none'; }, 3500);
         };
         mainRecorder.stop();
       } else {
         if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تسجيل المباراة الكاملة لايف HD')) return;
-
         const cfg = getBestRecorderConfig();
-        const opts = { videoBitsPerSecond: cfg.videoBitsPerSecond };
-        if (cfg.mimeType) opts.mimeType = cfg.mimeType;
-
-        try {
-          mainRecorder = new MediaRecorder(currentStream, opts);
-        } catch (e) {
-          mainRecorder = new MediaRecorder(currentStream);
-        }
-        mainRecorder._usedMime = cfg.mimeType || 'video/webm';
-        mainRecorder._usedExt = cfg.ext;
-
+        mainRecorder = createSafeRecorder(currentStream, cfg);
         mainChunks = [];
         mainRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) mainChunks.push(e.data); };
-        mainRecorder.start(500);
+        if (mainRecorder._usedExt === 'mp4') mainRecorder.start();
+        else mainRecorder.start(500);
 
-        isFullRecording = true;
-        matchStartTime = Date.now();
-        liveRecBadge.style.display = 'inline-flex';
+        isFullRecording = true; matchStartTime = Date.now(); liveRecBadge.style.display = 'inline-flex';
         btnRecord.classList.add('recording');
         btnRecord.innerHTML = '<i class="fa-solid fa-stop"></i> <span>إيقاف وحفظ المباراة</span>';
-        requestWakeLock();
-
-        timerText.innerText = '00:00:00';
-        timerInterval = setInterval(updateTimer, 1000);
+        requestWakeLock(); timerText.innerText = '00:00:00'; timerInterval = setInterval(updateTimer, 1000);
       }
     }
 
     function updateTimer() {
       const diff = Math.floor((Date.now() - matchStartTime) / 1000);
-      const h = Math.floor(diff / 3600).toString().padStart(2, '0');
-      const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
-      const s = (diff % 60).toString().padStart(2, '0');
-      timerText.innerText = `${h}:${m}:${s}`;
+      timerText.innerText = `${Math.floor(diff/3600).toString().padStart(2,'0')}:${Math.floor((diff%3600)/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
     }
 
     // ==========================================
-    // التقطيع الفوري للقطات بجودة عالية (مربوط بحدود الباقة)
+    // التقطيع الفوري للقطات (MP4 للتليفون وواتساب)
     // ==========================================
     function triggerInstantExport(categoryName) {
       if (!currentStream) {
         initializeStreamFromVideoElement();
         if (!currentStream) return alert('الرجاء فتح الكاميرا أو تشغيل فيديو أولاً للتقطيع!');
       }
-
       if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', liveClips.length, 'لقطات لايف')) return;
 
       const durSec = parseInt(document.getElementById('clipDurationSelect').value) || 8;
-      const durMs = durSec * 1000;
       const half = document.getElementById('matchHalfSelect').value;
-      const currentMatchTime = isFullRecording ? timerText.innerText : new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const currentMatchTime = isFullRecording ? timerText.innerText : new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
       const clipId = 'clip_' + Date.now() + '_' + Math.floor(Math.random() * 999);
 
-      const pendingObj = { id: clipId, time: currentMatchTime, half, tag: categoryName, durationSec: durSec, status: 'recording' };
-      liveClips.push(pendingObj);
+      liveClips.push({ id: clipId, time: currentMatchTime, half, tag: categoryName, durationSec: durSec, status: 'recording' });
       renderClipsTable();
 
       const cfg = getBestRecorderConfig();
-      const opts = { videoBitsPerSecond: cfg.videoBitsPerSecond };
-      if (cfg.mimeType) opts.mimeType = cfg.mimeType;
-
-      let clipRecorder;
-      try {
-        clipRecorder = new MediaRecorder(currentStream, opts);
-      } catch (e) {
-        clipRecorder = new MediaRecorder(currentStream);
-      }
-
+      const clipRecorder = createSafeRecorder(currentStream, cfg);
+      const usedMime = clipRecorder._usedMime, usedExt = clipRecorder._usedExt;
       const clipChunks = [];
       clipRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) clipChunks.push(e.data); };
       const recStart = Date.now();
-      clipRecorder.start(250);
 
-      setTimeout(() => {
-        if (clipRecorder.state !== 'inactive') clipRecorder.stop();
-      }, durMs);
+      // في الـ MP4 نبدأ بدون timeslice لضمان سلامة الملف في معرض التليفون وواتساب
+      if (usedExt === 'mp4') clipRecorder.start();
+      else clipRecorder.start(250);
+
+      setTimeout(() => { if (clipRecorder.state !== 'inactive') clipRecorder.stop(); }, durSec * 1000);
 
       clipRecorder.onstop = async () => {
         const realDur = Date.now() - recStart;
-        const rawBlob = new Blob(clipChunks, { type: cfg.mimeType || 'video/webm' });
+        const rawBlob = new Blob(clipChunks, { type: usedMime });
         let finalBlob = rawBlob;
-        if (cfg.ext === 'webm' && typeof ysFixWebmDuration === 'function') {
+        if (usedExt === 'webm' && typeof ysFixWebmDuration === 'function') {
           finalBlob = await new Promise(res => ysFixWebmDuration(rawBlob, realDur, res));
         }
-
         const target = liveClips.find(c => c.id === clipId);
         if (target) {
-          target.status = 'ready';
-          target.ext = cfg.ext;
-          target.blob = finalBlob;
-          target.url = URL.createObjectURL(finalBlob);
-          renderClipsTable();
-          scheduleAutoSave();
-          showToast(`تم حفظ لقطة: ${categoryName} (${durSec}ث) ✓`);
+          target.status = 'ready'; target.ext = usedExt; target.blob = finalBlob; target.url = URL.createObjectURL(finalBlob);
+          renderClipsTable(); scheduleAutoSave();
+          showToast(`تم حفظ لقطة: ${categoryName} (${durSec}ث - ${usedExt.toUpperCase()}) ✓`);
         }
       };
     }
 
     function downloadLiveClip(idx) {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تحميل لقطة اللايف')) return;
-      const c = liveClips[idx];
-      if (!c || !c.url) return;
-      const a = document.createElement('a');
-      a.href = c.url;
-      a.download = `Live_${c.tag.replace(/\s+/g, '_')}_${Date.now()}.${c.ext || 'webm'}`;
-      a.click();
+      const c = liveClips[idx]; if (!c || !c.url) return;
+      const a = document.createElement('a'); a.href = c.url;
+      a.download = `Live_${c.tag.replace(/\s+/g, '_')}_${Date.now()}.${c.ext || 'mp4'}`; a.click();
     }
 
     function renderClipsTable() {
-      const tbody = document.getElementById('liveLogBody');
-      document.getElementById('clipsCount').innerText = liveClips.length;
-
-      if (liveClips.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding:18px;">لم يتم تقطيع لقطات حتى الآن. افتح الكاميرا أو ارفع فيديو واضغط على أي حالة.</td></tr>';
-        return;
-      }
-
+      const tbody = document.getElementById('liveLogBody'); document.getElementById('clipsCount').innerText = liveClips.length;
+      if (!liveClips.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:18px;">لم يتم تقطيع لقطات حتى الآن. افتح الكاميرا أو ارفع فيديو واضغط على أي حالة.</td></tr>'; return; }
       tbody.innerHTML = liveClips.slice().reverse().map((c, idx) => {
         const actualIdx = liveClips.length - 1 - idx;
         return `<tr>
           <td><b style="direction:ltr; display:inline-block;">${escapeHtml(c.time)}</b><div style="font-size:11px; color:var(--text-muted);">${escapeHtml(c.half)}</div></td>
           <td style="color:var(--primary); font-weight:800;">${escapeHtml(c.tag)}</td>
           <td>${c.durationSec} ثانية</td>
-          <td>
-            ${c.status === 'recording'
-              ? `<span class="status-badge"><i class="fa-solid fa-spinner fa-spin"></i> جاري تسجيل اللقطة (${c.durationSec}ث)...</span>`
-              : `<div class="action-btns-row">
-                   <button class="btn-preview" onclick="openClipPreview(${actualIdx})"><i class="fa-solid fa-play"></i> معاينة</button>
-                   <button class="btn-download" onclick="downloadLiveClip(${actualIdx})"><i class="fa-solid fa-download"></i> تحميل</button>
-                   <button class="btn-del" onclick="deleteLiveClip(${actualIdx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                 </div>`
-            }
-          </td>
+          <td>${c.status === 'recording'
+            ? `<span class="status-badge"><i class="fa-solid fa-spinner fa-spin"></i> جاري تسجيل اللقطة (${c.durationSec}ث)...</span>`
+            : `<div class="action-btns-row">
+                 <button class="btn-preview" onclick="openClipPreview(${actualIdx})"><i class="fa-solid fa-play"></i> معاينة</button>
+                 <button class="btn-download" onclick="downloadLiveClip(${actualIdx})"><i class="fa-solid fa-download"></i> تحميل</button>
+                 <button class="btn-del" onclick="deleteLiveClip(${actualIdx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
+               </div>`}</td>
         </tr>`;
       }).join('');
     }
 
     function openClipPreview(idx) {
-      const c = liveClips[idx];
-      if (!c || !c.url) return;
+      const c = liveClips[idx]; if (!c || !c.url) return;
       document.getElementById('previewClipTitle').innerHTML = `<i class="fa-solid fa-play-circle"></i> ${escapeHtml(c.tag)} — ${escapeHtml(c.time)}`;
-      const pv = document.getElementById('previewClipVideo');
-      pv.src = c.url;
-      document.getElementById('clipPreviewModal').style.display = 'flex';
-      pv.play().catch(() => {});
+      const pv = document.getElementById('previewClipVideo'); pv.src = c.url;
+      document.getElementById('clipPreviewModal').style.display = 'flex'; pv.play().catch(() => {});
     }
-
-    function closeClipPreview() {
-      const pv = document.getElementById('previewClipVideo');
-      pv.pause();
-      pv.src = '';
-      document.getElementById('clipPreviewModal').style.display = 'none';
-    }
-
-    function deleteLiveClip(idx) {
-      if (!confirm('هل تريد حذف هذه اللقطة؟')) return;
-      liveClips.splice(idx, 1);
-      renderClipsTable();
-      scheduleAutoSave();
-    }
-
-    function clearAllClips() {
-      if (liveClips.length === 0) return;
-      if (!confirm('هل تريد مسح جميع اللقطات المقطوعة في هذه المباراة؟')) return;
-      liveClips = [];
-      renderClipsTable();
-      scheduleAutoSave();
-    }
+    function closeClipPreview() { const pv = document.getElementById('previewClipVideo'); pv.pause(); pv.src = ''; document.getElementById('clipPreviewModal').style.display = 'none'; }
+    function deleteLiveClip(idx) { if (!confirm('هل تريد حذف هذه اللقطة؟')) return; liveClips.splice(idx, 1); renderClipsTable(); scheduleAutoSave(); }
+    function clearAllClips() { if (!liveClips.length || !confirm('هل تريد مسح جميع اللقطات المقطوعة في هذه المباراة؟')) return; liveClips = []; renderClipsTable(); scheduleAutoSave(); }
 
     // ==========================================
     // نظام الحفظ التلقائي واسترجاع الجلسة (IndexedDB)
@@ -1162,126 +507,57 @@
     function openLiveDB() {
       return new Promise((res, rej) => {
         const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = e => {
-          if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME);
-        };
-        req.onsuccess = () => res(req.result);
-        req.onerror = () => rej(req.error);
+        req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME); };
+        req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
       });
     }
-    async function dbPut(data) {
-      const db = await openLiveDB();
-      return new Promise((res, rej) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        tx.objectStore(STORE_NAME).put(data, SESSION_KEY);
-        tx.oncomplete = res;
-        tx.onerror = () => rej(tx.error);
-      });
-    }
-    async function dbGet() {
-      const db = await openLiveDB();
-      return new Promise((res, rej) => {
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const r = tx.objectStore(STORE_NAME).get(SESSION_KEY);
-        r.onsuccess = () => res(r.result || null);
-        r.onerror = () => rej(r.error);
-      });
-    }
-    async function dbDel() {
-      const db = await openLiveDB();
-      return new Promise((res, rej) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        tx.objectStore(STORE_NAME).delete(SESSION_KEY);
-        tx.oncomplete = res;
-        tx.onerror = () => rej(tx.error);
-      });
-    }
+    async function dbPut(data) { const db = await openLiveDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(data, SESSION_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+    async function dbGet() { const db = await openLiveDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const r = tx.objectStore(STORE_NAME).get(SESSION_KEY); r.onsuccess = () => res(r.result || null); r.onerror = () => rej(r.error); }); }
+    async function dbDel() { const db = await openLiveDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(SESSION_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
 
     function collectLiveState() {
       return {
-        savedAt: new Date().toISOString(),
-        teamA: document.getElementById('teamAName').value || 'فريقنا',
-        teamB: document.getElementById('teamBName').value || 'المنافس',
-        scoreA, scoreB,
-        half: document.getElementById('matchHalfSelect').value,
-        quality: document.getElementById('camQualitySelect').value,
-        clipDuration: document.getElementById('clipDurationSelect').value,
-        clips: liveClips.filter(c => c.status === 'ready').map(c => ({
-          id: c.id, time: c.time, half: c.half, tag: c.tag,
-          durationSec: c.durationSec, ext: c.ext || 'webm', blob: c.blob
-        }))
+        savedAt: new Date().toISOString(), teamA: document.getElementById('teamAName').value || 'فريقنا', teamB: document.getElementById('teamBName').value || 'المنافس',
+        scoreA, scoreB, half: document.getElementById('matchHalfSelect').value, quality: document.getElementById('camQualitySelect').value, clipDuration: document.getElementById('clipDurationSelect').value,
+        clips: liveClips.filter(c => c.status === 'ready').map(c => ({ id: c.id, time: c.time, half: c.half, tag: c.tag, durationSec: c.durationSec, ext: c.ext || 'mp4', blob: c.blob }))
       };
     }
 
     async function saveProjectNow() {
       const badge = document.getElementById('autosaveBadge');
-      try {
-        const s = collectLiveState();
-        if (s.clips.length === 0 && scoreA === 0 && scoreB === 0) await dbDel();
-        else await dbPut(s);
-      } catch (e) {}
-      badge.classList.remove('saving');
-      badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
+      try { const s = collectLiveState(); if (s.clips.length === 0 && scoreA === 0 && scoreB === 0) await dbDel(); else await dbPut(s); } catch (e) {}
+      badge.classList.remove('saving'); badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
     }
-
     function scheduleAutoSave() {
-      const badge = document.getElementById('autosaveBadge');
-      badge.classList.add('saving');
-      badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-      clearTimeout(autosaveTimer);
-      autosaveTimer = setTimeout(saveProjectNow, 500);
+      const badge = document.getElementById('autosaveBadge'); badge.classList.add('saving'); badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      clearTimeout(autosaveTimer); autosaveTimer = setTimeout(saveProjectNow, 500);
     }
-
     window.addEventListener('beforeunload', () => { saveProjectNow(); });
 
     let pendingRecovery = null;
     (async function checkSavedSession() {
       try {
-        const s = await dbGet();
-        if (!s || (!s.clips?.length && !s.scoreA && !s.scoreB)) return;
-        pendingRecovery = s;
-        const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
-        document.getElementById('recoveryMetaInfo').innerHTML = `
-          <div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div>
-          <div><i class="fa-solid fa-futbol" style="color:var(--primary);"></i> <b>المباراة:</b> ${escapeHtml(s.teamA)} (${s.scoreA}) × (${s.scoreB}) ${escapeHtml(s.teamB)}</div>
-          <div><i class="fa-solid fa-film" style="color:#4ade80;"></i> <b>اللقطات المحفوظة:</b> ${s.clips?.length || 0} لقطة فيديو جاهزة</div>
-        `;
+        const s = await dbGet(); if (!s || (!s.clips?.length && !s.scoreA && !s.scoreB)) return;
+        pendingRecovery = s; const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
+        document.getElementById('recoveryMetaInfo').innerHTML = `<div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div><div><i class="fa-solid fa-futbol" style="color:var(--primary);"></i> <b>المباراة:</b> ${escapeHtml(s.teamA)} (${s.scoreA}) × (${s.scoreB}) ${escapeHtml(s.teamB)}</div><div><i class="fa-solid fa-film" style="color:#4ade80;"></i> <b>اللقطات المحفوظة:</b> ${s.clips?.length || 0} لقطة فيديو جاهزة</div>`;
         document.getElementById('recoveryModal').style.display = 'flex';
       } catch (e) {}
     })();
 
     function restoreSavedProject() {
-      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
-        ZiadaPlan.requireGold('استرجاع جلسة اللايف المحفوظة تلقائياً');
-        return;
-      }
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع جلسة اللايف المحفوظة تلقائياً'); return; }
       if (!pendingRecovery) return;
       const s = pendingRecovery;
-      document.getElementById('teamAName').value = s.teamA || 'فريقنا';
-      document.getElementById('teamBName').value = s.teamB || 'المنافس';
-      scoreA = s.scoreA || 0; scoreB = s.scoreB || 0;
-      document.getElementById('scoreA').innerText = scoreA;
-      document.getElementById('scoreB').innerText = scoreB;
+      document.getElementById('teamAName').value = s.teamA || 'فريقنا'; document.getElementById('teamBName').value = s.teamB || 'المنافس';
+      scoreA = s.scoreA || 0; scoreB = s.scoreB || 0; document.getElementById('scoreA').innerText = scoreA; document.getElementById('scoreB').innerText = scoreB;
       if (s.half) document.getElementById('matchHalfSelect').value = s.half;
       if (s.quality) document.getElementById('camQualitySelect').value = s.quality;
       if (s.clipDuration) document.getElementById('clipDurationSelect').value = s.clipDuration;
-
-      liveClips = (s.clips || []).map(c => ({
-        ...c,
-        status: 'ready',
-        url: c.blob ? URL.createObjectURL(c.blob) : ''
-      }));
-      renderClipsTable();
-      document.getElementById('recoveryModal').style.display = 'none';
-      showToast('تم استرجاع جلسة اللايف وكل اللقطات ✓');
+      liveClips = (s.clips || []).map(c => ({ ...c, status: 'ready', url: c.blob ? URL.createObjectURL(c.blob) : '' }));
+      renderClipsTable(); document.getElementById('recoveryModal').style.display = 'none'; showToast('تم استرجاع جلسة اللايف وكل اللقطات ✓');
     }
 
-    async function startFreshProject() {
-      await dbDel();
-      pendingRecovery = null;
-      document.getElementById('recoveryModal').style.display = 'none';
-      showToast('تم بدء جلسة لايف جديدة');
-    }
+    async function startFreshProject() { await dbDel(); pendingRecovery = null; document.getElementById('recoveryModal').style.display = 'none'; showToast('تم بدء جلسة لايف جديدة'); }
   </script>
 </body>
 </html>
