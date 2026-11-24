@@ -212,8 +212,8 @@
 
   <div class="modal-overlay" id="exportProgressModal">
     <div class="modal-card">
-      <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير الفيديو بجودة Full HD</h3>
-      <p id="exportStatusText">جاري تسجيل الحركة بسرعة 60 إطار/ثانية وبأعلى نقاء...</p>
+      <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير الفيديو بجودة HD كاملة</h3>
+      <p id="exportStatusText">جاري تسجيل جميع إطارات التمرين حتى النهاية...</p>
       <div class="progress-track"><div class="progress-fill" id="exportProgressFill"></div></div>
       <div id="exportPercentText" style="font-weight:800; color:var(--cyan); font-size:15px;">0%</div>
     </div>
@@ -335,7 +335,10 @@
       <div class="anim-bar">
         <button class="anim-btn record" onclick="saveFrame('train')"><i class="fa-solid fa-camera"></i> حفظ إطار الحركة</button>
         <select id="trainAnimSpeed" class="speed-select" onchange="scheduleAutoSave()">
-          <option value="1200">بطيء جداً</option><option value="850">بطيء</option><option value="550" selected>عادي</option><option value="300">سريع</option>
+          <option value="3200">بطيء جداً (شرح تفصيلي)</option>
+          <option value="2200">بطيء (مثالي للشرح)</option>
+          <option value="1500" selected>عادي (هادئ ومريح)</option>
+          <option value="950">سريع</option>
         </select>
         <span style="color:#fff; font-size:13px;">الإطارات: <span id="trainFrameCount" style="color:var(--primary); font-weight:800;">0</span></span>
         <button class="anim-btn play" id="trainPlayBtn" onclick="playAnimation('train')"><i class="fa-solid fa-play"></i> تشغيل العرض</button>
@@ -408,7 +411,10 @@
       <div class="anim-bar">
         <button class="anim-btn record" onclick="saveFrame('match')"><i class="fa-solid fa-camera"></i> حفظ التمركز</button>
         <select id="matchAnimSpeed" class="speed-select" onchange="scheduleAutoSave()">
-          <option value="1200">بطيء جداً</option><option value="850">بطيء</option><option value="550" selected>عادي</option><option value="300">سريع</option>
+          <option value="3200">بطيء جداً (شرح تفصيلي)</option>
+          <option value="2200">بطيء (مثالي للشرح)</option>
+          <option value="1500" selected>عادي (هادئ ومريح)</option>
+          <option value="950">سريع</option>
         </select>
         <span style="color:#fff; font-size:13px;">الإطارات: <span id="matchFrameCount" style="color:var(--primary); font-weight:800;">0</span></span>
         <button class="anim-btn play" id="matchPlayBtn" onclick="playAnimation('match')"><i class="fa-solid fa-play"></i> تشغيل التحركات</button>
@@ -459,9 +465,6 @@
       scheduleAutoSave();
     }
 
-    // ==========================================
-    // مكتبة العناصر (بما فيها الأجوان الصغيرة وتغيير الألوان)
-    // ==========================================
     const defaultTypeColors = {
       playerRed: () => team1Color,
       playerBlue: () => team2Color,
@@ -544,12 +547,8 @@
         document.getElementById('team2ColorInput').value = hex;
       }
       buildTrainingPalette();
-      // تحديث ألوان لاعبي الفريق الموجودين على ملعب التدريب
       const targetType = teamNum === 1 ? 'playerRed' : 'playerBlue';
-      document.querySelectorAll(`#trainPitch .drill-item[data-type="${targetType}"]`).forEach(el => {
-        applyItemColor(el, hex);
-      });
-      // تحديث ألوان الفريق في تاب خطط المباريات
+      document.querySelectorAll(`#trainPitch .drill-item[data-type="${targetType}"]`).forEach(el => applyItemColor(el, hex));
       document.querySelectorAll(`#matchPitch .player-node.team${teamNum}`).forEach(node => {
         node.dataset.color = hex;
         node.style.borderColor = hex;
@@ -577,10 +576,8 @@
       el.dataset.color = hex;
       const t = el.querySelector('.p-text');
       const currentTxt = t ? t.textContent : (el.dataset.num || '');
-      const delBtn = el.querySelector('.delete-btn');
       el.innerHTML = `${getSvgByType(el.dataset.type, currentTxt, hex)}<div class="delete-btn" onclick="removeNode(event, this)">×</div>`;
       if (t) { const newT = el.querySelector('.p-text'); if (newT) newT.textContent = currentTxt; }
-      if (!delBtn && el.classList.contains('ball-item')) { /* keep del btn */ }
     }
 
     function getClientPos(e) {
@@ -661,11 +658,9 @@
     }
     function changeSelectedItemColor(hex) {
       if (!selectedElement) return;
-      if (selectedElement.classList.contains('drill-item')) {
-        applyItemColor(selectedElement, hex);
-      } else if (selectedElement.classList.contains('player-node')) {
-        selectedElement.dataset.color = hex;
-        selectedElement.style.borderColor = hex;
+      if (selectedElement.classList.contains('drill-item')) applyItemColor(selectedElement, hex);
+      else if (selectedElement.classList.contains('player-node')) {
+        selectedElement.dataset.color = hex; selectedElement.style.borderColor = hex;
         const lbl = selectedElement.querySelector('.player-label');
         if (lbl) { lbl.style.background = hex; lbl.style.color = getContrastColor(hex); }
       }
@@ -841,7 +836,7 @@
     }
 
     // ==========================================
-    // محرك الرندر Full HD (1920px - 60 FPS) بدعم الألوان والتدوير
+    // محرك الرندر HD بدعم الألوان والتدوير
     // ==========================================
     function loadImageSafe(src) { return new Promise(res => { const img = new Image(); img.onload = () => res(img); img.onerror = () => res(null); img.src = src; }); }
     function drawRoundedRect(ctx, x, y, w, h, r) {
@@ -891,7 +886,7 @@
           } else {
             let loadedImg = null;
             if (svgEl) {
-              const clone = svgEl.cloneNode(true); clone.setAttribute('xmlns','http://www.w3.org/2000/svg'); clone.setAttribute('width', origW*5); clone.setAttribute('height', origH*5);
+              const clone = svgEl.cloneNode(true); clone.setAttribute('xmlns','http://www.w3.org/2000/svg'); clone.setAttribute('width', origW*4); clone.setAttribute('height', origH*4);
               loadedImg = await loadImageSafe('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone)));
             }
             assets.push({ kind:'drill-svg', id:el.id, left, top, scale, rot, origW, origH, img:loadedImg });
@@ -901,7 +896,7 @@
       return assets;
     }
 
-    function renderPitchFrameHD(ctx, w, h, sf, pitchId, assets, posMap) {
+    function renderPitchFrameHD(ctx, w, h, sf, pitchId, assets, posMap, tickParity = 0) {
       drawPitchBackgroundHD(ctx, w, h, pitchId === 'trainPitch' ? currentPitchView : 'full');
       const links = tacticalLinks.filter(l => l.pitchId === pitchId);
       if (links.length) {
@@ -913,7 +908,7 @@
 
       assets.forEach(asset => {
         const p = posMap[asset.id] || { left: asset.left, top: asset.top }, cx = (p.left/100)*w, cy = (p.top/100)*h;
-        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 7*sf; ctx.shadowOffsetY = 3*sf;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 5*sf; ctx.shadowOffsetY = 2.5*sf;
 
         if (asset.kind === 'drill-circle') {
           const r = (asset.origW*asset.scale*sf)/2, fillCol = asset.color || '#ef4444';
@@ -951,13 +946,22 @@
       });
 
       ctx.save(); ctx.font = `800 ${Math.round(13*sf)}px Cairo, Arial, sans-serif`; ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText('Ziada Analysis Pro', 18*sf, h - 12*sf); ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText('Ziada Analysis Pro', 18*sf, h - 12*sf);
+      // نبضة بكسل غير مرئية تضمن استمرار تدفق الفريمات للمسجل حتى آخر ثانية في الفيديو
+      ctx.fillStyle = tickParity % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
+      ctx.fillRect(w - 2, h - 2, 2, 2);
+      ctx.restore();
     }
 
-    function getHDCanvasConfig(pitchId) { const r = document.getElementById(pitchId).getBoundingClientRect(), w = 1920; let h = Math.round(w*(r.height/r.width)); if (h%2!==0) h++; return { w, h, sf: w/r.width }; }
+    function getHDCanvasConfig(pitchId, targetW = 1920) {
+      const r = document.getElementById(pitchId).getBoundingClientRect();
+      let h = Math.round(targetW * (r.height / r.width));
+      if (h % 2 !== 0) h++;
+      return { w: targetW, h, sf: targetW / r.width };
+    }
 
     async function renderStaticHDDataUrl(pitchId) {
-      deselectAll(); const { w, h, sf } = getHDCanvasConfig(pitchId), assets = await preparePitchRenderAssets(pitchId), posMap = {};
+      deselectAll(); const { w, h, sf } = getHDCanvasConfig(pitchId, 1920), assets = await preparePitchRenderAssets(pitchId), posMap = {};
       assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
       const c = document.createElement('canvas'); c.width = w; c.height = h;
       renderPitchFrameHD(c.getContext('2d'), w, h, sf, pitchId, assets, posMap); return c.toDataURL('image/png');
@@ -999,8 +1003,8 @@
       animState[tabPrefix].playing = true; animState[tabPrefix].stopReq = false;
       const playBtn = document.getElementById(`${tabPrefix}PlayBtn`), stopBtn = document.getElementById(`${tabPrefix}StopBtn`);
       playBtn.style.display = 'none'; stopBtn.style.display = 'inline-flex';
-      const pitchId = tabPrefix === 'train' ? 'trainPitch' : 'matchPitch', pitch = document.getElementById(pitchId), dur = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value)||550;
-      applyFrameImmediate(frames[0], pitch); await new Promise(r => setTimeout(r, 150));
+      const pitchId = tabPrefix === 'train' ? 'trainPitch' : 'matchPitch', pitch = document.getElementById(pitchId), dur = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value)||1500;
+      applyFrameImmediate(frames[0], pitch); await new Promise(r => setTimeout(r, 350));
 
       for (let i = 0; i < frames.length - 1; i++) {
         if (animState[tabPrefix].stopReq) break;
@@ -1015,13 +1019,16 @@
           }
           requestAnimationFrame(step);
         });
+        if (!animState[tabPrefix].stopReq && i < frames.length - 2) {
+          await new Promise(r => setTimeout(r, 220));
+        }
       }
       animState[tabPrefix].playing = false; animState[tabPrefix].stopReq = false;
       playBtn.style.display = 'inline-flex'; stopBtn.style.display = 'none';
     }
 
     // ==========================================
-    // أولوية قصوى لـ MP4 H.264 للتشغيل المباشر في معرض التليفون وواتساب
+    // تصدير فيديو MP4 H.264 كامل حتى آخر فريم (بدون قص النهاية)
     // ==========================================
     function getSupportedVideoMime() {
       const types = [
@@ -1038,7 +1045,7 @@
     }
 
     async function exportVideo(pitchId) {
-      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو التدريب والخطط Full HD')) return;
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو التدريب والخطط HD')) return;
       const tabPrefix = pitchId === 'trainPitch' ? 'train' : 'match', frames = animationData[tabPrefix].frames;
       if (frames.length < 2) return alert('الرجاء حفظ إطارين على الأقل لتصدير الفيديو.');
       if (!window.MediaRecorder) return alert('متصفحك الحالي لا يدعم تسجيل الفيديو المباشر.');
@@ -1047,13 +1054,18 @@
       const modal = document.getElementById('exportProgressModal'), fill = document.getElementById('exportProgressFill'), pctTxt = document.getElementById('exportPercentText');
       modal.style.display = 'flex'; fill.style.width = '0%'; pctTxt.textContent = '0%';
 
-      const { w, h, sf } = getHDCanvasConfig(pitchId), assets = await preparePitchRenderAssets(pitchId), speedMs = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value)||550;
-      const vCanvas = document.createElement('canvas'); vCanvas.width = w; vCanvas.height = h; const vCtx = vCanvas.getContext('2d');
-      const stream = vCanvas.captureStream(60), mimeType = getSupportedVideoMime();
+      // دقة 1280px HD + 30fps تضمن سلاسة تامة وعدم تقطيع أو قص آخر التمرين
+      const { w, h, sf } = getHDCanvasConfig(pitchId, 1280);
+      const assets = await preparePitchRenderAssets(pitchId);
+      const speedMs = parseInt(document.getElementById(`${tabPrefix}AnimSpeed`).value) || 1500;
+
+      const vCanvas = document.createElement('canvas'); vCanvas.width = w; vCanvas.height = h;
+      const vCtx = vCanvas.getContext('2d');
+      const stream = vCanvas.captureStream(30), mimeType = getSupportedVideoMime();
 
       let recorder;
       try {
-        recorder = mimeType ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 }) : new MediaRecorder(stream, { videoBitsPerSecond: 8000000 });
+        recorder = mimeType ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6000000 }) : new MediaRecorder(stream, { videoBitsPerSecond: 6000000 });
       } catch (e) {
         try { recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream); }
         catch (e2) { recorder = new MediaRecorder(stream); }
@@ -1061,40 +1073,83 @@
       const actualMime = recorder.mimeType || mimeType || 'video/webm';
       const isMp4 = actualMime.includes('mp4'), usedMime = isMp4 ? 'video/mp4' : 'video/webm', usedExt = isMp4 ? 'mp4' : 'webm';
 
-      const chunks = []; recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-      const startHoldMs = 350, waypointHoldMs = 100, endHoldMs = 700, segs = frames.length - 1;
-      const totalAnimMs = startHoldMs + segs*speedMs + Math.max(0, segs-1)*waypointHoldMs + endHoldMs;
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+
+      const startHoldMs = 550;
+      const waypointHoldMs = 260;
+      const endHoldMs = 1700; // ثبات كامل في النهاية لضمان ظهور آخر حركة كاملة
+      const segs = frames.length - 1;
+      const totalAnimMs = startHoldMs + segs * speedMs + Math.max(0, segs - 1) * waypointHoldMs + endHoldMs;
 
       function buildPosMapAtTime(elapsedMs) {
-        const posMap = {}; assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
+        const posMap = {};
+        assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
         let fA = frames[0], fB = frames[0], t = 0;
-        if (elapsedMs >= totalAnimMs - endHoldMs) { fA = frames[frames.length-1]; fB = fA; }
-        else if (elapsedMs > startHoldMs) {
+
+        if (elapsedMs <= startHoldMs) {
+          fA = frames[0]; fB = frames[0]; t = 0;
+        } else if (elapsedMs >= totalAnimMs - endHoldMs) {
+          fA = frames[frames.length - 1]; fB = fA; t = 0;
+        } else {
           let cur = elapsedMs - startHoldMs;
           for (let i = 0; i < segs; i++) {
-            if (cur <= speedMs) { fA = frames[i]; fB = frames[i+1]; t = easeInOutQuad(cur/speedMs); break; }
-            cur -= speedMs; if (i < segs - 1) { if (cur <= waypointHoldMs) { fA = frames[i+1]; fB = fA; break; } cur -= waypointHoldMs; }
+            if (cur <= speedMs) { fA = frames[i]; fB = frames[i + 1]; t = easeInOutQuad(cur / speedMs); break; }
+            cur -= speedMs;
+            if (i < segs - 1) {
+              if (cur <= waypointHoldMs) { fA = frames[i + 1]; fB = fA; t = 0; break; }
+              cur -= waypointHoldMs;
+            }
           }
         }
-        fA.forEach(pA => { const pB = fB.find(p => p.id === pA.id) || pA; posMap[pA.id] = { left: pA.left + (pB.left - pA.left)*t, top: pA.top + (pB.top - pA.top)*t }; });
+
+        const ids = new Set([...fA.map(p => p.id), ...fB.map(p => p.id)]);
+        ids.forEach(id => {
+          const pA = fA.find(p => p.id === id) || fB.find(p => p.id === id);
+          const pB = fB.find(p => p.id === id) || pA;
+          if (pA && pB) {
+            posMap[id] = { left: pA.left + (pB.left - pA.left) * t, top: pA.top + (pB.top - pA.top) * t };
+          }
+        });
         return posMap;
       }
 
-      renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, buildPosMapAtTime(0));
-      const recordStartTime = performance.now(); recorder.start();
+      renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, buildPosMapAtTime(0), 0);
+      await new Promise(r => setTimeout(r, 120));
+
+      const wallStart = performance.now();
+      recorder.start();
+      await new Promise(r => setTimeout(r, 120));
 
       try {
+        let elapsed = 0, lastNow = performance.now(), tickCount = 0;
         await new Promise(resolve => {
           function tick(now) {
-            const elapsed = now - recordStartTime;
-            renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, buildPosMapAtTime(Math.min(elapsed, totalAnimMs)));
-            const pct = Math.min(99, Math.round((elapsed/totalAnimMs)*100)); fill.style.width = `${pct}%`; pctTxt.textContent = `${pct}%`;
-            if (elapsed < totalAnimMs) requestAnimationFrame(tick); else resolve();
+            // تقييد dt بحد أقصى 40ms حتى لا يقفز الفيديو فوق آخر الحركات لو الجهاز أبطأ لحظياً
+            const dt = Math.min(40, Math.max(8, now - lastNow));
+            lastNow = now;
+            elapsed += dt;
+            tickCount++;
+
+            renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, buildPosMapAtTime(Math.min(elapsed, totalAnimMs)), tickCount);
+
+            const pct = Math.min(98, Math.round((elapsed / totalAnimMs) * 98));
+            fill.style.width = `${pct}%`; pctTxt.textContent = `${pct}%`;
+
+            if (elapsed < totalAnimMs) requestAnimationFrame(tick);
+            else resolve();
           }
           requestAnimationFrame(tick);
         });
 
-        const finalDuration = Math.round(performance.now() - recordStartTime);
+        // تفريغ أخير للـ Encoder لضمان حفظ آخر فريم كامل
+        const finalMap = buildPosMapAtTime(totalAnimMs);
+        for (let k = 0; k < 12; k++) {
+          renderPitchFrameHD(vCtx, w, h, sf, pitchId, assets, finalMap, k);
+          await new Promise(r => setTimeout(r, 34));
+        }
+
+        const finalDuration = Math.round(performance.now() - wallStart);
         recorder.onstop = () => {
           const rawBlob = new Blob(chunks, { type: usedMime });
           const downloadBlob = (finalBlob) => {
@@ -1102,11 +1157,12 @@
             const a = document.createElement('a'); a.href = dlUrl; a.download = `Ziada_Tactical_HD_${Date.now()}.${usedExt}`; a.click();
             setTimeout(() => URL.revokeObjectURL(dlUrl), 15000);
             fill.style.width = '100%'; pctTxt.textContent = '100%';
-            setTimeout(() => { modal.style.display = 'none'; showToast(`تم تصدير الفيديو (${usedExt.toUpperCase()}) بجودة Full HD ✓`); }, 350);
+            setTimeout(() => { modal.style.display = 'none'; showToast(`تم تصدير الفيديو كامل (${usedExt.toUpperCase()}) ✓`); }, 350);
           };
           if (!isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(rawBlob, finalDuration, downloadBlob);
           else downloadBlob(rawBlob);
         };
+        if (typeof recorder.requestData === 'function') { try { recorder.requestData(); } catch (e) {} }
         recorder.stop();
       } catch (err) { try { recorder.stop(); } catch (e) {} modal.style.display = 'none'; alert('حدث خطأ أثناء تصدير الفيديو: ' + err.message); }
     }
@@ -1173,6 +1229,12 @@
       } catch (e) { localStorage.removeItem(AUTOSAVE_KEY); }
     })();
 
+    function setSelectIfValid(id, val, fallback) {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      sel.value = [...sel.options].some(o => o.value === String(val)) ? String(val) : String(fallback);
+    }
+
     function restoreSavedProject() {
       if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً'); return; }
       if (!pendingRecoveryState) return;
@@ -1191,8 +1253,8 @@
       (s.matchBalls || []).forEach(b => addMatchBall(b.id, b.left, b.top, b.scale||1.35));
 
       document.getElementById('drillNotes').value = s.drillNotes || '';
-      if (s.trainAnimSpeed) document.getElementById('trainAnimSpeed').value = s.trainAnimSpeed;
-      if (s.matchAnimSpeed) document.getElementById('matchAnimSpeed').value = s.matchAnimSpeed;
+      setSelectIfValid('trainAnimSpeed', s.trainAnimSpeed, '1500');
+      setSelectIfValid('matchAnimSpeed', s.matchAnimSpeed, '1500');
 
       tacticalLinks = Array.isArray(s.tacticalLinks) ? s.tacticalLinks : [];
       drawings.trainPitch = s.drawings?.trainPitch || []; drawings.matchPitch = s.drawings?.matchPitch || [];
