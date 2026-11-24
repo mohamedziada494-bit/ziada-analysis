@@ -21,6 +21,28 @@
     goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، والتدريب الذهني والـ QR والكاميرا المباشرة بلا حدود.'
   };
 
+  // العروض والأسعار الخاصة بكل أداة (مفعّل حالياً للمدير الفني فقط)
+  const PAGE_PROMOS = {
+    head_coach: {
+      toolName: 'استوديو المدير الفني',
+      discountLabel: 'خصم 50%',
+      oldPriceShort: '500 ج',
+      newPriceShort: '250 ج',
+      oldPriceFull: '500 جنيه',
+      newPriceFull: '250 جنيه'
+    }
+  };
+
+  function getPagePromo() {
+    if (window.ZIADA_PAGE_PROMO) return window.ZIADA_PAGE_PROMO;
+    const url = ((window.location.pathname || '') + ' ' + (window.location.href || '')).toLowerCase();
+    for (const key in PAGE_PROMOS) {
+      if (url.includes(key)) return PAGE_PROMOS[key];
+    }
+    if ((document.title || '').includes('المدير الفني')) return PAGE_PROMOS.head_coach;
+    return null;
+  }
+
   function getActiveUser() {
     try {
       return JSON.parse(localStorage.getItem('ziada_active_user') || 'null') || {};
@@ -55,10 +77,15 @@
   function buildWhatsappLink(reasonText) {
     const cfg = getConfig();
     const u = getActiveUser();
+    const promo = getPagePromo();
     const phone = String(cfg.whatsappNumber || '201027482686').replace(/[^\d]/g, '');
+    const promoLine = promo
+      ? `العرض المطلوب: ${promo.toolName} (${promo.discountLabel}: ${promo.newPriceFull} بدلاً من ${promo.oldPriceFull})\n`
+      : '';
     const msg =
       `مرحباً إدارة Ziada Analysis ⚽\n` +
-      `أرغب في الترقية إلى باقة Gold ⭐ (عرض خصم 50%: 250 جنيه بدلاً من 500 جنيه)\n` +
+      `أرغب في الترقية إلى باقة Gold ⭐\n` +
+      promoLine +
       `الاسم: ${u.name || 'غير محدد'}\n` +
       `البريد الإلكتروني: ${u.email || 'غير محدد'}\n` +
       (reasonText ? `الميزة المطلوبة: ${reasonText}` : '');
@@ -83,6 +110,7 @@
       .zg-crown { font-size: 42px; margin-bottom: 6px; }
       .zg-title { color: #fbbf24; font-size: 20px; font-weight: 900; margin-bottom: 8px; }
       .zg-price-box {
+        display: none;
         background: linear-gradient(135deg, rgba(220, 38, 38, 0.22), rgba(245, 158, 11, 0.16));
         border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px;
       }
@@ -145,14 +173,14 @@
       <div class="zg-card" onclick="event.stopPropagation()">
         <div class="zg-crown">👑</div>
         <div class="zg-title">ميزة حصرية لباقة Gold</div>
-        <div class="zg-price-box">
-          <div class="zg-discount-tag">🔥 عرض خاص — خصم 50%</div>
-          <div class="zg-prices"><b>250 جنيه</b> بدلاً من <s>500 جنيه</s></div>
+        <div class="zg-price-box" id="zgPriceBox">
+          <div class="zg-discount-tag" id="zgDiscountTag"></div>
+          <div class="zg-prices" id="zgPricesLine"></div>
         </div>
         <div class="zg-reason" id="zgReasonText"></div>
         <div class="zg-offer" id="zgOfferText"></div>
         <a id="zgWhatsappBtn" href="#" target="_blank" class="zg-btn-wa">
-          <i class="fa-brands fa-whatsapp" style="font-size:18px;"></i> اشترك الآن بـ 250 جنيه بدلاً من 500
+          <i class="fa-brands fa-whatsapp" style="font-size:18px;"></i> <span id="zgWaBtnText">ترقية حسابك لـ Gold الآن</span>
         </a>
         <button class="zg-btn-close" onclick="ZiadaPlan.closeUpgradeModal()">متابعة بالباقة المجانية</button>
       </div>
@@ -164,6 +192,20 @@
   function openUpgradeModal(reasonText) {
     ensureModalInjected();
     const cfg = getConfig();
+    const promo = getPagePromo();
+    const priceBox = document.getElementById('zgPriceBox');
+    const waText = document.getElementById('zgWaBtnText');
+
+    if (promo) {
+      priceBox.style.display = 'block';
+      document.getElementById('zgDiscountTag').textContent = `🔥 عرض خاص (${promo.toolName}) — ${promo.discountLabel}`;
+      document.getElementById('zgPricesLine').innerHTML = `<b>${promo.newPriceFull}</b> بدلاً من <s>${promo.oldPriceFull}</s>`;
+      waText.textContent = `اشترك الآن بـ ${promo.newPriceFull} بدلاً من ${promo.oldPriceFull}`;
+    } else {
+      priceBox.style.display = 'none';
+      waText.textContent = 'ترقية حسابك لـ Gold الآن';
+    }
+
     document.getElementById('zgReasonText').textContent = reasonText || 'هذه الميزة متاحة لمشتركي باقة Gold فقط.';
     document.getElementById('zgOfferText').textContent = cfg.goldOfferText || DEFAULT_CONFIG.goldOfferText;
     document.getElementById('zgWhatsappBtn').href = buildWhatsappLink(reasonText);
@@ -244,27 +286,36 @@
       pill.innerHTML = '⭐ باقة Gold';
       navRight.prepend(pill);
     } else {
-      const wrap = document.createElement('div');
-      wrap.className = 'zg-promo-wrap';
-
-      const offerBtn = document.createElement('button');
-      offerBtn.type = 'button';
-      offerBtn.className = 'zg-offer-pill';
-      offerBtn.innerHTML = '🔥 خصم 50% | <b>250 ج</b> بدلاً من <s>500 ج</s>';
-      offerBtn.onclick = () => openUpgradeModal('اغتنم عرض خصم 50% الآن — اشتراك باقة Gold بـ 250 جنيه بدلاً من 500 جنيه!');
-
+      const promo = getPagePromo();
       pill.className = 'zg-nav-pill zg-pill-free';
       pill.innerHTML = '⭐ ترقية للـ Gold';
-      pill.onclick = () => openUpgradeModal('قم بترقية حسابك إلى باقة Gold الآن بـ 250 جنيه بدلاً من 500 جنيه لفتح جميع المميزات بلا حدود.');
 
-      wrap.appendChild(offerBtn);
-      wrap.appendChild(pill);
-      navRight.prepend(wrap);
+      if (promo) {
+        const wrap = document.createElement('div');
+        wrap.className = 'zg-promo-wrap';
+
+        const offerBtn = document.createElement('button');
+        offerBtn.type = 'button';
+        offerBtn.className = 'zg-offer-pill';
+        offerBtn.innerHTML = `🔥 ${promo.discountLabel} | <b>${promo.newPriceShort}</b> بدلاً من <s>${promo.oldPriceShort}</s>`;
+        offerBtn.onclick = () => openUpgradeModal(`اغتنم عرض ${promo.discountLabel} على ${promo.toolName} — ${promo.newPriceFull} بدلاً من ${promo.oldPriceFull}!`);
+
+        pill.onclick = () => openUpgradeModal(`قم بترقية حسابك لـ ${promo.toolName} الآن بـ ${promo.newPriceFull} بدلاً من ${promo.oldPriceFull}.`);
+
+        wrap.appendChild(offerBtn);
+        wrap.appendChild(pill);
+        navRight.prepend(wrap);
+      } else {
+        pill.onclick = () => openUpgradeModal('قم بترقية حسابك من الباقة العادية إلى باقة Gold لفتح جميع المميزات بلا حدود.');
+        navRight.prepend(pill);
+      }
     }
   }
 
   window.ZiadaPlan = {
     DEFAULT_CONFIG,
+    PAGE_PROMOS,
+    getPagePromo,
     getConfig,
     isGold,
     requireGold,
