@@ -10,780 +10,168 @@
   <script src="plan-guard.js"></script>
 
   <style>
-    :root {
-      --bg-dark: #070b12;
-      --card-bg: #111827;
-      --border-color: #1f2937;
-      --primary: #10b981;
-      --cyan: #38bdf8;
-      --accent: #f59e0b;
-      --danger: #ef4444;
-      --success: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --pitch-green: #15803d;
-    }
+    :root { --bg-dark:#070b12; --card-bg:#111827; --border-color:#1f2937; --primary:#10b981; --cyan:#38bdf8; --accent:#f59e0b; --danger:#ef4444; --success:#10b981; --text:#f8fafc; --text-muted:#94a3b8; --pitch-green:#15803d; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; -webkit-tap-highlight-color:transparent; }
+    body { background-color:var(--bg-dark); color:var(--text); padding:12px; overflow-x:hidden; min-height:100vh; }
+    .main-wrapper { max-width:1480px; margin:0 auto; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .top-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--card-bg); padding:12px 18px; border-radius:12px; border:1px solid var(--border-color); margin-bottom:12px; }
+    .brand-title { font-size:1.15rem; font-weight:800; color:#34d399; display:flex; align-items:center; gap:10px; }
+    .nav-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .autosave-badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#4ade80; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); padding:5px 12px; border-radius:20px; }
+    .autosave-badge.saving { color:var(--accent); background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.35); }
+    .btn-top { background:#1f2937; color:var(--cyan); border:1px solid var(--cyan); padding:6px 15px; border-radius:8px; cursor:pointer; font-weight:800; text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:6px; transition:0.2s; }
+    .btn-top:hover { background:var(--cyan); color:#070b12; }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text);
-      padding: 12px;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
+    .tabs-container { display:flex; justify-content:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .tab-btn { background:#1f2937; border:1px solid #374151; color:#e2e8f0; padding:9px 24px; border-radius:10px; cursor:pointer; font-weight:800; font-size:14px; transition:0.25s; display:flex; align-items:center; gap:8px; }
+    .tab-btn:hover { border-color:var(--primary); }
+    .tab-btn.active { background:linear-gradient(135deg,#059669,#10b981); color:#fff; border-color:var(--primary); box-shadow:0 4px 15px rgba(16,185,129,0.35); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; animation:fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-    .main-wrapper {
-      max-width: 1480px;
-      margin: 0 auto;
-    }
+    .training-workspace { display:grid; grid-template-columns:265px 1fr; gap:14px; align-items:stretch; }
+    .tools-panel { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; gap:8px; height:70vh; min-height:470px; overflow-y:auto; user-select:none; }
+    .tools-title { color:var(--accent); font-weight:800; font-size:14px; text-align:center; border-bottom:1px solid #374151; padding-bottom:8px; }
+    .tools-hint { font-size:11px; text-align:center; color:var(--text-muted); }
+    .tools-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .draggable-source { background:#1f2937; border:1px solid #374151; color:#fff; padding:8px 4px; border-radius:8px; cursor:grab; font-weight:700; font-size:11px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; transition:0.2s; text-align:center; }
+    .draggable-source:hover { background:#374151; border-color:var(--primary); transform:translateY(-1px); }
 
-    /* الشريط العلوي */
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: var(--card-bg);
-      padding: 12px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 12px;
-    }
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #34d399;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .autosave-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #4ade80;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 5px 12px;
-      border-radius: 20px;
-    }
-    .autosave-badge.saving {
-      color: var(--accent);
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.35);
-    }
-    .btn-top {
-      background: #1f2937;
-      color: var(--cyan);
-      border: 1px solid var(--cyan);
-      padding: 6px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 800;
-      text-decoration: none;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
-    .btn-top:hover { background: var(--cyan); color: #070b12; }
+    .pitch-container { display:flex; flex-direction:column; gap:10px; min-width:0; }
+    .pitch-controls { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; background:var(--card-bg); padding:9px; border-radius:10px; border:1px solid var(--border-color); }
+    .pitch-btn { background:#1f2937; color:#e2e8f0; border:1px solid #374151; padding:6px 14px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer; }
+    .pitch-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
 
-    /* التبويبات */
-    .tabs-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: #1f2937;
-      border: 1px solid #374151;
-      color: #e2e8f0;
-      padding: 9px 24px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
-      transition: 0.25s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .tab-btn:hover { border-color: var(--primary); }
-    .tab-btn.active {
-      background: linear-gradient(135deg, #059669, #10b981);
-      color: #fff;
-      border-color: var(--primary);
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
-    }
+    .selected-bar { display:none; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; background:linear-gradient(135deg,#1e293b,#0f172a); border:1px solid var(--cyan); padding:7px 14px; border-radius:10px; }
+    .selected-bar.visible { display:flex; }
+    .selected-bar span { font-size:12px; font-weight:800; color:var(--cyan); }
+    .sel-btn { background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+    .sel-btn.del { border-color:var(--danger); color:#fca5a5; }
+    .sel-btn.del:hover { background:var(--danger); color:#fff; }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .pitch-area { background-color:var(--pitch-green); background-image:repeating-linear-gradient(0deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 44px,rgba(0,0,0,0.05) 44px,rgba(0,0,0,0.05) 88px); border:3px solid rgba(255,255,255,0.9); border-radius:10px; height:56vh; min-height:390px; position:relative; overflow:hidden; box-shadow:inset 0 0 35px rgba(0,0,0,0.35),0 8px 25px rgba(0,0,0,0.5); touch-action:none; user-select:none; }
+    .pitch-lines { position:absolute; inset:0; pointer-events:none; }
+    .view-penalty .penalty-box { position:absolute; top:0; left:50%; transform:translateX(-50%); width:60%; height:50%; border:2px solid #fff; border-top:none; }
+    .view-penalty .six-yard-box { position:absolute; top:0; left:50%; transform:translateX(-50%); width:25%; height:20%; border:2px solid #fff; border-top:none; }
+    .view-penalty .penalty-arc { position:absolute; top:40%; left:50%; transform:translateX(-50%); width:20%; aspect-ratio:1; border:2px solid #fff; border-radius:50%; clip-path:polygon(0 50%,100% 50%,100% 100%,0 100%); }
+    .view-penalty .goal-net { display:none; }
+    .view-six-yard .penalty-box, .view-six-yard .penalty-arc { display:none; }
+    .view-six-yard .six-yard-box { position:absolute; top:15%; left:50%; transform:translateX(-50%); width:70%; height:60%; border:3px solid #fff; border-top:none; }
+    .view-six-yard .goal-net { display:block; position:absolute; top:0; left:50%; transform:translateX(-50%); width:36%; height:15%; border:4px solid #eab308; border-top:none; background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,0.3) 10px,rgba(255,255,255,0.3) 12px); }
 
-    /* =========================================
-       التاب الأول: محاكي تدريبات الحراس
-       ========================================= */
-    .training-workspace {
-      display: grid;
-      grid-template-columns: 265px 1fr;
-      gap: 14px;
-      align-items: stretch;
-    }
-    .tools-panel {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 70vh;
-      min-height: 470px;
-      overflow-y: auto;
-      user-select: none;
-    }
-    .tools-title {
-      color: var(--accent);
-      font-weight: 800;
-      font-size: 14px;
-      text-align: center;
-      border-bottom: 1px solid #374151;
-      padding-bottom: 8px;
-    }
-    .tools-hint {
-      font-size: 11px;
-      text-align: center;
-      color: var(--text-muted);
-    }
+    .drill-item { position:absolute; cursor:grab; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.55)); transform-origin:center; touch-action:none; border-radius:50%; }
+    .drill-item:active { cursor:grabbing; }
+    .drill-item.selected { box-shadow:0 0 0 3px var(--cyan),0 0 14px rgba(56,189,248,0.8); }
+    .drill-item .delete-btn { display:none; position:absolute; top:-10px; right:-10px; background:var(--danger); color:#fff; border-radius:50%; width:20px; height:20px; font-size:11px; font-weight:800; text-align:center; line-height:18px; cursor:pointer; border:1px solid #fff; z-index:20; }
+    .drill-item:hover .delete-btn, .drill-item.selected .delete-btn { display:block; }
 
-    .tools-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-    .draggable-source {
-      background: #1f2937;
-      border: 1px solid #374151;
-      color: #fff;
-      padding: 8px 4px;
-      border-radius: 8px;
-      cursor: grab;
-      font-weight: 700;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 4px;
-      transition: 0.2s;
-      text-align: center;
-    }
-    .draggable-source:hover { background: #374151; border-color: var(--primary); transform: translateY(-1px); }
+    .drill-notes { width:100%; background:#111827; color:#fff; border:1px solid #374151; border-radius:10px; padding:9px 12px; font-size:13px; min-height:62px; resize:vertical; outline:none; }
+    .drill-notes:focus { border-color:var(--primary); }
+    .anim-bar { background:var(--card-bg); border:1px solid var(--border-color); padding:10px 16px; border-radius:10px; display:flex; justify-content:center; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .anim-btn { background:#374151; color:#fff; border:1px solid #4b5563; padding:7px 14px; border-radius:7px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:12.5px; }
+    .anim-btn.record { background:#0ea5e9; color:#070b12; border-color:#0284c7; }
+    .anim-btn.play { background:var(--primary); color:#fff; border-color:#059669; }
+    .anim-btn.stop { background:var(--accent); color:#070b12; border-color:#d97706; display:none; }
+    .speed-select { background:#1f2937; color:#fff; border:1px solid var(--primary); padding:6px 8px; border-radius:6px; font-weight:700; outline:none; font-size:12px; }
+    .frames-count { font-size:12.5px; font-weight:800; color:var(--cyan); background:#0b1220; padding:5px 10px; border-radius:6px; }
+    .action-bar { padding:12px 0; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .btn-action { background:var(--cyan); color:#070b12; border:none; padding:8px 18px; border-radius:8px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:7px; font-size:13px; }
 
-    .pitch-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 0;
-    }
-    .pitch-controls {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: var(--card-bg);
-      padding: 9px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-    }
-    .pitch-btn {
-      background: #1f2937;
-      color: #e2e8f0;
-      border: 1px solid #374151;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .pitch-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .relink-banner { display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(245,158,11,0.14); border:1px solid var(--accent); color:#fde68a; padding:10px 16px; border-radius:10px; font-size:13px; font-weight:700; margin-bottom:12px; }
+    .relink-banner button { background:var(--accent); color:#070b12; border:none; padding:6px 14px; border-radius:6px; font-weight:800; cursor:pointer; }
+    .gk-stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:10px; margin-bottom:12px; }
+    .stat-card { background:var(--card-bg); border:1px solid var(--border-color); padding:10px 12px; border-radius:10px; text-align:center; }
+    .stat-card h4 { font-size:11.5px; color:var(--text-muted); margin-bottom:3px; }
+    .stat-card span { font-size:20px; font-weight:900; color:var(--cyan); }
 
-    .selected-bar {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1px solid var(--cyan);
-      padding: 7px 14px;
-      border-radius: 10px;
-    }
-    .selected-bar.visible { display: flex; }
-    .selected-bar span { font-size: 12px; font-weight: 800; color: var(--cyan); }
-    .sel-btn {
-      background: #0f172a;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .sel-btn.del { border-color: var(--danger); color: #fca5a5; }
-    .sel-btn.del:hover { background: var(--danger); color: #fff; }
+    .analysis-workspace { display:grid; grid-template-columns:275px 1fr; gap:14px; align-items:start; }
+    .clipping-panel { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:7px; max-height:78vh; overflow-y:auto; }
+    .mode-toggle-box { background:#0b1220; padding:9px; border-radius:8px; border:1px solid var(--primary); margin-bottom:6px; display:flex; flex-direction:column; gap:6px; }
+    .mode-toggle-box label { display:flex; align-items:center; gap:6px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; }
+    .clip-btn { width:100%; padding:9px 11px; border-radius:8px; font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; color:#fff; background:#1f2937; border:1px solid #374151; transition:0.2s; text-align:right; }
+    .clip-btn:hover { border-color:var(--primary); background:#273549; }
+    .clip-btn.sub-btn { background:#0f172a; margin-right:12px; width:calc(100% - 12px); border-color:#1e293b; color:#cbd5e1; }
+    .cat-title { color:#34d399; font-size:12.5px; font-weight:800; padding-right:4px; margin-top:3px; }
+    .recording-btn { background:var(--danger) !important; color:#fff !important; border-color:#b91c1c !important; animation:pulse 1.2s infinite; justify-content:center !important; }
+    @keyframes pulse { 0% { opacity:1; } 50% { opacity:0.65; } 100% { opacity:1; } }
 
-    .pitch-area {
-      background-color: var(--pitch-green);
-      background-image: repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.04) 0px,
-        rgba(255, 255, 255, 0.04) 44px,
-        rgba(0, 0, 0, 0.05) 44px,
-        rgba(0, 0, 0, 0.05) 88px
-      );
-      border: 3px solid rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      height: 56vh;
-      min-height: 390px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.35), 0 8px 25px rgba(0, 0, 0, 0.5);
-      touch-action: none;
-      user-select: none;
-    }
-    .pitch-lines { position: absolute; inset: 0; pointer-events: none; }
+    .video-area { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+    .video-container { width:100%; background:#000; border-radius:10px; overflow:hidden; display:flex; justify-content:center; align-items:center; height:48vh; min-height:250px; position:relative; }
+    video { width:100%; height:100%; object-fit:contain; }
+    .var-controls-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#0b1220; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; }
+    .btn-group { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+    .control-btn { background:#1f2937; color:#fff; border:1px solid #334155; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:5px; }
+    .control-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+    .speed-btn { background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:5px 8px; border-radius:5px; font-size:11.5px; font-weight:800; cursor:pointer; }
+    .speed-btn.active { background:var(--accent); color:#070b12; border-color:var(--accent); }
+    .upload-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#070b12; padding:9px 12px; border-radius:8px; border:1px solid var(--border-color); }
+    .upload-label { display:inline-flex; align-items:center; gap:7px; background:linear-gradient(135deg,#059669,#10b981); color:#fff; padding:7px 14px; border-radius:7px; font-size:12.5px; font-weight:800; cursor:pointer; }
+    .live-status-banner { display:none; background:rgba(56,189,248,0.14); border:1px solid var(--cyan); color:var(--cyan); padding:9px 14px; border-radius:8px; font-weight:800; font-size:13px; align-items:center; justify-content:center; gap:10px; }
 
-    .view-penalty .penalty-box { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 50%; border: 2px solid #fff; border-top: none; }
-    .view-penalty .six-yard-box { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 25%; height: 20%; border: 2px solid #fff; border-top: none; }
-    .view-penalty .penalty-arc { position: absolute; top: 40%; left: 50%; transform: translateX(-50%); width: 20%; aspect-ratio: 1; border: 2px solid #fff; border-radius: 50%; clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
-    .view-penalty .goal-net { display: none; }
+    .log-section { background:#0b1220; border:1px solid var(--border-color); border-radius:10px; padding:12px; overflow-x:auto; }
+    .log-table { width:100%; border-collapse:collapse; font-size:13px; text-align:right; min-width:480px; }
+    .log-table th { background:#111827; color:#34d399; padding:9px; }
+    .log-table td { padding:8px 10px; border-bottom:1px solid var(--border-color); font-weight:600; }
+    .btn-download { background:var(--success); color:#fff; padding:5px 10px; border-radius:5px; text-decoration:none; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px; border:none; cursor:pointer; }
+    .btn-draw { background:#2563eb; color:#fff; padding:5px 10px; border-radius:5px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px; border:none; cursor:pointer; }
+    .btn-del-clip { background:#b91c1c; color:#fff; padding:5px 9px; border-radius:5px; font-size:11.5px; border:none; cursor:pointer; }
 
-    .view-six-yard .penalty-box, .view-six-yard .penalty-arc { display: none; }
-    .view-six-yard .six-yard-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 70%; height: 60%; border: 3px solid #fff; border-top: none; }
-    .view-six-yard .goal-net {
-      display: block; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 36%; height: 15%; border: 4px solid #eab308; border-top: none;
-      background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 12px);
-    }
+    .draw-modal { display:none; position:fixed; inset:0; background:rgba(2,6,23,0.96); z-index:3000; flex-direction:column; padding:14px; }
+    .draw-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .draw-header h2 { color:var(--cyan); font-size:17px; }
+    .draw-close { background:transparent; border:none; color:var(--danger); font-size:24px; cursor:pointer; }
+    .draw-toolbar { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:7px; margin-bottom:10px; }
+    .draw-tool-btn { background:#1f2937; border:1px solid #374151; color:#fff; padding:6px 11px; border-radius:6px; cursor:pointer; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:5px; }
+    .draw-tool-btn:hover, .draw-tool-btn.active { background:var(--cyan); color:#070b12; border-color:var(--cyan); }
+    .draw-canvas-wrapper { position:relative; flex:1; background:#000; border:1px solid #374151; border-radius:8px; display:flex; justify-content:center; align-items:center; overflow:hidden; min-height:240px; touch-action:none; }
+    #drawVideoPlayer { position:absolute; max-width:100%; max-height:100%; object-fit:contain; }
+    #drawCanvasOverlay { position:absolute; z-index:10; cursor:crosshair; touch-action:none; }
+    .shape-controls { position:absolute; display:none; background:rgba(15,23,42,0.95); border:1px solid var(--cyan); padding:5px; border-radius:8px; gap:5px; z-index:100; flex-direction:row; }
+    .shape-btn { background:#334155; color:#fff; border:none; padding:5px 9px; border-radius:4px; cursor:pointer; font-size:13px; }
+    .shape-btn.ok { color:#4ade80; } .shape-btn.del { color:#f87171; }
+    .draw-footer { display:flex; justify-content:center; margin-top:10px; gap:10px; }
+    .btn-save-draw { background:var(--success); color:#fff; padding:9px 26px; border-radius:8px; border:none; font-weight:800; font-size:13.5px; cursor:pointer; }
 
-    .drill-item {
-      position: absolute;
-      cursor: grab;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.55));
-      transform-origin: center;
-      touch-action: none;
-      border-radius: 50%;
-    }
-    .drill-item:active { cursor: grabbing; }
-    .drill-item.selected { box-shadow: 0 0 0 3px var(--cyan), 0 0 14px rgba(56, 189, 248, 0.8); }
-    .drill-item .delete-btn {
-      display: none;
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background: var(--danger);
-      color: #fff;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      font-weight: 800;
-      text-align: center;
-      line-height: 18px;
-      cursor: pointer;
-      border: 1px solid #fff;
-      z-index: 20;
-    }
-    .drill-item:hover .delete-btn, .drill-item.selected .delete-btn { display: block; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,0.88); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center; padding:16px; }
+    .modal-card { background:#111827; border:1px solid rgba(16,185,129,0.5); border-radius:16px; padding:24px; width:100%; max-width:440px; text-align:center; box-shadow:0 20px 55px rgba(0,0,0,0.85); }
+    .modal-card h3 { color:#34d399; font-size:18px; margin-bottom:10px; }
+    .modal-card p { color:#cbd5e1; font-size:13.5px; line-height:1.7; margin-bottom:14px; }
+    .recovery-meta { background:#070b12; border:1px solid #1f2937; border-radius:10px; padding:12px; margin-bottom:18px; font-size:13px; color:#e2e8f0; line-height:1.9; }
+    .modal-btns { display:flex; gap:10px; flex-wrap:wrap; }
+    .modal-btns button { flex:1; padding:10px 14px; border-radius:8px; border:none; font-weight:800; font-size:13.5px; cursor:pointer; }
+    .btn-resume { background:linear-gradient(135deg,#059669,#10b981); color:#fff; }
+    .btn-fresh { background:#334155; color:#f8fafc; }
+    .progress-track { width:100%; height:10px; background:#1f2937; border-radius:999px; overflow:hidden; margin:14px 0 8px; }
+    .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,#10b981,#38bdf8); transition:width 0.1s; }
+    .toast-msg { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#0f172a; color:#fff; border:1px solid var(--primary); padding:9px 18px; border-radius:999px; font-size:13px; font-weight:700; z-index:9500; opacity:0; transition:0.3s; pointer-events:none; }
+    .toast-msg.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    .drill-notes {
-      width: 100%;
-      background: #111827;
-      color: #fff;
-      border: 1px solid #374151;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 13px;
-      min-height: 62px;
-      resize: vertical;
-      outline: none;
-    }
-    .drill-notes:focus { border-color: var(--primary); }
-
-    .anim-bar {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 10px 16px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .anim-btn {
-      background: #374151;
-      color: #fff;
-      border: 1px solid #4b5563;
-      padding: 7px 14px;
-      border-radius: 7px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12.5px;
-    }
-    .anim-btn.record { background: #0ea5e9; color: #070b12; border-color: #0284c7; }
-    .anim-btn.play { background: var(--primary); color: #fff; border-color: #059669; }
-    .anim-btn.stop { background: var(--accent); color: #070b12; border-color: #d97706; display: none; }
-    .speed-select {
-      background: #1f2937;
-      color: #fff;
-      border: 1px solid var(--primary);
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-      outline: none;
-      font-size: 12px;
-    }
-    .frames-count { font-size: 12.5px; font-weight: 800; color: var(--cyan); background: #0b1220; padding: 5px 10px; border-radius: 6px; }
-
-    .action-bar { padding: 12px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    .btn-action {
-      background: var(--cyan);
-      color: #070b12;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-    }
-
-    /* =========================================
-       التاب الثاني: تقطيع وتحليل حراس المرمى
-       ========================================= */
-    .relink-banner {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: rgba(245, 158, 11, 0.14);
-      border: 1px solid var(--accent);
-      color: #fde68a;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .relink-banner button {
-      background: var(--accent);
-      color: #070b12;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .gk-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 10px 12px;
-      border-radius: 10px;
-      text-align: center;
-    }
-    .stat-card h4 { font-size: 11.5px; color: var(--text-muted); margin-bottom: 3px; }
-    .stat-card span { font-size: 20px; font-weight: 900; color: var(--cyan); }
-
-    .analysis-workspace {
-      display: grid;
-      grid-template-columns: 275px 1fr;
-      gap: 14px;
-      align-items: start;
-    }
-    .clipping-panel {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      max-height: 78vh;
-      overflow-y: auto;
-    }
-    .mode-toggle-box {
-      background: #0b1220;
-      padding: 9px;
-      border-radius: 8px;
-      border: 1px solid var(--primary);
-      margin-bottom: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .mode-toggle-box label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .clip-btn {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 12.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #fff;
-      background: #1f2937;
-      border: 1px solid #374151;
-      transition: 0.2s;
-      text-align: right;
-    }
-    .clip-btn:hover { border-color: var(--primary); background: #273549; }
-    .clip-btn.sub-btn {
-      background: #0f172a;
-      margin-right: 12px;
-      width: calc(100% - 12px);
-      border-color: #1e293b;
-      color: #cbd5e1;
-    }
-    .cat-title { color: #34d399; font-size: 12.5px; font-weight: 800; padding-right: 4px; margin-top: 3px; }
-    .recording-btn {
-      background: var(--danger) !important;
-      color: #fff !important;
-      border-color: #b91c1c !important;
-      animation: pulse 1.2s infinite;
-      justify-content: center !important;
-    }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.65; } 100% { opacity: 1; } }
-
-    .video-area {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .video-container {
-      width: 100%;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 48vh;
-      min-height: 250px;
-      position: relative;
-    }
-    video { width: 100%; height: 100%; object-fit: contain; }
-
-    .var-controls-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: #0b1220;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #1e293b;
-    }
-    .btn-group { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-    .control-btn {
-      background: #1f2937;
-      color: #fff;
-      border: 1px solid #334155;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .control-btn:hover { border-color: var(--cyan); color: var(--cyan); }
-    .speed-btn {
-      background: #1e293b;
-      color: #cbd5e1;
-      border: 1px solid #334155;
-      padding: 5px 8px;
-      border-radius: 5px;
-      font-size: 11.5px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    .speed-btn.active { background: var(--accent); color: #070b12; border-color: var(--accent); }
-
-    .upload-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: #070b12;
-      padding: 9px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-    .upload-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: linear-gradient(135deg, #059669, #10b981);
-      color: #fff;
-      padding: 7px 14px;
-      border-radius: 7px;
-      font-size: 12.5px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .live-status-banner {
-      display: none;
-      background: rgba(56, 189, 248, 0.14);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 13px;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .log-section {
-      background: #0b1220;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px;
-      overflow-x: auto;
-    }
-    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; min-width: 480px; }
-    .log-table th { background: #111827; color: #34d399; padding: 9px; }
-    .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-    .btn-download { background: var(--success); color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: none; cursor: pointer; }
-    .btn-draw { background: #2563eb; color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: none; cursor: pointer; }
-    .btn-del-clip { background: #b91c1c; color: #fff; padding: 5px 9px; border-radius: 5px; font-size: 11.5px; border: none; cursor: pointer; }
-
-    /* =========================================
-       مودال الرسم والتحليل الذكي على اللقطة
-       ========================================= */
-    .draw-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.96);
-      z-index: 3000;
-      flex-direction: column;
-      padding: 14px;
-    }
-    .draw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .draw-header h2 { color: var(--cyan); font-size: 17px; }
-    .draw-close { background: transparent; border: none; color: var(--danger); font-size: 24px; cursor: pointer; }
-
-    .draw-toolbar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 10px;
-    }
-    .draw-tool-btn {
-      background: #1f2937;
-      border: 1px solid #374151;
-      color: #fff;
-      padding: 6px 11px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .draw-tool-btn:hover, .draw-tool-btn.active { background: var(--cyan); color: #070b12; border-color: var(--cyan); }
-
-    .draw-canvas-wrapper {
-      position: relative;
-      flex: 1;
-      background: #000;
-      border: 1px solid #374151;
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      min-height: 240px;
-      touch-action: none;
-    }
-    #drawVideoPlayer { position: absolute; max-width: 100%; max-height: 100%; object-fit: contain; }
-    #drawCanvasOverlay { position: absolute; z-index: 10; cursor: crosshair; touch-action: none; }
-
-    .shape-controls {
-      position: absolute;
-      display: none;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--cyan);
-      padding: 5px;
-      border-radius: 8px;
-      gap: 5px;
-      z-index: 100;
-      flex-direction: row;
-    }
-    .shape-btn { background: #334155; color: #fff; border: none; padding: 5px 9px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-    .shape-btn.ok { color: #4ade80; }
-    .shape-btn.del { color: #f87171; }
-
-    .draw-footer { display: flex; justify-content: center; margin-top: 10px; gap: 10px; }
-    .btn-save-draw { background: var(--success); color: #fff; padding: 9px 26px; border-radius: 8px; border: none; font-weight: 800; font-size: 13.5px; cursor: pointer; }
-
-    /* النوافذ المنبثقة (استرجاع المشروع + التصدير) */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.88);
-      backdrop-filter: blur(5px);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    .modal-card {
-      background: #111827;
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      border-radius: 16px;
-      padding: 24px;
-      width: 100%;
-      max-width: 440px;
-      text-align: center;
-      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.85);
-    }
-    .modal-card h3 { color: #34d399; font-size: 18px; margin-bottom: 10px; }
-    .modal-card p { color: #cbd5e1; font-size: 13.5px; line-height: 1.7; margin-bottom: 14px; }
-    .recovery-meta {
-      background: #070b12;
-      border: 1px solid #1f2937;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 18px;
-      font-size: 13px;
-      color: #e2e8f0;
-      line-height: 1.9;
-    }
-    .modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-    .modal-btns button { flex: 1; padding: 10px 14px; border-radius: 8px; border: none; font-weight: 800; font-size: 13.5px; cursor: pointer; }
-    .btn-resume { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
-    .btn-fresh { background: #334155; color: #f8fafc; }
-
-    .progress-track { width: 100%; height: 10px; background: #1f2937; border-radius: 999px; overflow: hidden; margin: 14px 0 8px; }
-    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #38bdf8); transition: width 0.1s; }
-
-    .toast-msg {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #0f172a;
-      color: #fff;
-      border: 1px solid var(--primary);
-      padding: 9px 18px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      z-index: 9500;
-      opacity: 0;
-      transition: 0.3s;
-      pointer-events: none;
-    }
-    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 920px) {
-      body { padding: 8px; }
-      .training-workspace, .analysis-workspace { grid-template-columns: 1fr; }
-      .pitch-container, .video-area { order: 1; }
-      .tools-panel, .clipping-panel { order: 2; height: auto; min-height: 0; max-height: 300px; }
-      .tools-grid { grid-template-columns: repeat(4, 1fr); }
-      .pitch-area { height: 50vh; min-height: 340px; }
-      .video-container { height: 36vh; min-height: 210px; }
-      .tab-btn { flex: 1; justify-content: center; padding: 8px 12px; font-size: 12.5px; }
+    @media (max-width:920px) {
+      body { padding:8px; }
+      .training-workspace, .analysis-workspace { grid-template-columns:1fr; }
+      .pitch-container, .video-area { order:1; }
+      .tools-panel, .clipping-panel { order:2; height:auto; min-height:0; max-height:300px; }
+      .tools-grid { grid-template-columns:repeat(4,1fr); }
+      .pitch-area { height:50vh; min-height:340px; }
+      .video-container { height:36vh; min-height:210px; }
+      .tab-btn { flex:1; justify-content:center; padding:8px 12px; font-size:12.5px; }
     }
   </style>
 
-  <!-- كود حماية الواجهة (Capture Phase) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), true);
     document.addEventListener('keydown', e => {
-      const forbiddenKeys = ['U', 'S', 'P'];
-      const devKeys = ['I', 'J', 'C'];
-      if (
-        e.key === 'F12' || e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+      const f = ['U','S','P'], d = ['I','J','C'];
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && d.includes(e.key.toUpperCase())) || (e.ctrlKey && f.includes(e.key.toUpperCase()))) {
+        e.preventDefault(); e.stopPropagation(); return false;
       }
     }, true);
   </script>
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية حراس المرمى (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
@@ -798,7 +186,6 @@
     })();
   </script>
 
-  <!-- نافذة استرجاع المشروع السابق -->
   <div class="modal-overlay" id="recoveryModal">
     <div class="modal-card">
       <h3><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع حراس مرمى سابق</h3>
@@ -811,7 +198,6 @@
     </div>
   </div>
 
-  <!-- نافذة تقدم تصدير فيديو التدريب -->
   <div class="modal-overlay" id="exportProgressModal">
     <div class="modal-card">
       <h3><i class="fa-solid fa-film fa-beat"></i> جاري تصدير فيديو التدريب Full HD</h3>
@@ -837,62 +223,24 @@
       <button class="tab-btn" id="tabBtn-analysis" onclick="switchTab('analysis', this)"><i class="fa-solid fa-scissors"></i> تقطيع وتحليل الحالات (فيديو)</button>
     </div>
 
-    <!-- ==================== التاب الأول: تصميم التدريبات ==================== -->
     <div id="trainingTab" class="tab-content active">
       <div class="training-workspace">
         <aside class="tools-panel">
           <div class="tools-title">مكتبة أدوات الحراس</div>
           <div class="tools-hint">اسحب للملعب أو اضغط للإضافة الفورية</div>
-
           <div class="tools-grid">
-            <div class="draggable-source" draggable="true" data-type="gk">
-              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/></svg>
-              <span>حارس (GK)</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="gk_coach">
-              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#f97316"/><path d="M 20 90 Q 50 50 80 90" fill="#f97316" stroke="#fff" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fff" stroke="#000" stroke-width="2"/></svg>
-              <span>مدرب حراس</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="ball">
-              <svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/><polygon points="50,20 75,40 65,70 35,70 25,40" fill="#000"/></svg>
-              <span>كرة قدم</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="player_red">
-              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#ef4444"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
-              <span>مهاجم أحمر</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="player_blue">
-              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#3b82f6"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
-              <span>مدافع أزرق</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="player_yellow">
-              <svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#facc15"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg>
-              <span>لاعب أصفر</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="mannequin">
-              <svg width="30" height="30" viewBox="0 0 100 100"><path d="M 30 90 L 30 50 Q 50 20 70 50 L 70 90 Z" fill="#ef4444" stroke="#fff" stroke-width="2"/><circle cx="50" cy="25" r="15" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>
-              <span>شاخص (حائط)</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="cone_red">
-              <svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg>
-              <span>قمع أحمر</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="cone_blue">
-              <svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="2"/></svg>
-              <span>قمع أزرق</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="marker_yellow">
-              <svg width="25" height="25" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="15" fill="#facc15"/></svg>
-              <span>ماركر أرضي</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="hurdle">
-              <svg width="35" height="20" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="30" fill="#000"/><rect x="75" y="20" width="10" height="30" fill="#000"/></svg>
-              <span>حاجز قفز</span>
-            </div>
-            <div class="draggable-source" draggable="true" data-type="ladder">
-              <svg width="20" height="35" viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" fill="none" stroke="#facc15" stroke-width="4"/><line x1="30" y1="30" x2="70" y2="30" stroke="#facc15" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#facc15" stroke-width="4"/><line x1="30" y1="70" x2="70" y2="70" stroke="#facc15" stroke-width="4"/></svg>
-              <span>سلم توافق</span>
-            </div>
+            <div class="draggable-source" draggable="true" data-type="gk"><svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/></svg><span>حارس (GK)</span></div>
+            <div class="draggable-source" draggable="true" data-type="gk_coach"><svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#f97316"/><path d="M 20 90 Q 50 50 80 90" fill="#f97316" stroke="#fff" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fff" stroke="#000" stroke-width="2"/></svg><span>مدرب حراس</span></div>
+            <div class="draggable-source" draggable="true" data-type="ball"><svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/><polygon points="50,20 75,40 65,70 35,70 25,40" fill="#000"/></svg><span>كرة قدم</span></div>
+            <div class="draggable-source" draggable="true" data-type="player_red"><svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#ef4444"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg><span>مهاجم أحمر</span></div>
+            <div class="draggable-source" draggable="true" data-type="player_blue"><svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#3b82f6"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg><span>مدافع أزرق</span></div>
+            <div class="draggable-source" draggable="true" data-type="player_yellow"><svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#facc15"/><path d="M 25 50 Q 50 10 75 50" fill="none" stroke="#fff" stroke-width="4"/></svg><span>لاعب أصفر</span></div>
+            <div class="draggable-source" draggable="true" data-type="mannequin"><svg width="30" height="30" viewBox="0 0 100 100"><path d="M 30 90 L 30 50 Q 50 20 70 50 L 70 90 Z" fill="#ef4444" stroke="#fff" stroke-width="2"/><circle cx="50" cy="25" r="15" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg><span>شاخص (حائط)</span></div>
+            <div class="draggable-source" draggable="true" data-type="cone_red"><svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#ef4444" stroke="#fff" stroke-width="2"/></svg><span>قمع أحمر</span></div>
+            <div class="draggable-source" draggable="true" data-type="cone_blue"><svg width="25" height="25" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#3b82f6" stroke="#fff" stroke-width="2"/></svg><span>قمع أزرق</span></div>
+            <div class="draggable-source" draggable="true" data-type="marker_yellow"><svg width="25" height="25" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="15" fill="#facc15"/></svg><span>ماركر أرضي</span></div>
+            <div class="draggable-source" draggable="true" data-type="hurdle"><svg width="35" height="20" viewBox="0 0 100 50"><rect x="10" y="10" width="80" height="10" fill="#facc15"/><rect x="15" y="20" width="10" height="30" fill="#000"/><rect x="75" y="20" width="10" height="30" fill="#000"/></svg><span>حاجز قفز</span></div>
+            <div class="draggable-source" draggable="true" data-type="ladder"><svg width="20" height="35" viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" fill="none" stroke="#facc15" stroke-width="4"/><line x1="30" y1="30" x2="70" y2="30" stroke="#facc15" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#facc15" stroke-width="4"/><line x1="30" y1="70" x2="70" y2="70" stroke="#facc15" stroke-width="4"/></svg><span>سلم توافق</span></div>
           </div>
         </aside>
 
@@ -901,23 +249,15 @@
             <button class="pitch-btn active" data-view="penalty" onclick="setPitchView('penalty', this)">منطقة الجزاء (مواجهة)</button>
             <button class="pitch-btn" data-view="six-yard" onclick="setPitchView('six-yard', this)">التلات خشبات ومنطقة الـ 6</button>
           </div>
-
           <div class="selected-bar" id="selectedBar">
             <span>عنصر محدد:</span>
             <button class="sel-btn" onclick="scaleSelectedItem(0.2)"><i class="fa-solid fa-magnifying-glass-plus"></i> تكبير</button>
             <button class="sel-btn" onclick="scaleSelectedItem(-0.2)"><i class="fa-solid fa-magnifying-glass-minus"></i> تصغير</button>
             <button class="sel-btn del" onclick="deleteSelectedItem()"><i class="fa-solid fa-trash"></i> حذف</button>
           </div>
-
           <div class="pitch-area view-penalty" id="pitchArea" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="pitch-lines">
-              <div class="penalty-arc"></div>
-              <div class="penalty-box"></div>
-              <div class="six-yard-box"></div>
-              <div class="goal-net"></div>
-            </div>
+            <div class="pitch-lines"><div class="penalty-arc"></div><div class="penalty-box"></div><div class="six-yard-box"></div><div class="goal-net"></div></div>
           </div>
-
           <textarea class="drill-notes" id="drillNotes" placeholder="اكتب هدف التدريب وعدد التكرارات والملاحظات الفنية للحارس..." oninput="scheduleAutoSave()"></textarea>
         </div>
       </div>
@@ -926,10 +266,7 @@
         <span style="color:#cbd5e1; font-weight:bold;"><i class="fa-solid fa-film"></i> الحركة:</span>
         <button class="anim-btn record" onclick="saveFrame()"><i class="fa-solid fa-camera"></i> حفظ إطار</button>
         <select id="animSpeed" class="speed-select" onchange="scheduleAutoSave()">
-          <option value="1200">بطيء جداً</option>
-          <option value="850">بطيء</option>
-          <option value="550" selected>عادي</option>
-          <option value="300">سريع</option>
+          <option value="1200">بطيء جداً</option><option value="850">بطيء</option><option value="550" selected>عادي</option><option value="300">سريع</option>
         </select>
         <span class="frames-count">اللقطات: <span id="frameCount">0</span></span>
         <button class="anim-btn play" id="playAnimBtn" onclick="playAnimation()"><i class="fa-solid fa-play"></i> تشغيل الحركة</button>
@@ -940,18 +277,16 @@
       <div class="action-bar">
         <button class="btn-action" style="background:#4b5563; color:#fff;" onclick="clearPitch()"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
         <button class="btn-action" style="background:var(--success); color:#fff;" onclick="printDrill()"><i class="fa-solid fa-image"></i> حفظ كصورة HD</button>
-        <button class="btn-action" onclick="exportDrillVideo()"><i class="fa-solid fa-video"></i> تصدير التدريب (فيديو HD)</button>
+        <button class="btn-action" onclick="exportDrillVideo()"><i class="fa-solid fa-video"></i> تصدير التدريب (فيديو MP4 HD)</button>
       </div>
     </div>
 
-    <!-- ==================== التاب الثاني: تقطيع وتحليل الفيديو ==================== -->
     <div id="analysisTab" class="tab-content">
       <div class="relink-banner" id="relinkBanner">
         <span id="relinkBannerText"></span>
         <button onclick="document.getElementById('gkVideoInput').click()"><i class="fa-solid fa-folder-open"></i> اختيار الفيديو الآن</button>
       </div>
 
-      <!-- إحصائيات سريعة لأداء الحارس -->
       <div class="gk-stats-grid">
         <div class="stat-card"><h4>إجمالي اللقطات</h4><span id="statTotal">0</span></div>
         <div class="stat-card"><h4>تصويب ورد فعل</h4><span id="statSaves" style="color:#4ade80;">0</span></div>
@@ -963,19 +298,16 @@
       <div class="analysis-workspace">
         <aside class="clipping-panel">
           <div class="tools-title">التقطيع السريع (Tagging)</div>
-
           <div class="mode-toggle-box">
-            <div style="font-size: 11px; text-align: center; color: var(--text-muted);">اختر طريقة التقطيع للأزرار بالأسفل:</div>
+            <div style="font-size:11px; text-align:center; color:var(--text-muted);">اختر طريقة التقطيع للأزرار بالأسفل:</div>
             <label><input type="radio" name="clipMode" value="auto" checked> ✂️ تقطيع تلقائي (5ث قبل و 5ث بعد)</label>
             <label><input type="radio" name="clipMode" value="manual"> 🔴 تسجيل يدوي (مفتوح المدة)</label>
           </div>
-
           <div class="cat-title">عرضيات (Crosses)</div>
           <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - كروس')">كروس <i class="fa-solid fa-share"></i></button>
           <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - كورنر')">كورنر <i class="fa-solid fa-flag"></i></button>
           <button class="clip-btn sub-btn" onclick="handleTagClick(this, 'عرضيات - فاولات')">فاولات <i class="fa-solid fa-bullseye"></i></button>
-
-          <hr style="border-color:#374151; margin: 4px 0;">
+          <hr style="border-color:#374151; margin:4px 0;">
           <button class="clip-btn" onclick="handleTagClick(this, 'تصويب')">تصويب <i class="fa-solid fa-bullseye"></i></button>
           <button class="clip-btn" onclick="handleTagClick(this, 'رد الفعل')">رد الفعل <i class="fa-solid fa-bolt"></i></button>
           <button class="clip-btn" onclick="handleTagClick(this, 'اللعب بالرجلين')">اللعب بالرجلين <i class="fa-solid fa-shoe-prints"></i></button>
@@ -989,15 +321,8 @@
         </aside>
 
         <main class="video-area">
-          <div class="live-status-banner" id="liveStatusBanner">
-            <i class="fa-solid fa-circle-notch fa-spin"></i>
-            <span id="liveStatusText">جاري المعالجة... يرجى الانتظار.</span>
-          </div>
-
-          <div class="video-container">
-            <video id="gkVideo" controls playsinline crossorigin="anonymous"></video>
-          </div>
-
+          <div class="live-status-banner" id="liveStatusBanner"><i class="fa-solid fa-circle-notch fa-spin"></i><span id="liveStatusText">جاري المعالجة... يرجى الانتظار.</span></div>
+          <div class="video-container"><video id="gkVideo" controls playsinline crossorigin="anonymous"></video></div>
           <div class="var-controls-bar">
             <div class="btn-group">
               <button class="control-btn" onclick="skip(-5)">-5ث</button>
@@ -1013,27 +338,14 @@
               <button class="speed-btn" onclick="setGkSpeed(1.5, this)">1.5x</button>
             </div>
           </div>
-
           <div class="upload-bar">
-            <label class="upload-label">
-              <i class="fa-solid fa-video"></i> اختيار فيديو المباراة
-              <input type="file" id="gkVideoInput" accept="video/*" onchange="loadGkVideo(event)" style="display:none;">
-            </label>
+            <label class="upload-label"><i class="fa-solid fa-video"></i> اختيار فيديو المباراة<input type="file" id="gkVideoInput" accept="video/*" onchange="loadGkVideo(event)" style="display:none;"></label>
             <span id="gkVideoFileName" style="font-size:12.5px; color:var(--text-muted); font-weight:600;">لم يتم تحميل فيديو بعد</span>
           </div>
-
           <div class="log-section">
             <table class="log-table">
-              <thead>
-                <tr>
-                  <th>التوقيت</th>
-                  <th>نوع الحالة (Tag)</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="gkLogBody">
-                <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding:16px;">لم يتم تقطيع لقطات حتى الآن.</td></tr>
-              </tbody>
+              <thead><tr><th>التوقيت</th><th>نوع الحالة (Tag)</th><th>الإجراءات</th></tr></thead>
+              <tbody id="gkLogBody"><tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">لم يتم تقطيع لقطات حتى الآن.</td></tr></tbody>
             </table>
           </div>
         </main>
@@ -1041,17 +353,12 @@
     </div>
   </div>
 
-  <canvas id="liveRenderCanvas" style="display: none;"></canvas>
+  <canvas id="liveRenderCanvas" style="display:none;"></canvas>
 
-  <!-- ==================== مودال الرسم والتحليل الذكي ==================== -->
   <div class="draw-modal" id="drawModal">
-    <div class="draw-header">
-      <h2><i class="fa-solid fa-pen-nib"></i> تحليل لقطة الحارس بالرسم</h2>
-      <button class="draw-close" onclick="closeDrawModal()"><i class="fa-solid fa-circle-xmark"></i></button>
-    </div>
-
+    <div class="draw-header"><h2><i class="fa-solid fa-pen-nib"></i> تحليل لقطة الحارس بالرسم</h2><button class="draw-close" onclick="closeDrawModal()"><i class="fa-solid fa-circle-xmark"></i></button></div>
     <div class="draw-toolbar" id="drawToolbar">
-      <button class="draw-tool-btn" style="background: var(--accent); color: #070b12; border-color: var(--accent);" onclick="toggleDrawVideo()"><i class="fa-solid fa-play"></i> تشغيل / إيقاف</button>
+      <button class="draw-tool-btn" style="background:var(--accent); color:#070b12; border-color:var(--accent);" onclick="toggleDrawVideo()"><i class="fa-solid fa-play"></i> تشغيل / إيقاف</button>
       <button class="draw-tool-btn" onclick="skipDrawVideo(-1)">-1ث</button>
       <button class="draw-tool-btn" onclick="skipDrawVideo(1)">+1ث</button>
       <span style="color:#475569;">|</span>
@@ -1065,11 +372,9 @@
       <button class="draw-tool-btn" onclick="undoDrawShape()"><i class="fa-solid fa-rotate-left"></i> تراجع</button>
       <button class="draw-tool-btn" style="background:var(--danger); border-color:var(--danger);" onclick="clearDrawings()"><i class="fa-solid fa-trash"></i> مسح الكل</button>
     </div>
-
     <div class="draw-canvas-wrapper" id="drawWrapper">
       <video id="drawVideoPlayer" playsinline></video>
       <canvas id="drawCanvasOverlay"></canvas>
-
       <div id="shapeControlsDraw" class="shape-controls">
         <button class="shape-btn ok" onclick="confirmDrawShape()" title="تثبيت"><i class="fa-solid fa-check"></i></button>
         <button class="shape-btn" onclick="scaleDrawShape(1.15)" title="تكبير"><i class="fa-solid fa-plus"></i></button>
@@ -1077,68 +382,28 @@
         <button class="shape-btn del" onclick="deleteDrawShape()" title="حذف"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>
-
-    <div class="draw-footer">
-      <button class="btn-save-draw" onclick="saveDrawnImage()"><i class="fa-solid fa-download"></i> حفظ الصورة التحليلية HD</button>
-    </div>
+    <div class="draw-footer"><button class="btn-save-draw" onclick="saveDrawnImage()"><i class="fa-solid fa-download"></i> حفظ الصورة التحليلية HD</button></div>
   </div>
 
   <script>
-    // ==========================================
-    // المتغيرات العامة
-    // ==========================================
-    const DB_NAME = 'ZiadaGKStudioDB';
-    const STORE_NAME = 'projects';
-    const PROJECT_KEY = 'gk_active_project_v1';
+    const DB_NAME = 'ZiadaGKStudioDB', STORE_NAME = 'projects', PROJECT_KEY = 'gk_active_project_v1';
+    let currentTab = 'training', currentPitchView = 'penalty', itemIdCounter = 0, selectedElement = null, frames = [], animPlaying = false, animStopReq = false;
+    const pitchArea = document.getElementById('pitchArea'), video = document.getElementById('gkVideo');
+    let gkEventsLog = [], loadedVideoName = '', pendingSeekAfterLoad = null, lastSavedVideoTime = 0;
+    let manualRecorder = null, manualChunks = [], manualStartTime = 0, activeManualTag = null, activeManualBtn = null, isAutoClipping = false, autosaveTimer = null;
 
-    let currentTab = 'training';
-    let currentPitchView = 'penalty';
-    let itemIdCounter = 0;
-    let selectedElement = null;
-    let frames = [];
-    let animPlaying = false, animStopReq = false;
-
-    const pitchArea = document.getElementById('pitchArea');
-    const video = document.getElementById('gkVideo');
-    let gkEventsLog = [];
-    let loadedVideoName = '';
-    let pendingSeekAfterLoad = null;
-    let lastSavedVideoTime = 0;
-
-    let manualRecorder = null, manualChunks = [], manualStartTime = 0;
-    let activeManualTag = null, activeManualBtn = null;
-    let isAutoClipping = false;
-    let autosaveTimer = null;
-
-    function showToast(msg) {
-      const t = document.getElementById('toastMsg');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
+    function showToast(msg) { const t = document.getElementById('toastMsg'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2200); }
     function clampPercent(val) { return Math.max(3, Math.min(97, val)); }
-
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, m => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[m]));
-    }
-
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
     function switchTab(tabId, btnEl) {
-      currentTab = tabId;
-      deselectAll();
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      currentTab = tabId; deselectAll();
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       (btnEl || document.getElementById('tabBtn-' + tabId)).classList.add('active');
       document.getElementById(tabId + 'Tab').classList.add('active');
       scheduleAutoSave();
     }
 
-    // ==========================================
-    // لوحة تدريبات الحراس (نسب مئوية + تاتش + Full HD)
-    // ==========================================
     const svgShapes = {
       'gk': `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#eab308"/><circle cx="15" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="85" cy="50" r="15" fill="#fff" stroke="#000" stroke-width="3"/></svg>`,
       'gk_coach': `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="#f97316"/><path d="M 20 90 Q 50 50 80 90" fill="#f97316" stroke="#fff" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fff" stroke="#000" stroke-width="2"/></svg>`,
@@ -1156,205 +421,92 @@
 
     let draggedType = null;
     document.querySelectorAll('.draggable-source').forEach(el => {
-      el.addEventListener('dragstart', (e) => {
-        draggedType = el.dataset.type;
-        e.dataTransfer.setData('text/plain', draggedType);
-      });
+      el.addEventListener('dragstart', e => { draggedType = el.dataset.type; e.dataTransfer.setData('text/plain', draggedType); });
       el.addEventListener('click', () => {
-        const randX = clampPercent(50 + (Math.random() * 14 - 7));
-        const randY = clampPercent(50 + (Math.random() * 14 - 7));
-        const created = createDrillItem(el.dataset.type, randX, randY);
-        selectElement(created);
-        showToast('تمت الإضافة للملعب ✓');
-        scheduleAutoSave();
+        const created = createDrillItem(el.dataset.type, clampPercent(50 + Math.random()*14 - 7), clampPercent(50 + Math.random()*14 - 7));
+        selectElement(created); showToast('تمت الإضافة للملعب ✓'); scheduleAutoSave();
       });
     });
 
     function allowDrop(e) { e.preventDefault(); }
     function drop(e) {
-      e.preventDefault();
-      const type = draggedType || e.dataTransfer.getData('text/plain');
-      if (!type) return;
+      e.preventDefault(); const type = draggedType || e.dataTransfer.getData('text/plain'); if (!type) return;
       const rect = pitchArea.getBoundingClientRect();
-      const xPct = clampPercent(((e.clientX - rect.left) / rect.width) * 100);
-      const yPct = clampPercent(((e.clientY - rect.top) / rect.height) * 100);
-      const created = createDrillItem(type, xPct, yPct);
-      selectElement(created);
-      draggedType = null;
-      scheduleAutoSave();
+      const created = createDrillItem(type, clampPercent(((e.clientX - rect.left)/rect.width)*100), clampPercent(((e.clientY - rect.top)/rect.height)*100));
+      selectElement(created); draggedType = null; scheduleAutoSave();
     }
 
     function getClientPos(e) {
-      if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
       return { x: e.clientX, y: e.clientY };
     }
 
     function createDrillItem(type, xPct, yPct, customId = null, scaleVal = 1.1) {
       itemIdCounter++;
       const item = document.createElement('div');
-      item.className = 'drill-item';
-      item.id = customId || `gk_item_${Date.now()}_${itemIdCounter}`;
-      item.dataset.type = type;
-      item.dataset.scale = scaleVal;
+      item.className = 'drill-item'; item.id = customId || `gk_item_${Date.now()}_${itemIdCounter}`;
+      item.dataset.type = type; item.dataset.scale = scaleVal;
       item.innerHTML = `${svgShapes[type] || svgShapes.ball}<div class="delete-btn" onclick="removeDrillItem(event, this)">×</div>`;
-      item.style.left = `${xPct}%`;
-      item.style.top = `${yPct}%`;
-      item.style.transform = `translate(-50%, -50%) scale(${scaleVal})`;
-
-      item.addEventListener('mousedown', pitchItemDragStart);
-      item.addEventListener('touchstart', pitchItemDragStart, { passive: false });
-      item.addEventListener('wheel', (e) => {
+      item.style.left = `${xPct}%`; item.style.top = `${yPct}%`; item.style.transform = `translate(-50%,-50%) scale(${scaleVal})`;
+      item.addEventListener('mousedown', pitchItemDragStart); item.addEventListener('touchstart', pitchItemDragStart, { passive: false });
+      item.addEventListener('wheel', e => {
         e.preventDefault();
-        let sc = parseFloat(item.dataset.scale || 1.1) + (e.deltaY < 0 ? 0.15 : -0.15);
-        sc = Math.max(0.5, Math.min(3.5, sc));
-        item.dataset.scale = sc.toFixed(2);
-        item.style.transform = `translate(-50%, -50%) scale(${item.dataset.scale})`;
-        scheduleAutoSave();
+        item.dataset.scale = Math.max(0.5, Math.min(3.5, parseFloat(item.dataset.scale||1.1) + (e.deltaY < 0 ? 0.15 : -0.15))).toFixed(2);
+        item.style.transform = `translate(-50%,-50%) scale(${item.dataset.scale})`; scheduleAutoSave();
       }, { passive: false });
-
-      pitchArea.appendChild(item);
-      return item;
+      pitchArea.appendChild(item); return item;
     }
 
-    function removeDrillItem(e, btn) {
-      if (e) e.stopPropagation();
-      const node = btn.parentElement;
-      if (selectedElement === node) deselectAll();
-      node.remove();
-      scheduleAutoSave();
-    }
+    function removeDrillItem(e, btn) { if (e) e.stopPropagation(); const n = btn.parentElement; if (selectedElement === n) deselectAll(); n.remove(); scheduleAutoSave(); }
+    function selectElement(el) { deselectAll(); if (!el) return; selectedElement = el; el.classList.add('selected'); document.getElementById('selectedBar').classList.add('visible'); }
+    function deselectAll() { if (selectedElement) selectedElement.classList.remove('selected'); selectedElement = null; document.getElementById('selectedBar').classList.remove('visible'); }
+    function scaleSelectedItem(d) { if (!selectedElement) return; selectedElement.dataset.scale = Math.max(0.5, Math.min(3.5, parseFloat(selectedElement.dataset.scale||1.1) + d)).toFixed(2); selectedElement.style.transform = `translate(-50%,-50%) scale(${selectedElement.dataset.scale})`; scheduleAutoSave(); }
+    function deleteSelectedItem() { if (!selectedElement) return; selectedElement.remove(); deselectAll(); scheduleAutoSave(); }
+    pitchArea.addEventListener('mousedown', e => { if (e.target === pitchArea || e.target.classList.contains('pitch-lines')) deselectAll(); });
 
-    function selectElement(el) {
-      deselectAll();
-      if (!el) return;
-      selectedElement = el;
-      el.classList.add('selected');
-      document.getElementById('selectedBar').classList.add('visible');
-    }
-
-    function deselectAll() {
-      if (selectedElement) selectedElement.classList.remove('selected');
-      selectedElement = null;
-      document.getElementById('selectedBar').classList.remove('visible');
-    }
-
-    function scaleSelectedItem(delta) {
-      if (!selectedElement) return;
-      let sc = parseFloat(selectedElement.dataset.scale || 1.1) + delta;
-      sc = Math.max(0.5, Math.min(3.5, sc));
-      selectedElement.dataset.scale = sc.toFixed(2);
-      selectedElement.style.transform = `translate(-50%, -50%) scale(${selectedElement.dataset.scale})`;
-      scheduleAutoSave();
-    }
-
-    function deleteSelectedItem() {
-      if (!selectedElement) return;
-      selectedElement.remove();
-      deselectAll();
-      scheduleAutoSave();
-    }
-
-    pitchArea.addEventListener('mousedown', (e) => {
-      if (e.target === pitchArea || e.target.classList.contains('pitch-lines')) deselectAll();
-    });
-
-    let activeItem = null, dragStartClient = { x: 0, y: 0 }, dragStartPct = { x: 0, y: 0 }, hasMoved = false;
+    let activeItem = null, dragStartClient = { x:0, y:0 }, dragStartPct = { x:0, y:0 }, hasMoved = false;
     function pitchItemDragStart(e) {
-      if (e.target.classList.contains('delete-btn')) return;
-      if (e.type === 'touchstart') e.preventDefault();
-      activeItem = this;
-      activeItem.style.zIndex = 100;
-      hasMoved = false;
-      const pos = getClientPos(e);
-      dragStartClient = { x: pos.x, y: pos.y };
-      dragStartPct = { x: parseFloat(activeItem.style.left) || 50, y: parseFloat(activeItem.style.top) || 50 };
-
-      document.addEventListener('mousemove', pitchItemDragMove);
-      document.addEventListener('mouseup', pitchItemDragEnd);
-      document.addEventListener('touchmove', pitchItemDragMove, { passive: false });
-      document.addEventListener('touchend', pitchItemDragEnd);
+      if (e.target.classList.contains('delete-btn')) return; if (e.type === 'touchstart') e.preventDefault();
+      activeItem = this; activeItem.style.zIndex = 100; hasMoved = false;
+      const pos = getClientPos(e); dragStartClient = { x: pos.x, y: pos.y }; dragStartPct = { x: parseFloat(activeItem.style.left)||50, y: parseFloat(activeItem.style.top)||50 };
+      document.addEventListener('mousemove', pitchItemDragMove); document.addEventListener('mouseup', pitchItemDragEnd);
+      document.addEventListener('touchmove', pitchItemDragMove, { passive: false }); document.addEventListener('touchend', pitchItemDragEnd);
     }
-
     function pitchItemDragMove(e) {
-      if (!activeItem) return;
-      if (e.type === 'touchmove') e.preventDefault();
-      const pos = getClientPos(e);
-      const dx = pos.x - dragStartClient.x, dy = pos.y - dragStartClient.y;
-      if (Math.hypot(dx, dy) > 4) hasMoved = true;
-
-      const pRect = pitchArea.getBoundingClientRect();
-      activeItem.style.left = `${clampPercent(dragStartPct.x + (dx / pRect.width) * 100).toFixed(2)}%`;
-      activeItem.style.top = `${clampPercent(dragStartPct.y + (dy / pRect.height) * 100).toFixed(2)}%`;
+      if (!activeItem) return; if (e.type === 'touchmove') e.preventDefault();
+      const pos = getClientPos(e), dx = pos.x - dragStartClient.x, dy = pos.y - dragStartClient.y; if (Math.hypot(dx, dy) > 4) hasMoved = true;
+      const r = pitchArea.getBoundingClientRect();
+      activeItem.style.left = `${clampPercent(dragStartPct.x + (dx/r.width)*100).toFixed(2)}%`;
+      activeItem.style.top = `${clampPercent(dragStartPct.y + (dy/r.height)*100).toFixed(2)}%`;
     }
-
     function pitchItemDragEnd() {
-      if (activeItem) {
-        activeItem.style.zIndex = 10;
-        if (!hasMoved) selectElement(activeItem);
-        else scheduleAutoSave();
-      }
+      if (activeItem) { activeItem.style.zIndex = 10; if (!hasMoved) selectElement(activeItem); else scheduleAutoSave(); }
       activeItem = null;
-      document.removeEventListener('mousemove', pitchItemDragMove);
-      document.removeEventListener('mouseup', pitchItemDragEnd);
-      document.removeEventListener('touchmove', pitchItemDragMove);
-      document.removeEventListener('touchend', pitchItemDragEnd);
+      document.removeEventListener('mousemove', pitchItemDragMove); document.removeEventListener('mouseup', pitchItemDragEnd);
+      document.removeEventListener('touchmove', pitchItemDragMove); document.removeEventListener('touchend', pitchItemDragEnd);
     }
 
-    function setPitchView(view, btnEl = null) {
-      currentPitchView = view;
-      document.querySelectorAll('.pitch-btn[data-view]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === view);
-      });
-      pitchArea.className = `pitch-area view-${view}`;
-      scheduleAutoSave();
-    }
+    function setPitchView(view) { currentPitchView = view; document.querySelectorAll('.pitch-btn[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view)); pitchArea.className = `pitch-area view-${view}`; scheduleAutoSave(); }
+    function clearPitch() { if (!confirm('هل تريد تنظيف جميع الأدوات والإطارات في الملعب؟')) return; deselectAll(); pitchArea.querySelectorAll('.drill-item').forEach(i => i.remove()); clearFrames(true); scheduleAutoSave(); }
 
-    function clearPitch() {
-      if (!confirm('هل تريد تنظيف جميع الأدوات والإطارات في الملعب؟')) return;
-      deselectAll();
-      pitchArea.querySelectorAll('.drill-item').forEach(item => item.remove());
-      clearFrames(true);
-      scheduleAutoSave();
-    }
-
-    // ==========================================
-    // أنيميشن التدريب وتصدير Full HD 60fps
-    // ==========================================
     function saveFrame() {
       if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxAnimFrames', frames.length, 'إطارات حركة')) return;
-      const items = pitchArea.querySelectorAll('.drill-item');
-      if (items.length === 0) return alert('أضف أدوات للملعب أولاً قبل حفظ الإطار.');
-      const posArr = [];
-      items.forEach(it => posArr.push({ id: it.id, left: parseFloat(it.style.left) || 50, top: parseFloat(it.style.top) || 50 }));
-      frames.push(posArr);
-      document.getElementById('frameCount').innerText = frames.length;
-      showToast(`تم حفظ الإطار رقم ${frames.length} ✓`);
-      scheduleAutoSave();
+      const items = pitchArea.querySelectorAll('.drill-item'); if (!items.length) return alert('أضف أدوات للملعب أولاً قبل حفظ الإطار.');
+      const arr = []; items.forEach(it => arr.push({ id: it.id, left: parseFloat(it.style.left)||50, top: parseFloat(it.style.top)||50 }));
+      frames.push(arr); document.getElementById('frameCount').innerText = frames.length; showToast(`تم حفظ الإطار رقم ${frames.length} ✓`); scheduleAutoSave();
     }
-
-    function clearFrames(silent = false) {
-      stopAnimation();
-      frames = [];
-      document.getElementById('frameCount').innerText = '0';
-      if (!silent) { showToast('تم مسح الإطارات'); scheduleAutoSave(); }
-    }
-
+    function clearFrames(silent = false) { stopAnimation(); frames = []; document.getElementById('frameCount').innerText = '0'; if (!silent) { showToast('تم مسح الإطارات'); scheduleAutoSave(); } }
     function stopAnimation() { if (animPlaying) animStopReq = true; }
-    function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+    function easeInOutQuad(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
 
     async function playAnimation() {
       if (frames.length < 2) return alert('قم بحفظ إطارين على الأقل لتشغيل الحركة!');
-      if (animPlaying) return;
-      deselectAll();
-      animPlaying = true; animStopReq = false;
-      document.getElementById('playAnimBtn').style.display = 'none';
-      document.getElementById('stopAnimBtn').style.display = 'inline-flex';
-
-      const durationMs = parseInt(document.getElementById('animSpeed').value) || 550;
+      if (animPlaying) return; deselectAll(); animPlaying = true; animStopReq = false;
+      document.getElementById('playAnimBtn').style.display = 'none'; document.getElementById('stopAnimBtn').style.display = 'inline-flex';
+      const dur = parseInt(document.getElementById('animSpeed').value)||550;
       frames[0].forEach(p => { const el = document.getElementById(p.id); if (el) { el.style.left = `${p.left}%`; el.style.top = `${p.top}%`; } });
       await new Promise(r => setTimeout(r, 150));
-
       for (let i = 0; i < frames.length - 1; i++) {
         if (animStopReq) break;
         const fA = frames[i], fB = frames[i + 1];
@@ -1362,92 +514,46 @@
           const t0 = performance.now();
           function step(now) {
             if (animStopReq) { resolve(); return; }
-            const rawT = Math.min(1, (now - t0) / durationMs);
-            const t = easeInOutQuad(rawT);
-            fA.forEach(pA => {
-              const pB = fB.find(x => x.id === pA.id) || pA;
-              const el = document.getElementById(pA.id);
-              if (el) {
-                el.style.left = `${pA.left + (pB.left - pA.left) * t}%`;
-                el.style.top = `${pA.top + (pB.top - pA.top) * t}%`;
-              }
-            });
-            if (rawT < 1) requestAnimationFrame(step);
-            else resolve();
+            const rawT = Math.min(1, (now - t0)/dur), t = easeInOutQuad(rawT);
+            fA.forEach(pA => { const pB = fB.find(x => x.id === pA.id) || pA, el = document.getElementById(pA.id); if (el) { el.style.left = `${pA.left + (pB.left - pA.left)*t}%`; el.style.top = `${pA.top + (pB.top - pA.top)*t}%`; } });
+            if (rawT < 1) requestAnimationFrame(step); else resolve();
           }
           requestAnimationFrame(step);
         });
       }
-
       animPlaying = false; animStopReq = false;
-      document.getElementById('playAnimBtn').style.display = 'inline-flex';
-      document.getElementById('stopAnimBtn').style.display = 'none';
+      document.getElementById('playAnimBtn').style.display = 'inline-flex'; document.getElementById('stopAnimBtn').style.display = 'none';
     }
 
-    function loadImageSafe(src) {
-      return new Promise(res => { const img = new Image(); img.onload = () => res(img); img.onerror = () => res(null); img.src = src; });
-    }
-
+    function loadImageSafe(src) { return new Promise(res => { const img = new Image(); img.onload = () => res(img); img.onerror = () => res(null); img.src = src; }); }
     function drawGKPitchHD(ctx, w, h, view) {
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(0, 0, w, h);
-      const stripeH = h / 10;
-      for (let i = 0; i < 10; i++) {
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.045)';
-        ctx.fillRect(0, i * stripeH, w, stripeH);
-      }
-      const lw = Math.max(3, w * 0.0025);
-      const pad = lw * 1.5;
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.92)';
-      ctx.lineWidth = lw;
-      ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
-
+      ctx.fillStyle = '#15803d'; ctx.fillRect(0, 0, w, h);
+      const sh = h/10; for (let i = 0; i < 10; i++) { ctx.fillStyle = i%2===0 ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.045)'; ctx.fillRect(0, i*sh, w, sh); }
+      const lw = Math.max(3, w*0.0025), pad = lw*1.5;
+      ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.92)'; ctx.lineWidth = lw; ctx.strokeRect(pad, pad, w - pad*2, h - pad*2);
       if (view === 'penalty') {
-        ctx.strokeRect(w * 0.20, pad, w * 0.60, h * 0.50);
-        ctx.strokeRect(w * 0.375, pad, w * 0.25, h * 0.20);
-        ctx.beginPath();
-        ctx.arc(w / 2, h * 0.50, w * 0.10, 0, Math.PI);
-        ctx.stroke();
+        ctx.strokeRect(w*0.20, pad, w*0.60, h*0.50); ctx.strokeRect(w*0.375, pad, w*0.25, h*0.20);
+        ctx.beginPath(); ctx.arc(w/2, h*0.50, w*0.10, 0, Math.PI); ctx.stroke();
       } else {
-        const netX = w * 0.32, netW = w * 0.36, netH = h * 0.15;
-        ctx.save();
-        ctx.beginPath(); ctx.rect(netX, pad, netW, netH); ctx.clip();
-        ctx.strokeStyle = 'rgba(255,255,255,0.28)';
-        for (let d = -netH; d < netW + netH; d += w * 0.015) {
-          ctx.beginPath(); ctx.moveTo(netX + d, pad); ctx.lineTo(netX + d - netH, pad + netH); ctx.stroke();
-        }
-        ctx.restore();
-        ctx.strokeStyle = '#eab308'; ctx.lineWidth = lw * 1.8;
-        ctx.strokeRect(netX, pad, netW, netH);
-        ctx.strokeStyle = '#fff'; ctx.lineWidth = lw * 1.3;
-        ctx.strokeRect(w * 0.15, h * 0.15, w * 0.70, h * 0.60);
+        const netX = w*0.32, netW = w*0.36, netH = h*0.15;
+        ctx.save(); ctx.beginPath(); ctx.rect(netX, pad, netW, netH); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+        for (let d = -netH; d < netW + netH; d += w*0.015) { ctx.beginPath(); ctx.moveTo(netX+d, pad); ctx.lineTo(netX+d-netH, pad+netH); ctx.stroke(); }
+        ctx.restore(); ctx.strokeStyle = '#eab308'; ctx.lineWidth = lw*1.8; ctx.strokeRect(netX, pad, netW, netH);
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = lw*1.3; ctx.strokeRect(w*0.15, h*0.15, w*0.70, h*0.60);
       }
       ctx.restore();
     }
 
     async function prepareDrillAssets() {
       const assets = [];
-      const nodes = pitchArea.querySelectorAll('.drill-item');
-      for (const el of nodes) {
-        const svgEl = el.querySelector('svg');
-        const origW = svgEl ? (parseFloat(svgEl.getAttribute('width')) || 35) : 35;
-        const origH = svgEl ? (parseFloat(svgEl.getAttribute('height')) || 35) : 35;
+      for (const el of pitchArea.querySelectorAll('.drill-item')) {
+        const svgEl = el.querySelector('svg'), ow = svgEl ? (parseFloat(svgEl.getAttribute('width'))||35) : 35, oh = svgEl ? (parseFloat(svgEl.getAttribute('height'))||35) : 35;
         let img = null;
         if (svgEl) {
-          const clone = svgEl.cloneNode(true);
-          clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-          clone.setAttribute('width', origW * 5);
-          clone.setAttribute('height', origH * 5);
+          const clone = svgEl.cloneNode(true); clone.setAttribute('xmlns','http://www.w3.org/2000/svg'); clone.setAttribute('width', ow*5); clone.setAttribute('height', oh*5);
           img = await loadImageSafe('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone)));
         }
-        assets.push({
-          id: el.id,
-          left: parseFloat(el.style.left) || 50,
-          top: parseFloat(el.style.top) || 50,
-          scale: parseFloat(el.dataset.scale || 1.1),
-          origW, origH, img
-        });
+        assets.push({ id: el.id, left: parseFloat(el.style.left)||50, top: parseFloat(el.style.top)||50, scale: parseFloat(el.dataset.scale||1.1), origW: ow, origH: oh, img });
       }
       return assets;
     }
@@ -1456,50 +562,55 @@
       drawGKPitchHD(ctx, w, h, currentPitchView);
       assets.forEach(a => {
         if (!a.img) return;
-        const p = posMap[a.id] || { left: a.left, top: a.top };
-        const cx = (p.left / 100) * w, cy = (p.top / 100) * h;
-        const dw = a.origW * a.scale * sf, dh = a.origH * a.scale * sf;
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6 * sf; ctx.shadowOffsetY = 3 * sf;
-        ctx.drawImage(a.img, cx - dw / 2, cy - dh / 2, dw, dh);
-        ctx.restore();
+        const p = posMap[a.id] || { left: a.left, top: a.top }, cx = (p.left/100)*w, cy = (p.top/100)*h, dw = a.origW*a.scale*sf, dh = a.origH*a.scale*sf;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6*sf; ctx.shadowOffsetY = 3*sf; ctx.drawImage(a.img, cx - dw/2, cy - dh/2, dw, dh); ctx.restore();
       });
-      ctx.save();
-      ctx.font = `800 ${Math.round(14 * sf)}px Cairo, Arial`;
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
-      ctx.fillText('Ziada GK Studio Pro', 18 * sf, h - 12 * sf);
-      ctx.restore();
+      ctx.save(); ctx.font = `800 ${Math.round(14*sf)}px Cairo, Arial`; ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText('Ziada GK Studio Pro', 18*sf, h - 12*sf); ctx.restore();
     }
 
-    function getHDConfig() {
-      const rect = pitchArea.getBoundingClientRect();
-      const w = 1920;
-      let h = Math.round(w * (rect.height / rect.width));
-      if (h % 2 !== 0) h += 1;
-      return { w, h, sf: w / rect.width };
-    }
+    function getHDConfig() { const r = pitchArea.getBoundingClientRect(), w = 1920; let h = Math.round(w*(r.height/r.width)); if (h%2!==0) h++; return { w, h, sf: w/r.width }; }
 
     async function printDrill() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة تدريب حراس المرمى HD')) return;
-      deselectAll();
-      const { w, h, sf } = getHDConfig();
-      const assets = await prepareDrillAssets();
-      const posMap = {};
+      deselectAll(); const { w, h, sf } = getHDConfig(), assets = await prepareDrillAssets(), posMap = {};
       assets.forEach(a => posMap[a.id] = { left: a.left, top: a.top });
-      const c = document.createElement('canvas'); c.width = w; c.height = h;
-      renderGKFrameHD(c.getContext('2d'), w, h, sf, assets, posMap);
-      const a = document.createElement('a');
-      a.download = `Ziada_GK_Drill_HD_${Date.now()}.png`;
-      a.href = c.toDataURL('image/png');
-      a.click();
+      const c = document.createElement('canvas'); c.width = w; c.height = h; renderGKFrameHD(c.getContext('2d'), w, h, sf, assets, posMap);
+      const a = document.createElement('a'); a.download = `Ziada_GK_Drill_HD_${Date.now()}.png`; a.href = c.toDataURL('image/png'); a.click();
       showToast('تم حفظ صورة التدريب بجودة Full HD ✓');
     }
 
+    // ==========================================
+    // أولوية قصوى لـ MP4 H.264 لضمان التشغيل المباشر في معرض التليفون وواتساب
+    // ==========================================
     function getSupportedVideoMime() {
-      const types = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'];
+      const types = [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1.4d002a',
+        'video/mp4;codecs=h264',
+        'video/mp4',
+        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9',
+        'video/webm'
+      ];
       for (const t of types) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t; }
       return '';
+    }
+
+    function createSafeRecorder(stream, bitrate) {
+      const mimeType = getSupportedVideoMime();
+      let rec;
+      try {
+        rec = mimeType ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: bitrate }) : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
+      } catch (e) {
+        try { rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream); }
+        catch (e2) { rec = new MediaRecorder(stream); }
+      }
+      const actualMime = rec.mimeType || mimeType || 'video/webm';
+      const isMp4 = actualMime.includes('mp4');
+      rec._isMp4 = isMp4;
+      rec._usedMime = isMp4 ? 'video/mp4' : 'video/webm';
+      rec._usedExt = isMp4 ? 'mp4' : 'webm';
+      return rec;
     }
 
     async function exportDrillVideo() {
@@ -1508,279 +619,166 @@
       if (!window.MediaRecorder) return alert('متصفحك لا يدعم تسجيل الفيديو.');
       deselectAll();
 
-      const modal = document.getElementById('exportProgressModal');
-      const fill = document.getElementById('exportProgressFill');
-      const pctTxt = document.getElementById('exportPercentText');
+      const modal = document.getElementById('exportProgressModal'), fill = document.getElementById('exportProgressFill'), pctTxt = document.getElementById('exportPercentText');
       modal.style.display = 'flex'; fill.style.width = '0%'; pctTxt.textContent = '0%';
 
-      const { w, h, sf } = getHDConfig();
-      const assets = await prepareDrillAssets();
-      const speedMs = parseInt(document.getElementById('animSpeed').value) || 550;
+      const { w, h, sf } = getHDConfig(), assets = await prepareDrillAssets(), speedMs = parseInt(document.getElementById('animSpeed').value)||550;
+      const vCanvas = document.createElement('canvas'); vCanvas.width = w; vCanvas.height = h; const vCtx = vCanvas.getContext('2d');
+      const recorder = createSafeRecorder(vCanvas.captureStream(60), 8000000);
+      const chunks = []; recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
 
-      const vCanvas = document.createElement('canvas'); vCanvas.width = w; vCanvas.height = h;
-      const vCtx = vCanvas.getContext('2d');
-      const stream = vCanvas.captureStream(60);
-      const mimeType = getSupportedVideoMime();
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 });
-      const chunks = [];
-      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-
-      const startHold = 350, wpHold = 100, endHold = 700;
-      const segs = frames.length - 1;
-      const totalMs = startHold + segs * speedMs + Math.max(0, segs - 1) * wpHold + endHold;
-
+      const startHold = 350, wpHold = 100, endHold = 700, segs = frames.length - 1, totalMs = startHold + segs*speedMs + Math.max(0, segs-1)*wpHold + endHold;
       function getPosAt(elapsed) {
-        const map = {};
-        assets.forEach(a => map[a.id] = { left: a.left, top: a.top });
+        const map = {}; assets.forEach(a => map[a.id] = { left: a.left, top: a.top });
         let fA = frames[0], fB = frames[0], t = 0;
-        if (elapsed >= totalMs - endHold) { fA = frames[frames.length - 1]; fB = fA; }
+        if (elapsed >= totalMs - endHold) { fA = frames[frames.length-1]; fB = fA; }
         else if (elapsed > startHold) {
           let cur = elapsed - startHold;
           for (let i = 0; i < segs; i++) {
-            if (cur <= speedMs) { fA = frames[i]; fB = frames[i + 1]; t = easeInOutQuad(cur / speedMs); break; }
-            cur -= speedMs;
-            if (i < segs - 1) {
-              if (cur <= wpHold) { fA = frames[i + 1]; fB = frames[i + 1]; break; }
-              cur -= wpHold;
-            }
+            if (cur <= speedMs) { fA = frames[i]; fB = frames[i+1]; t = easeInOutQuad(cur/speedMs); break; }
+            cur -= speedMs; if (i < segs - 1) { if (cur <= wpHold) { fA = frames[i+1]; fB = fA; break; } cur -= wpHold; }
           }
         }
-        fA.forEach(pA => {
-          const pB = fB.find(x => x.id === pA.id) || pA;
-          map[pA.id] = { left: pA.left + (pB.left - pA.left) * t, top: pA.top + (pB.top - pA.top) * t };
-        });
+        fA.forEach(pA => { const pB = fB.find(x => x.id === pA.id) || pA; map[pA.id] = { left: pA.left + (pB.left - pA.left)*t, top: pA.top + (pB.top - pA.top)*t }; });
         return map;
       }
 
       renderGKFrameHD(vCtx, w, h, sf, assets, getPosAt(0));
-      const t0 = performance.now();
-      recorder.start();
+      const t0 = performance.now(); recorder.start();
 
       await new Promise(resolve => {
         function tick(now) {
-          const elapsed = now - t0;
-          renderGKFrameHD(vCtx, w, h, sf, assets, getPosAt(Math.min(elapsed, totalMs)));
-          const pct = Math.min(99, Math.round((elapsed / totalMs) * 100));
-          fill.style.width = `${pct}%`; pctTxt.textContent = `${pct}%`;
-          if (elapsed < totalMs) requestAnimationFrame(tick);
-          else resolve();
+          const el = now - t0; renderGKFrameHD(vCtx, w, h, sf, assets, getPosAt(Math.min(el, totalMs)));
+          const pct = Math.min(99, Math.round((el/totalMs)*100)); fill.style.width = `${pct}%`; pctTxt.textContent = `${pct}%`;
+          if (el < totalMs) requestAnimationFrame(tick); else resolve();
         }
         requestAnimationFrame(tick);
       });
 
       const dur = Math.round(performance.now() - t0);
       recorder.onstop = () => {
-        const rawBlob = new Blob(chunks, { type: mimeType || 'video/webm' });
+        const rawBlob = new Blob(chunks, { type: recorder._usedMime });
         const done = (b) => {
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(b);
-          a.download = `Ziada_GK_Drill_HD_${Date.now()}.${mimeType && mimeType.includes('mp4') ? 'mp4' : 'webm'}`;
-          a.click();
+          const dlUrl = URL.createObjectURL(b);
+          const a = document.createElement('a'); a.href = dlUrl; a.download = `Ziada_GK_Drill_HD_${Date.now()}.${recorder._usedExt}`; a.click();
+          setTimeout(() => URL.revokeObjectURL(dlUrl), 15000);
           fill.style.width = '100%'; pctTxt.textContent = '100%';
-          setTimeout(() => { modal.style.display = 'none'; showToast('تم تصدير فيديو التدريب Full HD ✓'); }, 350);
+          setTimeout(() => { modal.style.display = 'none'; showToast(`تم تصدير فيديو التدريب (${recorder._usedExt.toUpperCase()}) ✓`); }, 350);
         };
-        if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) {
-          ysFixWebmDuration(rawBlob, dur, done);
-        } else done(rawBlob);
+        if (!recorder._isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(rawBlob, dur, done);
+        else done(rawBlob);
       };
       recorder.stop();
     }
 
     // ==========================================
-    // التاب الثاني: تقطيع وتحليل لقطات الحارس
+    // التاب الثاني: تقطيع وتحليل لقطات الحارس (MP4 للموبايل وواتساب)
     // ==========================================
     function loadGkVideo(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      loadedVideoName = file.name;
-      document.getElementById('gkVideoFileName').textContent = file.name;
-      document.getElementById('relinkBanner').style.display = 'none';
-      video.src = URL.createObjectURL(file);
-      video.load();
+      const file = e.target.files[0]; if (!file) return;
+      loadedVideoName = file.name; document.getElementById('gkVideoFileName').textContent = file.name; document.getElementById('relinkBanner').style.display = 'none';
+      video.src = URL.createObjectURL(file); video.load();
       video.onloadedmetadata = () => {
-        if (pendingSeekAfterLoad !== null && pendingSeekAfterLoad < video.duration) {
-          video.currentTime = pendingSeekAfterLoad;
-          showToast(`تم العودة للدقيقة ${formatTime(pendingSeekAfterLoad)} ✓`);
-          pendingSeekAfterLoad = null;
-        }
+        if (pendingSeekAfterLoad !== null && pendingSeekAfterLoad < video.duration) { video.currentTime = pendingSeekAfterLoad; showToast(`تم العودة للدقيقة ${formatTime(pendingSeekAfterLoad)} ✓`); pendingSeekAfterLoad = null; }
         scheduleAutoSave();
       };
     }
 
-    function skip(sec) { if (video.src) video.currentTime = Math.max(0, Math.min(video.duration || 99999, video.currentTime + sec)); }
-    function stepGkFrame(dir) { if (video.src) { video.pause(); skip(dir * 0.04); } }
-    function setGkSpeed(rate, btnEl) {
-      video.playbackRate = rate;
-      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
-    }
-    function formatTime(sec) {
-      const s = Math.max(0, sec || 0);
-      return `${Math.floor(s / 60).toString().padStart(2, '0')}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
-    }
+    function skip(sec) { if (video.src) video.currentTime = Math.max(0, Math.min(video.duration||99999, video.currentTime + sec)); }
+    function stepGkFrame(dir) { if (video.src) { video.pause(); skip(dir*0.04); } }
+    function setGkSpeed(rate, btnEl) { video.playbackRate = rate; document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active')); if (btnEl) btnEl.classList.add('active'); }
+    function formatTime(sec) { const s = Math.max(0, sec||0); return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 
-    video.addEventListener('timeupdate', () => {
-      if (Math.abs(video.currentTime - lastSavedVideoTime) >= 4) {
-        lastSavedVideoTime = video.currentTime;
-        scheduleAutoSave();
-      }
-    });
+    video.addEventListener('timeupdate', () => { if (Math.abs(video.currentTime - lastSavedVideoTime) >= 4) { lastSavedVideoTime = video.currentTime; scheduleAutoSave(); } });
 
     function handleTagClick(btn, eventType) {
       if (!video.src) return alert('الرجاء اختيار فيديو المباراة أولاً!');
       if (isAutoClipping) return alert('انتظر انتهاء التقطيع التلقائي الحالي.');
-
       const mode = document.querySelector('input[name="clipMode"]:checked').value;
       if (mode === 'auto') {
         if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', gkEventsLog.length, 'لقطات حراس مرمى')) return;
         clipVideoAuto(eventType);
       } else {
         if (activeManualTag === eventType) {
-          stopManualClip(eventType);
-          btn.classList.remove('recording-btn');
-          btn.innerHTML = btn.dataset.originalHtml;
-          activeManualTag = null; activeManualBtn = null;
+          stopManualClip(eventType); btn.classList.remove('recording-btn'); btn.innerHTML = btn.dataset.originalHtml; activeManualTag = null; activeManualBtn = null;
         } else if (!activeManualTag) {
           if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxLiveClips', gkEventsLog.length, 'لقطات حراس مرمى')) return;
-          btn.dataset.originalHtml = btn.innerHTML;
-          btn.classList.add('recording-btn');
-          btn.innerHTML = 'إيقاف وحفظ اللقطة ⏹️';
-          activeManualTag = eventType; activeManualBtn = btn;
-          startManualClip();
-        } else {
-          alert('يرجى إيقاف تسجيل الحالة الحالية أولاً!');
-        }
+          btn.dataset.originalHtml = btn.innerHTML; btn.classList.add('recording-btn'); btn.innerHTML = 'إيقاف وحفظ اللقطة ⏹️';
+          activeManualTag = eventType; activeManualBtn = btn; startManualClip();
+        } else alert('يرجى إيقاف تسجيل الحالة الحالية أولاً!');
       }
     }
 
     async function clipVideoAuto(eventType) {
-      isAutoClipping = true;
-      video.pause();
-      const origTime = video.currentTime;
-      const startTime = Math.max(0, origTime - 5);
-      const endTime = Math.min(video.duration || (origTime + 5), origTime + 5);
-
-      const banner = document.getElementById('liveStatusBanner');
-      banner.style.display = 'flex';
+      isAutoClipping = true; video.pause();
+      const origTime = video.currentTime, startTime = Math.max(0, origTime - 5), endTime = Math.min(video.duration||(origTime+5), origTime + 5);
+      const banner = document.getElementById('liveStatusBanner'); banner.style.display = 'flex';
       document.getElementById('liveStatusText').innerText = `جاري تقطيع لقطة (${eventType}) تلقائياً...`;
 
       try {
-        const hc = document.getElementById('liveRenderCanvas');
-        const vw = video.videoWidth || 1280, vh = video.videoHeight || 720;
-        const sc = vw > 1280 ? 1280 / vw : 1;
-        hc.width = Math.round(vw * sc); hc.height = Math.round(vh * sc);
+        const hc = document.getElementById('liveRenderCanvas'), vw = video.videoWidth||1280, vh = video.videoHeight||720;
+        const sc = vw > 1280 ? 1280/vw : 1;
+        let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
+        hc.width = cw; hc.height = ch;
         const hCtx = hc.getContext('2d');
-        const stream = hc.captureStream(30);
-        const mimeType = getSupportedVideoMime();
-        const recorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 4000000 } : { videoBitsPerSecond: 4000000 });
-        const chunks = [];
-        recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+        const recorder = createSafeRecorder(hc.captureStream(30), 4000000);
+        const chunks = []; recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
 
-        video.currentTime = startTime;
-        await new Promise(r => { video.onseeked = r; });
-
-        const t0 = Date.now();
-        recorder.start();
-        await video.play();
+        video.currentTime = startTime; await new Promise(r => { video.onseeked = r; });
+        const t0 = Date.now(); recorder.start(); await video.play();
 
         function drawLoop() {
-          if (video.currentTime >= endTime || video.paused || video.ended) {
-            video.pause();
-            recorder.stop();
-            video.currentTime = origTime;
-            return;
-          }
-          hCtx.drawImage(video, 0, 0, hc.width, hc.height);
-          requestAnimationFrame(drawLoop);
+          if (video.currentTime >= endTime || video.paused || video.ended) { video.pause(); recorder.stop(); video.currentTime = origTime; return; }
+          hCtx.drawImage(video, 0, 0, hc.width, hc.height); requestAnimationFrame(drawLoop);
         }
         requestAnimationFrame(drawLoop);
 
         recorder.onstop = () => {
-          const dur = Date.now() - t0;
-          const rawBlob = new Blob(chunks, { type: mimeType || 'video/webm' });
+          const dur = Date.now() - t0, rawBlob = new Blob(chunks, { type: recorder._usedMime });
           const finish = (finalBlob) => {
-            gkEventsLog.push({
-              id: 'clip_' + Date.now(),
-              timeSec: origTime,
-              time: formatTime(origTime),
-              type: eventType,
-              videoBlob: finalBlob,
-              videoUrl: URL.createObjectURL(finalBlob)
-            });
-            updateGkStats();
-            renderGkLog();
-            scheduleAutoSave();
-            banner.style.display = 'none';
-            isAutoClipping = false;
-            showToast(`تم حفظ لقطة (${eventType}) ✓`);
+            gkEventsLog.push({ id:'clip_'+Date.now(), timeSec:origTime, time:formatTime(origTime), type:eventType, ext:recorder._usedExt, videoBlob:finalBlob, videoUrl:URL.createObjectURL(finalBlob) });
+            updateGkStats(); renderGkLog(); scheduleAutoSave(); banner.style.display = 'none'; isAutoClipping = false;
+            showToast(`تم حفظ لقطة (${eventType}) بصيغة ${recorder._usedExt.toUpperCase()} ✓`);
           };
-          if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) {
-            ysFixWebmDuration(rawBlob, dur, finish);
-          } else finish(rawBlob);
+          if (!recorder._isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(rawBlob, dur, finish);
+          else finish(rawBlob);
         };
-      } catch (err) {
-        banner.style.display = 'none';
-        isAutoClipping = false;
-        alert('خطأ في التقطيع التلقائي: ' + err.message);
-      }
+      } catch (err) { banner.style.display = 'none'; isAutoClipping = false; alert('خطأ في التقطيع التلقائي: ' + err.message); }
     }
 
     function startManualClip() {
       manualStartTime = video.currentTime;
-      const banner = document.getElementById('liveStatusBanner');
-      banner.style.display = 'flex';
+      const banner = document.getElementById('liveStatusBanner'); banner.style.display = 'flex';
       document.getElementById('liveStatusText').innerText = 'جاري التسجيل اليدوي الآن... اضغط إيقاف عند الانتهاء.';
 
-      const hc = document.getElementById('liveRenderCanvas');
-      const vw = video.videoWidth || 1280, vh = video.videoHeight || 720;
-      const sc = vw > 1280 ? 1280 / vw : 1;
-      hc.width = Math.round(vw * sc); hc.height = Math.round(vh * sc);
+      const hc = document.getElementById('liveRenderCanvas'), vw = video.videoWidth||1280, vh = video.videoHeight||720;
+      const sc = vw > 1280 ? 1280/vw : 1;
+      let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
+      hc.width = cw; hc.height = ch;
       const hCtx = hc.getContext('2d');
-      const stream = hc.captureStream(30);
-      const mimeType = getSupportedVideoMime();
 
-      manualRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 4000000 } : { videoBitsPerSecond: 4000000 });
-      manualRecorder._mime = mimeType;
-      manualRecorder._t0 = Date.now();
-      manualChunks = [];
+      manualRecorder = createSafeRecorder(hc.captureStream(30), 4000000);
+      manualRecorder._t0 = Date.now(); manualChunks = [];
       manualRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) manualChunks.push(e.data); };
+      manualRecorder.start(); video.play();
 
-      manualRecorder.start();
-      video.play();
-
-      function drawLoop() {
-        if (!manualRecorder || manualRecorder.state !== 'recording') return;
-        hCtx.drawImage(video, 0, 0, hc.width, hc.height);
-        requestAnimationFrame(drawLoop);
-      }
+      function drawLoop() { if (!manualRecorder || manualRecorder.state !== 'recording') return; hCtx.drawImage(video, 0, 0, hc.width, hc.height); requestAnimationFrame(drawLoop); }
       requestAnimationFrame(drawLoop);
     }
 
     function stopManualClip(tagName) {
       if (manualRecorder && manualRecorder.state === 'recording') {
-        const mimeType = manualRecorder._mime;
-        const dur = Date.now() - manualRecorder._t0;
+        const isMp4 = manualRecorder._isMp4, usedMime = manualRecorder._usedMime, usedExt = manualRecorder._usedExt, dur = Date.now() - manualRecorder._t0;
         video.pause();
         manualRecorder.onstop = () => {
-          const rawBlob = new Blob(manualChunks, { type: mimeType || 'video/webm' });
+          const rawBlob = new Blob(manualChunks, { type: usedMime });
           const finish = (finalBlob) => {
-            gkEventsLog.push({
-              id: 'clip_' + Date.now(),
-              timeSec: manualStartTime,
-              time: formatTime(manualStartTime),
-              type: tagName,
-              videoBlob: finalBlob,
-              videoUrl: URL.createObjectURL(finalBlob)
-            });
-            updateGkStats();
-            renderGkLog();
-            scheduleAutoSave();
-            document.getElementById('liveStatusBanner').style.display = 'none';
-            showToast(`تم حفظ لقطة (${tagName}) ✓`);
+            gkEventsLog.push({ id:'clip_'+Date.now(), timeSec:manualStartTime, time:formatTime(manualStartTime), type:tagName, ext:usedExt, videoBlob:finalBlob, videoUrl:URL.createObjectURL(finalBlob) });
+            updateGkStats(); renderGkLog(); scheduleAutoSave(); document.getElementById('liveStatusBanner').style.display = 'none';
+            showToast(`تم حفظ لقطة (${tagName}) بصيغة ${usedExt.toUpperCase()} ✓`);
           };
-          if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) {
-            ysFixWebmDuration(rawBlob, dur, finish);
-          } else finish(rawBlob);
+          if (!isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(rawBlob, dur, finish);
+          else finish(rawBlob);
         };
         manualRecorder.stop();
       }
@@ -1796,414 +794,209 @@
 
     function downloadGkClip(idx) {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تحميل لقطة حارس المرمى')) return;
-      const item = gkEventsLog[idx];
-      if (!item || !item.videoUrl) return;
-      const a = document.createElement('a');
-      a.href = item.videoUrl;
-      a.download = `GK_${item.type}_${item.time.replace(':', '-')}.webm`;
-      a.click();
+      const item = gkEventsLog[idx]; if (!item || !item.videoUrl) return;
+      const ext = item.ext || (item.videoBlob && item.videoBlob.type && item.videoBlob.type.includes('mp4') ? 'mp4' : 'webm');
+      const a = document.createElement('a'); a.href = item.videoUrl; a.download = `GK_${item.type}_${item.time.replace(':','-')}.${ext}`; a.click();
     }
 
     function renderGkLog() {
       const tbody = document.getElementById('gkLogBody');
-      if (gkEventsLog.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding:16px;">لم يتم تقطيع لقطات حتى الآن.</td></tr>';
-        return;
-      }
+      if (!gkEventsLog.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">لم يتم تقطيع لقطات حتى الآن.</td></tr>'; return; }
       tbody.innerHTML = gkEventsLog.slice().reverse().map((item, idx) => {
-        const actualIndex = gkEventsLog.length - 1 - idx;
-        return `<tr>
-          <td>${escapeHtml(item.time)}</td>
-          <td style="color: #34d399; font-weight: 800;">${escapeHtml(item.type)}</td>
-          <td style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="btn-download" onclick="downloadGkClip(${actualIndex})"><i class="fa-solid fa-download"></i> حفظ</button>
-            <button class="btn-draw" onclick="openDrawModal(${actualIndex})"><i class="fa-solid fa-pen-nib"></i> تحليل بالرسم</button>
-            <button class="btn-del-clip" onclick="deleteGkClip(${actualIndex})" title="حذف"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>`;
+        const ai = gkEventsLog.length - 1 - idx;
+        return `<tr><td>${escapeHtml(item.time)}</td><td style="color:#34d399; font-weight:800;">${escapeHtml(item.type)}</td><td style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn-download" onclick="downloadGkClip(${ai})"><i class="fa-solid fa-download"></i> حفظ</button><button class="btn-draw" onclick="openDrawModal(${ai})"><i class="fa-solid fa-pen-nib"></i> تحليل بالرسم</button><button class="btn-del-clip" onclick="deleteGkClip(${ai})" title="حذف"><i class="fa-solid fa-trash"></i></button></td></tr>`;
       }).join('');
     }
-
-    function deleteGkClip(idx) {
-      if (!confirm('هل تريد حذف هذه اللقطة؟')) return;
-      gkEventsLog.splice(idx, 1);
-      updateGkStats();
-      renderGkLog();
-      scheduleAutoSave();
-    }
+    function deleteGkClip(idx) { if (!confirm('هل تريد حذف هذه اللقطة؟')) return; gkEventsLog.splice(idx, 1); updateGkStats(); renderGkLog(); scheduleAutoSave(); }
 
     // ==========================================
-    // استوديو الرسم على اللقطات (تاتش + زاوية تغطية حقيقية)
+    // استوديو الرسم على اللقطات
     // ==========================================
-    const drawModal = document.getElementById('drawModal');
-    const drawWrapper = document.getElementById('drawWrapper');
-    const drawVideo = document.getElementById('drawVideoPlayer');
-    const drawCanvas = document.getElementById('drawCanvasOverlay');
-    const drawCtx = drawCanvas.getContext('2d');
-    const shapeControlsDraw = document.getElementById('shapeControlsDraw');
-
-    let drawActiveTool = 'none', drawShapes = [], activeDrawPen = null;
-    let isDrawModalDrawing = false, isDrawModalDragging = false;
-    let dStartX = 0, dStartY = 0, dDragOffsetX = 0, dDragOffsetY = 0;
-    let drawSelectedIdx = -1;
+    const drawModal = document.getElementById('drawModal'), drawWrapper = document.getElementById('drawWrapper'), drawVideo = document.getElementById('drawVideoPlayer'), drawCanvas = document.getElementById('drawCanvasOverlay'), drawCtx = drawCanvas.getContext('2d'), shapeControlsDraw = document.getElementById('shapeControlsDraw');
+    let drawActiveTool = 'none', drawShapes = [], activeDrawPen = null, isDrawModalDrawing = false, isDrawModalDragging = false, dStartX = 0, dStartY = 0, dDragOffsetX = 0, dDragOffsetY = 0, drawSelectedIdx = -1;
 
     function openDrawModal(idx) {
-      const item = gkEventsLog[idx];
-      if (!item) return;
-      drawVideo.src = item.videoUrl;
-      drawShapes = []; drawSelectedIdx = -1; setDrawTool('none');
-      drawModal.style.display = 'flex';
-      drawVideo.play();
-      drawVideo.onloadeddata = resizeDrawCanvas;
-      window.addEventListener('resize', resizeDrawCanvas);
+      const item = gkEventsLog[idx]; if (!item) return;
+      drawVideo.src = item.videoUrl; drawShapes = []; drawSelectedIdx = -1; setDrawTool('none');
+      drawModal.style.display = 'flex'; drawVideo.play(); drawVideo.onloadeddata = resizeDrawCanvas; window.addEventListener('resize', resizeDrawCanvas);
     }
-
-    function closeDrawModal() {
-      drawModal.style.display = 'none';
-      drawVideo.pause(); drawVideo.src = '';
-      window.removeEventListener('resize', resizeDrawCanvas);
-    }
-
+    function closeDrawModal() { drawModal.style.display = 'none'; drawVideo.pause(); drawVideo.src = ''; window.removeEventListener('resize', resizeDrawCanvas); }
     function resizeDrawCanvas() {
-      const rect = drawVideo.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      drawCanvas.width = rect.width; drawCanvas.height = rect.height;
-      drawCanvas.style.width = `${rect.width}px`; drawCanvas.style.height = `${rect.height}px`;
-      redrawShapes();
+      const r = drawVideo.getBoundingClientRect(); if (!r.width || !r.height) return;
+      drawCanvas.width = r.width; drawCanvas.height = r.height; drawCanvas.style.width = `${r.width}px`; drawCanvas.style.height = `${r.height}px`; redrawShapes();
     }
-
     function toggleDrawVideo() { drawVideo.paused ? drawVideo.play() : drawVideo.pause(); }
     function skipDrawVideo(sec) { drawVideo.currentTime = Math.max(0, drawVideo.currentTime + sec); }
-
     function setDrawTool(tool) {
       drawActiveTool = tool; drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
-      document.querySelectorAll('#drawToolbar .draw-tool-btn[data-tool]').forEach(b => {
-        b.classList.toggle('active', b.dataset.tool === tool);
-      });
+      document.querySelectorAll('#drawToolbar .draw-tool-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
       if (tool !== 'none') drawVideo.pause();
     }
-
     function undoDrawShape() { if (drawShapes.length) { drawShapes.pop(); drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); } }
     function clearDrawings() { drawShapes = []; drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); }
 
-    function getDPos(e) {
-      const rect = drawCanvas.getBoundingClientRect();
-      const wrapRect = drawWrapper.getBoundingClientRect();
-      const p = getClientPos(e);
-      return { x: p.x - rect.left, y: p.y - rect.top, wrapX: p.x - wrapRect.left, wrapY: p.y - wrapRect.top };
-    }
-
+    function getDPos(e) { const r = drawCanvas.getBoundingClientRect(), wr = drawWrapper.getBoundingClientRect(), p = getClientPos(e); return { x: p.x - r.left, y: p.y - r.top, wrapX: p.x - wr.left, wrapY: p.y - wr.top }; }
     function onDrawStart(e) {
       if (e.type === 'touchstart') e.preventDefault();
-      const pos = getDPos(e);
-      dStartX = pos.x; dStartY = pos.y;
-
+      const pos = getDPos(e); dStartX = pos.x; dStartY = pos.y;
       if (drawActiveTool === 'text') {
         const t = prompt('اكتب الملاحظة على اللقطة:');
-        if (t && t.trim()) {
-          drawShapes.push({ type: 'text', x: pos.x, y: pos.y, text: t.trim(), scale: 1 });
-          drawSelectedIdx = drawShapes.length - 1;
-          positionDrawControls(pos.wrapX, pos.wrapY);
-          redrawShapes();
-        }
-        setDrawTool('none');
-        return;
+        if (t && t.trim()) { drawShapes.push({ type:'text', x:pos.x, y:pos.y, text:t.trim(), scale:1 }); drawSelectedIdx = drawShapes.length-1; positionDrawControls(pos.wrapX, pos.wrapY); redrawShapes(); }
+        setDrawTool('none'); return;
       }
-
       if (drawActiveTool === 'none') {
         drawSelectedIdx = -1;
         for (let i = drawShapes.length - 1; i >= 0; i--) {
-          const d = drawShapes[i];
-          let hit = false;
-          if ('x' in d) hit = Math.hypot(pos.x - d.x, pos.y - d.y) < 35 * (d.scale || 1);
+          const d = drawShapes[i]; let hit = false;
+          if ('x' in d) hit = Math.hypot(pos.x - d.x, pos.y - d.y) < 35*(d.scale||1);
           else if (d.type === 'pen' && d.points) hit = d.points.some(pt => Math.hypot(pos.x - pt.x, pos.y - pt.y) < 20);
-          else hit = Math.hypot(pos.x - (d.startX + d.endX) / 2, pos.y - (d.startY + d.endY) / 2) < 55;
-
-          if (hit) {
-            drawSelectedIdx = i; isDrawModalDragging = true;
-            if ('x' in d) { dDragOffsetX = pos.x - d.x; dDragOffsetY = pos.y - d.y; }
-            positionDrawControls(pos.wrapX, pos.wrapY);
-            break;
-          }
+          else hit = Math.hypot(pos.x - (d.startX+d.endX)/2, pos.y - (d.startY+d.endY)/2) < 55;
+          if (hit) { drawSelectedIdx = i; isDrawModalDragging = true; if ('x' in d) { dDragOffsetX = pos.x - d.x; dDragOffsetY = pos.y - d.y; } positionDrawControls(pos.wrapX, pos.wrapY); break; }
         }
-        if (drawSelectedIdx === -1) hideDrawControls();
-        redrawShapes();
+        if (drawSelectedIdx === -1) hideDrawControls(); redrawShapes();
       } else if (drawActiveTool === 'gk-pos' || drawActiveTool === 'ball') {
         drawShapes.push({ type: drawActiveTool, x: dStartX, y: dStartY, scale: 1 });
-        const idx = drawShapes.length - 1;
-        setDrawTool('none');
-        drawSelectedIdx = idx;
-        positionDrawControls(pos.wrapX, pos.wrapY);
-        redrawShapes();
-      } else if (drawActiveTool === 'pen') {
-        isDrawModalDrawing = true;
-        activeDrawPen = { type: 'pen', points: [{ x: pos.x, y: pos.y }], scale: 1 };
-      } else {
-        isDrawModalDrawing = true;
-      }
+        const idx = drawShapes.length - 1; setDrawTool('none'); drawSelectedIdx = idx; positionDrawControls(pos.wrapX, pos.wrapY); redrawShapes();
+      } else if (drawActiveTool === 'pen') { isDrawModalDrawing = true; activeDrawPen = { type:'pen', points:[{x:pos.x,y:pos.y}], scale:1 }; }
+      else isDrawModalDrawing = true;
     }
 
     function onDrawMove(e) {
-      if (!isDrawModalDragging && !isDrawModalDrawing) return;
-      if (e.type === 'touchmove') e.preventDefault();
+      if (!isDrawModalDragging && !isDrawModalDrawing) return; if (e.type === 'touchmove') e.preventDefault();
       const pos = getDPos(e);
-
       if (isDrawModalDragging && drawSelectedIdx > -1) {
         const d = drawShapes[drawSelectedIdx];
         if ('x' in d) { d.x = pos.x - dDragOffsetX; d.y = pos.y - dDragOffsetY; }
-        else if (d.type === 'pen') {
-          const dx = pos.x - dStartX, dy = pos.y - dStartY;
-          d.points.forEach(pt => { pt.x += dx; pt.y += dy; });
-          dStartX = pos.x; dStartY = pos.y;
-        } else {
-          const dx = pos.x - dStartX, dy = pos.y - dStartY;
-          d.startX += dx; d.startY += dy; d.endX += dx; d.endY += dy;
-          dStartX = pos.x; dStartY = pos.y;
-        }
-        positionDrawControls(pos.wrapX, pos.wrapY);
-        redrawShapes();
+        else if (d.type === 'pen') { const dx = pos.x - dStartX, dy = pos.y - dStartY; d.points.forEach(pt => { pt.x += dx; pt.y += dy; }); dStartX = pos.x; dStartY = pos.y; }
+        else { const dx = pos.x - dStartX, dy = pos.y - dStartY; d.startX += dx; d.startY += dy; d.endX += dx; d.endY += dy; dStartX = pos.x; dStartY = pos.y; }
+        positionDrawControls(pos.wrapX, pos.wrapY); redrawShapes();
       } else if (isDrawModalDrawing) {
-        if (drawActiveTool === 'pen' && activeDrawPen) {
-          activeDrawPen.points.push({ x: pos.x, y: pos.y });
-          redrawShapes(activeDrawPen);
-        } else {
-          redrawShapes({ type: drawActiveTool, startX: dStartX, startY: dStartY, endX: pos.x, endY: pos.y, scale: 1 });
-        }
+        if (drawActiveTool === 'pen' && activeDrawPen) { activeDrawPen.points.push({x:pos.x,y:pos.y}); redrawShapes(activeDrawPen); }
+        else redrawShapes({ type:drawActiveTool, startX:dStartX, startY:dStartY, endX:pos.x, endY:pos.y, scale:1 });
       }
     }
 
     function onDrawEnd(e) {
-      isDrawModalDragging = false;
-      if (!isDrawModalDrawing) return;
-      isDrawModalDrawing = false;
+      isDrawModalDragging = false; if (!isDrawModalDrawing) return; isDrawModalDrawing = false;
       const pos = getDPos(e);
-
-      if (drawActiveTool === 'pen' && activeDrawPen) {
-        if (activeDrawPen.points.length > 2) drawShapes.push(activeDrawPen);
-        activeDrawPen = null;
-        redrawShapes();
-        return;
-      }
-
+      if (drawActiveTool === 'pen' && activeDrawPen) { if (activeDrawPen.points.length > 2) drawShapes.push(activeDrawPen); activeDrawPen = null; redrawShapes(); return; }
       if (Math.hypot(pos.x - dStartX, pos.y - dStartY) > 8) {
-        drawShapes.push({ type: drawActiveTool, startX: dStartX, startY: dStartY, endX: pos.x, endY: pos.y, scale: 1 });
-        const idx = drawShapes.length - 1;
-        setDrawTool('none');
-        drawSelectedIdx = idx;
-        positionDrawControls(pos.wrapX, pos.wrapY);
-        redrawShapes();
+        drawShapes.push({ type:drawActiveTool, startX:dStartX, startY:dStartY, endX:pos.x, endY:pos.y, scale:1 });
+        const idx = drawShapes.length - 1; setDrawTool('none'); drawSelectedIdx = idx; positionDrawControls(pos.wrapX, pos.wrapY); redrawShapes();
       } else redrawShapes();
     }
 
-    drawCanvas.addEventListener('mousedown', onDrawStart);
-    drawCanvas.addEventListener('mousemove', onDrawMove);
-    window.addEventListener('mouseup', onDrawEnd);
-    drawCanvas.addEventListener('touchstart', onDrawStart, { passive: false });
-    drawCanvas.addEventListener('touchmove', onDrawMove, { passive: false });
-    drawCanvas.addEventListener('touchend', onDrawEnd);
+    drawCanvas.addEventListener('mousedown', onDrawStart); drawCanvas.addEventListener('mousemove', onDrawMove); window.addEventListener('mouseup', onDrawEnd);
+    drawCanvas.addEventListener('touchstart', onDrawStart, { passive: false }); drawCanvas.addEventListener('touchmove', onDrawMove, { passive: false }); drawCanvas.addEventListener('touchend', onDrawEnd);
 
-    function positionDrawControls(wx, wy) {
-      shapeControlsDraw.style.display = 'flex';
-      shapeControlsDraw.style.left = `${Math.max(8, Math.min(wx - 70, drawWrapper.clientWidth - 170))}px`;
-      shapeControlsDraw.style.top = `${Math.max(8, Math.min(wy - 50, drawWrapper.clientHeight - 46))}px`;
-    }
+    function positionDrawControls(wx, wy) { shapeControlsDraw.style.display = 'flex'; shapeControlsDraw.style.left = `${Math.max(8, Math.min(wx-70, drawWrapper.clientWidth-170))}px`; shapeControlsDraw.style.top = `${Math.max(8, Math.min(wy-50, drawWrapper.clientHeight-46))}px`; }
     function hideDrawControls() { shapeControlsDraw.style.display = 'none'; }
     function confirmDrawShape() { drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); }
     function deleteDrawShape() { if (drawSelectedIdx > -1) { drawShapes.splice(drawSelectedIdx, 1); drawSelectedIdx = -1; hideDrawControls(); redrawShapes(); } }
-    function scaleDrawShape(factor) { if (drawSelectedIdx > -1) { drawShapes[drawSelectedIdx].scale = Math.max(0.4, Math.min(3.5, (drawShapes[drawSelectedIdx].scale || 1) * factor)); redrawShapes(); } }
+    function scaleDrawShape(f) { if (drawSelectedIdx > -1) { drawShapes[drawSelectedIdx].scale = Math.max(0.4, Math.min(3.5, (drawShapes[drawSelectedIdx].scale||1)*f)); redrawShapes(); } }
 
     function drawOneGKShape(d, isSel) {
-      const sc = d.scale || 1;
-      drawCtx.save();
-      drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round';
+      const sc = d.scale || 1; drawCtx.save(); drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round';
       if (isSel) { drawCtx.shadowColor = '#fff'; drawCtx.shadowBlur = 10; }
-
       if (d.type === 'gk-pos') {
-        drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 18 * sc, 0, Math.PI * 2);
-        drawCtx.fillStyle = '#eab308'; drawCtx.fill(); drawCtx.lineWidth = 2.5; drawCtx.strokeStyle = '#fff'; drawCtx.stroke();
-        drawCtx.fillStyle = '#000'; drawCtx.font = `800 ${Math.round(13 * sc)}px Cairo`;
-        drawCtx.textAlign = 'center'; drawCtx.textBaseline = 'middle'; drawCtx.fillText('GK', d.x, d.y + 1);
+        drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 18*sc, 0, Math.PI*2); drawCtx.fillStyle = '#eab308'; drawCtx.fill(); drawCtx.lineWidth = 2.5; drawCtx.strokeStyle = '#fff'; drawCtx.stroke();
+        drawCtx.fillStyle = '#000'; drawCtx.font = `800 ${Math.round(13*sc)}px Cairo`; drawCtx.textAlign = 'center'; drawCtx.textBaseline = 'middle'; drawCtx.fillText('GK', d.x, d.y+1);
       } else if (d.type === 'ball') {
-        drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 12 * sc, 0, Math.PI * 2);
-        drawCtx.fillStyle = '#fff'; drawCtx.fill(); drawCtx.lineWidth = 2; drawCtx.strokeStyle = '#000'; drawCtx.stroke();
+        drawCtx.beginPath(); drawCtx.arc(d.x, d.y, 12*sc, 0, Math.PI*2); drawCtx.fillStyle = '#fff'; drawCtx.fill(); drawCtx.lineWidth = 2; drawCtx.strokeStyle = '#000'; drawCtx.stroke();
       } else if (d.type === 'text') {
-        const fs = Math.round(20 * sc);
-        drawCtx.font = `800 ${fs}px Cairo`;
-        const w = drawCtx.measureText(d.text).width;
-        drawCtx.fillStyle = 'rgba(2,6,23,0.78)';
-        drawCtx.fillRect(d.x - w / 2 - 8, d.y - fs * 0.7, w + 16, fs * 1.3);
-        drawCtx.fillStyle = '#facc15'; drawCtx.textAlign = 'center'; drawCtx.textBaseline = 'middle';
-        drawCtx.fillText(d.text, d.x, d.y);
+        const fs = Math.round(20*sc); drawCtx.font = `800 ${fs}px Cairo`; const w = drawCtx.measureText(d.text).width;
+        drawCtx.fillStyle = 'rgba(2,6,23,0.78)'; drawCtx.fillRect(d.x - w/2 - 8, d.y - fs*0.7, w+16, fs*1.3);
+        drawCtx.fillStyle = '#facc15'; drawCtx.textAlign = 'center'; drawCtx.textBaseline = 'middle'; drawCtx.fillText(d.text, d.x, d.y);
       } else if (d.type === 'pen' && d.points && d.points.length > 1) {
-        drawCtx.beginPath(); drawCtx.moveTo(d.points[0].x, d.points[0].y);
-        for (let i = 1; i < d.points.length; i++) drawCtx.lineTo(d.points[i].x, d.points[i].y);
-        drawCtx.strokeStyle = '#facc15'; drawCtx.lineWidth = 3.5; drawCtx.stroke();
+        drawCtx.beginPath(); drawCtx.moveTo(d.points[0].x, d.points[0].y); for (let i=1;i<d.points.length;i++) drawCtx.lineTo(d.points[i].x, d.points[i].y); drawCtx.strokeStyle = '#facc15'; drawCtx.lineWidth = 3.5; drawCtx.stroke();
       } else if (d.type === 'shot-path') {
-        const midX = (d.startX + d.endX) / 2, midY = (d.startY + d.endY) / 2;
-        drawCtx.translate(midX, midY); drawCtx.scale(sc, sc); drawCtx.translate(-midX, -midY);
-        const angle = Math.atan2(d.endY - d.startY, d.endX - d.startX);
-        drawCtx.beginPath(); drawCtx.moveTo(d.startX, d.startY); drawCtx.lineTo(d.endX, d.endY);
-        drawCtx.lineTo(d.endX - 15 * Math.cos(angle - Math.PI / 6), d.endY - 15 * Math.sin(angle - Math.PI / 6));
-        drawCtx.moveTo(d.endX, d.endY);
-        drawCtx.lineTo(d.endX - 15 * Math.cos(angle + Math.PI / 6), d.endY - 15 * Math.sin(angle + Math.PI / 6));
+        const mx = (d.startX+d.endX)/2, my = (d.startY+d.endY)/2; drawCtx.translate(mx,my); drawCtx.scale(sc,sc); drawCtx.translate(-mx,-my);
+        const a = Math.atan2(d.endY-d.startY, d.endX-d.startX);
+        drawCtx.beginPath(); drawCtx.moveTo(d.startX,d.startY); drawCtx.lineTo(d.endX,d.endY);
+        drawCtx.lineTo(d.endX - 15*Math.cos(a - Math.PI/6), d.endY - 15*Math.sin(a - Math.PI/6));
+        drawCtx.moveTo(d.endX,d.endY); drawCtx.lineTo(d.endX - 15*Math.cos(a + Math.PI/6), d.endY - 15*Math.sin(a + Math.PI/6));
         drawCtx.strokeStyle = '#ef4444'; drawCtx.lineWidth = 4; drawCtx.stroke();
       } else if (d.type === 'angle') {
-        const dx = d.endX - d.startX, dy = d.endY - d.startY;
-        const len = Math.hypot(dx, dy) * sc;
-        const ang = Math.atan2(dy, dx);
-        const half = Math.PI / 8;
-        drawCtx.beginPath();
-        drawCtx.moveTo(d.startX, d.startY);
-        drawCtx.lineTo(d.startX + len * Math.cos(ang - half), d.startY + len * Math.sin(ang - half));
-        drawCtx.lineTo(d.startX + len * Math.cos(ang + half), d.startY + len * Math.sin(ang + half));
-        drawCtx.closePath();
-        drawCtx.fillStyle = 'rgba(56, 189, 248, 0.35)'; drawCtx.fill();
-        drawCtx.strokeStyle = '#38bdf8'; drawCtx.lineWidth = 2.5; drawCtx.stroke();
+        const dx = d.endX - d.startX, dy = d.endY - d.startY, len = Math.hypot(dx,dy)*sc, ang = Math.atan2(dy,dx), half = Math.PI/8;
+        drawCtx.beginPath(); drawCtx.moveTo(d.startX,d.startY);
+        drawCtx.lineTo(d.startX + len*Math.cos(ang-half), d.startY + len*Math.sin(ang-half));
+        drawCtx.lineTo(d.startX + len*Math.cos(ang+half), d.startY + len*Math.sin(ang+half));
+        drawCtx.closePath(); drawCtx.fillStyle = 'rgba(56,189,248,0.35)'; drawCtx.fill(); drawCtx.strokeStyle = '#38bdf8'; drawCtx.lineWidth = 2.5; drawCtx.stroke();
       }
       drawCtx.restore();
     }
 
-    function redrawShapes(preview = null) {
-      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-      drawShapes.forEach((d, idx) => drawOneGKShape(d, idx === drawSelectedIdx));
-      if (preview) drawOneGKShape(preview, false);
-    }
-
+    function redrawShapes(preview = null) { drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height); drawShapes.forEach((d,i) => drawOneGKShape(d, i===drawSelectedIdx)); if (preview) drawOneGKShape(preview, false); }
     function saveDrawnImage() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'صورة تحليل اللقطة HD')) return;
       drawSelectedIdx = -1; hideDrawControls(); redrawShapes();
-      const ec = document.createElement('canvas');
-      ec.width = drawCanvas.width; ec.height = drawCanvas.height;
-      const eCtx = ec.getContext('2d');
-      eCtx.drawImage(drawVideo, 0, 0, ec.width, ec.height);
-      eCtx.drawImage(drawCanvas, 0, 0);
-      const a = document.createElement('a');
-      a.download = `Ziada_GK_Analysis_${Date.now()}.jpg`;
-      a.href = ec.toDataURL('image/jpeg', 0.92);
-      a.click();
+      const ec = document.createElement('canvas'); ec.width = drawCanvas.width; ec.height = drawCanvas.height;
+      const eCtx = ec.getContext('2d'); eCtx.drawImage(drawVideo, 0, 0, ec.width, ec.height); eCtx.drawImage(drawCanvas, 0, 0);
+      const a = document.createElement('a'); a.download = `Ziada_GK_Analysis_${Date.now()}.jpg`; a.href = ec.toDataURL('image/jpeg', 0.92); a.click();
       showToast('تم حفظ الصورة التحليلية ✓');
     }
 
     // ==========================================
     // نظام الحفظ التلقائي واسترجاع المشروع (IndexedDB)
     // ==========================================
-    function openGKDB() {
-      return new Promise((res, rej) => {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME); };
-        req.onsuccess = () => res(req.result);
-        req.onerror = () => rej(req.error);
-      });
-    }
-    async function dbPut(data) {
-      const db = await openGKDB();
-      return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(data, PROJECT_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
-    }
-    async function dbGet() {
-      const db = await openGKDB();
-      return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const r = tx.objectStore(STORE_NAME).get(PROJECT_KEY); r.onsuccess = () => res(r.result || null); r.onerror = () => rej(r.error); });
-    }
-    async function dbDel() {
-      const db = await openGKDB();
-      return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(PROJECT_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
-    }
+    function openGKDB() { return new Promise((res, rej) => { const req = indexedDB.open(DB_NAME, 1); req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME); }; req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); }); }
+    async function dbPut(data) { const db = await openGKDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(data, PROJECT_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+    async function dbGet() { const db = await openGKDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const r = tx.objectStore(STORE_NAME).get(PROJECT_KEY); r.onsuccess = () => res(r.result || null); r.onerror = () => rej(r.error); }); }
+    async function dbDel() { const db = await openGKDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(PROJECT_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
 
     function collectState() {
       const drillItems = [];
-      pitchArea.querySelectorAll('.drill-item').forEach(el => {
-        drillItems.push({ id: el.id, type: el.dataset.type, left: parseFloat(el.style.left) || 50, top: parseFloat(el.style.top) || 50, scale: parseFloat(el.dataset.scale || 1.1) });
-      });
+      pitchArea.querySelectorAll('.drill-item').forEach(el => drillItems.push({ id: el.id, type: el.dataset.type, left: parseFloat(el.style.left)||50, top: parseFloat(el.style.top)||50, scale: parseFloat(el.dataset.scale||1.1) }));
       return {
-        savedAt: new Date().toISOString(),
-        currentTab, currentPitchView,
-        drillNotes: document.getElementById('drillNotes').value || '',
-        animSpeed: document.getElementById('animSpeed').value,
-        drillItems, frames,
-        videoFileName: loadedVideoName || '',
-        lastVideoTime: video.src ? video.currentTime : (pendingSeekAfterLoad || 0),
-        clips: gkEventsLog.map(c => ({ id: c.id, timeSec: c.timeSec, time: c.time, type: c.type, videoBlob: c.videoBlob || null }))
+        savedAt: new Date().toISOString(), currentTab, currentPitchView, drillNotes: document.getElementById('drillNotes').value || '', animSpeed: document.getElementById('animSpeed').value,
+        drillItems, frames, videoFileName: loadedVideoName || '', lastVideoTime: video.src ? video.currentTime : (pendingSeekAfterLoad || 0),
+        clips: gkEventsLog.map(c => ({ id: c.id, timeSec: c.timeSec, time: c.time, type: c.type, ext: c.ext || (c.videoBlob && c.videoBlob.type && c.videoBlob.type.includes('mp4') ? 'mp4' : 'webm'), videoBlob: c.videoBlob || null }))
       };
     }
 
-    function hasData(s) {
-      return s && ((s.drillItems && s.drillItems.length > 0) || (s.clips && s.clips.length > 0) || (s.drillNotes && s.drillNotes.trim() !== ''));
-    }
-
+    function hasData(s) { return s && ((s.drillItems && s.drillItems.length > 0) || (s.clips && s.clips.length > 0) || (s.drillNotes && s.drillNotes.trim() !== '')); }
     async function saveProjectNow() {
       const badge = document.getElementById('autosaveBadge');
-      try {
-        const s = collectState();
-        if (!hasData(s)) await dbDel();
-        else await dbPut(s);
-      } catch (e) {}
-      badge.classList.remove('saving');
-      badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
+      try { const s = collectState(); if (!hasData(s)) await dbDel(); else await dbPut(s); } catch (e) {}
+      badge.classList.remove('saving'); badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
     }
-
     function scheduleAutoSave() {
-      const badge = document.getElementById('autosaveBadge');
-      badge.classList.add('saving');
-      badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-      clearTimeout(autosaveTimer);
-      autosaveTimer = setTimeout(saveProjectNow, 500);
+      const badge = document.getElementById('autosaveBadge'); badge.classList.add('saving'); badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      clearTimeout(autosaveTimer); autosaveTimer = setTimeout(saveProjectNow, 500);
     }
-
     window.addEventListener('beforeunload', () => { saveProjectNow(); });
 
     let pendingRecovery = null;
     (async function checkSavedGKProject() {
       try {
-        const s = await dbGet();
-        if (!hasData(s)) return;
-        pendingRecovery = s;
-        const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
-        document.getElementById('recoveryMetaInfo').innerHTML = `
-          <div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div>
-          <div><i class="fa-solid fa-clipboard-list" style="color:#34d399;"></i> <b>أدوات التدريب:</b> ${s.drillItems?.length || 0} | <b>الإطارات:</b> ${s.frames?.length || 0}</div>
-          <div><i class="fa-solid fa-scissors" style="color:var(--cyan);"></i> <b>اللقطات المقطوعة:</b> ${s.clips?.length || 0} لقطة</div>
-        `;
+        const s = await dbGet(); if (!hasData(s)) return;
+        pendingRecovery = s; const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
+        document.getElementById('recoveryMetaInfo').innerHTML = `<div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div><div><i class="fa-solid fa-clipboard-list" style="color:#34d399;"></i> <b>أدوات التدريب:</b> ${s.drillItems?.length||0} | <b>الإطارات:</b> ${s.frames?.length||0}</div><div><i class="fa-solid fa-scissors" style="color:var(--cyan);"></i> <b>اللقطات المقطوعة:</b> ${s.clips?.length||0} لقطة</div>`;
         document.getElementById('recoveryModal').style.display = 'flex';
       } catch (e) {}
     })();
 
     function restoreSavedProject() {
-      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
-        ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً');
-        return;
-      }
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً'); return; }
       if (!pendingRecovery) return;
       const s = pendingRecovery;
       pitchArea.querySelectorAll('.drill-item').forEach(e => e.remove());
       (s.drillItems || []).forEach(it => createDrillItem(it.type, it.left, it.top, it.id, it.scale || 1.1));
-      frames = Array.isArray(s.frames) ? s.frames : [];
-      document.getElementById('frameCount').innerText = frames.length;
-      document.getElementById('drillNotes').value = s.drillNotes || '';
-      if (s.animSpeed) document.getElementById('animSpeed').value = s.animSpeed;
+      frames = Array.isArray(s.frames) ? s.frames : []; document.getElementById('frameCount').innerText = frames.length;
+      document.getElementById('drillNotes').value = s.drillNotes || ''; if (s.animSpeed) document.getElementById('animSpeed').value = s.animSpeed;
       setPitchView(s.currentPitchView || 'penalty');
-
       loadedVideoName = s.videoFileName || '';
       gkEventsLog = (s.clips || []).map(c => ({ ...c, videoUrl: c.videoBlob ? URL.createObjectURL(c.videoBlob) : '' }));
-      updateGkStats();
-      renderGkLog();
-
+      updateGkStats(); renderGkLog();
       if (s.videoFileName) {
         pendingSeekAfterLoad = s.lastVideoTime || 0;
-        document.getElementById('relinkBannerText').innerHTML =
-          `<i class="fa-solid fa-link"></i> تم استرجاع لقطاتك بنجاح! أعد اختيار ملف الفيديو <b>(${escapeHtml(s.videoFileName)})</b> للعودة للدقيقة <b>${formatTime(pendingSeekAfterLoad)}</b>.`;
+        document.getElementById('relinkBannerText').innerHTML = `<i class="fa-solid fa-link"></i> تم استرجاع لقطاتك بنجاح! أعد اختيار ملف الفيديو <b>(${escapeHtml(s.videoFileName)})</b> للعودة للدقيقة <b>${formatTime(pendingSeekAfterLoad)}</b>.`;
         document.getElementById('relinkBanner').style.display = 'flex';
       }
-
-      switchTab(s.currentTab || 'training');
-      document.getElementById('recoveryModal').style.display = 'none';
+      switchTab(s.currentTab || 'training'); document.getElementById('recoveryModal').style.display = 'none';
       showToast('تم استرجاع مشروع حراس المرمى بالكامل ✓');
     }
-
-    async function startFreshProject() {
-      await dbDel();
-      pendingRecovery = null;
-      document.getElementById('recoveryModal').style.display = 'none';
-      showToast('تم بدء مشروع جديد');
-    }
+    async function startFreshProject() { await dbDel(); pendingRecovery = null; document.getElementById('recoveryModal').style.display = 'none'; showToast('تم بدء مشروع جديد'); }
   </script>
 </body>
 </html>
