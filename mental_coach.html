@@ -43,13 +43,9 @@
     .btn { background:var(--primary); color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12.5px; transition:0.2s; }
     .btn:hover { filter:brightness(1.12); transform:translateY(-1px); }
     .btn-sm { padding:5px 10px; font-size:11.5px; border-radius:6px; }
-    .btn-cyan { background:#0284c7; }
-    .btn-green { background:#059669; }
-    .btn-gold { background:linear-gradient(135deg,#ca8a04,#f59e0b); color:#070b12; }
-    .btn-red { background:#dc2626; }
-    .btn-dark { background:#1e293b; border:1px solid #334155; color:#e2e8f0; }
+    .btn-cyan { background:#0284c7; } .btn-green { background:#059669; } .btn-gold { background:linear-gradient(135deg,#ca8a04,#f59e0b); color:#070b12; }
+    .btn-red { background:#dc2626; } .btn-dark { background:#1e293b; border:1px solid #334155; color:#e2e8f0; }
 
-    /* التاب 1: التحليل النفسي للفيديو */
     .video-workspace { display:grid; grid-template-columns:305px 1fr; gap:14px; align-items:start; }
     .psych-tags-panel { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; max-height:82vh; overflow-y:auto; }
     .mode-box { background:#070b12; border:1px solid var(--primary); border-radius:8px; padding:9px; display:flex; flex-direction:column; gap:5px; font-size:12px; font-weight:700; }
@@ -58,9 +54,7 @@
     .tag-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
     .ptag-btn { padding:8px 7px; border-radius:7px; border:1px solid #334155; background:#1f2937; color:#fff; font-size:11.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:4px; text-align:right; transition:0.2s; }
     .ptag-btn:hover { transform:translateY(-1px); filter:brightness(1.15); }
-    .ptag-neg { border-right:3.5px solid #ef4444; }
-    .ptag-warn { border-right:3.5px solid #f59e0b; }
-    .ptag-pos { border-right:3.5px solid #10b981; }
+    .ptag-neg { border-right:3.5px solid #ef4444; } .ptag-warn { border-right:3.5px solid #f59e0b; } .ptag-pos { border-right:3.5px solid #10b981; }
     .ptag-btn.rec-on { background:#dc2626 !important; border-color:#fff !important; animation:pulseRed 1.1s infinite; justify-content:center; grid-column:1/-1; }
     @keyframes pulseRed { 0%,100% { opacity:1; } 50% { opacity:0.65; } }
 
@@ -80,7 +74,6 @@
     .b-pos { background:rgba(16,185,129,0.18); color:#4ade80; border:1px solid rgba(16,185,129,0.4); }
     .b-warn { background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid rgba(245,158,11,0.4); }
 
-    /* التاب 2: Neuro-Track MOT وبرامج التدريب العقلي */
     .mot-grid { display:grid; grid-template-columns:1.35fr 1fr; gap:14px; align-items:start; }
     .mot-canvas-box { position:relative; width:100%; background:#020617; border:2px solid #334155; border-radius:12px; overflow:hidden; display:flex; justify-content:center; align-items:center; }
     #motCanvas { width:100%; height:auto; display:block; cursor:pointer; touch-action:none; }
@@ -89,13 +82,11 @@
     .breath-circle { width:125px; height:125px; border-radius:50%; background:radial-gradient(circle,rgba(56,189,248,0.55),rgba(168,85,247,0.3)); border:3px solid var(--cyan); display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:900; font-size:15px; transition:transform 1s ease-in-out, border-color 0.4s; box-shadow:0 0 28px rgba(56,189,248,0.3); }
     .program-box { background:#0b1220; border:1px solid #1e293b; border-radius:10px; padding:12px; font-size:12.5px; line-height:1.85; color:#e2e8f0; }
 
-    /* التاب 3: فحص الجاهزية بالـ QR */
     .qr-grid { display:grid; grid-template-columns:340px 1fr; gap:14px; align-items:start; }
     .qr-card-center { display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; background:#070b12; border:1px dashed var(--cyan); border-radius:12px; padding:14px; }
     #mentalQrBox { background:#fff; padding:10px; border-radius:10px; display:inline-block; }
     .traffic-dot { width:13px; height:13px; border-radius:50%; display:inline-block; vertical-align:middle; margin-left:6px; }
 
-    /* التاب 4: القياسات النفسية */
     .assess-grid { display:grid; grid-template-columns:1.25fr 0.9fr; gap:14px; align-items:start; }
     .q-item { background:#0b1220; border:1px solid #1e293b; border-radius:9px; padding:10px 12px; display:flex; flex-direction:column; gap:7px; }
     .q-scale { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
@@ -104,7 +95,6 @@
     .bar-track { width:100%; height:10px; background:#1e293b; border-radius:99px; overflow:hidden; margin-top:4px; }
     .bar-fill { height:100%; border-radius:99px; transition:width 0.3s; }
 
-    /* التاب 5 و 6: البروفايل + السيناريوهات + كارت التركيز */
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
     .skill-row { background:#0b1220; border:1px solid #1e293b; border-radius:8px; padding:8px 10px; display:flex; flex-direction:column; gap:5px; }
     .skill-sliders { display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:11px; color:var(--muted); font-weight:700; }
@@ -112,7 +102,6 @@
     .scenario-item { background:#0b1220; border:1px solid #334155; border-right:4px solid var(--accent); border-radius:9px; padding:10px 12px; display:flex; flex-direction:column; gap:5px; }
     #focusCardPreview { width:100%; max-width:420px; border-radius:12px; border:2px solid var(--primary); margin:0 auto; display:block; }
 
-    /* شاشة عرض السيناريو للمحاضرة + واجهة اللاعب عبر QR */
     .fullscreen-modal { display:none; position:fixed; inset:0; z-index:9900; background:#020617; flex-direction:column; justify-content:center; align-items:center; padding:24px; text-align:center; }
     #playerCheckinUI { display:none; position:fixed; inset:0; z-index:9950; background:#070b12; overflow-y:auto; padding:18px; }
     .checkin-box { max-width:460px; margin:16px auto; background:var(--card-bg); border:1.5px solid var(--primary); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:13px; }
@@ -155,7 +144,6 @@
 </head>
 <body>
 
-  <!-- التحقق من الجلسة (يُعفى منه اللاعب عند مسح QR فحص الجاهزية ?mRoom=) -->
   <script>
     const M_PARAMS = new URLSearchParams(window.location.search);
     const JOIN_M_ROOM = M_PARAMS.get('mRoom');
@@ -232,9 +220,7 @@
     </div>
   </div>
 
-  <!-- منطقة الطباعة PDF -->
   <div id="printArea" style="display:none;"></div>
-
   <div class="toast-msg" id="toastMsg"></div>
   <canvas id="psychRenderCanvas" style="display:none;"></canvas>
 
@@ -256,7 +242,7 @@
       <button class="tab-btn" id="tabBtn-prep" onclick="switchTab('prep', this)"><i class="fa-solid fa-fire"></i> سيناريوهات المباراة وكارت التركيز</button>
     </div>
 
-    <!-- ==================== التاب 1: التحليل النفسي للفيديو وتقطيع الحالات ==================== -->
+    <!-- التاب 1: التحليل النفسي للفيديو وتقطيع الحالات -->
     <div id="videoTab" class="tab-content active">
       <div class="kpi-grid" style="margin-bottom:12px;">
         <div class="kpi-box"><small>إجمالي الحالات النفسية</small><b id="vpTotal">0</b></div>
@@ -268,13 +254,11 @@
       <div class="video-workspace">
         <aside class="psych-tags-panel">
           <div style="font-size:13.5px; font-weight:900; color:#c084fc; text-align:center;">لوحة رصد وتقطيع الحالات النفسية</div>
-
           <div class="mode-box">
-            <label><input type="radio" name="psychClipMode" value="auto" checked> ✂️ تقطيع تلقائي (5ث قبل و 5ث بعد)</label>
-            <label><input type="radio" name="psychClipMode" value="manual"> 🔴 تسجيل يدوي (مفتوح المدة)</label>
+            <label><input type="radio" name="psychClipMode" value="auto" checked> ✂️ تقطيع تلقائي MP4 (5ث قبل و 5ث بعد)</label>
+            <label><input type="radio" name="psychClipMode" value="manual"> 🔴 تسجيل يدوي MP4 (مفتوح المدة)</label>
             <label><input type="radio" name="psychClipMode" value="log_only"> ⚡ رصد توقيت وملاحظة فقط (فوري)</label>
           </div>
-
           <div class="field"><label>اللاعب / اللاعبة:</label><input type="text" id="vpPlayerName" class="input-ui" placeholder="مثال: شروق #9"></div>
           <div class="field"><label>ملاحظة نفسية سريعة (تُسجل مع اللقطة):</label><input type="text" id="vpQuickNote" class="input-ui" placeholder="مثال: انفعال بعد خطأ تحكيمي..."></div>
 
@@ -303,7 +287,6 @@
 
         <main class="card">
           <div class="live-banner" id="psychClipBanner"><i class="fa-solid fa-circle-notch fa-spin"></i> <span id="psychClipBannerText">جاري تقطيع الحالة النفسية...</span></div>
-
           <div class="video-stage"><video id="psychVideo" controls playsinline crossorigin="anonymous"></video></div>
 
           <div class="ctrl-strip">
@@ -337,7 +320,7 @@
       </div>
     </div>
 
-    <!-- ==================== التاب 2: التتبع البصري (Neuro-Track 3D) وبرامج العقل ==================== -->
+    <!-- التاب 2: التتبع البصري (Neuro-Track 3D) وبرامج العقل -->
     <div id="motTab" class="tab-content">
       <div class="mot-grid">
         <div class="card">
@@ -345,36 +328,21 @@
             <span><i class="fa-solid fa-cubes"></i> التتبع البصري متعدد الأهداف (Neuro-Track 3D MOT)</span>
             <span style="font-size:12px; color:var(--accent);">تدريب الوعي المحيطي وسرعة معالجة الملعب</span>
           </div>
-
           <div class="kpi-grid">
             <div class="kpi-box"><small>مؤشر السرعة التكيّفي</small><b id="motSpeedScore" style="color:#c084fc;">1.00x</b></div>
             <div class="kpi-box"><small>أعلى سرعة محققة</small><b id="motBestSpeed" style="color:#4ade80;">1.00x</b></div>
             <div class="kpi-box"><small>الدقة</small><b id="motAccuracy">-</b></div>
             <div class="kpi-box"><small>الجولات</small><b id="motTrials">0</b></div>
           </div>
-
           <div class="mot-canvas-box">
             <canvas id="motCanvas" width="760" height="430"></canvas>
             <div class="mot-overlay-msg" id="motStatusMsg">اضغط "ابدأ الجولة" لتحديد الكرات الصفراء ثم تتبعها داخل المكعب</div>
           </div>
-
           <div class="ctrl-strip">
             <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:12px; font-weight:700;">
-              <label>إجمالي الكرات:
-                <select id="motTotalBalls" class="input-ui" style="width:65px; display:inline-block;">
-                  <option value="6">6</option><option value="8" selected>8</option><option value="10">10</option>
-                </select>
-              </label>
-              <label>الأهداف المطلوبة:
-                <select id="motTargetBalls" class="input-ui" style="width:65px; display:inline-block;">
-                  <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option>
-                </select>
-              </label>
-              <label>مدة الحركة:
-                <select id="motDurationSec" class="input-ui" style="width:72px; display:inline-block;">
-                  <option value="6">6ث</option><option value="8" selected>8ث</option><option value="10">10ث</option>
-                </select>
-              </label>
+              <label>إجمالي الكرات: <select id="motTotalBalls" class="input-ui" style="width:65px; display:inline-block;"><option value="6">6</option><option value="8" selected>8</option><option value="10">10</option></select></label>
+              <label>الأهداف المطلوبة: <select id="motTargetBalls" class="input-ui" style="width:65px; display:inline-block;"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
+              <label>مدة الحركة: <select id="motDurationSec" class="input-ui" style="width:72px; display:inline-block;"><option value="6">6ث</option><option value="8" selected>8ث</option><option value="10">10ث</option></select></label>
             </div>
             <div style="display:flex; gap:7px;">
               <button class="btn btn-green" id="btnStartMot" onclick="startMotTrial()"><i class="fa-solid fa-play"></i> ابدأ الجولة</button>
@@ -384,7 +352,6 @@
         </div>
 
         <div style="display:flex; flex-direction:column; gap:14px;">
-          <!-- محرك التنفس والتهدئة -->
           <div class="card">
             <div class="card-title"><span><i class="fa-solid fa-wind" style="color:var(--cyan);"></i> غرفة التنفس والتهدئة الذهنية</span></div>
             <div style="display:flex; gap:7px; flex-wrap:wrap;">
@@ -396,15 +363,11 @@
               <button class="btn btn-cyan" id="btnBreathToggle" onclick="toggleBreathing()"><i class="fa-solid fa-play"></i> بدء</button>
             </div>
             <div class="breath-stage">
-              <div class="breath-circle" id="breathCircle">
-                <span id="breathPhaseText">جاهز</span>
-                <small id="breathCountText" style="font-size:20px; color:var(--accent);"></small>
-              </div>
+              <div class="breath-circle" id="breathCircle"><span id="breathPhaseText">جاهز</span><small id="breathCountText" style="font-size:20px; color:var(--accent);"></small></div>
               <div id="breathHint" style="font-size:12px; color:var(--muted);">اتبع تمدد الدائرة مع صوت الإيقاع لتقليل ضربات القلب</div>
             </div>
           </div>
 
-          <!-- برامج التدريب العقلي الجاهزة -->
           <div class="card">
             <div class="card-title"><span><i class="fa-solid fa-book-open"></i> مكتبة برامج التدريب العقلي</span></div>
             <select id="mentalProgramSelect" class="input-ui" onchange="renderMentalProgram()">
@@ -420,14 +383,13 @@
       </div>
     </div>
 
-    <!-- ==================== التاب 3: فحص الجاهزية النفسية بالـ QR ==================== -->
+    <!-- التاب 3: فحص الجاهزية النفسية بالـ QR -->
     <div id="qrTab" class="tab-content">
       <div class="qr-grid">
         <div class="card">
           <div class="card-title"><span><i class="fa-solid fa-qrcode" style="color:var(--cyan);"></i> غرفة الفحص السريع</span></div>
           <p style="font-size:12.5px; color:var(--muted); line-height:1.7;">أنشئ كود QR قبل التمرين أو المباراة؛ اللاعبون يمسحونه بموبايلاتهم (بدون تسجيل دخول) وتظهر نتائجهم فوراً بنظام إشارات المرور.</p>
           <button class="btn btn-cyan" style="width:100%;" onclick="createMentalQRRoom()"><i class="fa-solid fa-qrcode"></i> إنشاء غرفة و QR للفريق</button>
-
           <div class="qr-card-center" id="mentalQrWrap" style="display:none;">
             <div id="mentalQrBox"></div>
             <div style="font-family:monospace; font-size:18px; font-weight:900; color:var(--accent);" id="mentalRoomCodeTxt">----</div>
@@ -459,7 +421,7 @@
       </div>
     </div>
 
-    <!-- ==================== التاب 4: القياسات والاختبارات النفسية ==================== -->
+    <!-- التاب 4: القياسات والاختبارات النفسية -->
     <div id="assessTab" class="tab-content">
       <div class="assess-grid">
         <div class="card">
@@ -481,16 +443,14 @@
             <span><i class="fa-solid fa-chart-bar"></i> نتيجة القياس والتوصية</span>
             <button class="btn btn-sm btn-gold" onclick="printAssessmentPDF()"><i class="fa-solid fa-file-pdf"></i> طباعة PDF</button>
           </div>
-          <div id="assessResultBox" style="display:flex; flex-direction:column; gap:10px; color:var(--muted); font-size:13px;">
-            اختر المقياس وأجب على العبارات ثم اضغط "حساب النتيجة" لعرض التحليل والتوصيات التخصصية.
-          </div>
+          <div id="assessResultBox" style="display:flex; flex-direction:column; gap:10px; color:var(--muted); font-size:13px;">اختر المقياس وأجب على العبارات ثم اضغط "حساب النتيجة" لعرض التحليل والتوصيات التخصصية.</div>
           <div class="card-title" style="margin-top:8px;"><span>سجل القياسات المحفوظة</span></div>
           <div id="assessHistoryBox" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; font-size:12px;"></div>
         </div>
       </div>
     </div>
 
-    <!-- ==================== التاب 5: البروفايل النفسي للاعب وسجل الجلسات ==================== -->
+    <!-- التاب 5: البروفايل النفسي للاعب وسجل الجلسات -->
     <div id="profileTab" class="tab-content">
       <div class="ctrl-strip" style="margin-bottom:12px;">
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1;">
@@ -516,9 +476,7 @@
 
         <div class="card">
           <div class="card-title"><span><i class="fa-solid fa-chart-pie"></i> رادار الصلابة الذهنية وسجل الجلسات</span></div>
-          <div style="display:flex; justify-content:center; background:#0b1220; border-radius:10px; padding:8px;">
-            <canvas id="mpRadarCanvas" width="480" height="360" style="max-width:100%; height:auto;"></canvas>
-          </div>
+          <div style="display:flex; justify-content:center; background:#0b1220; border-radius:10px; padding:8px;"><canvas id="mpRadarCanvas" width="480" height="360" style="max-width:100%; height:auto;"></canvas></div>
           <div class="card-title" style="margin-top:4px;"><span>إضافة جلسة فردية جديدة</span></div>
           <div style="display:flex; gap:7px;">
             <input type="text" id="mpSessTopic" class="input-ui" placeholder="موضوع الجلسة والتوصية العملية...">
@@ -529,7 +487,7 @@
       </div>
     </div>
 
-    <!-- ==================== التاب 6: سيناريوهات المباراة وكارت التركيز HD ==================== -->
+    <!-- التاب 6: سيناريوهات المباراة وكارت التركيز HD -->
     <div id="prepTab" class="tab-content">
       <div class="two-col">
         <div class="card">
@@ -567,9 +525,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // 0. Firebase + الصوتيات + دوال مساعدة
-    // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyCvhDAm6YtDvmj6D7q-SyJakij9gDSe3o4",
       authDomain: "ziada-analysis-82e34.firebaseapp.com",
@@ -606,9 +561,7 @@
       if (id === 'prep') renderFocusCard();
     }
 
-    // ==========================================
-    // 1. وضع اللاعب عند مسح QR فحص الجاهزية (?mRoom=)
-    // ==========================================
+    // وضع اللاعب عبر QR (?mRoom=)
     const CHECKIN_METRICS = [
       { key:'sleep', label:'جودة النوم ليلة أمس (1 سيء - 5 ممتاز)' },
       { key:'calm', label:'الهدوء وقلة التوتر حالياً (1 متوتر جداً - 5 هادئ جداً)' },
@@ -622,36 +575,23 @@
       document.getElementById('appUI').style.display = 'none';
       document.getElementById('playerCheckinUI').style.display = 'block';
       document.getElementById('pcQuestionsArea').innerHTML = CHECKIN_METRICS.map(m => `
-        <div class="field">
-          <label>${m.label}</label>
-          <div class="rate-row" id="rr_${m.key}">
-            ${[1,2,3,4,5].map(v => `<button type="button" class="rate-btn ${v===4?'active':''}" onclick="setPcScore('${m.key}',${v},this)">${v}</button>`).join('')}
-          </div>
-        </div>`).join('');
+        <div class="field"><label>${m.label}</label><div class="rate-row" id="rr_${m.key}">${[1,2,3,4,5].map(v => `<button type="button" class="rate-btn ${v===4?'active':''}" onclick="setPcScore('${m.key}',${v},this)">${v}</button>`).join('')}</div></div>`).join('');
     }
-    function setPcScore(k, v, btn) {
-      pcScores[k] = v;
-      document.querySelectorAll(`#rr_${k} .rate-btn`).forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
+    function setPcScore(k, v, btn) { pcScores[k] = v; document.querySelectorAll(`#rr_${k} .rate-btn`).forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
     async function submitPlayerCheckin() {
-      const name = document.getElementById('pcName').value.trim();
-      if (!name) return alert('اكتب اسمك أو رقمك أولاً.');
+      const name = document.getElementById('pcName').value.trim(); if (!name) return alert('اكتب اسمك أو رقمك أولاً.');
       const pid = 'p_' + Date.now() + '_' + Math.floor(Math.random()*999);
       try {
-        await db.collection('reaction_rooms').doc(JOIN_M_ROOM).set({
-          responses: { [pid]: { name, ...pcScores, note: document.getElementById('pcNote').value.trim(), ts: Date.now() } }
-        }, { merge: true });
-        document.getElementById('playerCheckinForm').style.display = 'none';
-        document.getElementById('playerCheckinDone').style.display = 'flex';
+        await db.collection('reaction_rooms').doc(JOIN_M_ROOM).set({ responses: { [pid]: { name, ...pcScores, note: document.getElementById('pcNote').value.trim(), ts: Date.now() } } }, { merge: true });
+        document.getElementById('playerCheckinForm').style.display = 'none'; document.getElementById('playerCheckinDone').style.display = 'flex';
       } catch (err) { alert('تعذر الإرسال: ' + err.message); }
     }
 
     // ==========================================
-    // 2. التاب 1: التحليل النفسي للفيديو وتقطيع الحالات
+    // التاب 1: التحليل النفسي للفيديو وتقطيع الحالات (MP4 H.264 للموبايل وواتساب)
     // ==========================================
     const pVideo = document.getElementById('psychVideo');
-    let psychLogs = []; // { id, timeSec, time, player, tag, sentiment, note, videoUrl }
+    let psychLogs = [];
     let psychAutoBusy = false, psychManRec = null, psychManChunks = [], psychManTag = null, psychManBtn = null, psychManSent = 'neg', psychManStart = 0;
 
     function loadPsychVideo(e) {
@@ -661,9 +601,35 @@
     }
     function skipPsychVid(s) { if (pVideo.src) pVideo.currentTime = Math.max(0, Math.min(pVideo.duration||9999, pVideo.currentTime + s)); }
     function setPsychSpeed(r) { pVideo.playbackRate = r; showToast(`السرعة: ${r}x`); }
+
     function getVidMime() {
-      const m = ['video/webm;codecs=h264','video/webm;codecs=vp8','video/webm','video/mp4'];
+      const m = [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1.4d002a',
+        'video/mp4;codecs=h264',
+        'video/mp4',
+        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9',
+        'video/webm'
+      ];
       return m.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+    }
+
+    function createSafePsychRecorder(stream, bitrate = 4000000) {
+      const mime = getVidMime();
+      let rec;
+      try {
+        rec = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: bitrate }) : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
+      } catch (e) {
+        try { rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); }
+        catch (e2) { rec = new MediaRecorder(stream); }
+      }
+      const actualMime = rec.mimeType || mime || 'video/webm';
+      const isMp4 = actualMime.includes('mp4');
+      rec._isMp4 = isMp4;
+      rec._usedMime = isMp4 ? 'video/mp4' : 'video/webm';
+      rec._usedExt = isMp4 ? 'mp4' : 'webm';
+      return rec;
     }
 
     function handlePsychTag(btn, tagName, sentiment) {
@@ -672,7 +638,7 @@
       const note = document.getElementById('vpQuickNote').value.trim() || '-';
 
       if (mode === 'log_only') {
-        psychLogs.push({ id:'pl_'+Date.now(), timeSec: pVideo.src ? pVideo.currentTime : 0, time: fmtTime(pVideo.src ? pVideo.currentTime : 0), player, tag: tagName, sentiment, note, videoUrl: '' });
+        psychLogs.push({ id:'pl_'+Date.now(), timeSec: pVideo.src ? pVideo.currentTime : 0, time: fmtTime(pVideo.src ? pVideo.currentTime : 0), player, tag: tagName, sentiment, note, ext: '', videoUrl: '' });
         document.getElementById('vpQuickNote').value = '';
         renderPsychLogs(); scheduleAutoSave(); showToast(`تم رصد: ${tagName} ✓`);
         return;
@@ -706,13 +672,14 @@
 
       try {
         const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720;
-        const sc = vw > 1280 ? 1280/vw : 1; hc.width = Math.round(vw*sc); hc.height = Math.round(vh*sc);
-        const hCtx = hc.getContext('2d'), mime = getVidMime();
-        const rec = new MediaRecorder(hc.captureStream(30), mime ? { mimeType:mime, videoBitsPerSecond:4000000 } : { videoBitsPerSecond:4000000 });
+        const sc = vw > 1280 ? 1280/vw : 1;
+        let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
+        hc.width = cw; hc.height = ch;
+        const hCtx = hc.getContext('2d');
+        const rec = createSafePsychRecorder(hc.captureStream(30), 4000000);
         const chunks = []; rec.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
 
-        pVideo.currentTime = startT;
-        await new Promise(r => { pVideo.onseeked = r; });
+        pVideo.currentTime = startT; await new Promise(r => { pVideo.onseeked = r; });
         const t0 = Date.now(); rec.start(); await pVideo.play();
 
         function loop() {
@@ -722,14 +689,14 @@
         requestAnimationFrame(loop);
 
         rec.onstop = () => {
-          const raw = new Blob(chunks, { type: mime || 'video/webm' }), dur = Date.now() - t0;
+          const raw = new Blob(chunks, { type: rec._usedMime }), dur = Date.now() - t0;
           const finish = b => {
-            psychLogs.push({ id:'pl_'+Date.now(), timeSec:origT, time:fmtTime(origT), player, tag:tagName, sentiment, note, videoUrl:URL.createObjectURL(b) });
+            psychLogs.push({ id:'pl_'+Date.now(), timeSec:origT, time:fmtTime(origT), player, tag:tagName, sentiment, note, ext:rec._usedExt, videoUrl:URL.createObjectURL(b) });
             document.getElementById('vpQuickNote').value = '';
             renderPsychLogs(); scheduleAutoSave(); banner.style.display = 'none'; psychAutoBusy = false;
-            showToast(`تم تقطيع وحفظ: ${tagName} ✓`);
+            showToast(`تم تقطيع وحفظ: ${tagName} (${rec._usedExt.toUpperCase()}) ✓`);
           };
-          if (typeof ysFixWebmDuration === 'function' && (!mime || mime.includes('webm'))) ysFixWebmDuration(raw, dur, finish); else finish(raw);
+          if (!rec._isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(raw, dur, finish); else finish(raw);
         };
       } catch (err) { banner.style.display = 'none'; psychAutoBusy = false; alert('خطأ في التقطيع: ' + err.message); }
     }
@@ -739,10 +706,12 @@
       const banner = document.getElementById('psychClipBanner');
       banner.style.display = 'flex'; document.getElementById('psychClipBannerText').textContent = 'جاري التسجيل اليدوي للحالة النفسية... اضغط إيقاف عند الانتهاء.';
       const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720;
-      const sc = vw > 1280 ? 1280/vw : 1; hc.width = Math.round(vw*sc); hc.height = Math.round(vh*sc);
-      const hCtx = hc.getContext('2d'), mime = getVidMime();
-      psychManRec = new MediaRecorder(hc.captureStream(30), mime ? { mimeType:mime, videoBitsPerSecond:4000000 } : { videoBitsPerSecond:4000000 });
-      psychManRec._mime = mime; psychManRec._t0 = Date.now(); psychManChunks = [];
+      const sc = vw > 1280 ? 1280/vw : 1;
+      let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
+      hc.width = cw; hc.height = ch;
+      const hCtx = hc.getContext('2d');
+      psychManRec = createSafePsychRecorder(hc.captureStream(30), 4000000);
+      psychManRec._t0 = Date.now(); psychManChunks = [];
       psychManRec.ondataavailable = e => { if (e.data?.size) psychManChunks.push(e.data); };
       psychManRec.start(); pVideo.play();
       function loop() { if (!psychManRec || psychManRec.state !== 'recording') return; hCtx.drawImage(pVideo, 0, 0, hc.width, hc.height); requestAnimationFrame(loop); }
@@ -751,28 +720,25 @@
 
     function stopPsychManual(tagName, sentiment, player, note) {
       if (!psychManRec || psychManRec.state !== 'recording') return;
-      const mime = psychManRec._mime, dur = Date.now() - psychManRec._t0;
+      const isMp4 = psychManRec._isMp4, usedMime = psychManRec._usedMime, usedExt = psychManRec._usedExt, dur = Date.now() - psychManRec._t0;
       pVideo.pause();
       psychManRec.onstop = () => {
-        const raw = new Blob(psychManChunks, { type: mime || 'video/webm' });
+        const raw = new Blob(psychManChunks, { type: usedMime });
         const finish = b => {
-          psychLogs.push({ id:'pl_'+Date.now(), timeSec:psychManStart, time:fmtTime(psychManStart), player, tag:tagName, sentiment, note, videoUrl:URL.createObjectURL(b) });
+          psychLogs.push({ id:'pl_'+Date.now(), timeSec:psychManStart, time:fmtTime(psychManStart), player, tag:tagName, sentiment, note, ext:usedExt, videoUrl:URL.createObjectURL(b) });
           document.getElementById('vpQuickNote').value = '';
           renderPsychLogs(); scheduleAutoSave(); document.getElementById('psychClipBanner').style.display = 'none';
-          showToast(`تم حفظ لقطة: ${tagName} ✓`);
+          showToast(`تم حفظ لقطة: ${tagName} (${usedExt.toUpperCase()}) ✓`);
         };
-        if (typeof ysFixWebmDuration === 'function' && (!mime || mime.includes('webm'))) ysFixWebmDuration(raw, dur, finish); else finish(raw);
+        if (!isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(raw, dur, finish); else finish(raw);
       };
       psychManRec.stop();
     }
 
     function renderPsychLogs() {
       const tb = document.getElementById('psychLogBody');
-      const negCount = psychLogs.filter(x => x.sentiment === 'neg').length;
-      const posCount = psychLogs.filter(x => x.sentiment === 'pos').length;
-      document.getElementById('vpTotal').textContent = psychLogs.length;
-      document.getElementById('vpNeg').textContent = negCount;
-      document.getElementById('vpPos').textContent = posCount;
+      const negCount = psychLogs.filter(x => x.sentiment === 'neg').length, posCount = psychLogs.filter(x => x.sentiment === 'pos').length;
+      document.getElementById('vpTotal').textContent = psychLogs.length; document.getElementById('vpNeg').textContent = negCount; document.getElementById('vpPos').textContent = posCount;
       const freq = {}; psychLogs.forEach(x => freq[x.tag] = (freq[x.tag]||0)+1);
       const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
       document.getElementById('vpTop').textContent = top ? `${top[0]} (${top[1]})` : '-';
@@ -804,7 +770,7 @@
     function downloadPsychClip(i) {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'تحميل لقطة التحليل النفسي')) return;
       const it = psychLogs[i]; if (!it?.videoUrl) return;
-      const a = document.createElement('a'); a.href = it.videoUrl; a.download = `Psych_${it.tag}_${it.time.replace(':','-')}.webm`; a.click();
+      const a = document.createElement('a'); a.href = it.videoUrl; a.download = `Psych_${it.tag}_${it.time.replace(':','-')}.${it.ext || 'mp4'}`; a.click();
     }
     function deletePsychLog(i) { psychLogs.splice(i,1); renderPsychLogs(); scheduleAutoSave(); }
 
@@ -816,39 +782,22 @@
       printHtmlReport(`تقرير التحليل النفسي للمباراة — ${title}`, `<p><b>إجمالي الحالات:</b> ${psychLogs.length} | <b>سلبي:</b> ${document.getElementById('vpNeg').textContent} | <b>إيجابي:</b> ${document.getElementById('vpPos').textContent}</p><table class="print-table"><thead><tr><th>التوقيت</th><th>اللاعب</th><th>الحالة النفسية</th><th>الملاحظة</th></tr></thead><tbody>${rows}</tbody></table>`);
     }
 
-    // ==========================================
-    // 3. التاب 2: التتبع البصري (Neuro-Track 3D MOT) + التنفس + البرامج
-    // ==========================================
+    // التاب 2: Neuro-Track 3D MOT + التنفس + البرامج
     const motCanvas = document.getElementById('motCanvas'), motCtx = motCanvas.getContext('2d');
     let motPhase = 'idle', motBalls = [], motRaf = null, motSpeed = 1.0, motBest = 1.0, motTrials = 0, motCorrectTrials = 0, motLastFrame = 0;
 
     function drawMotRoom() {
-      const W = motCanvas.width, H = motCanvas.height;
+      const W = motCanvas.width, H = motCanvas.height, bx = W*0.18, by = H*0.18, bw = W*0.64, bh = H*0.64;
       motCtx.fillStyle = '#020617'; motCtx.fillRect(0, 0, W, H);
-      const bx = W*0.18, by = H*0.18, bw = W*0.64, bh = H*0.64;
-      motCtx.strokeStyle = 'rgba(56,189,248,0.22)'; motCtx.lineWidth = 1.5;
-      motCtx.strokeRect(bx, by, bw, bh);
-      [[0,0,bx,by],[W,0,bx+bw,by],[0,H,bx,by+bh],[W,H,bx+bw,by+bh]].forEach(([x1,y1,x2,y2]) => {
-        motCtx.beginPath(); motCtx.moveTo(x1,y1); motCtx.lineTo(x2,y2); motCtx.stroke();
-      });
-      // نقطة تثبيت مركزية (Fixation Cross) زي NeuroTracker
+      motCtx.strokeStyle = 'rgba(56,189,248,0.22)'; motCtx.lineWidth = 1.5; motCtx.strokeRect(bx, by, bw, bh);
+      [[0,0,bx,by],[W,0,bx+bw,by],[0,H,bx,by+bh],[W,H,bx+bw,by+bh]].forEach(([x1,y1,x2,y2]) => { motCtx.beginPath(); motCtx.moveTo(x1,y1); motCtx.lineTo(x2,y2); motCtx.stroke(); });
       motCtx.strokeStyle = 'rgba(255,255,255,0.45)'; motCtx.lineWidth = 2;
       motCtx.beginPath(); motCtx.moveTo(W/2-10, H/2); motCtx.lineTo(W/2+10, H/2); motCtx.moveTo(W/2, H/2-10); motCtx.lineTo(W/2, H/2+10); motCtx.stroke();
     }
-
-    function projectBall(b) {
-      const W = motCanvas.width, H = motCanvas.height;
-      const scale = 0.58 + b.z * 0.62;
-      const sx = W/2 + b.x * (W*0.42) * scale;
-      const sy = H/2 + b.y * (H*0.40) * scale;
-      const r = 24 * scale;
-      return { sx, sy, r, scale };
-    }
-
+    function projectBall(b) { const W = motCanvas.width, H = motCanvas.height, scale = 0.58 + b.z*0.62; return { sx: W/2 + b.x*(W*0.42)*scale, sy: H/2 + b.y*(H*0.40)*scale, r: 24*scale, scale }; }
     function renderMotScene() {
       drawMotRoom();
-      const sorted = [...motBalls].sort((a,b) => a.z - b.z);
-      sorted.forEach(b => {
+      [...motBalls].sort((a,b) => a.z - b.z).forEach(b => {
         const { sx, sy, r } = projectBall(b);
         let c1 = '#cbd5e1', c2 = '#475569';
         if (motPhase === 'highlight' && b.isTarget) { c1 = '#fef08a'; c2 = '#f59e0b'; }
@@ -858,31 +807,20 @@
           else if (b.isTarget && !b.selected) { c1 = '#fde047'; c2 = '#ca8a04'; }
           else if (!b.isTarget && b.selected) { c1 = '#fca5a5'; c2 = '#dc2626'; }
         }
-        const g = motCtx.createRadialGradient(sx - r*0.32, sy - r*0.32, r*0.1, sx, sy, r);
-        g.addColorStop(0, c1); g.addColorStop(1, c2);
+        const g = motCtx.createRadialGradient(sx - r*0.32, sy - r*0.32, r*0.1, sx, sy, r); g.addColorStop(0, c1); g.addColorStop(1, c2);
         motCtx.beginPath(); motCtx.arc(sx, sy, r, 0, Math.PI*2); motCtx.fillStyle = g; motCtx.fill();
-        if ((motPhase === 'highlight' && b.isTarget) || (motPhase === 'select' && b.selected)) {
-          motCtx.lineWidth = 3; motCtx.strokeStyle = '#ffffff'; motCtx.stroke();
-        }
+        if ((motPhase === 'highlight' && b.isTarget) || (motPhase === 'select' && b.selected)) { motCtx.lineWidth = 3; motCtx.strokeStyle = '#ffffff'; motCtx.stroke(); }
       });
     }
 
     function startMotTrial() {
       cancelAnimationFrame(motRaf);
-      const total = parseInt(document.getElementById('motTotalBalls').value)||8;
-      const targets = Math.min(total - 1, parseInt(document.getElementById('motTargetBalls').value)||3);
-      const moveSec = parseInt(document.getElementById('motDurationSec').value)||8;
-
+      const total = parseInt(document.getElementById('motTotalBalls').value)||8, targets = Math.min(total - 1, parseInt(document.getElementById('motTargetBalls').value)||3), moveSec = parseInt(document.getElementById('motDurationSec').value)||8;
       motBalls = [];
       for (let i = 0; i < total; i++) {
-        const ang = Math.random()*Math.PI*2, spd = (0.42 + Math.random()*0.25) * motSpeed;
-        motBalls.push({
-          x: (Math.random()*1.4 - 0.7), y: (Math.random()*1.4 - 0.7), z: 0.25 + Math.random()*0.65,
-          vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd, vz: (Math.random()-0.5)*0.45*motSpeed,
-          isTarget: i < targets, selected: false
-        });
+        const ang = Math.random()*Math.PI*2, spd = (0.42 + Math.random()*0.25)*motSpeed;
+        motBalls.push({ x: Math.random()*1.4 - 0.7, y: Math.random()*1.4 - 0.7, z: 0.25 + Math.random()*0.65, vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd, vz: (Math.random()-0.5)*0.45*motSpeed, isTarget: i < targets, selected: false });
       }
-
       motPhase = 'highlight'; playTone(880, 140);
       document.getElementById('motStatusMsg').textContent = `احفظ مواقع الكرات الصفراء (${targets} أهداف)...`;
       renderMotScene();
@@ -891,9 +829,7 @@
         if (motPhase !== 'highlight') return;
         motPhase = 'tracking'; playTone(660, 100);
         document.getElementById('motStatusMsg').textContent = 'تتبع الأهداف بتركيز مع تثبيت نظرك على المنتصف...';
-        const endAt = performance.now() + moveSec * 1000;
-        motLastFrame = performance.now();
-
+        const endAt = performance.now() + moveSec*1000; motLastFrame = performance.now();
         function step(now) {
           const dt = Math.min(0.05, (now - motLastFrame)/1000); motLastFrame = now;
           motBalls.forEach(b => {
@@ -902,23 +838,13 @@
             if (b.y > 0.85 || b.y < -0.85) { b.vy *= -1; b.y = Math.max(-0.85, Math.min(0.85, b.y)); }
             if (b.z > 0.95 || b.z < 0.15) { b.vz *= -1; b.z = Math.max(0.15, Math.min(0.95, b.z)); }
           });
-          // تنافر بسيط لمنع تداخل الكرات
-          for (let i = 0; i < motBalls.length; i++) {
-            for (let j = i + 1; j < motBalls.length; j++) {
-              const a = motBalls[i], b = motBalls[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
-              if (d > 0 && d < 0.22 && Math.abs(b.z - a.z) < 0.25) {
-                const push = (0.22 - d)*0.5;
-                a.x -= (dx/d)*push; a.y -= (dy/d)*push; b.x += (dx/d)*push; b.y += (dy/d)*push;
-              }
-            }
+          for (let i = 0; i < motBalls.length; i++) for (let j = i + 1; j < motBalls.length; j++) {
+            const a = motBalls[i], b = motBalls[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+            if (d > 0 && d < 0.22 && Math.abs(b.z - a.z) < 0.25) { const p = (0.22 - d)*0.5; a.x -= (dx/d)*p; a.y -= (dy/d)*p; b.x += (dx/d)*p; b.y += (dy/d)*p; }
           }
           renderMotScene();
           if (now < endAt) motRaf = requestAnimationFrame(step);
-          else {
-            motPhase = 'select'; playTone(1040, 150);
-            document.getElementById('motStatusMsg').textContent = `اضغط على الكرات الـ ${targets} التي كنت تتبعها!`;
-            renderMotScene();
-          }
+          else { motPhase = 'select'; playTone(1040, 150); document.getElementById('motStatusMsg').textContent = `اضغط على الكرات الـ ${targets} التي كنت تتبعها!`; renderMotScene(); }
         }
         motRaf = requestAnimationFrame(step);
       }, 2400);
@@ -926,46 +852,23 @@
 
     motCanvas.addEventListener('click', e => {
       if (motPhase !== 'select') return;
-      const rect = motCanvas.getBoundingClientRect();
-      const px = (e.clientX - rect.left) * (motCanvas.width / rect.width);
-      const py = (e.clientY - rect.top) * (motCanvas.height / rect.height);
-      const targetsCount = motBalls.filter(b => b.isTarget).length;
-
+      const r = motCanvas.getBoundingClientRect(), px = (e.clientX - r.left)*(motCanvas.width/r.width), py = (e.clientY - r.top)*(motCanvas.height/r.height), targetsCount = motBalls.filter(b => b.isTarget).length;
       for (let i = motBalls.length - 1; i >= 0; i--) {
-        const b = motBalls[i], { sx, sy, r } = projectBall(b);
-        if (Math.hypot(px - sx, py - sy) <= r + 8) {
-          b.selected = !b.selected; playTone(740, 60);
-          renderMotScene();
-          if (motBalls.filter(x => x.selected).length === targetsCount) evaluateMotTrial(targetsCount);
-          break;
-        }
+        const b = motBalls[i], { sx, sy, r: rad } = projectBall(b);
+        if (Math.hypot(px - sx, py - sy) <= rad + 8) { b.selected = !b.selected; playTone(740, 60); renderMotScene(); if (motBalls.filter(x => x.selected).length === targetsCount) evaluateMotTrial(targetsCount); break; }
       }
     });
 
-    function evaluateMotTrial(targetsCount) {
-      motPhase = 'result'; motTrials++;
-      const hits = motBalls.filter(b => b.isTarget && b.selected).length;
-      const perfect = hits === targetsCount;
-      if (perfect) {
-        motCorrectTrials++; motSpeed = +(Math.min(3.5, motSpeed + 0.18)).toFixed(2);
-        if (motSpeed > motBest) motBest = motSpeed;
-        playTone(1280, 260);
-        document.getElementById('motStatusMsg').textContent = `ممتاز! ${hits}/${targetsCount} — تمت زيادة السرعة إلى ${motSpeed}x 🔥`;
-      } else {
-        motSpeed = +(Math.max(0.6, motSpeed - 0.12)).toFixed(2);
-        playTone(360, 260);
-        document.getElementById('motStatusMsg').textContent = `أصبت ${hits}/${targetsCount} — السرعة التالية ${motSpeed}x`;
-      }
-      document.getElementById('motSpeedScore').textContent = motSpeed.toFixed(2) + 'x';
-      document.getElementById('motBestSpeed').textContent = motBest.toFixed(2) + 'x';
-      document.getElementById('motTrials').textContent = motTrials;
-      document.getElementById('motAccuracy').textContent = Math.round((motCorrectTrials / motTrials) * 100) + '%';
-      renderMotScene();
+    function evaluateMotTrial(tc) {
+      motPhase = 'result'; motTrials++; const hits = motBalls.filter(b => b.isTarget && b.selected).length;
+      if (hits === tc) { motCorrectTrials++; motSpeed = +(Math.min(3.5, motSpeed + 0.18)).toFixed(2); if (motSpeed > motBest) motBest = motSpeed; playTone(1280, 260); document.getElementById('motStatusMsg').textContent = `ممتاز! ${hits}/${tc} — تمت زيادة السرعة إلى ${motSpeed}x 🔥`; }
+      else { motSpeed = +(Math.max(0.6, motSpeed - 0.12)).toFixed(2); playTone(360, 260); document.getElementById('motStatusMsg').textContent = `أصبت ${hits}/${tc} — السرعة التالية ${motSpeed}x`; }
+      document.getElementById('motSpeedScore').textContent = motSpeed.toFixed(2) + 'x'; document.getElementById('motBestSpeed').textContent = motBest.toFixed(2) + 'x';
+      document.getElementById('motTrials').textContent = motTrials; document.getElementById('motAccuracy').textContent = Math.round((motCorrectTrials/motTrials)*100) + '%'; renderMotScene();
     }
     function resetMotStats() { cancelAnimationFrame(motRaf); motPhase = 'idle'; motSpeed = 1.0; motBest = 1.0; motTrials = 0; motCorrectTrials = 0; motBalls = []; document.getElementById('motSpeedScore').textContent = '1.00x'; document.getElementById('motBestSpeed').textContent = '1.00x'; document.getElementById('motTrials').textContent = '0'; document.getElementById('motAccuracy').textContent = '-'; document.getElementById('motStatusMsg').textContent = 'اضغط "ابدأ الجولة" للبدء'; drawMotRoom(); }
     drawMotRoom();
 
-    // التنفس التفاعلي
     let breathRunning = false, breathTimer = null;
     const BREATH_PROTOS = {
       box: [{t:'شهيق عميق',s:4,sc:1.38,c:'#38bdf8'},{t:'احبس النفس',s:4,sc:1.38,c:'#facc15'},{t:'زفير هادئ',s:4,sc:0.88,c:'#10b981'},{t:'ثبات',s:4,sc:0.88,c:'#a855f7'}],
@@ -974,47 +877,18 @@
     };
     function toggleBreathing() {
       const btn = document.getElementById('btnBreathToggle'), cir = document.getElementById('breathCircle');
-      if (breathRunning) {
-        clearInterval(breathTimer); breathRunning = false;
-        btn.innerHTML = '<i class="fa-solid fa-play"></i> بدء'; cir.style.transform = 'scale(1)';
-        document.getElementById('breathPhaseText').textContent = 'جاهز'; document.getElementById('breathCountText').textContent = ''; return;
-      }
-      const steps = BREATH_PROTOS[document.getElementById('breathProtocol').value];
-      let si = 0, sec = steps[0].s; breathRunning = true; btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف';
-      const apply = () => {
-        const st = steps[si];
-        document.getElementById('breathPhaseText').textContent = st.t;
-        document.getElementById('breathCountText').textContent = sec;
-        cir.style.transform = `scale(${st.sc})`; cir.style.borderColor = st.c;
-      };
+      if (breathRunning) { clearInterval(breathTimer); breathRunning = false; btn.innerHTML = '<i class="fa-solid fa-play"></i> بدء'; cir.style.transform = 'scale(1)'; document.getElementById('breathPhaseText').textContent = 'جاهز'; document.getElementById('breathCountText').textContent = ''; return; }
+      const steps = BREATH_PROTOS[document.getElementById('breathProtocol').value]; let si = 0, sec = steps[0].s; breathRunning = true; btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف';
+      const apply = () => { const st = steps[si]; document.getElementById('breathPhaseText').textContent = st.t; document.getElementById('breathCountText').textContent = sec; cir.style.transform = `scale(${st.sc})`; cir.style.borderColor = st.c; };
       apply(); playTone(520, 120);
-      breathTimer = setInterval(() => {
-        sec--;
-        if (sec <= 0) { si = (si + 1) % steps.length; sec = steps[si].s; playTone(si === 0 ? 640 : 480, 100); }
-        apply();
-      }, 1000);
+      breathTimer = setInterval(() => { sec--; if (sec <= 0) { si = (si + 1) % steps.length; sec = steps[si].s; playTone(si === 0 ? 640 : 480, 100); } apply(); }, 1000);
     }
 
-    // مكتبة برامج التدريب العقلي
     const MENTAL_PROGRAMS = {
-      anger: `<b>الهدف:</b> خفض الانفعال السريع والاستجابة لاستفزاز الخصوم والحكام.<br>
-        <b>• الأسبوع 1:</b> رصد محفزات العصبية عبر فيديو المباراة + تدريب التنفس (4-7-8) يومياً 5 دقائق.<br>
-        <b>• الأسبوع 2:</b> تطبيق قاعدة <b>"إشارة الإيقاف 3 ثوانٍ"</b> (لمس الشراب أو مسح الوجه = فصل انفعالي فوري).<br>
-        <b>• الأسبوع 3:</b> محاكاة قرارات تحكيمية ظالمة في التقسيمة وتقييم الهدوء بدرجة من 10.<br>
-        <b>• الأسبوع 4:</b> تثبيت جملة العودة للتركيز: <i>"الحكم لا يغير قراره.. الكرة القادمة ملكي"</i>.`,
-      confidence: `<b>الهدف:</b> استعادة الثقة وتقليل زمن الارتداد بعد الخطأ.<br>
-        <b>• الأسبوع 1:</b> تجميع فيديو 3 دقائق لأفضل لمسات وقرارات اللاعب ومشاهدته يومياً.<br>
-        <b>• الأسبوع 2:</b> استبدال الحديث الذاتي السلبي بجمل إجرائية محددة (Process Self-Talk).<br>
-        <b>• الأسبوع 3:</b> قاعدة <b>"الذاكرة الذهبية 5 ثوانٍ"</b>: بعد أي خطأ، خطوتين للأمام وتوجيه زميل بصوت عالٍ.`,
-      imagery: `<b>بروتوكول التصور الذهني قبل المباراة (10 دقائق):</b><br>
-        1. دقيقتان تنفس مربع (4-4-4-4) مع إغماض العينين.<br>
-        2. 3 دقائق تصور أول 3 لمسات ناجحة وهادئة في المباراة.<br>
-        3. 3 دقائق تصور موقف صعب (ضغط خصم / فرصة ضائعة) والتعامل معه بثبات كامل.<br>
-        4. دقيقتان استحضار إحساس الفوز والثقة ولغة الجسد القوية عند الدخول للملعب.`,
-      focus: `<b>الهدف:</b> منع الشرود في آخر 15 دقيقة من المباراة.<br>
-        <b>• يومياً:</b> 3 جولات على أداة <b>Neuro-Track 3D</b> بسرعة تكيّفية.<br>
-        <b>• في المران:</b> المسح البصري (Scanning) مرتين قبل استلام الكرة مع نداء لون القمع.<br>
-        <b>• في المباراة:</b> تقسيم الشوط إلى 3 بلوكات (كل 15 دقيقة = بداية مباراة جديدة 0-0).`
+      anger: `<b>الهدف:</b> خفض الانفعال السريع والاستجابة لاستفزاز الخصوم والحكام.<br><b>• الأسبوع 1:</b> رصد محفزات العصبية عبر فيديو المباراة + تدريب التنفس (4-7-8) يومياً 5 دقائق.<br><b>• الأسبوع 2:</b> تطبيق قاعدة <b>"إشارة الإيقاف 3 ثوانٍ"</b> (لمس الشراب أو مسح الوجه = فصل انفعالي فوري).<br><b>• الأسبوع 3:</b> محاكاة قرارات تحكيمية ظالمة في التقسيمة وتقييم الهدوء بدرجة من 10.<br><b>• الأسبوع 4:</b> تثبيت جملة العودة للتركيز: <i>"الحكم لا يغير قراره.. الكرة القادمة ملكي"</i>.`,
+      confidence: `<b>الهدف:</b> استعادة الثقة وتقليل زمن الارتداد بعد الخطأ.<br><b>• الأسبوع 1:</b> تجميع فيديو 3 دقائق لأفضل لمسات وقرارات اللاعب ومشاهدته يومياً.<br><b>• الأسبوع 2:</b> استبدال الحديث الذاتي السلبي بجمل إجرائية محددة (Process Self-Talk).<br><b>• الأسبوع 3:</b> قاعدة <b>"الذاكرة الذهبية 5 ثوانٍ"</b>: بعد أي خطأ، خطوتين للأمام وتوجيه زميل بصوت عالٍ.`,
+      imagery: `<b>بروتوكول التصور الذهني قبل المباراة (10 دقائق):</b><br>1. دقيقتان تنفس مربع (4-4-4-4) مع إغماض العينين.<br>2. 3 دقائق تصور أول 3 لمسات ناجحة وهادئة في المباراة.<br>3. 3 دقائق تصور موقف صعب (ضغط خصم / فرصة ضائعة) والتعامل معه بثبات كامل.<br>4. دقيقتان استحضار إحساس الفوز والثقة ولغة الجسد القوية عند الدخول للملعب.`,
+      focus: `<b>الهدف:</b> منع الشرود في آخر 15 دقيقة من المباراة.<br><b>• يومياً:</b> 3 جولات على أداة <b>Neuro-Track 3D</b> بسرعة تكيّفية.<br><b>• في المران:</b> المسح البصري (Scanning) مرتين قبل استلام الكرة مع نداء لون القمع.<br><b>• في المباراة:</b> تقسيم الشوط إلى 3 بلوكات (كل 15 دقيقة = بداية مباراة جديدة 0-0).`
     };
     function renderMentalProgram() { document.getElementById('mentalProgramContent').innerHTML = MENTAL_PROGRAMS[document.getElementById('mentalProgramSelect').value] || ''; }
     renderMentalProgram();
@@ -1024,55 +898,38 @@
       printHtmlReport(sel.options[sel.selectedIndex].text, `<div style="font-size:14.5px; line-height:2; padding:12px; border:1px solid #334155;">${MENTAL_PROGRAMS[sel.value]}</div>`);
     }
 
-    // ==========================================
-    // 4. التاب 3: فحص الجاهزية عبر QR (Firestore)
-    // ==========================================
+    // التاب 3: فحص الجاهزية بالـ QR
     let mRoomId = null, mRoomUnsub = null, qrResponsesList = [];
-
     async function createMentalQRRoom() {
       mRoomId = 'MNT-' + Math.floor(1000 + Math.random()*9000);
       try {
         await db.collection('reaction_rooms').doc(mRoomId).set({ type:'mental_checkin', createdAt: Date.now(), responses: {} });
-        const url = `${window.location.href.split('?')[0]}?mRoom=${mRoomId}`;
         const box = document.getElementById('mentalQrBox'); box.innerHTML = '';
-        new QRCode(box, { text: url, width: 165, height: 165, colorDark:'#020617', colorLight:'#ffffff' });
-        document.getElementById('mentalRoomCodeTxt').textContent = mRoomId;
-        document.getElementById('mentalQrWrap').style.display = 'flex';
-
+        new QRCode(box, { text: `${window.location.href.split('?')[0]}?mRoom=${mRoomId}`, width: 165, height: 165, colorDark:'#020617', colorLight:'#ffffff' });
+        document.getElementById('mentalRoomCodeTxt').textContent = mRoomId; document.getElementById('mentalQrWrap').style.display = 'flex';
         if (mRoomUnsub) mRoomUnsub();
         mRoomUnsub = db.collection('reaction_rooms').doc(mRoomId).onSnapshot(snap => {
           if (!snap.exists) return;
-          const resps = snap.data().responses || {};
-          qrResponsesList = Object.values(resps).sort((a,b) => (b.ts||0) - (a.ts||0));
+          qrResponsesList = Object.values(snap.data().responses || {}).sort((a,b) => (b.ts||0) - (a.ts||0));
           renderQRResponses();
         });
         showToast(`تم إنشاء غرفة الفحص ${mRoomId} ✓`);
       } catch (err) { alert('تعذر إنشاء الغرفة: ' + err.message); }
     }
-
     function renderQRResponses() {
-      const tb = document.getElementById('qrRespBody');
-      document.getElementById('qrRespCount').textContent = qrResponsesList.length;
+      const tb = document.getElementById('qrRespBody'); document.getElementById('qrRespCount').textContent = qrResponsesList.length;
       if (!qrResponsesList.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:18px;">في انتظار إرسال تقييمات اللاعبين...</td></tr>'; return; }
       let g = 0, y = 0, r = 0, sumAll = 0;
       tb.innerHTML = qrResponsesList.map(it => {
-        const avg = ((it.sleep + it.calm + it.confidence + it.focus + it.energy) / 5);
-        sumAll += avg;
+        const avg = (it.sleep + it.calm + it.confidence + it.focus + it.energy)/5; sumAll += avg;
         let col = '#10b981', lbl = 'جاهز';
-        if (avg < 2.8 || it.calm <= 2) { col = '#ef4444'; lbl = 'تدخل فوري'; r++; }
-        else if (avg < 3.8) { col = '#facc15'; lbl = 'متابعة'; y++; }
-        else g++;
+        if (avg < 2.8 || it.calm <= 2) { col = '#ef4444'; lbl = 'تدخل فوري'; r++; } else if (avg < 3.8) { col = '#facc15'; lbl = 'متابعة'; y++; } else g++;
         return `<tr><td><span class="traffic-dot" style="background:${col};"></span><b>${lbl}</b></td><td><b>${esc(it.name)}</b></td><td>${it.sleep}/5</td><td>${it.calm}/5</td><td>${it.confidence}/5</td><td>${it.focus}/5</td><td>${it.energy}/5</td><td>${esc(it.note||'-')}</td></tr>`;
       }).join('');
-      document.getElementById('qrGreen').textContent = g; document.getElementById('qrYellow').textContent = y;
-      document.getElementById('qrRed').textContent = r; document.getElementById('qrAvg').textContent = (sumAll / qrResponsesList.length).toFixed(1) + '/5';
+      document.getElementById('qrGreen').textContent = g; document.getElementById('qrYellow').textContent = y; document.getElementById('qrRed').textContent = r; document.getElementById('qrAvg').textContent = (sumAll/qrResponsesList.length).toFixed(1) + '/5';
     }
     function copyMentalQRLink() { if (!mRoomId) return; navigator.clipboard.writeText(`${window.location.href.split('?')[0]}?mRoom=${mRoomId}`).then(() => showToast('تم نسخ رابط الفحص السريع ✓')); }
-    async function closeMentalQRRoom() {
-      if (mRoomUnsub) { mRoomUnsub(); mRoomUnsub = null; }
-      if (mRoomId) { try { await db.collection('reaction_rooms').doc(mRoomId).delete(); } catch(e){} }
-      mRoomId = null; document.getElementById('mentalQrWrap').style.display = 'none'; showToast('تم إغلاق الغرفة');
-    }
+    async function closeMentalQRRoom() { if (mRoomUnsub) { mRoomUnsub(); mRoomUnsub = null; } if (mRoomId) { try { await db.collection('reaction_rooms').doc(mRoomId).delete(); } catch(e){} } mRoomId = null; document.getElementById('mentalQrWrap').style.display = 'none'; showToast('تم إغلاق الغرفة'); }
     function exportCheckinPDF() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'تقرير الجاهزية النفسية للفريق PDF')) return;
       if (!qrResponsesList.length) return alert('لا توجد تقييمات لطباعتها.');
@@ -1080,77 +937,26 @@
       printHtmlReport('تقرير الجاهزية النفسية للفريق (Check-in)', `<table class="print-table"><thead><tr><th>اللاعب</th><th>النوم</th><th>الهدوء</th><th>الثقة</th><th>التركيز</th><th>الطاقة</th><th>ملاحظة</th></tr></thead><tbody>${rows}</tbody></table>`);
     }
 
-    // ==========================================
-    // 5. التاب 4: القياسات النفسية المعتمدة
-    // ==========================================
+    // التاب 4: القياسات النفسية
     const SCALES = {
-      csai: {
-        title: 'مقياس قلق المنافسة والثقة (CSAI-2 المختصر)',
-        items: [
-          { t:'أشعر بالقلق من ارتكاب أخطاء مؤثرة أثناء المباراة', cat:'قلق معرفي' },
-          { t:'تراودني أفكار سلبية حول الخسارة قبل البداية', cat:'قلق معرفي' },
-          { t:'أخشى ألا أقدم المستوى المتوقع مني', cat:'قلق معرفي' },
-          { t:'أشعر بتسارع نبضات القلب وتوتر عضلي قبل النزول', cat:'قلق بدني' },
-          { t:'أشعر بتقلص في المعدة أو برودة في الأطراف قبل الماتش', cat:'قلق بدني' },
-          { t:'أجد صعوبة في إرخاء جسدي أثناء الإحماء', cat:'قلق بدني' },
-          { t:'أثق تماماً في قدرتي على التعامل مع ضغط المباراة', cat:'ثقة بالنفس' },
-          { t:'أشعر بالجاهزية الذهنية لمواجهة أي منافس', cat:'ثقة بالنفس' },
-          { t:'أستطيع تنفيذ مهاراتي بهدوء حتى في اللحظات الحرجة', cat:'ثقة بالنفس' }
-        ]
-      },
-      mtq: {
-        title: 'مقياس الصلابة الذهنية (Mental Toughness)',
-        items: [
-          { t:'أتحكم في انفعالاتي حتى لو تعرضت لقرار تحكيمي غير منصف', cat:'التحكم الانفعالي' },
-          { t:'أتجاوز أي خطأ أرتكبه في الملعب خلال ثوانٍ معدودة', cat:'التحكم الانفعالي' },
-          { t:'ألتزم بتعليمات الجهاز الفني وتدريباتي الإضافية باستمرار', cat:'الالتزام' },
-          { t:'أحافظ على نفس القتال والتركيز حتى لو تأخرنا في النتيجة', cat:'الالتزام' },
-          { t:'أستمتع بالمباريات الكبيرة والجماهيرية وأراها فرصة للتألق', cat:'روح التحدي' },
-          { t:'المنافسة القوية على مركزي تدفعني للتطور وليس للإحباط', cat:'روح التحدي' }
-        ]
-      },
-      focus: {
-        title: 'مقياس التركيز والتحكم في الانفعال',
-        items: [
-          { t:'أحافظ على تركيزي الكامل طوال الـ 90 دقيقة دون شرود', cat:'استمرارية التركيز' },
-          { t:'أفصل نفسي تماماً عن صيحات الجماهير واستفزاز المنافسين', cat:'العزل الذهني' },
-          { t:'أقرأ تحركات زملائي والمنافسين قبل وصول الكرة إليّ', cat:'الوعي البصري' },
-          { t:'أتخذ قرارات هادئة وسليمة في آخر 10 دقائق من المباراة', cat:'الهدوء الحاسم' },
-          { t:'لا أسمح لضياع فرصة سهلة بالتأثير على باقي أدائي', cat:'الارتداد الذهني' }
-        ]
-      }
+      csai: { title:'مقياس قلق المنافسة والثقة (CSAI-2 المختصر)', items:[{t:'أشعر بالقلق من ارتكاب أخطاء مؤثرة أثناء المباراة',cat:'قلق معرفي'},{t:'تراودني أفكار سلبية حول الخسارة قبل البداية',cat:'قلق معرفي'},{t:'أخشى ألا أقدم المستوى المتوقع مني',cat:'قلق معرفي'},{t:'أشعر بتسارع نبضات القلب وتوتر عضلي قبل النزول',cat:'قلق بدني'},{t:'أشعر بتقلص في المعدة أو برودة في الأطراف قبل الماتش',cat:'قلق بدني'},{t:'أجد صعوبة في إرخاء جسدي أثناء الإحماء',cat:'قلق بدني'},{t:'أثق تماماً في قدرتي على التعامل مع ضغط المباراة',cat:'ثقة بالنفس'},{t:'أشعر بالجاهزية الذهنية لمواجهة أي منافس',cat:'ثقة بالنفس'},{t:'أستطيع تنفيذ مهاراتي بهدوء حتى في اللحظات الحرجة',cat:'ثقة بالنفس'}] },
+      mtq: { title:'مقياس الصلابة الذهنية (Mental Toughness)', items:[{t:'أتحكم في انفعالاتي حتى لو تعرضت لقرار تحكيمي غير منصف',cat:'التحكم الانفعالي'},{t:'أتجاوز أي خطأ أرتكبه في الملعب خلال ثوانٍ معدودة',cat:'التحكم الانفعالي'},{t:'ألتزم بتعليمات الجهاز الفني وتدريباتي الإضافية باستمرار',cat:'الالتزام'},{t:'أحافظ على نفس القتال والتركيز حتى لو تأخرنا في النتيجة',cat:'الالتزام'},{t:'أستمتع بالمباريات الكبيرة والجماهيرية وأراها فرصة للتألق',cat:'روح التحدي'},{t:'المنافسة القوية على مركزي تدفعني للتطور وليس للإحباط',cat:'روح التحدي'}] },
+      focus: { title:'مقياس التركيز والتحكم في الانفعال', items:[{t:'أحافظ على تركيزي الكامل طوال الـ 90 دقيقة دون شرود',cat:'استمرارية التركيز'},{t:'أفصل نفسي تماماً عن صيحات الجماهير واستفزاز المنافسين',cat:'العزل الذهني'},{t:'أقرأ تحركات زملائي والمنافسين قبل وصول الكرة إليّ',cat:'الوعي البصري'},{t:'أتخذ قرارات هادئة وسليمة في آخر 10 دقائق من المباراة',cat:'الهدوء الحاسم'},{t:'لا أسمح لضياع فرصة سهلة بالتأثير على باقي أدائي',cat:'الارتداد الذهني'}] }
     };
     const SCALE_OPTS = ['أبداً (1)','نادراً (2)','أحياناً (3)','دائماً (4)'];
     let assessAnswers = {}, assessHistory = [], lastAssessReportHtml = '';
-
     function renderAssessmentForm() {
-      const sc = SCALES[document.getElementById('assessScaleSelect').value];
-      assessAnswers = {};
-      document.getElementById('assessQuestionsBox').innerHTML = sc.items.map((it, i) => `
-        <div class="q-item">
-          <div style="font-size:12.5px; font-weight:700;">${i+1}. ${it.t} <small style="color:var(--primary);">(${it.cat})</small></div>
-          <div class="q-scale" id="qs_${i}">${SCALE_OPTS.map((o, idx) => `<button type="button" class="q-opt" onclick="pickAssess(${i},${idx+1},this)">${o}</button>`).join('')}</div>
-        </div>`).join('');
+      const sc = SCALES[document.getElementById('assessScaleSelect').value]; assessAnswers = {};
+      document.getElementById('assessQuestionsBox').innerHTML = sc.items.map((it, i) => `<div class="q-item"><div style="font-size:12.5px; font-weight:700;">${i+1}. ${it.t} <small style="color:var(--primary);">(${it.cat})</small></div><div class="q-scale" id="qs_${i}">${SCALE_OPTS.map((o, idx) => `<button type="button" class="q-opt" onclick="pickAssess(${i},${idx+1},this)">${o}</button>`).join('')}</div></div>`).join('');
     }
-    function pickAssess(i, val, btn) {
-      assessAnswers[i] = val;
-      document.querySelectorAll(`#qs_${i} .q-opt`).forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
+    function pickAssess(i, val, btn) { assessAnswers[i] = val; document.querySelectorAll(`#qs_${i} .q-opt`).forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
     function calculateAssessment() {
-      const key = document.getElementById('assessScaleSelect').value, sc = SCALES[key];
-      if (Object.keys(assessAnswers).length < sc.items.length) return alert('يرجى الإجابة على جميع العبارات أولاً.');
-      const player = document.getElementById('assessPlayerName').value.trim() || 'لاعب غير محدد';
-      const buckets = {};
-      sc.items.forEach((it, i) => {
-        if (!buckets[it.cat]) buckets[it.cat] = { sum:0, max:0 };
-        buckets[it.cat].sum += assessAnswers[i]; buckets[it.cat].max += 4;
-      });
-      let html = `<div style="color:#fff; font-weight:800; font-size:14px;">اللاعب: ${esc(player)} — ${sc.title}</div>`;
-      let tableRows = '';
+      const sc = SCALES[document.getElementById('assessScaleSelect').value]; if (Object.keys(assessAnswers).length < sc.items.length) return alert('يرجى الإجابة على جميع العبارات أولاً.');
+      const player = document.getElementById('assessPlayerName').value.trim() || 'لاعب غير محدد', buckets = {};
+      sc.items.forEach((it, i) => { if (!buckets[it.cat]) buckets[it.cat] = { sum:0, max:0 }; buckets[it.cat].sum += assessAnswers[i]; buckets[it.cat].max += 4; });
+      let html = `<div style="color:#fff; font-weight:800; font-size:14px;">اللاعب: ${esc(player)} — ${sc.title}</div>`, tableRows = '';
       for (const [cat, obj] of Object.entries(buckets)) {
-        const pct = Math.round((obj.sum / obj.max) * 100);
-        const isAnx = cat.includes('قلق');
+        const pct = Math.round((obj.sum/obj.max)*100), isAnx = cat.includes('قلق');
         const col = isAnx ? (pct > 65 ? '#ef4444' : pct > 45 ? '#facc15' : '#10b981') : (pct >= 75 ? '#10b981' : pct >= 55 ? '#facc15' : '#ef4444');
         const status = isAnx ? (pct > 65 ? 'مرتفع (يحتاج تدخل وتنفس)' : pct > 45 ? 'متوسط' : 'منخفض وممتاز') : (pct >= 75 ? 'ممتاز وقوي' : pct >= 55 ? 'متوسط (يحتاج تطوير)' : 'ضعيف (أولوية تدريبية)');
         html += `<div style="background:#0b1220; padding:10px; border-radius:8px; border:1px solid #1e293b;"><div style="display:flex; justify-content:space-between; font-weight:800; color:#fff;"><span>${cat}</span><span style="color:${col};">${pct}% — ${status}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${col};"></div></div></div>`;
@@ -1163,35 +969,22 @@
     }
     function renderAssessHistory() {
       const box = document.getElementById('assessHistoryBox');
-      if (!assessHistory.length) { box.innerHTML = '<div style="color:var(--muted);">لا توجد قياسات محفوظة بعد.</div>'; return; }
-      box.innerHTML = assessHistory.map((h, i) => `<div style="display:flex; justify-content:space-between; align-items:center; background:#0b1220; padding:7px 10px; border-radius:7px;"><span><b>${esc(h.player)}</b> — ${esc(h.scale)} (${h.date})</span><button class="btn btn-sm btn-gold" onclick="printSavedAssess(${i})"><i class="fa-solid fa-print"></i></button></div>`).join('');
+      box.innerHTML = assessHistory.length ? assessHistory.map((h, i) => `<div style="display:flex; justify-content:space-between; align-items:center; background:#0b1220; padding:7px 10px; border-radius:7px;"><span><b>${esc(h.player)}</b> — ${esc(h.scale)} (${h.date})</span><button class="btn btn-sm btn-gold" onclick="printSavedAssess(${i})"><i class="fa-solid fa-print"></i></button></div>`).join('') : '<div style="color:var(--muted);">لا توجد قياسات محفوظة بعد.</div>';
     }
     function printAssessmentPDF() { if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'تقرير القياس النفسي PDF')) return; if (!lastAssessReportHtml) return alert('احسب نتيجة قياس أولاً.'); printHtmlReport('تقرير القياس النفسي الرياضي', lastAssessReportHtml); }
     function printSavedAssess(i) { if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'تقرير القياس النفسي PDF')) return; printHtmlReport('تقرير القياس النفسي الرياضي', assessHistory[i].html); }
     renderAssessmentForm();
 
-    // ==========================================
-    // 6. التاب 5: البروفايل النفسي للاعب (Radar + جلسات)
-    // ==========================================
+    // التاب 5: البروفايل النفسي
     const MP_SKILLS = ['الهدوء تحت الضغط','الارتداد بعد الخطأ','الثقة بالنفس','استمرارية التركيز','التحكم في الانفعال','القيادة والتواصل','الدافعية والشغف','المرونة الذهنية'];
-    function makeDefaultMP(name = 'لاعب #10') {
-      return { id:'mp_'+Date.now()+'_'+Math.floor(Math.random()*999), name, pos:'وسط #10', trigger:'التشجيع الهادئ وتحديد مهمة واحدة واضحة', stressor:'الاستعجال بعد تمريرة خاطئة', base:[5,5,6,6,5,5,7,5], cur:[7,8,8,7,7,7,8,7], sessions:[] };
-    }
+    function makeDefaultMP(name = 'لاعب #10') { return { id:'mp_'+Date.now()+'_'+Math.floor(Math.random()*999), name, pos:'وسط #10', trigger:'التشجيع الهادئ وتحديد مهمة واحدة واضحة', stressor:'الاستعجال بعد تمريرة خاطئة', base:[5,5,6,6,5,5,7,5], cur:[7,8,8,7,7,7,8,7], sessions:[] }; }
     let mpList = [makeDefaultMP()], activeMpId = mpList[0].id;
     function getMp() { return mpList.find(x => x.id === activeMpId) || mpList[0]; }
     function renderMpDropdown() { const s = document.getElementById('mpSelect'); s.innerHTML = mpList.map(p => `<option value="${p.id}">${esc(p.name)} (${esc(p.pos)})</option>`).join(''); s.value = activeMpId; }
     function loadMpToUI() {
       const p = getMp();
-      document.getElementById('mpName').value = p.name||''; document.getElementById('mpPos').value = p.pos||'';
-      document.getElementById('mpTrigger').value = p.trigger||''; document.getElementById('mpStressor').value = p.stressor||'';
-      document.getElementById('mpSkillsBox').innerHTML = MP_SKILLS.map((lbl, i) => `
-        <div class="skill-row">
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800;"><span>${lbl}</span><span style="color:#4ade80;">${p.base[i]} ← ${p.cur[i]}</span></div>
-          <div class="skill-sliders">
-            <div>قبل: <b>${p.base[i]}</b><input type="range" min="1" max="10" step="0.5" value="${p.base[i]}" oninput="slideMp('base',${i},this.value)"></div>
-            <div style="color:#c084fc;">الحالي: <b>${p.cur[i]}</b><input type="range" min="1" max="10" step="0.5" value="${p.cur[i]}" oninput="slideMp('cur',${i},this.value)"></div>
-          </div>
-        </div>`).join('');
+      document.getElementById('mpName').value = p.name||''; document.getElementById('mpPos').value = p.pos||''; document.getElementById('mpTrigger').value = p.trigger||''; document.getElementById('mpStressor').value = p.stressor||'';
+      document.getElementById('mpSkillsBox').innerHTML = MP_SKILLS.map((lbl, i) => `<div class="skill-row"><div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800;"><span>${lbl}</span><span style="color:#4ade80;">${p.base[i]} ← ${p.cur[i]}</span></div><div class="skill-sliders"><div>قبل: <b>${p.base[i]}</b><input type="range" min="1" max="10" step="0.5" value="${p.base[i]}" oninput="slideMp('base',${i},this.value)"></div><div style="color:#c084fc;">الحالي: <b>${p.cur[i]}</b><input type="range" min="1" max="10" step="0.5" value="${p.cur[i]}" oninput="slideMp('cur',${i},this.value)"></div></div></div>`).join('');
       renderMpSessions(); drawMpRadar();
     }
     function slideMp(w, i, v) { getMp()[w][i] = parseFloat(v); loadMpToUI(); scheduleAutoSave(); }
@@ -1199,37 +992,18 @@
     function switchMentalProfile(id) { activeMpId = id; loadMpToUI(); scheduleAutoSave(); }
     function addMentalProfile() { const n = prompt('اسم اللاعب الجديد:'); if (!n?.trim()) return; const np = makeDefaultMP(n.trim()); mpList.push(np); activeMpId = np.id; renderMpDropdown(); loadMpToUI(); scheduleAutoSave(); }
     function delMentalProfile() { if (mpList.length <= 1) return alert('اترك ملفاً واحداً على الأقل.'); if (!confirm('حذف الملف؟')) return; mpList = mpList.filter(x => x.id !== activeMpId); activeMpId = mpList[0].id; renderMpDropdown(); loadMpToUI(); scheduleAutoSave(); }
-    function addMentalSession() {
-      const txt = document.getElementById('mpSessTopic').value.trim(); if (!txt) return;
-      getMp().sessions.unshift({ date: new Date().toLocaleDateString('ar-EG'), txt });
-      document.getElementById('mpSessTopic').value = ''; renderMpSessions(); scheduleAutoSave();
-    }
+    function addMentalSession() { const txt = document.getElementById('mpSessTopic').value.trim(); if (!txt) return; getMp().sessions.unshift({ date: new Date().toLocaleDateString('ar-EG'), txt }); document.getElementById('mpSessTopic').value = ''; renderMpSessions(); scheduleAutoSave(); }
     function renderMpSessions() {
       const list = getMp().sessions || [];
-      document.getElementById('mpSessionsList').innerHTML = list.length
-        ? list.map((s, i) => `<div style="background:#0b1220; padding:8px 10px; border-radius:7px; border-right:3px solid var(--primary); font-size:12px; display:flex; justify-content:space-between; gap:8px;"><span><b style="color:var(--accent);">${s.date}:</b> ${esc(s.txt)}</span><button class="btn btn-sm btn-red" onclick="getMp().sessions.splice(${i},1);renderMpSessions();scheduleAutoSave();">×</button></div>`).join('')
-        : '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">لا توجد جلسات مسجلة بعد.</div>';
+      document.getElementById('mpSessionsList').innerHTML = list.length ? list.map((s, i) => `<div style="background:#0b1220; padding:8px 10px; border-radius:7px; border-right:3px solid var(--primary); font-size:12px; display:flex; justify-content:space-between; gap:8px;"><span><b style="color:var(--accent);">${s.date}:</b> ${esc(s.txt)}</span><button class="btn btn-sm btn-red" onclick="getMp().sessions.splice(${i},1);renderMpSessions();scheduleAutoSave();">×</button></div>`).join('') : '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">لا توجد جلسات مسجلة بعد.</div>';
     }
     function drawMpRadar(target = null, light = false) {
-      const p = getMp(), c = target || document.getElementById('mpRadarCanvas'), ctx = c.getContext('2d');
-      const W = c.width, H = c.height, cx = W/2, cy = H/2, maxR = 112, n = MP_SKILLS.length;
+      const p = getMp(), c = target || document.getElementById('mpRadarCanvas'), ctx = c.getContext('2d'), W = c.width, H = c.height, cx = W/2, cy = H/2, maxR = 112, n = MP_SKILLS.length;
       ctx.clearRect(0,0,W,H); if (light) { ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H); }
-      for (let l=1; l<=5; l++) {
-        const r = (maxR*l)/5; ctx.beginPath();
-        for (let i=0;i<n;i++){ const a=-Math.PI/2+(i*2*Math.PI)/n, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
-        ctx.closePath(); ctx.strokeStyle = light ? 'rgba(15,23,42,0.16)' : 'rgba(148,163,184,0.22)'; ctx.stroke();
-      }
+      for (let l=1; l<=5; l++) { const r = (maxR*l)/5; ctx.beginPath(); for (let i=0;i<n;i++){ const a=-Math.PI/2+(i*2*Math.PI)/n, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.closePath(); ctx.strokeStyle = light ? 'rgba(15,23,42,0.16)' : 'rgba(148,163,184,0.22)'; ctx.stroke(); }
       ctx.font = '800 11px Cairo, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      for (let i=0;i<n;i++){
-        const a=-Math.PI/2+(i*2*Math.PI)/n;
-        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+maxR*Math.cos(a), cy+maxR*Math.sin(a)); ctx.stroke();
-        ctx.fillStyle = light ? '#0f172a' : '#e2e8f0'; ctx.fillText(MP_SKILLS[i], cx+158*Math.cos(a), cy+138*Math.sin(a));
-      }
-      const poly = (arr, st, fl, dash) => {
-        ctx.save(); ctx.beginPath();
-        for (let i=0;i<n;i++){ const r=((arr[i]||0)/10)*maxR, a=-Math.PI/2+(i*2*Math.PI)/n, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
-        ctx.closePath(); ctx.fillStyle=fl; ctx.fill(); if(dash) ctx.setLineDash([6,4]); ctx.strokeStyle=st; ctx.lineWidth=2.5; ctx.stroke(); ctx.restore();
-      };
+      for (let i=0;i<n;i++){ const a=-Math.PI/2+(i*2*Math.PI)/n; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+maxR*Math.cos(a), cy+maxR*Math.sin(a)); ctx.stroke(); ctx.fillStyle = light ? '#0f172a' : '#e2e8f0'; ctx.fillText(MP_SKILLS[i], cx+158*Math.cos(a), cy+138*Math.sin(a)); }
+      const poly = (arr, st, fl, dash) => { ctx.save(); ctx.beginPath(); for (let i=0;i<n;i++){ const r=((arr[i]||0)/10)*maxR, a=-Math.PI/2+(i*2*Math.PI)/n, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.closePath(); ctx.fillStyle=fl; ctx.fill(); if(dash) ctx.setLineDash([6,4]); ctx.strokeStyle=st; ctx.lineWidth=2.5; ctx.stroke(); ctx.restore(); };
       poly(p.base,'#94a3b8','rgba(148,163,184,0.22)',true); poly(p.cur,'#a855f7','rgba(168,85,247,0.34)',false);
     }
     function exportMentalProfilePDF() {
@@ -1239,107 +1013,62 @@
       printHtmlReport(`الملف النفسي السري — ${p.name}`, `<table class="print-table"><tr><th>اللاعب</th><th>المركز</th><th>مفتاح التحفيز</th><th>محفز التوتر</th></tr><tr><td><b>${esc(p.name)}</b></td><td>${esc(p.pos)}</td><td>${esc(p.trigger)}</td><td>${esc(p.stressor)}</td></tr></table><img src="${pc.toDataURL()}" style="display:block;margin:10px auto;max-width:440px;border:1px solid #334155;"><table class="print-table"><thead><tr><th style="width:120px;">التاريخ</th><th>ملاحظات الجلسة والتوصية</th></tr></thead><tbody>${sessHtml}</tbody></table>`);
     }
 
-    // ==========================================
-    // 7. التاب 6: سيناريوهات "ماذا لو؟" وكارت التركيز HD
-    // ==========================================
+    // التاب 6: سيناريوهات "ماذا لو؟" وكارت التركيز HD
     let scenarios = [
       { sit:'استقبال هدف مبكر في أول 10 دقائق', act:'هدوء تام، تجميع سريع، نفس عميق 3 ثوانٍ، ولعب أول 3 تمريرات آمنة لاستعادة الثقة.', cue:'الكرة القادمة فقط!' },
       { sit:'استفزاز متعمد من لاعب منافس أو قرار تحكيمي مثير للجدل', act:'عدم الرد اللفظي نهائياً، الابتعاد خطوتين، والرد يكون بالالتزام التكتيكي والفوز بالالتحام النظيف.', cue:'هدوئي هو سلاحي 🧊' },
       { sit:'ضياع فرصة محققة أو خطأ فردي مؤثر', act:'قاعدة الـ 5 ثوانٍ: رفع الرأس فوراً، وتوجيه الزملاء بصوت عالٍ للخروج من التفكير في الخطأ.', cue:'الصفحة التالية فوراً 🔄' }
     ];
     let spIdx = 0;
-
     function renderScenarios() {
-      document.getElementById('scenariosList').innerHTML = scenarios.map((s, i) => `
-        <div class="scenario-item">
-          <div style="display:flex; justify-content:space-between; align-items:center;"><b style="color:var(--accent); font-size:13px;">⚡ ${esc(s.sit)}</b><button class="btn btn-sm btn-red" onclick="scenarios.splice(${i},1);renderScenarios();scheduleAutoSave();">×</button></div>
-          <div style="font-size:12.5px; color:#e2e8f0;">${esc(s.act)}</div>
-          <div style="font-size:11.5px; color:#4ade80; font-weight:800;">🔑 إشارة العودة للتركيز: ${esc(s.cue)}</div>
-        </div>`).join('');
+      document.getElementById('scenariosList').innerHTML = scenarios.map((s, i) => `<div class="scenario-item"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="color:var(--accent); font-size:13px;">⚡ ${esc(s.sit)}</b><button class="btn btn-sm btn-red" onclick="scenarios.splice(${i},1);renderScenarios();scheduleAutoSave();">×</button></div><div style="font-size:12.5px; color:#e2e8f0;">${esc(s.act)}</div><div style="font-size:11.5px; color:#4ade80; font-weight:800;">🔑 إشارة العودة للتركيز: ${esc(s.cue)}</div></div>`).join('');
     }
     function addScenario() {
       const sit = document.getElementById('scSituation').value.trim(), act = document.getElementById('scAction').value.trim(), cue = document.getElementById('scCue').value.trim() || 'نفس عميق وتركيز';
       if (!sit || !act) return alert('اكتب الموقف ورد الفعل المطلوب.');
-      scenarios.push({ sit, act, cue });
-      document.getElementById('scSituation').value = ''; document.getElementById('scAction').value = ''; document.getElementById('scCue').value = '';
+      scenarios.push({ sit, act, cue }); document.getElementById('scSituation').value = ''; document.getElementById('scAction').value = ''; document.getElementById('scCue').value = '';
       renderScenarios(); scheduleAutoSave();
     }
-    function openScenarioPresentation() {
-      if (!scenarios.length) return alert('أضف سيناريو واحد على الأقل.');
-      spIdx = 0; showScenarioSlide(); document.getElementById('scenarioPresentModal').style.display = 'flex';
-    }
+    function openScenarioPresentation() { if (!scenarios.length) return alert('أضف سيناريو واحد على الأقل.'); spIdx = 0; showScenarioSlide(); document.getElementById('scenarioPresentModal').style.display = 'flex'; }
     function closeScenarioPresentation() { document.getElementById('scenarioPresentModal').style.display = 'none'; }
     function navScenario(d) { spIdx = (spIdx + d + scenarios.length) % scenarios.length; showScenarioSlide(); }
-    function showScenarioSlide() {
-      const s = scenarios[spIdx];
-      document.getElementById('spCounter').textContent = `سيناريو ${spIdx+1} / ${scenarios.length}`;
-      document.getElementById('spTitle').textContent = `ماذا لو: ${s.sit}؟`;
-      document.getElementById('spResponse').textContent = s.act;
-      document.getElementById('spCue').textContent = `🔑 إشارة العودة للتركيز: ${s.cue}`;
-    }
+    function showScenarioSlide() { const s = scenarios[spIdx]; document.getElementById('spCounter').textContent = `سيناريو ${spIdx+1} / ${scenarios.length}`; document.getElementById('spTitle').textContent = `ماذا لو: ${s.sit}؟`; document.getElementById('spResponse').textContent = s.act; document.getElementById('spCue').textContent = `🔑 إشارة العودة للتركيز: ${s.cue}`; }
 
-    // مولّد كارت التركيز HD لواتساب
     function renderFocusCard() {
       const c = document.getElementById('focusCardCanvas'), ctx = c.getContext('2d'), W = c.width, H = c.height;
       const g = ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'#020617'); g.addColorStop(0.55,'#1e1b4b'); g.addColorStop(1,'#0f172a');
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 8; ctx.strokeRect(26,26,W-52,H-52);
-      ctx.strokeStyle = 'rgba(250,204,21,0.45)'; ctx.lineWidth = 2; ctx.strokeRect(42,42,W-84,H-84);
-
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 8; ctx.strokeRect(26,26,W-52,H-52); ctx.strokeStyle = 'rgba(250,204,21,0.45)'; ctx.lineWidth = 2; ctx.strokeRect(42,42,W-84,H-84);
       ctx.textAlign = 'center';
       ctx.fillStyle = '#facc15'; ctx.font = '900 32px Cairo, Arial'; ctx.fillText('ZIADA MENTAL PERFORMANCE', W/2, 110);
       ctx.fillStyle = '#38bdf8'; ctx.font = '800 28px Cairo, Arial'; ctx.fillText(document.getElementById('fcMatch').value || '', W/2, 165);
       ctx.fillStyle = '#ffffff'; ctx.font = '900 54px Cairo, Arial'; ctx.fillText(document.getElementById('fcPlayer').value || '', W/2, 250);
-
-      const keys = [document.getElementById('fcKey1').value, document.getElementById('fcKey2').value, document.getElementById('fcKey3').value];
-      keys.forEach((k, i) => {
-        const y = 350 + i * 165;
-        ctx.fillStyle = 'rgba(15,23,42,0.85)'; ctx.fillRect(85, y, W-170, 125);
-        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.strokeRect(85, y, W-170, 125);
+      [document.getElementById('fcKey1').value, document.getElementById('fcKey2').value, document.getElementById('fcKey3').value].forEach((k, i) => {
+        const y = 350 + i * 165; ctx.fillStyle = 'rgba(15,23,42,0.85)'; ctx.fillRect(85, y, W-170, 125); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.strokeRect(85, y, W-170, 125);
         ctx.fillStyle = '#facc15'; ctx.font = '900 26px Cairo, Arial'; ctx.fillText(`المفتاح الذهني #${i+1}`, W/2, y + 40);
         ctx.fillStyle = '#f8fafc'; ctx.font = '700 28px Cairo, Arial'; ctx.fillText(k || '-', W/2, y + 88);
       });
-
-      ctx.fillStyle = 'rgba(168,85,247,0.28)'; ctx.fillRect(85, 875, W-170, 145);
-      ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.strokeRect(85, 875, W-170, 145);
+      ctx.fillStyle = 'rgba(168,85,247,0.28)'; ctx.fillRect(85, 875, W-170, 145); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.strokeRect(85, 875, W-170, 145);
       ctx.fillStyle = '#c084fc'; ctx.font = '800 24px Cairo, Arial'; ctx.fillText('جملة القوة والتركيز (Self-Talk)', W/2, 918);
       ctx.fillStyle = '#ffffff'; ctx.font = '900 32px Cairo, Arial'; ctx.fillText(`"${document.getElementById('fcMantra').value || ''}"`, W/2, 976);
-
       document.getElementById('focusCardPreview').src = c.toDataURL('image/png');
     }
-
     function downloadFocusCardHD() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('image', 'كارت التركيز الشخصي HD')) return;
-      renderFocusCard();
-      const a = document.createElement('a'); a.download = `Ziada_FocusCard_${Date.now()}.png`;
-      a.href = document.getElementById('focusCardCanvas').toDataURL('image/png'); a.click();
-      showToast('تم حفظ كارت التركيز HD ✓');
+      renderFocusCard(); const a = document.createElement('a'); a.download = `Ziada_FocusCard_${Date.now()}.png`; a.href = document.getElementById('focusCardCanvas').toDataURL('image/png'); a.click(); showToast('تم حفظ كارت التركيز HD ✓');
     }
-
     function printHtmlReport(title, bodyHtml) {
       document.getElementById('printArea').innerHTML = `<h1 style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px;">${esc(title)}</h1><p style="text-align:center; color:#334155; margin:6px 0 14px;">Ziada Analysis — ${new Date().toLocaleDateString('ar-EG', { dateStyle:'full' })}</p>${bodyHtml}`;
       document.getElementById('appUI').style.display = 'none'; document.getElementById('printArea').style.display = 'block';
       setTimeout(() => { window.print(); document.getElementById('printArea').style.display = 'none'; document.getElementById('appUI').style.display = 'block'; }, 300);
     }
 
-    // ==========================================
-    // 8. الحفظ التلقائي واسترجاع الجلسة
-    // ==========================================
+    // الحفظ التلقائي
     const AUTOSAVE_KEY = 'ziada_autosave_mental_v1';
     let autosaveTimer = null, pendingRecovery = null;
-
     function saveProjectNow() {
       if (JOIN_M_ROOM) return;
       const badge = document.getElementById('autosaveBadge');
-      try {
-        const state = {
-          savedAt: new Date().toISOString(),
-          vpMatchTitle: document.getElementById('vpMatchTitle').value,
-          psychLogs: psychLogs.map(x => ({ ...x, videoUrl: '' })),
-          assessHistory, mpList, activeMpId, scenarios
-        };
-        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state));
-      } catch (e) {}
+      try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ savedAt: new Date().toISOString(), vpMatchTitle: document.getElementById('vpMatchTitle').value, psychLogs: psychLogs.map(x => ({ ...x, videoUrl: '' })), assessHistory, mpList, activeMpId, scenarios })); } catch (e) {}
       badge.classList.remove('saving'); badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
     }
     function scheduleAutoSave() {
@@ -1368,13 +1097,11 @@
       if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع جلسة المعد النفسي المحفوظة تلقائياً'); return; }
       if (!pendingRecovery) return;
       const s = pendingRecovery;
-      document.getElementById('vpMatchTitle').value = s.vpMatchTitle || '';
-      psychLogs = s.psychLogs || []; renderPsychLogs();
+      document.getElementById('vpMatchTitle').value = s.vpMatchTitle || ''; psychLogs = s.psychLogs || []; renderPsychLogs();
       assessHistory = s.assessHistory || []; renderAssessHistory();
       if (s.mpList?.length) { mpList = s.mpList; activeMpId = s.activeMpId || mpList[0].id; renderMpDropdown(); loadMpToUI(); }
       if (s.scenarios?.length) { scenarios = s.scenarios; renderScenarios(); }
-      document.getElementById('recoveryModal').style.display = 'none';
-      showToast('تم استرجاع جلسة المعد النفسي بالكامل ✓');
+      document.getElementById('recoveryModal').style.display = 'none'; showToast('تم استرجاع جلسة المعد النفسي بالكامل ✓');
     }
     function startFreshProject() { localStorage.removeItem(AUTOSAVE_KEY); pendingRecovery = null; document.getElementById('recoveryModal').style.display = 'none'; }
   </script>
