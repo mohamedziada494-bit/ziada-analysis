@@ -481,7 +481,7 @@
         <button class="btn-action" style="background:#4b5563;" onclick="clearPitch()"><i class="fa-solid fa-broom"></i> تنظيف الملعب</button>
         <button class="btn-action" style="background:var(--accent); color:#070b12;" onclick="exportDrillPDF()"><i class="fa-solid fa-file-pdf"></i> كارت التمرين (PDF)</button>
         <button class="btn-action" style="background:var(--success);" onclick="printPitch()"><i class="fa-solid fa-image"></i> حفظ كصورة HD</button>
-        <button class="btn-action" onclick="exportVideo()"><i class="fa-solid fa-video"></i> تصدير فيديو HD</button>
+        <button class="btn-action" onclick="exportVideo()"><i class="fa-solid fa-video"></i> تصدير فيديو MP4 HD</button>
       </div>
     </div>
 
@@ -1265,17 +1265,42 @@
       document.getElementById('appUI').style.display = 'none'; document.getElementById('printArea').style.display = 'block';
       setTimeout(() => { window.print(); document.getElementById('printArea').style.display = 'none'; document.getElementById('appUI').style.display = 'block'; resizeCanvas(); renderTacticalLinks(); }, 300);
     }
+
+    // أولوية قصوى لـ MP4 H.264 لضمان التشغيل المباشر في معرض التليفون وواتساب
+    function getBestExportMime() {
+      const mimes = [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1.4d002a',
+        'video/mp4;codecs=h264',
+        'video/mp4',
+        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9',
+        'video/webm'
+      ];
+      return mimes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
+    }
+
     async function exportVideo() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('video', 'فيديو تدريب مطور الأداء Full HD')) return;
       if (frames.length < 2) return alert('الرجاء حفظ إطارين على الأقل لتصدير الفيديو.');
+      if (!window.MediaRecorder) return alert('متصفحك الحالي لا يدعم تسجيل الفيديو المباشر.');
       deselectAll();
       const modal = document.getElementById('exportProgressModal'), fill = document.getElementById('exportProgressFill'), pctTxt = document.getElementById('exportPercentText');
       modal.style.display = 'flex'; fill.style.width = '0%'; pctTxt.textContent = '0%';
       const { w, h, sf } = getHDConfig(), assets = await prepareAssets(), speedMs = parseInt(document.getElementById('animSpeed').value)||550;
       const vC = document.createElement('canvas'); vC.width = w; vC.height = h; const vCtx = vC.getContext('2d');
-      const mimes = ['video/webm;codecs=h264','video/webm;codecs=vp8','video/webm','video/mp4'];
-      const mimeType = mimes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
-      const recorder = new MediaRecorder(vC.captureStream(60), mimeType ? { mimeType, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 });
+      const stream = vC.captureStream(60), mimeType = getBestExportMime();
+
+      let recorder;
+      try {
+        recorder = mimeType ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 }) : new MediaRecorder(stream, { videoBitsPerSecond: 8000000 });
+      } catch (e) {
+        try { recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream); }
+        catch (e2) { recorder = new MediaRecorder(stream); }
+      }
+      const actualMime = recorder.mimeType || mimeType || 'video/webm';
+      const isMp4 = actualMime.includes('mp4'), usedMime = isMp4 ? 'video/mp4' : 'video/webm', usedExt = isMp4 ? 'mp4' : 'webm';
+
       const chunks = []; recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
       const startHold = 350, wpHold = 100, endHold = 700, segs = frames.length - 1, totalMs = startHold + segs*speedMs + Math.max(0, segs-1)*wpHold + endHold;
       function getPosAt(el) {
@@ -1304,14 +1329,16 @@
       });
       const dur = Math.round(performance.now() - t0);
       recorder.onstop = () => {
-        const raw = new Blob(chunks, { type: mimeType || 'video/webm' });
+        const raw = new Blob(chunks, { type: usedMime });
         const done = b => {
-          const a = document.createElement('a'); a.href = URL.createObjectURL(b);
-          a.download = `Ziada_PerfDev_HD_${Date.now()}.${mimeType.includes('mp4')?'mp4':'webm'}`; a.click();
+          const dlUrl = URL.createObjectURL(b);
+          const a = document.createElement('a'); a.href = dlUrl;
+          a.download = `Ziada_PerfDev_HD_${Date.now()}.${usedExt}`; a.click();
+          setTimeout(() => URL.revokeObjectURL(dlUrl), 15000);
           fill.style.width = '100%'; pctTxt.textContent = '100%';
-          setTimeout(() => { modal.style.display = 'none'; showToast('تم تصدير الفيديو Full HD ✓'); }, 350);
+          setTimeout(() => { modal.style.display = 'none'; showToast(`تم تصدير الفيديو (${usedExt.toUpperCase()}) Full HD ✓`); }, 350);
         };
-        if (typeof ysFixWebmDuration === 'function' && (!mimeType || mimeType.includes('webm'))) ysFixWebmDuration(raw, dur, done); else done(raw);
+        if (!isMp4 && typeof ysFixWebmDuration === 'function') ysFixWebmDuration(raw, dur, done); else done(raw);
       };
       recorder.stop();
     }
