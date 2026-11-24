@@ -11,654 +11,160 @@
   <script src="plan-guard.js"></script>
 
   <style>
-    :root {
-      --bg-dark: #070b12;
-      --card-bg: #111827;
-      --panel-bg: #0b1220;
-      --border: #1f2937;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --success: #10b981;
-      --danger: #ef4444;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-    }
+    :root { --bg-dark:#070b12; --card-bg:#111827; --panel-bg:#0b1220; --border:#1f2937; --primary:#38bdf8; --accent:#f59e0b; --success:#10b981; --danger:#ef4444; --text:#f8fafc; --muted:#94a3b8; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; -webkit-tap-highlight-color:transparent; }
+    body { background:var(--bg-dark); color:var(--text); padding:14px; min-height:100vh; overflow-x:hidden; }
+    .main-wrapper { max-width:1480px; margin:auto; display:flex; flex-direction:column; gap:14px; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .top-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--card-bg); padding:12px 18px; border-radius:12px; border:1px solid var(--border); }
+    .brand-title { font-size:1.15rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:10px; }
+    .top-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .autosave-badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#4ade80; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); padding:5px 12px; border-radius:20px; }
+    .autosave-badge.saving { color:var(--accent); background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.35); }
+    .btn-team-setup { background:linear-gradient(135deg,#2563eb,#3b82f6); color:#fff; border:none; padding:7px 14px; border-radius:7px; cursor:pointer; font-weight:800; font-size:12.5px; display:inline-flex; align-items:center; gap:7px; transition:0.2s; }
+    .btn-team-setup:hover { filter:brightness(1.1); }
+    .btn-back-home { background:#1e293b; color:var(--primary); border:1px solid var(--primary); padding:6px 14px; border-radius:7px; cursor:pointer; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:7px; font-size:12.5px; transition:0.2s; }
+    .btn-back-home:hover { background:var(--primary); color:#070b12; }
 
-    body {
-      background: var(--bg-dark);
-      color: var(--text);
-      padding: 14px;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    .match-info-banner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#1e293b; border:1px solid #334155; padding:10px 18px; border-radius:10px; font-size:13px; }
+    .kit-preview-badge { display:inline-flex; align-items:center; gap:7px; font-weight:700; }
+    .color-dot { width:17px; height:17px; border-radius:50%; border:2px solid #fff; display:inline-block; vertical-align:middle; }
+    .relink-banner { display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(245,158,11,0.14); border:1px solid var(--accent); color:#fde68a; padding:10px 16px; border-radius:10px; font-size:13px; font-weight:700; }
+    .relink-banner button { background:var(--accent); color:#070b12; border:none; padding:6px 14px; border-radius:6px; font-weight:800; cursor:pointer; }
 
-    .main-wrapper {
-      max-width: 1480px;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .workspace-section { background:var(--card-bg); border-radius:12px; padding:16px; border:1px solid var(--border); display:grid; grid-template-columns:225px 1fr; gap:16px; align-items:start; }
+    .vertical-tagging-panel { display:flex; flex-direction:column; gap:6px; background:var(--panel-bg); padding:11px; border-radius:10px; border:1px solid var(--border); }
+    .panel-title { font-size:12.5px; font-weight:800; color:var(--primary); text-align:center; padding-bottom:6px; border-bottom:1px solid var(--border); margin-bottom:2px; }
+    .free-quota-box { display:none; font-size:11.5px; font-weight:800; text-align:center; padding:6px 8px; border-radius:7px; background:rgba(245,158,11,0.12); border:1px solid var(--accent); color:#fde68a; line-height:1.5; }
+    .btn-ai-auto { background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%); color:#fff; padding:10px 8px; border:none; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; box-shadow:0 0 14px rgba(236,72,153,0.35); transition:0.2s; margin-bottom:4px; }
+    .btn-ai-auto:hover { transform:translateY(-1px); filter:brightness(1.08); }
 
-    /* الشريط العلوي */
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: var(--card-bg);
-      padding: 12px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .autosave-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #4ade80;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 5px 12px;
-      border-radius: 20px;
-    }
-    .autosave-badge.saving {
-      color: var(--accent);
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.35);
-    }
-    .btn-team-setup {
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 12.5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: 0.2s;
-    }
-    .btn-team-setup:hover { filter: brightness(1.1); }
-    .btn-back-home {
-      background: #1e293b;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      padding: 6px 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: 800;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12.5px;
-      transition: 0.2s;
-    }
-    .btn-back-home:hover { background: var(--primary); color: #070b12; }
+    .tags-buttons-grid { display:flex; flex-direction:column; gap:6px; }
+    .vertical-tagging-panel button.tag-btn { width:100%; padding:9px 10px; border:none; border-radius:7px; font-weight:800; cursor:pointer; font-size:12px; transition:0.2s; display:flex; align-items:center; justify-content:space-between; }
+    .vertical-tagging-panel button.tag-btn:hover { filter:brightness(1.1); }
+    .vertical-tagging-panel button.tag-btn:active { transform:scale(0.97); }
+    .key-badge { background:rgba(0,0,0,0.28); padding:1px 6px; border-radius:4px; font-size:10px; font-weight:800; margin-right:4px; }
 
-    /* بانر بيانات المباراة */
-    .match-info-banner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-    .kit-preview-badge { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; }
-    .color-dot { width: 17px; height: 17px; border-radius: 50%; border: 2px solid #fff; display: inline-block; vertical-align: middle; }
+    .btn-pass-ok { background:#1f6feb; color:#fff; } .btn-pass-bad { background:#da3633; color:#fff; } .btn-receive { background:#8957e5; color:#fff; }
+    .btn-dribble { background:#ea580c; color:#fff; } .btn-recovery { background:#0d9488; color:#fff; } .btn-loss { background:#b91c1c; color:#fff; }
+    .btn-air { background:#5c6bc0; color:#fff; } .btn-shot { background:#d97706; color:#fff; } .btn-goal { background:#eab308; color:#070b12; }
+    .btn-cross { background:#0284c7; color:#fff; } .btn-possession { background:#16a34a; color:#fff; }
 
-    /* بانر تذكير إعادة ربط الفيديو */
-    .relink-banner {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: rgba(245, 158, 11, 0.14);
-      border: 1px solid var(--accent);
-      color: #fde68a;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .relink-banner button {
-      background: var(--accent);
-      color: #070b12;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 800;
-      cursor: pointer;
-    }
+    .video-main-area { display:flex; flex-direction:column; gap:10px; min-width:0; }
+    .video-container { width:100%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #1e293b; }
+    video { width:100%; height:52vh; min-height:250px; max-height:56vh; background:#000; outline:none; object-fit:contain; display:block; }
+    .video-timeline-wrapper { display:flex; align-items:center; gap:10px; background:var(--panel-bg); padding:8px 14px; border-radius:8px; border:1px solid var(--border); }
+    .time-display { font-size:12.5px; font-weight:800; color:var(--primary); direction:ltr; min-width:52px; text-align:center; font-variant-numeric:tabular-nums; }
+    .seek-slider { flex:1; -webkit-appearance:none; appearance:none; height:7px; border-radius:5px; background:#334155; outline:none; cursor:pointer; }
+    .seek-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%; background:var(--primary); cursor:pointer; box-shadow:0 0 8px rgba(56,189,248,0.75); }
 
-    /* منطقة العمل الرئيسية */
-    .workspace-section {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 225px 1fr;
-      gap: 16px;
-      align-items: start;
-    }
+    .video-advanced-tools { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:var(--panel-bg); border:1px solid var(--border); padding:8px 12px; border-radius:8px; gap:8px; }
+    .tool-group { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+    .tool-label { font-size:11.5px; color:var(--muted); font-weight:700; }
+    .btn-vtool { background:#1f2937; color:#e2e8f0; border:1px solid #334155; padding:5px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer; transition:0.2s; }
+    .btn-vtool:hover { background:#334155; color:#fff; }
+    .btn-vtool.active { background:var(--primary); color:#070b12; border-color:var(--primary); }
+    .video-status-bar { font-size:12.5px; font-weight:700; color:var(--primary); text-align:center; }
 
-    .vertical-tagging-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      background: var(--panel-bg);
-      padding: 11px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    .panel-title {
-      font-size: 12.5px;
-      font-weight: 800;
-      color: var(--primary);
-      text-align: center;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2px;
-    }
+    .bottom-operations-grid { display:grid; grid-template-columns:1.15fr 1fr; gap:12px; align-items:start; }
+    .operations-sub-bar { display:flex; flex-direction:column; gap:7px; }
+    .ops-row { display:flex; gap:7px; flex-wrap:wrap; }
+    .btn-undo { background:#dc2626; color:#fff; flex:1; padding:9px; font-size:12.5px; border-radius:7px; font-weight:800; cursor:pointer; border:none; }
+    .btn-clear-all { background:#475569; color:#fff; padding:9px 14px; font-size:12.5px; border-radius:7px; font-weight:800; cursor:pointer; border:none; }
+    .btn-export { background:linear-gradient(135deg,#059669,#10b981); color:#fff; flex:1; padding:10px 12px; font-size:12.5px; border-radius:7px; font-weight:800; cursor:pointer; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-export.secondary { background:linear-gradient(135deg,#0284c7,#2563eb); }
+    .btn-export.csv { background:#ca8a04; color:#070b12; flex:0.7; }
 
-    .btn-ai-auto {
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-      color: #fff;
-      padding: 10px 8px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 12.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
-      transition: 0.2s;
-      margin-bottom: 4px;
-    }
-    .btn-ai-auto:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .upload-video-btn { display:flex; align-items:center; justify-content:center; gap:8px; background:#1e293b; border:1px dashed var(--primary); color:var(--primary); padding:9px 12px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer; transition:0.2s; }
+    .upload-video-btn:hover { background:rgba(56,189,248,0.12); }
+    select, input[type="text"], input[type="color"], textarea { width:100%; padding:8px 10px; border-radius:7px; border:1px solid #334155; background:var(--panel-bg); color:#fff; font-size:13px; outline:none; }
+    select:focus, input[type="text"]:focus, textarea:focus { border-color:var(--primary); }
+    .hotkey-hint-box { font-size:11px; color:var(--muted); line-height:1.6; background:var(--panel-bg); padding:7px 10px; border-radius:7px; border:1px solid var(--border); }
+    .hotkey-hint-box b { color:var(--primary); }
 
-    .tags-buttons-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .vertical-tagging-panel button.tag-btn {
-      width: 100%;
-      padding: 9px 10px;
-      border: none;
-      border-radius: 7px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 12px;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .vertical-tagging-panel button.tag-btn:hover { filter: brightness(1.1); }
-    .vertical-tagging-panel button.tag-btn:active { transform: scale(0.97); }
-    .key-badge {
-      background: rgba(0, 0, 0, 0.28);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 800;
-      margin-right: 4px;
-    }
+    #reportSheet { background:#ffffff; color:#0f172a; padding:24px; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+    .report-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-bottom:3px solid #1f6feb; padding-bottom:12px; margin-bottom:18px; }
+    .report-brand h1 { font-size:21px; color:#0969da; font-weight:900; }
+    .match-meta { text-align:left; font-size:13px; color:#475569; }
+    .physical-metrics-container { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:18px; }
+    .metric-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px; text-align:center; }
+    .metric-card.rating-card { background:linear-gradient(135deg,#0f172a,#1e293b); color:#fff; border-color:#38bdf8; }
+    .metric-card.rating-card .metric-card-title { color:#94a3b8; }
+    .metric-card.rating-card .metric-card-val { color:#38bdf8; }
+    .metric-card-title { font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .metric-card-val { font-size:22px; font-weight:900; color:#0f172a; direction:ltr; }
+    .metric-card-unit { font-size:11px; color:#64748b; font-weight:700; margin-left:3px; }
 
-    .btn-pass-ok { background: #1f6feb; color: #fff; }
-    .btn-pass-bad { background: #da3633; color: #fff; }
-    .btn-receive { background: #8957e5; color: #fff; }
-    .btn-dribble { background: #ea580c; color: #fff; }
-    .btn-recovery { background: #0d9488; color: #fff; }
-    .btn-loss { background: #b91c1c; color: #fff; }
-    .btn-air { background: #5c6bc0; color: #fff; }
-    .btn-shot { background: #d97706; color: #fff; }
-    .btn-goal { background: #eab308; color: #070b12; }
-    .btn-cross { background: #0284c7; color: #fff; }
-    .btn-possession { background: #16a34a; color: #fff; }
+    .map-view-switch { display:flex; background:#e2e8f0; border-radius:7px; padding:3px; margin-bottom:10px; gap:4px; }
+    .map-view-btn { flex:1; border:none; background:none; padding:6px 6px; font-size:11px; font-weight:800; border-radius:5px; cursor:pointer; color:#475569; transition:0.2s; }
+    .map-view-btn.active { background:#0969da; color:#fff; }
 
-    /* منطقة الفيديو */
-    .video-main-area { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-    .video-container {
-      width: 100%;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid #1e293b;
-    }
-    video {
-      width: 100%;
-      height: 52vh;
-      min-height: 250px;
-      max-height: 56vh;
-      background: #000;
-      outline: none;
-      object-fit: contain;
-      display: block;
-    }
+    .report-card-body { display:grid; grid-template-columns:280px 1.2fr 1.05fr; gap:18px; align-items:start; }
+    .single-pitch-canvas { background:#487346; border:2px solid #cbd5e1; border-radius:8px; box-shadow:0 3px 10px rgba(0,0,0,0.15); max-width:100%; height:auto; }
+    .legend { display:flex; flex-wrap:wrap; gap:6px; font-size:10.5px; margin-top:8px; justify-content:center; font-weight:700; color:#334155; }
+    .legend-item { display:flex; align-items:center; gap:4px; }
+    .legend-box { width:11px; height:4px; border-radius:2px; }
+    .legend-circle { width:8px; height:8px; border-radius:50%; }
+    .heatmap-legend-bar { display:flex; align-items:center; justify-content:space-between; width:100%; height:13px; border-radius:6px; background:linear-gradient(to left,rgba(255,0,0,0.9),rgba(255,165,0,0.8),rgba(255,255,0,0.7),rgba(0,255,0,0.6),rgba(0,0,255,0.4)); margin-top:8px; padding:0 6px; font-size:9px; font-weight:800; color:#fff; text-shadow:0 0 2px #000; }
 
-    .video-timeline-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--panel-bg);
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .time-display {
-      font-size: 12.5px;
-      font-weight: 800;
-      color: var(--primary);
-      direction: ltr;
-      min-width: 52px;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-    }
-    .seek-slider {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 7px;
-      border-radius: 5px;
-      background: #334155;
-      outline: none;
-      cursor: pointer;
-    }
-    .seek-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--primary);
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.75);
-    }
+    .stats-table { width:100%; border-collapse:collapse; font-size:12.5px; text-align:right; }
+    .stats-table th { background:#1f6feb; color:#fff; padding:8px; font-size:12px; }
+    .stats-table td { padding:6.5px 8px; border-bottom:1px solid #d0d7de; font-weight:700; }
+    .stats-table tr:nth-child(even) { background:#f6f8fa; }
+    .timeline-box { max-height:410px; overflow-y:auto; font-size:12px; border:1px solid #d0d7de; padding:8px 10px; border-radius:8px; background:#f8fafc; }
+    .timeline-row { display:flex; justify-content:space-between; align-items:center; padding:6px 4px; border-bottom:1px dashed #cbd5e1; cursor:pointer; transition:background 0.15s; }
+    .timeline-row:hover { background:#e2e8f0; }
+    .timeline-content { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .btn-del-item { background:transparent; border:none; color:#dc2626; cursor:pointer; font-size:13px; padding:2px 6px; }
 
-    .video-advanced-tools {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--panel-bg);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 8px;
-      gap: 8px;
-    }
-    .tool-group { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-    .tool-label { font-size: 11.5px; color: var(--muted); font-weight: 700; }
-    .btn-vtool {
-      background: #1f2937;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-vtool:hover { background: #334155; color: #fff; }
-    .btn-vtool.active { background: var(--primary); color: #070b12; border-color: var(--primary); }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,0.86); backdrop-filter:blur(4px); z-index:1000; justify-content:center; align-items:center; padding:14px; }
+    .modal-content { background:var(--card-bg); padding:22px; border-radius:14px; text-align:center; border:1px solid #334155; max-height:92vh; overflow-y:auto; width:100%; max-width:480px; box-shadow:0 20px 55px rgba(0,0,0,0.85); }
+    .modal-content.wide { max-width:600px; text-align:right; }
+    #modalCanvas { background:#487346; border:2px solid #fff; border-radius:6px; cursor:crosshair; max-width:100%; height:auto; touch-action:none; }
+    .form-group { text-align:right; margin-bottom:12px; }
+    .form-group label { display:block; margin-bottom:5px; font-weight:700; color:var(--primary); font-size:13px; }
+    .modal-player-box { background:var(--panel-bg); padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; text-align:right; }
+    .choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+    .btn-choice-ok { background:#16a34a; color:#fff; padding:12px 8px; font-size:13.5px; border-radius:8px; border:none; cursor:pointer; font-weight:800; }
+    .btn-choice-bad { background:#dc2626; color:#fff; padding:12px 8px; font-size:13.5px; border-radius:8px; border:none; cursor:pointer; font-weight:800; }
+    .ai-progress-container { margin:16px 0; }
+    .ai-progress-bar { width:100%; height:14px; background:#1e293b; border-radius:10px; overflow:hidden; }
+    .ai-progress-fill { width:0%; height:100%; background:linear-gradient(90deg,#8b5cf6,#ec4899); transition:width 0.25s; }
+    .ai-status-text { font-size:12.5px; color:var(--primary); margin-top:8px; font-weight:700; }
+    .color-picker-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .color-input-card { background:var(--panel-bg); border:1px solid var(--border); padding:8px 10px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; font-size:12.5px; }
+    .color-input-card input[type="color"] { width:42px; height:32px; border:none; cursor:pointer; background:transparent; padding:0; }
+    .recovery-meta { background:var(--panel-bg); border:1px solid var(--border); border-radius:10px; padding:12px; margin:14px 0 18px; font-size:13px; color:#e2e8f0; line-height:1.9; }
+    .toast-msg { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#0f172a; color:#fff; border:1px solid var(--primary); padding:9px 18px; border-radius:999px; font-size:13px; font-weight:700; z-index:9500; opacity:0; transition:0.3s; pointer-events:none; }
+    .toast-msg.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    .video-status-bar { font-size: 12.5px; font-weight: 700; color: var(--primary); text-align: center; }
-
-    .bottom-operations-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 12px;
-      align-items: start;
-    }
-    .operations-sub-bar { display: flex; flex-direction: column; gap: 7px; }
-    .ops-row { display: flex; gap: 7px; flex-wrap: wrap; }
-    .btn-undo { background: #dc2626; color: #fff; flex: 1; padding: 9px; font-size: 12.5px; border-radius: 7px; font-weight: 800; cursor: pointer; border: none; }
-    .btn-clear-all { background: #475569; color: #fff; padding: 9px 14px; font-size: 12.5px; border-radius: 7px; font-weight: 800; cursor: pointer; border: none; }
-    .btn-export { background: linear-gradient(135deg, #059669, #10b981); color: #fff; flex: 1; padding: 10px 12px; font-size: 12.5px; border-radius: 7px; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-export.secondary { background: linear-gradient(135deg, #0284c7, #2563eb); }
-    .btn-export.csv { background: #ca8a04; color: #070b12; flex: 0.7; }
-
-    .upload-video-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: #1e293b;
-      border: 1px dashed var(--primary);
-      color: var(--primary);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .upload-video-btn:hover { background: rgba(56, 189, 248, 0.12); }
-
-    select, input[type="text"], input[type="color"], textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 7px;
-      border: 1px solid #334155;
-      background: var(--panel-bg);
-      color: #fff;
-      font-size: 13px;
-      outline: none;
-    }
-    select:focus, input[type="text"]:focus, textarea:focus { border-color: var(--primary); }
-
-    .hotkey-hint-box {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
-      background: var(--panel-bg);
-      padding: 7px 10px;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-    }
-    .hotkey-hint-box b { color: var(--primary); }
-
-    /* =========================================
-       بطاقة التقرير الفني والبدني (PDF Ready)
-       ========================================= */
-    #reportSheet {
-      background: #ffffff;
-      color: #0f172a;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-    }
-    .report-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      border-bottom: 3px solid #1f6feb;
-      padding-bottom: 12px;
-      margin-bottom: 18px;
-    }
-    .report-brand h1 { font-size: 21px; color: #0969da; font-weight: 900; }
-    .match-meta { text-align: left; font-size: 13px; color: #475569; }
-
-    .physical-metrics-container {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .metric-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px 10px;
-      text-align: center;
-    }
-    .metric-card.rating-card {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #fff;
-      border-color: #38bdf8;
-    }
-    .metric-card.rating-card .metric-card-title { color: #94a3b8; }
-    .metric-card.rating-card .metric-card-val { color: #38bdf8; }
-    .metric-card-title {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #64748b;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-    .metric-card-val { font-size: 22px; font-weight: 900; color: #0f172a; direction: ltr; }
-    .metric-card-unit { font-size: 11px; color: #64748b; font-weight: 700; margin-left: 3px; }
-
-    .map-view-switch {
-      display: flex;
-      background: #e2e8f0;
-      border-radius: 7px;
-      padding: 3px;
-      margin-bottom: 10px;
-      gap: 4px;
-    }
-    .map-view-btn {
-      flex: 1;
-      border: none;
-      background: none;
-      padding: 6px 6px;
-      font-size: 11px;
-      font-weight: 800;
-      border-radius: 5px;
-      cursor: pointer;
-      color: #475569;
-      transition: 0.2s;
-    }
-    .map-view-btn.active { background: #0969da; color: #fff; }
-
-    .report-card-body {
-      display: grid;
-      grid-template-columns: 280px 1.2fr 1.05fr;
-      gap: 18px;
-      align-items: start;
-    }
-    .single-pitch-canvas {
-      background: #487346;
-      border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-      max-width: 100%;
-      height: auto;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      font-size: 10.5px;
-      margin-top: 8px;
-      justify-content: center;
-      font-weight: 700;
-      color: #334155;
-    }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-box { width: 11px; height: 4px; border-radius: 2px; }
-    .legend-circle { width: 8px; height: 8px; border-radius: 50%; }
-
-    .heatmap-legend-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      height: 13px;
-      border-radius: 6px;
-      background: linear-gradient(to left, rgba(255,0,0,0.9), rgba(255,165,0,0.8), rgba(255,255,0,0.7), rgba(0,255,0,0.6), rgba(0,0,255,0.4));
-      margin-top: 8px;
-      padding: 0 6px;
-      font-size: 9px;
-      font-weight: 800;
-      color: #fff;
-      text-shadow: 0 0 2px #000;
-    }
-
-    .stats-table { width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: right; }
-    .stats-table th { background: #1f6feb; color: #fff; padding: 8px; font-size: 12px; }
-    .stats-table td { padding: 6.5px 8px; border-bottom: 1px solid #d0d7de; font-weight: 700; }
-    .stats-table tr:nth-child(even) { background: #f6f8fa; }
-
-    .timeline-box {
-      max-height: 410px;
-      overflow-y: auto;
-      font-size: 12px;
-      border: 1px solid #d0d7de;
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-    .timeline-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 4px;
-      border-bottom: 1px dashed #cbd5e1;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .timeline-row:hover { background: #e2e8f0; }
-    .timeline-content { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .btn-del-item { background: transparent; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 2px 6px; }
-
-    /* النوافذ المنبثقة */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.86);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      padding: 14px;
-    }
-    .modal-content {
-      background: var(--card-bg);
-      padding: 22px;
-      border-radius: 14px;
-      text-align: center;
-      border: 1px solid #334155;
-      max-height: 92vh;
-      overflow-y: auto;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.85);
-    }
-    .modal-content.wide { max-width: 600px; text-align: right; }
-    #modalCanvas {
-      background: #487346;
-      border: 2px solid #fff;
-      border-radius: 6px;
-      cursor: crosshair;
-      max-width: 100%;
-      height: auto;
-      touch-action: none;
-    }
-    .form-group { text-align: right; margin-bottom: 12px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 700; color: var(--primary); font-size: 13px; }
-    .modal-player-box { background: var(--panel-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; text-align: right; }
-
-    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-    .btn-choice-ok { background: #16a34a; color: #fff; padding: 12px 8px; font-size: 13.5px; border-radius: 8px; border: none; cursor: pointer; font-weight: 800; }
-    .btn-choice-bad { background: #dc2626; color: #fff; padding: 12px 8px; font-size: 13.5px; border-radius: 8px; border: none; cursor: pointer; font-weight: 800; }
-
-    .ai-progress-container { margin: 16px 0; }
-    .ai-progress-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; }
-    .ai-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 0.25s; }
-    .ai-status-text { font-size: 12.5px; color: var(--primary); margin-top: 8px; font-weight: 700; }
-
-    .color-picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .color-input-card { background: var(--panel-bg); border: 1px solid var(--border); padding: 8px 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; }
-    .color-input-card input[type="color"] { width: 42px; height: 32px; border: none; cursor: pointer; background: transparent; padding: 0; }
-
-    .recovery-meta {
-      background: var(--panel-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin: 14px 0 18px;
-      font-size: 13px;
-      color: #e2e8f0;
-      line-height: 1.9;
-    }
-
-    .toast-msg {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #0f172a;
-      color: #fff;
-      border: 1px solid var(--primary);
-      padding: 9px 18px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      z-index: 9500;
-      opacity: 0;
-      transition: 0.3s;
-      pointer-events: none;
-    }
-    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* التجاوب الكامل مع الموبايل والتابلت */
-    @media (max-width: 1024px) {
-      body { padding: 8px; }
-      .workspace-section { grid-template-columns: 1fr; padding: 12px; }
-      .video-main-area { order: 1; }
-      .vertical-tagging-panel { order: 2; }
-      .tags-buttons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .bottom-operations-grid { grid-template-columns: 1fr; }
-      .physical-metrics-container { grid-template-columns: repeat(2, 1fr); }
-      .metric-card.rating-card { grid-column: 1 / -1; }
-      .report-card-body { grid-template-columns: 1fr; }
-      #reportSheet { padding: 16px; }
-      video { height: 36vh; min-height: 210px; }
+    @media (max-width:1024px) {
+      body { padding:8px; }
+      .workspace-section { grid-template-columns:1fr; padding:12px; }
+      .video-main-area { order:1; }
+      .vertical-tagging-panel { order:2; }
+      .tags-buttons-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
+      .bottom-operations-grid { grid-template-columns:1fr; }
+      .physical-metrics-container { grid-template-columns:repeat(2,1fr); }
+      .metric-card.rating-card { grid-column:1 / -1; }
+      .report-card-body { grid-template-columns:1fr; }
+      #reportSheet { padding:16px; }
+      video { height:36vh; min-height:210px; }
     }
   </style>
 
-  <!-- كود حماية الواجهة (Capture Phase) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), true);
     document.addEventListener('keydown', e => {
-      const forbiddenKeys = ['U', 'S', 'P'];
-      const devKeys = ['I', 'J', 'C'];
-      if (
-        e.key === 'F12' || e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+      const f = ['U','S','P'], d = ['I','J','C'];
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && d.includes(e.key.toUpperCase())) || (e.ctrlKey && f.includes(e.key.toUpperCase()))) {
+        e.preventDefault(); e.stopPropagation(); return false;
       }
     }, true);
   </script>
 </head>
 <body>
 
-  <!-- التحقق من الجلسة وصلاحية التحليل الفردي (مع دعم تجربة اليوزر العادي) -->
   <script>
     (function checkSession() {
       try {
@@ -673,25 +179,23 @@
     })();
   </script>
 
-  <!-- نافذة استرجاع المشروع السابق -->
-  <div class="modal-overlay" id="recoveryModal" style="z-index: 9999;">
+  <div class="modal-overlay" id="recoveryModal" style="z-index:9999;">
     <div class="modal-content">
-      <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 8px;"><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع تحليل فردي سابق</h3>
-      <p style="color: #cbd5e1; font-size: 13px; line-height: 1.7;">يوجد سجل أحداث وتشكيل محفوظ تلقائياً قبل إغلاق الصفحة. هل تريد استكمال العمل من نفس النقطة أم البدء من جديد؟</p>
+      <h3 style="color:var(--primary); font-size:18px; margin-bottom:8px;"><i class="fa-solid fa-clock-rotate-left"></i> تم العثور على مشروع تحليل فردي سابق</h3>
+      <p style="color:#cbd5e1; font-size:13px; line-height:1.7;">يوجد سجل أحداث وتشكيل محفوظ تلقائياً قبل إغلاق الصفحة. هل تريد استكمال العمل من نفس النقطة أم البدء من جديد؟</p>
       <div class="recovery-meta" id="recoveryMetaInfo"></div>
       <div class="choice-grid">
         <button class="btn-choice-ok" onclick="restoreSavedProject()"><i class="fa-solid fa-rotate-left"></i> استكمال القديم</button>
-        <button style="background: #334155; color: #fff; border: none; border-radius: 8px; padding: 12px; font-weight: 800; cursor: pointer;" onclick="startFreshProject()"><i class="fa-solid fa-file-circle-plus"></i> بدء جديد</button>
+        <button style="background:#334155; color:#fff; border:none; border-radius:8px; padding:12px; font-weight:800; cursor:pointer;" onclick="startFreshProject()"><i class="fa-solid fa-file-circle-plus"></i> بدء جديد</button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة تقدم تصدير PDF -->
-  <div class="modal-overlay" id="pdfProgressModal" style="z-index: 9998;">
+  <div class="modal-overlay" id="pdfProgressModal" style="z-index:9998;">
     <div class="modal-content">
-      <h3 style="color: var(--success); margin-bottom: 10px;"><i class="fa-solid fa-file-pdf fa-beat"></i> جاري تجهيز تقرير الـ PDF</h3>
+      <h3 style="color:var(--success); margin-bottom:10px;"><i class="fa-solid fa-file-pdf fa-beat"></i> جاري تجهيز تقرير الـ PDF</h3>
       <div class="ai-progress-container">
-        <div class="ai-progress-bar"><div class="ai-progress-fill" id="pdfProgressFill" style="background: linear-gradient(90deg, #10b981, #38bdf8);"></div></div>
+        <div class="ai-progress-bar"><div class="ai-progress-fill" id="pdfProgressFill" style="background:linear-gradient(90deg,#10b981,#38bdf8);"></div></div>
         <div class="ai-status-text" id="pdfStatusText">جاري الرندر...</div>
       </div>
     </div>
@@ -710,35 +214,23 @@
     </div>
 
     <div class="match-info-banner">
-      <div>
-        <span style="color: var(--muted);">المباراة:</span>
-        <b id="bannerTeamName" style="color: var(--primary);">فريقنا</b> ضد <b id="bannerOpponentName" style="color: #f87171;">المنافس</b>
-      </div>
-      <div>
-        <span class="kit-preview-badge">
-          <span>قميص الفريق:</span>
-          <span class="color-dot" id="bannerKitColor" style="background-color: #1e3a8a;"></span>
-        </span>
-      </div>
-      <div>
-        <span style="color: var(--muted);">طريقة اللعب:</span>
-        <b id="bannerFormation" style="color: #4ade80;">4-3-3</b>
-      </div>
+      <div><span style="color:var(--muted);">المباراة:</span> <b id="bannerTeamName" style="color:var(--primary);">فريقنا</b> ضد <b id="bannerOpponentName" style="color:#f87171;">المنافس</b></div>
+      <div><span class="kit-preview-badge"><span>قميص الفريق:</span><span class="color-dot" id="bannerKitColor" style="background-color:#1e3a8a;"></span></span></div>
+      <div><span style="color:var(--muted);">طريقة اللعب:</span> <b id="bannerFormation" style="color:#4ade80;">4-3-3</b></div>
     </div>
 
-    <!-- تذكير إعادة ربط الفيديو -->
     <div class="relink-banner" id="relinkBanner">
       <span id="relinkBannerText"></span>
       <button onclick="document.getElementById('videoFileInput').click()"><i class="fa-solid fa-folder-open"></i> اختيار الفيديو الآن</button>
     </div>
 
     <div class="workspace-section">
-      <!-- لوحة الرصد السريع -->
       <aside class="vertical-tagging-panel">
         <button class="btn-ai-auto" onclick="openAIAutoModal()" title="محاكاة بيانات تجريبية سريعة للعرض">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>محاكاة رصد (AI Demo)</span>
+          <i class="fa-solid fa-wand-magic-sparkles"></i><span>محاكاة رصد (AI Demo)</span>
         </button>
+
+        <div class="free-quota-box" id="freeActionsQuota"></div>
 
         <div class="panel-title"><i class="fa-solid fa-hand-pointer"></i> الرصد اليدوي (مع اختصارات)</div>
         <div class="tags-buttons-grid">
@@ -752,15 +244,12 @@
           <button class="tag-btn btn-shot" onclick="openPitchModal('تسديدة')"><span><span class="key-badge">8</span> تسديد</span> <i class="fa-solid fa-crosshairs"></i></button>
           <button class="tag-btn btn-goal" onclick="openPitchModal('هدف')"><span><span class="key-badge">9</span> هدف مسجل</span> <i class="fa-solid fa-fire"></i></button>
           <button class="tag-btn btn-cross" onclick="openCrossChoiceModal()"><span><span class="key-badge">0</span> كرة عرضية</span> <i class="fa-solid fa-repeat"></i></button>
-          <button id="possessionBtn" class="tag-btn btn-possession" onclick="togglePossession()" style="grid-column: 1 / -1;"><span>استحواذ: متوقف</span> <i class="fa-solid fa-stopwatch"></i></button>
+          <button id="possessionBtn" class="tag-btn btn-possession" onclick="togglePossession()" style="grid-column:1 / -1;"><span>استحواذ: متوقف</span> <i class="fa-solid fa-stopwatch"></i></button>
         </div>
       </aside>
 
-      <!-- مشغل الفيديو والعمليات -->
       <main class="video-main-area">
-        <div class="video-container">
-          <video id="matchVideo" playsinline controls></video>
-        </div>
+        <div class="video-container"><video id="matchVideo" playsinline controls></video></div>
 
         <div class="video-timeline-wrapper">
           <span class="time-display" id="currentTimeText">00:00</span>
@@ -779,7 +268,6 @@
             <button class="btn-vtool" onclick="seekVideo(1)">+1ث</button>
             <button class="btn-vtool" onclick="seekVideo(5)">+5ث</button>
           </div>
-
           <div class="tool-group">
             <span class="tool-label">السرعة:</span>
             <button class="btn-vtool" onclick="changePlaybackSpeed(0.25, this)">0.25x</button>
@@ -803,9 +291,7 @@
               <button class="btn-export secondary" onclick="exportToPDF('active')"><i class="fa-solid fa-users"></i> PDF (المشاركات)</button>
               <button class="btn-export csv" onclick="exportToCSV()" title="تصدير جدول إحصائيات الفريق لـ Excel"><i class="fa-solid fa-file-excel"></i> Excel</button>
             </div>
-            <div class="hotkey-hint-box">
-              ⌨️ <b>اختصارات سريعة:</b> <b>Space</b> تشغيل/إيقاف | <b>0–9</b> رصد فوري | <b>Z</b> تراجع | <b>أسهم</b> تقديم/تأخير.
-            </div>
+            <div class="hotkey-hint-box">⌨️ <b>اختصارات سريعة:</b> <b>Space</b> تشغيل/إيقاف | <b>0–9</b> رصد فوري | <b>Z</b> تراجع | <b>أسهم</b> تقديم/تأخير.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; gap:8px;">
@@ -814,7 +300,7 @@
               <input type="file" id="videoFileInput" accept="video/*" onchange="handleFileSelect(event)" style="display:none;">
             </label>
             <div>
-              <label style="font-size: 12.5px; font-weight: 700; color: var(--primary); margin-bottom: 4px; display: block;">عرض تقرير وخريطة:</label>
+              <label style="font-size:12.5px; font-weight:700; color:var(--primary); margin-bottom:4px; display:block;">عرض تقرير وخريطة:</label>
               <select id="playerSelect" onchange="renderCurrentPlayerView(); scheduleAutoSave();"></select>
             </div>
           </div>
@@ -822,95 +308,68 @@
       </main>
     </div>
 
-    <!-- ==================== بطاقة التقرير الفني والبدني ==================== -->
+    <!-- بطاقة التقرير الفني والبدني -->
     <div id="reportSheet">
       <div class="report-header">
         <div class="report-brand">
           <h1 id="dispPlayerTitle">التقرير الفني والبدني: -</h1>
-          <div style="font-size: 12.5px; font-weight: 700; color: #57606a; margin-top: 3px;" id="dispMatchSub">Ziada Analysis Pro | المؤشرات الفنية والخريطة الحرارية</div>
+          <div style="font-size:12.5px; font-weight:700; color:#57606a; margin-top:3px;" id="dispMatchSub">Ziada Analysis Pro | المؤشرات الفنية والخريطة الحرارية</div>
         </div>
         <div class="match-meta">
-          <div style="font-weight: 800; font-size: 15px; color: #0969da;" id="dispMatchFormation">طريقة اللعب: 4-3-3</div>
-          <div style="font-size: 12.5px; margin-top: 2px;">زمن الاستحواذ المسجل: <b id="dispPossession">0 ثانية</b></div>
+          <div style="font-weight:800; font-size:15px; color:#0969da;" id="dispMatchFormation">طريقة اللعب: 4-3-3</div>
+          <div style="font-size:12.5px; margin-top:2px;">زمن الاستحواذ المسجل: <b id="dispPossession">0 ثانية</b></div>
         </div>
       </div>
 
       <div class="physical-metrics-container">
-        <div class="metric-card rating-card">
-          <div class="metric-card-title"><i class="fa-solid fa-star" style="color: #facc15;"></i> تقييم الأداء (Rating)</div>
-          <div class="metric-card-val"><span id="metricRating">-</span><span class="metric-card-unit" style="color:#94a3b8;">/10</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-card-title"><i class="fa-solid fa-route" style="color: #0284c7;"></i> المسافة المقدرة</div>
-          <div class="metric-card-val"><span id="metricTotalDist">0.00</span><span class="metric-card-unit">كم</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-card-title"><i class="fa-solid fa-gauge-high" style="color: #ea580c;"></i> السرعة التقديرية</div>
-          <div class="metric-card-val"><span id="metricTopSpeed">0.0</span><span class="metric-card-unit">كم/س</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-card-title"><i class="fa-solid fa-bolt" style="color: #eab308;"></i> الانطلاقات (Sprints)</div>
-          <div class="metric-card-val"><span id="metricSprintsCount">0</span><span class="metric-card-unit">انطلاقة</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-card-title"><i class="fa-solid fa-fire-flame-curved" style="color: #ef4444;"></i> جري عالي الشدة</div>
-          <div class="metric-card-val"><span id="metricHighIntensity">0</span><span class="metric-card-unit">متر</span></div>
-        </div>
+        <div class="metric-card rating-card"><div class="metric-card-title"><i class="fa-solid fa-star" style="color:#facc15;"></i> تقييم الأداء (Rating)</div><div class="metric-card-val"><span id="metricRating">-</span><span class="metric-card-unit" style="color:#94a3b8;">/10</span></div></div>
+        <div class="metric-card"><div class="metric-card-title"><i class="fa-solid fa-route" style="color:#0284c7;"></i> المسافة المقدرة</div><div class="metric-card-val"><span id="metricTotalDist">0.00</span><span class="metric-card-unit">كم</span></div></div>
+        <div class="metric-card"><div class="metric-card-title"><i class="fa-solid fa-gauge-high" style="color:#ea580c;"></i> السرعة التقديرية</div><div class="metric-card-val"><span id="metricTopSpeed">0.0</span><span class="metric-card-unit">كم/س</span></div></div>
+        <div class="metric-card"><div class="metric-card-title"><i class="fa-solid fa-bolt" style="color:#eab308;"></i> الانطلاقات (Sprints)</div><div class="metric-card-val"><span id="metricSprintsCount">0</span><span class="metric-card-unit">انطلاقة</span></div></div>
+        <div class="metric-card"><div class="metric-card-title"><i class="fa-solid fa-fire-flame-curved" style="color:#ef4444;"></i> جري عالي الشدة</div><div class="metric-card-val"><span id="metricHighIntensity">0</span><span class="metric-card-unit">متر</span></div></div>
       </div>
 
       <div class="report-card-body">
-        <div style="text-align: center;">
+        <div style="text-align:center;">
           <div class="map-view-switch">
             <button class="map-view-btn active" id="btnViewEvents" onclick="setPitchViewMode('events')">الأحداث</button>
             <button class="map-view-btn" id="btnViewHeatmap" onclick="setPitchViewMode('heatmap')">حرارية 🔥</button>
             <button class="map-view-btn" id="btnViewBoth" onclick="setPitchViewMode('both')">مدمج</button>
           </div>
-
           <canvas id="activePitchCanvas" class="single-pitch-canvas" width="260" height="390"></canvas>
-
           <div class="legend" id="eventsLegendBox">
-            <div class="legend-item"><div class="legend-box" style="background: #1f6feb;"></div> باص صح</div>
-            <div class="legend-item"><div class="legend-box" style="background: #da3633;"></div> باص خطأ</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #238636;"></div> استلام صح</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #a371f7;"></div> استلام خطأ</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #ea580c;"></div> مراوغة✔</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #9a3412;"></div> مراوغة✖</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #0d9488;"></div> استخلاص</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #b91c1c;"></div> فقدان</div>
-            <div class="legend-item"><div class="legend-box" style="background: #0969da;"></div> كروس صح</div>
-            <div class="legend-item"><div class="legend-box" style="background: #f85149;"></div> كروس خطأ</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #d97706;"></div> تسديد</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #eab308; border: 1px solid #000;"></div> هدف ⚽</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #5c6bc0;"></div> هوائي✔</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #7986cb;"></div> هوائي✖</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #0f766e;"></div> أرضي✔</div>
-            <div class="legend-item"><div class="legend-circle" style="background: #be123c;"></div> أرضي✖</div>
+            <div class="legend-item"><div class="legend-box" style="background:#1f6feb;"></div> باص صح</div>
+            <div class="legend-item"><div class="legend-box" style="background:#da3633;"></div> باص خطأ</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#238636;"></div> استلام صح</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#a371f7;"></div> استلام خطأ</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#ea580c;"></div> مراوغة✔</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#9a3412;"></div> مراوغة✖</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#0d9488;"></div> استخلاص</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#b91c1c;"></div> فقدان</div>
+            <div class="legend-item"><div class="legend-box" style="background:#0969da;"></div> كروس صح</div>
+            <div class="legend-item"><div class="legend-box" style="background:#f85149;"></div> كروس خطأ</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#d97706;"></div> تسديد</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#eab308; border:1px solid #000;"></div> هدف ⚽</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#5c6bc0;"></div> هوائي✔</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#7986cb;"></div> هوائي✖</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#0f766e;"></div> أرضي✔</div>
+            <div class="legend-item"><div class="legend-circle" style="background:#be123c;"></div> أرضي✖</div>
           </div>
-
-          <div id="heatmapLegendBox" style="display: none;">
-            <div class="heatmap-legend-bar">
-              <span>كثافة عالية</span>
-              <span>نشاط منخفض</span>
-            </div>
-            <div style="font-size: 11px; color: #64748b; font-weight: 700; margin-top: 4px;">بؤر التمركز والانتشار على أرض الملعب</div>
+          <div id="heatmapLegendBox" style="display:none;">
+            <div class="heatmap-legend-bar"><span>كثافة عالية</span><span>نشاط منخفض</span></div>
+            <div style="font-size:11px; color:#64748b; font-weight:700; margin-top:4px;">بؤر التمركز والانتشار على أرض الملعب</div>
           </div>
         </div>
 
         <div>
           <table class="stats-table">
-            <thead>
-              <tr>
-                <th>الحدث الفني</th>
-                <th style="text-align: center;">العدد</th>
-                <th style="text-align: center;">النسبة</th>
-              </tr>
-            </thead>
+            <thead><tr><th>الحدث الفني</th><th style="text-align:center;">العدد</th><th style="text-align:center;">النسبة</th></tr></thead>
             <tbody id="activeStatsBody"></tbody>
           </table>
         </div>
 
         <div>
-          <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #1e293b;">سجل التوقيتات (اضغط للانتقال للقطة 🎥):</h4>
+          <h4 style="margin:0 0 8px 0; font-size:13px; color:#1e293b;">سجل التوقيتات (اضغط للانتقال للقطة 🎥):</h4>
           <div class="timeline-box" id="activeTimelineBox"></div>
         </div>
       </div>
@@ -920,40 +379,19 @@
   <!-- مودال إعداد الفريق والمباراة -->
   <div class="modal-overlay" id="teamSetupModal" onclick="if(event.target === this) closeTeamSetupModal()">
     <div class="modal-content wide">
-      <h3 style="color: var(--primary); margin-bottom: 12px; text-align: center;">
-        <i class="fa-solid fa-id-card-clip"></i> إعداد بيانات المباراة والفريق
-      </h3>
-
-      <div class="choice-grid" style="margin-top: 0;">
-        <div class="form-group">
-          <label>اسم فريقنا:</label>
-          <input type="text" id="myTeamNameInput" value="فريقنا">
-        </div>
-        <div class="form-group">
-          <label>اسم الفريق المنافس:</label>
-          <input type="text" id="opponentNameInput" value="المنافس">
-        </div>
+      <h3 style="color:var(--primary); margin-bottom:12px; text-align:center;"><i class="fa-solid fa-id-card-clip"></i> إعداد بيانات المباراة والفريق</h3>
+      <div class="choice-grid" style="margin-top:0;">
+        <div class="form-group"><label>اسم فريقنا:</label><input type="text" id="myTeamNameInput" value="فريقنا"></div>
+        <div class="form-group"><label>اسم الفريق المنافس:</label><input type="text" id="opponentNameInput" value="المنافس"></div>
       </div>
-
       <div class="form-group">
         <label>ألوان قميص فريقنا في هذا الفيديو:</label>
         <div class="color-picker-grid">
-          <div class="color-input-card">
-            <span>لون القميص الأساسي:</span>
-            <input type="color" id="primaryKitColor" value="#1e3a8a">
-          </div>
-          <div class="color-input-card">
-            <span>لون الشورت / الخطوط:</span>
-            <input type="color" id="secondaryKitColor" value="#ffffff">
-          </div>
+          <div class="color-input-card"><span>لون القميص الأساسي:</span><input type="color" id="primaryKitColor" value="#1e3a8a"></div>
+          <div class="color-input-card"><span>لون الشورت / الخطوط:</span><input type="color" id="secondaryKitColor" value="#ffffff"></div>
         </div>
       </div>
-
-      <div class="form-group">
-        <label>طريقة اللعب (الخطة):</label>
-        <input type="text" id="formationInput" value="4-3-3">
-      </div>
-
+      <div class="form-group"><label>طريقة اللعب (الخطة):</label><input type="text" id="formationInput" value="4-3-3"></div>
       <div class="form-group">
         <label>التشكيل الأساسي بالرقم والمركز (11 لاعبة):</label>
         <textarea id="startersInput" rows="6">1 - مها الدمرداش (حارسة المرمى)
@@ -968,7 +406,6 @@
 11 - منة طارق (جناح أيسر)
 9 - شروق السيد (مهاجمة)</textarea>
       </div>
-
       <div class="form-group">
         <label>قائمة البديلات بالرقم والمركز:</label>
         <textarea id="subsInput" rows="5">16 - حبيبة صبري (حارسة بديلة)
@@ -981,10 +418,9 @@
 20 - فرح سمير (جناح بديل)
 21 - ملك إسماعيل (مهاجمة بديلة)</textarea>
       </div>
-
-      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
-        <button style="background: #16a34a; color: #fff; padding: 10px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 800; flex: 1;" onclick="saveTeamSetup(true)">حفظ واعتماد البيانات</button>
-        <button style="background: #334155; color: #fff; padding: 10px 18px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="closeTeamSetupModal()">إلغاء</button>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:16px;">
+        <button style="background:#16a34a; color:#fff; padding:10px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:800; flex:1;" onclick="saveTeamSetup(true)">حفظ واعتماد البيانات</button>
+        <button style="background:#334155; color:#fff; padding:10px 18px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="closeTeamSetupModal()">إلغاء</button>
       </div>
     </div>
   </div>
@@ -992,28 +428,22 @@
   <!-- مودال محاكاة الرصد التجريبي -->
   <div class="modal-overlay" id="aiAutoModal" onclick="if(event.target === this) closeAIAutoModal()">
     <div class="modal-content">
-      <h3 style="color: #ec4899; margin-bottom: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> محاكاة الرصد الذكي (عرض تجريبي)</h3>
-      <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px; margin-bottom: 14px; font-size: 12.5px; text-align: right; line-height: 1.8;">
-        <b style="color: var(--primary);">ملاحظة:</b> هذه الأداة تولّد بيانات محاكاة تجريبية لاختبار التقارير والخريطة الحرارية.<br>
-        • لون التيشيرت: <span class="color-dot" id="modalKitDot" style="width: 13px; height: 13px;"></span> | اللاعبات: <b id="modalPlayersCount">20</b>
+      <h3 style="color:#ec4899; margin-bottom:10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> محاكاة الرصد الذكي (عرض تجريبي)</h3>
+      <div style="background:var(--panel-bg); border:1px solid var(--border); border-radius:8px; padding:11px; margin-bottom:14px; font-size:12.5px; text-align:right; line-height:1.8;">
+        <b style="color:var(--primary);">ملاحظة:</b> هذه الأداة تولّد بيانات محاكاة تجريبية لاختبار التقارير والخريطة الحرارية.<br>
+        • لون التيشيرت: <span class="color-dot" id="modalKitDot" style="width:13px; height:13px;"></span> | اللاعبات: <b id="modalPlayersCount">20</b>
       </div>
-
       <div class="form-group">
         <label>نطاق المحاكاة:</label>
-        <select id="aiModeSelect">
-          <option value="player">اللاعبة المحددة حالياً فقط</option>
-          <option value="all">التشكيل الأساسي بالكامل</option>
-        </select>
+        <select id="aiModeSelect"><option value="player">اللاعبة المحددة حالياً فقط</option><option value="all">التشكيل الأساسي بالكامل</option></select>
       </div>
-
-      <div class="ai-progress-container" id="aiProgressBox" style="display: none;">
+      <div class="ai-progress-container" id="aiProgressBox" style="display:none;">
         <div class="ai-progress-bar"><div class="ai-progress-fill" id="aiProgressFill"></div></div>
         <div class="ai-status-text" id="aiStatusText">جارٍ تجهيز بيانات المحاكاة...</div>
       </div>
-
-      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
-        <button id="btnStartAI" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; padding: 10px 22px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; flex: 1;" onclick="runAIAutoAnalysis()">بدء المحاكاة ⚡</button>
-        <button style="background: #334155; color: #fff; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;" onclick="closeAIAutoModal()">إلغاء</button>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:16px;">
+        <button id="btnStartAI" style="background:linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; padding:10px 22px; border:none; border-radius:8px; font-weight:800; cursor:pointer; flex:1;" onclick="runAIAutoAnalysis()">بدء المحاكاة ⚡</button>
+        <button style="background:#334155; color:#fff; padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:700;" onclick="closeAIAutoModal()">إلغاء</button>
       </div>
     </div>
   </div>
@@ -1021,307 +451,141 @@
   <!-- مودالات اختيار نوع الحدث -->
   <div class="modal-overlay" id="dribbleChoiceModal" onclick="if(event.target === this) closeDribbleChoiceModal()">
     <div class="modal-content">
-      <h3 style="color: #ea580c; margin-bottom: 10px;"><i class="fa-solid fa-bolt"></i> تسجيل مراوغة (1v1)</h3>
-      <div class="modal-player-box">
-        <label style="font-weight: 700; color: #ea580c; font-size: 13px; display: block; margin-bottom: 5px;">اسم اللاعبة المنفذة:</label>
-        <select id="dribblePlayerSelect"></select>
-      </div>
+      <h3 style="color:#ea580c; margin-bottom:10px;"><i class="fa-solid fa-bolt"></i> تسجيل مراوغة (1v1)</h3>
+      <div class="modal-player-box"><label style="font-weight:700; color:#ea580c; font-size:13px; display:block; margin-bottom:5px;">اسم اللاعبة المنفذة:</label><select id="dribblePlayerSelect"></select></div>
       <div class="choice-grid">
-        <button class="btn-choice-ok" style="background: #ea580c;" onclick="startDribblePitch(true)">مراوغة ناجحة ✔</button>
+        <button class="btn-choice-ok" style="background:#ea580c;" onclick="startDribblePitch(true)">مراوغة ناجحة ✔</button>
         <button class="btn-choice-bad" onclick="startDribblePitch(false)">مراوغة فاشلة ✖</button>
       </div>
-      <button style="background: #334155; color: #fff; margin-top: 14px; padding: 8px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="closeDribbleChoiceModal()">إلغاء</button>
+      <button style="background:#334155; color:#fff; margin-top:14px; padding:8px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="closeDribbleChoiceModal()">إلغاء</button>
     </div>
   </div>
 
   <div class="modal-overlay" id="receiveChoiceModal" onclick="if(event.target === this) closeReceiveChoiceModal()">
     <div class="modal-content">
-      <h3 style="color: #a855f7; margin-bottom: 10px;">تسجيل استلام كرة ⚽</h3>
+      <h3 style="color:#a855f7; margin-bottom:10px;">تسجيل استلام كرة ⚽</h3>
       <div class="choice-grid">
         <button class="btn-choice-ok" onclick="startReceivePitch(true)">استلام صحيح ✔</button>
         <button class="btn-choice-bad" onclick="startReceivePitch(false)">استلام خاطئ ✖</button>
       </div>
-      <button style="background: #334155; color: #fff; margin-top: 14px; padding: 8px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="closeReceiveChoiceModal()">إلغاء</button>
+      <button style="background:#334155; color:#fff; margin-top:14px; padding:8px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="closeReceiveChoiceModal()">إلغاء</button>
     </div>
   </div>
 
   <div class="modal-overlay" id="duelChoiceModal" onclick="if(event.target === this) closeDuelChoiceModal()">
     <div class="modal-content">
-      <h3 style="color: #818cf8; margin-bottom: 10px;"><i class="fa-solid fa-hand-back-fist"></i> تسجيل التحامات (Duels)</h3>
+      <h3 style="color:#818cf8; margin-bottom:10px;"><i class="fa-solid fa-hand-back-fist"></i> تسجيل التحامات (Duels)</h3>
       <div class="choice-grid">
-        <button class="btn-choice-ok" style="background: #5c6bc0;" onclick="startDuelPitch('التحام هوائي فائز')">هوائي فائز 🪂✔</button>
-        <button class="btn-choice-bad" style="background: #7986cb;" onclick="startDuelPitch('التحام هوائي خاسر')">هوائي خاسر 🪂✖</button>
-        <button class="btn-choice-ok" style="background: #0d9488;" onclick="startDuelPitch('التحام أرضي فائز')">أرضي فائز 🏃✔</button>
-        <button class="btn-choice-bad" style="background: #be123c;" onclick="startDuelPitch('التحام أرضي خاسر')">أرضي خاسر 🏃✖</button>
+        <button class="btn-choice-ok" style="background:#5c6bc0;" onclick="startDuelPitch('التحام هوائي فائز')">هوائي فائز 🪂✔</button>
+        <button class="btn-choice-bad" style="background:#7986cb;" onclick="startDuelPitch('التحام هوائي خاسر')">هوائي خاسر 🪂✖</button>
+        <button class="btn-choice-ok" style="background:#0d9488;" onclick="startDuelPitch('التحام أرضي فائز')">أرضي فائز 🏃✔</button>
+        <button class="btn-choice-bad" style="background:#be123c;" onclick="startDuelPitch('التحام أرضي خاسر')">أرضي خاسر 🏃✖</button>
       </div>
-      <button style="background: #334155; color: #fff; margin-top: 14px; padding: 8px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="closeDuelChoiceModal()">إلغاء</button>
+      <button style="background:#334155; color:#fff; margin-top:14px; padding:8px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="closeDuelChoiceModal()">إلغاء</button>
     </div>
   </div>
 
   <div class="modal-overlay" id="crossChoiceModal" onclick="if(event.target === this) closeCrossChoiceModal()">
     <div class="modal-content">
-      <h3 style="color: #0284c7; margin-bottom: 10px;">تسجيل كرة عرضية (كروس) 🔄</h3>
+      <h3 style="color:#0284c7; margin-bottom:10px;">تسجيل كرة عرضية (كروس) 🔄</h3>
       <div class="choice-grid">
         <button class="btn-choice-ok" onclick="startCrossPitch(true)">كروس صحيح ↗</button>
         <button class="btn-choice-bad" onclick="startCrossPitch(false)">كروس خاطئ ↘</button>
       </div>
-      <button style="background: #334155; color: #fff; margin-top: 14px; padding: 8px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="closeCrossChoiceModal()">إلغاء</button>
+      <button style="background:#334155; color:#fff; margin-top:14px; padding:8px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="closeCrossChoiceModal()">إلغاء</button>
     </div>
   </div>
 
   <!-- مودال تحديد مكان الحدث على الملعب -->
   <div class="modal-overlay" id="pitchModal">
     <div class="modal-content">
-      <div class="modal-player-box">
-        <label style="font-weight: 700; color: var(--primary); font-size: 13px; display: block; margin-bottom: 5px;">حدد اللاعبة المنفذة للحدث:</label>
-        <select id="modalPlayerSelect"></select>
-      </div>
-      <div id="modalInstructions" style="color: var(--accent); font-weight: 800; font-size: 14px; margin-bottom: 10px;">الخطوة 1: اضغط على مكان الحدث بالملعب</div>
+      <div class="modal-player-box"><label style="font-weight:700; color:var(--primary); font-size:13px; display:block; margin-bottom:5px;">حدد اللاعبة المنفذة للحدث:</label><select id="modalPlayerSelect"></select></div>
+      <div id="modalInstructions" style="color:var(--accent); font-weight:800; font-size:14px; margin-bottom:10px;">الخطوة 1: اضغط على مكان الحدث بالملعب</div>
       <canvas id="modalCanvas" width="300" height="450"></canvas>
-      <div style="margin-top: 12px;">
-        <button style="background: #334155; color: #fff; padding: 8px 24px; border: none; border-radius: 7px; cursor: pointer; font-weight: 700;" onclick="cancelPitchEvent()">إلغاء ومتابعة الفيديو</button>
-      </div>
+      <div style="margin-top:12px;"><button style="background:#334155; color:#fff; padding:8px 24px; border:none; border-radius:7px; cursor:pointer; font-weight:700;" onclick="cancelPitchEvent()">إلغاء ومتابعة الفيديو</button></div>
     </div>
   </div>
 
   <script>
-    // ==========================================
-    // المتغيرات العامة وحالة التطبيق
-    // ==========================================
     const AUTOSAVE_KEY = 'ziada_autosave_individual_v1';
+    let eventsData = [], currentEvent = null, clickStep = 0;
+    let isPossession = false, possessionSeconds = 0, possessionTimer = null, pitchViewMode = 'events';
+    let loadedVideoName = '', pendingSeekAfterLoad = null, lastSavedVideoTime = 0, autosaveTimer = null, isRestoring = false;
+    let matchConfig = { myTeam:'فريقنا', opponent:'المنافس', primaryKitColor:'#1e3a8a', secondaryKitColor:'#ffffff', formation:'4-3-3', starters:[], subs:[] };
 
-    let eventsData = [];
-    let currentEvent = null;
-    let clickStep = 0;
-
-    let isPossession = false;
-    let possessionSeconds = 0;
-    let possessionTimer = null;
-    let pitchViewMode = 'events';
-
-    let loadedVideoName = '';
-    let pendingSeekAfterLoad = null;
-    let lastSavedVideoTime = 0;
-    let autosaveTimer = null;
-    let isRestoring = false;
-
-    let matchConfig = {
-      myTeam: 'فريقنا',
-      opponent: 'المنافس',
-      primaryKitColor: '#1e3a8a',
-      secondaryKitColor: '#ffffff',
-      formation: '4-3-3',
-      starters: [],
-      subs: []
-    };
-
-    const video = document.getElementById('matchVideo');
-    const statusText = document.getElementById('videoStatus');
-    const modal = document.getElementById('pitchModal');
-    const receiveChoiceModal = document.getElementById('receiveChoiceModal');
-    const duelChoiceModal = document.getElementById('duelChoiceModal');
-    const crossChoiceModal = document.getElementById('crossChoiceModal');
-    const dribbleChoiceModal = document.getElementById('dribbleChoiceModal');
-    const teamSetupModal = document.getElementById('teamSetupModal');
-    const aiAutoModal = document.getElementById('aiAutoModal');
-
-    const modalCanvas = document.getElementById('modalCanvas');
-    const modalCtx = modalCanvas.getContext('2d');
-    const activeCanvas = document.getElementById('activePitchCanvas');
-    const activeCtx = activeCanvas.getContext('2d');
-
-    const pSelect = document.getElementById('playerSelect');
-    const modalPSelect = document.getElementById('modalPlayerSelect');
-    const dribblePSelect = document.getElementById('dribblePlayerSelect');
-    const btnPlayPause = document.getElementById('btnPlayPause');
-    const seekSlider = document.getElementById('videoSeekSlider');
-    const currentTimeText = document.getElementById('currentTimeText');
-    const totalTimeText = document.getElementById('totalTimeText');
+    const video = document.getElementById('matchVideo'), statusText = document.getElementById('videoStatus'), modal = document.getElementById('pitchModal');
+    const receiveChoiceModal = document.getElementById('receiveChoiceModal'), duelChoiceModal = document.getElementById('duelChoiceModal'), crossChoiceModal = document.getElementById('crossChoiceModal'), dribbleChoiceModal = document.getElementById('dribbleChoiceModal'), teamSetupModal = document.getElementById('teamSetupModal'), aiAutoModal = document.getElementById('aiAutoModal');
+    const modalCanvas = document.getElementById('modalCanvas'), modalCtx = modalCanvas.getContext('2d'), activeCanvas = document.getElementById('activePitchCanvas'), activeCtx = activeCanvas.getContext('2d');
+    const pSelect = document.getElementById('playerSelect'), modalPSelect = document.getElementById('modalPlayerSelect'), dribblePSelect = document.getElementById('dribblePlayerSelect');
+    const btnPlayPause = document.getElementById('btnPlayPause'), seekSlider = document.getElementById('videoSeekSlider'), currentTimeText = document.getElementById('currentTimeText'), totalTimeText = document.getElementById('totalTimeText');
     let isSeeking = false;
 
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, m => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[m]));
-    }
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function showToast(msg) { const t = document.getElementById('toastMsg'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2200); }
+    function safePlayVideo() { if (video.src && video.readyState >= 2) video.play().catch(() => {}); }
+    function formatTime(s) { if (isNaN(s) || !isFinite(s) || s < 0) return '00:00'; return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 
-    function showToast(msg) {
-      const t = document.getElementById('toastMsg');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
-    function safePlayVideo() {
-      if (video.src && video.readyState >= 2) {
-        video.play().catch(() => {});
-      }
-    }
-
-    function formatTime(seconds) {
-      if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return '00:00';
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    // ==========================================
-    // مشغل الفيديو والتحكم الزمني
-    // ==========================================
     video.addEventListener('timeupdate', () => {
-      if (!isSeeking && video.duration) {
-        seekSlider.value = (video.currentTime / video.duration) * 100;
-        currentTimeText.innerText = formatTime(video.currentTime);
-      }
-      if (Math.abs(video.currentTime - lastSavedVideoTime) >= 4) {
-        lastSavedVideoTime = video.currentTime;
-        scheduleAutoSave();
-      }
+      if (!isSeeking && video.duration) { seekSlider.value = (video.currentTime / video.duration) * 100; currentTimeText.innerText = formatTime(video.currentTime); }
+      if (Math.abs(video.currentTime - lastSavedVideoTime) >= 4) { lastSavedVideoTime = video.currentTime; scheduleAutoSave(); }
     });
-
     video.addEventListener('loadedmetadata', () => {
       totalTimeText.innerText = formatTime(video.duration);
-      if (pendingSeekAfterLoad !== null && pendingSeekAfterLoad < video.duration) {
-        video.currentTime = pendingSeekAfterLoad;
-        showToast(`تم العودة للدقيقة ${formatTime(pendingSeekAfterLoad)} ✓`);
-        pendingSeekAfterLoad = null;
-      }
+      if (pendingSeekAfterLoad !== null && pendingSeekAfterLoad < video.duration) { video.currentTime = pendingSeekAfterLoad; showToast(`تم العودة للدقيقة ${formatTime(pendingSeekAfterLoad)} ✓`); pendingSeekAfterLoad = null; }
     });
 
     seekSlider.addEventListener('mousedown', () => { isSeeking = true; });
     seekSlider.addEventListener('touchstart', () => { isSeeking = true; });
-    seekSlider.addEventListener('input', () => {
-      isSeeking = true;
-      if (video.duration) currentTimeText.innerText = formatTime((seekSlider.value / 100) * video.duration);
-    });
-    seekSlider.addEventListener('change', () => {
-      if (video.duration) video.currentTime = (seekSlider.value / 100) * video.duration;
-      isSeeking = false;
-    });
+    seekSlider.addEventListener('input', () => { isSeeking = true; if (video.duration) currentTimeText.innerText = formatTime((seekSlider.value / 100) * video.duration); });
+    seekSlider.addEventListener('change', () => { if (video.duration) video.currentTime = (seekSlider.value / 100) * video.duration; isSeeking = false; });
     seekSlider.addEventListener('mouseup', () => { isSeeking = false; });
     seekSlider.addEventListener('touchend', () => { isSeeking = false; });
 
-    function togglePlayPause() {
-      if (!video.src) return;
-      if (video.paused) safePlayVideo();
-      else video.pause();
-    }
-
+    function togglePlayPause() { if (!video.src) return; video.paused ? safePlayVideo() : video.pause(); }
     video.addEventListener('play', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i> إيقاف'; });
     video.addEventListener('pause', () => { btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i> تشغيل'; });
-
-    function seekVideo(seconds) {
-      if (!video.src) return;
-      video.currentTime = Math.max(0, Math.min(video.duration || 99999, video.currentTime + seconds));
-    }
-
-    function stepFrame(dir) {
-      if (!video.src) return;
-      video.pause();
-      seekVideo(dir * 0.04);
-    }
-
-    function jumpToVideoTime(timeSec) {
-      if (!video.src) return alert('اختر ملف الفيديو أولاً لمشاهدة اللقطة.');
-      video.currentTime = Math.max(0, timeSec - 2);
-      safePlayVideo();
-      statusText.innerText = `مشاهدة اللقطة عند: ${formatTime(timeSec)}`;
-      statusText.style.color = '#38bdf8';
-      video.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function changePlaybackSpeed(speed, btnElement) {
-      video.playbackRate = speed;
-      document.querySelectorAll('.video-advanced-tools .btn-vtool').forEach(b => {
-        if (b.innerText.includes('x')) b.classList.remove('active');
-      });
-      if (btnElement) btnElement.classList.add('active');
-      statusText.innerText = `سرعة التشغيل: ${speed}x`;
-    }
+    function seekVideo(s) { if (video.src) video.currentTime = Math.max(0, Math.min(video.duration||99999, video.currentTime + s)); }
+    function stepFrame(d) { if (video.src) { video.pause(); seekVideo(d * 0.04); } }
+    function jumpToVideoTime(t) { if (!video.src) return alert('اختر ملف الفيديو أولاً لمشاهدة اللقطة.'); video.currentTime = Math.max(0, t - 2); safePlayVideo(); statusText.innerText = `مشاهدة اللقطة عند: ${formatTime(t)}`; statusText.style.color = '#38bdf8'; video.scrollIntoView({ behavior:'smooth', block:'center' }); }
+    function changePlaybackSpeed(sp, btn) { video.playbackRate = sp; document.querySelectorAll('.video-advanced-tools .btn-vtool').forEach(b => { if (b.innerText.includes('x')) b.classList.remove('active'); }); if (btn) btn.classList.add('active'); statusText.innerText = `سرعة التشغيل: ${sp}x`; }
 
     function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      loadedVideoName = file.name;
-      document.getElementById('uploadBtnLabel').textContent = file.name;
-      document.getElementById('relinkBanner').style.display = 'none';
-      statusText.innerText = `جارٍ تجهيز الفيديو (${file.name})...`;
-      statusText.style.color = '#f59e0b';
-
-      video.src = URL.createObjectURL(file);
-      video.load();
-      video.onloadeddata = () => {
-        statusText.innerText = `الفيديو جاهز: ${file.name}`;
-        statusText.style.color = '#10b981';
-        scheduleAutoSave();
-      };
+      const f = e.target.files[0]; if (!f) return;
+      loadedVideoName = f.name; document.getElementById('uploadBtnLabel').textContent = f.name; document.getElementById('relinkBanner').style.display = 'none';
+      statusText.innerText = `جارٍ تجهيز الفيديو (${f.name})...`; statusText.style.color = '#f59e0b';
+      video.src = URL.createObjectURL(f); video.load();
+      video.onloadeddata = () => { statusText.innerText = `الفيديو جاهز: ${f.name}`; statusText.style.color = '#10b981'; scheduleAutoSave(); };
     }
 
-    // ==========================================
-    // إعداد الفريق والقوائم المنسدلة
-    // ==========================================
     function setPitchViewMode(mode) {
       pitchViewMode = mode;
       document.getElementById('btnViewEvents').classList.toggle('active', mode === 'events');
       document.getElementById('btnViewHeatmap').classList.toggle('active', mode === 'heatmap');
       document.getElementById('btnViewBoth').classList.toggle('active', mode === 'both');
-
       document.getElementById('eventsLegendBox').style.display = (mode === 'events' || mode === 'both') ? 'flex' : 'none';
       document.getElementById('heatmapLegendBox').style.display = (mode === 'heatmap' || mode === 'both') ? 'block' : 'none';
-      renderCurrentPlayerView();
-      scheduleAutoSave();
+      renderCurrentPlayerView(); scheduleAutoSave();
     }
 
-    function openTeamSetupModal() {
-      video.pause();
-      teamSetupModal.style.display = 'flex';
-    }
+    function openTeamSetupModal() { video.pause(); teamSetupModal.style.display = 'flex'; }
+    function closeTeamSetupModal() { teamSetupModal.style.display = 'none'; safePlayVideo(); }
 
-    function closeTeamSetupModal() {
-      teamSetupModal.style.display = 'none';
-      safePlayVideo();
-    }
-
-    function rebuildPlayerDropdowns(preserveSelection = null) {
-      const prevMain = preserveSelection || pSelect.value;
-      pSelect.innerHTML = '';
-      modalPSelect.innerHTML = '';
-      dribblePSelect.innerHTML = '';
-
-      const allOpt = document.createElement('option');
-      allOpt.value = '__ALL__';
-      allOpt.innerText = `📊 الفريق بالكامل (${matchConfig.myTeam})`;
-      pSelect.appendChild(allOpt);
-
-      const makeOptGroups = () => {
-        const g1 = document.createElement('optgroup');
-        g1.label = `--- الأساسيات (${matchConfig.starters.length}) - ${matchConfig.myTeam} ---`;
-        matchConfig.starters.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p; opt.innerText = p;
-          g1.appendChild(opt);
-        });
-
-        const g2 = document.createElement('optgroup');
-        g2.label = `--- البديلات (${matchConfig.subs.length}) ---`;
-        matchConfig.subs.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p; opt.innerText = p;
-          g2.appendChild(opt);
-        });
+    function rebuildPlayerDropdowns(preserve = null) {
+      const prev = preserve || pSelect.value;
+      pSelect.innerHTML = ''; modalPSelect.innerHTML = ''; dribblePSelect.innerHTML = '';
+      const allOpt = document.createElement('option'); allOpt.value = '__ALL__'; allOpt.innerText = `📊 الفريق بالكامل (${matchConfig.myTeam})`; pSelect.appendChild(allOpt);
+      const makeGroups = () => {
+        const g1 = document.createElement('optgroup'); g1.label = `--- الأساسيات (${matchConfig.starters.length}) - ${matchConfig.myTeam} ---`;
+        matchConfig.starters.forEach(p => { const o = document.createElement('option'); o.value = p; o.innerText = p; g1.appendChild(o); });
+        const g2 = document.createElement('optgroup'); g2.label = `--- البديلات (${matchConfig.subs.length}) ---`;
+        matchConfig.subs.forEach(p => { const o = document.createElement('option'); o.value = p; o.innerText = p; g2.appendChild(o); });
         return [g1, g2];
       };
-
-      const [a1, a2] = makeOptGroups(); pSelect.appendChild(a1); pSelect.appendChild(a2);
-      const [b1, b2] = makeOptGroups(); modalPSelect.appendChild(b1); modalPSelect.appendChild(b2);
-      const [c1, c2] = makeOptGroups(); dribblePSelect.appendChild(c1); dribblePSelect.appendChild(c2);
-
-      if (prevMain && [...pSelect.options].some(o => o.value === prevMain)) {
-        pSelect.value = prevMain;
-      } else if (matchConfig.starters.length > 0) {
-        pSelect.value = matchConfig.starters[0];
-      }
+      const [a1, a2] = makeGroups(); pSelect.appendChild(a1); pSelect.appendChild(a2);
+      const [b1, b2] = makeGroups(); modalPSelect.appendChild(b1); modalPSelect.appendChild(b2);
+      const [c1, c2] = makeGroups(); dribblePSelect.appendChild(c1); dribblePSelect.appendChild(c2);
+      if (prev && [...pSelect.options].some(o => o.value === prev)) pSelect.value = prev;
+      else if (matchConfig.starters.length) pSelect.value = matchConfig.starters[0];
     }
 
     function saveTeamSetup(isUserClick = false) {
@@ -1330,20 +594,10 @@
       matchConfig.primaryKitColor = document.getElementById('primaryKitColor').value;
       matchConfig.secondaryKitColor = document.getElementById('secondaryKitColor').value;
       matchConfig.formation = document.getElementById('formationInput').value.trim() || '4-3-3';
-
       matchConfig.starters = document.getElementById('startersInput').value.split('\n').map(s => s.trim()).filter(Boolean);
       matchConfig.subs = document.getElementById('subsInput').value.split('\n').map(s => s.trim()).filter(Boolean);
-
-      applyTeamBannerUI();
-      rebuildPlayerDropdowns();
-      renderCurrentPlayerView();
-      teamSetupModal.style.display = 'none';
-
-      if (isUserClick) {
-        scheduleAutoSave();
-        showToast('تم حفظ بيانات الفريق والمباراة ✓');
-        safePlayVideo();
-      }
+      applyTeamBannerUI(); rebuildPlayerDropdowns(); renderCurrentPlayerView(); teamSetupModal.style.display = 'none';
+      if (isUserClick) { scheduleAutoSave(); showToast('تم حفظ بيانات الفريق والمباراة ✓'); safePlayVideo(); }
     }
 
     function applyTeamBannerUI() {
@@ -1355,11 +609,32 @@
       document.getElementById('dispMatchSub').innerText = `${matchConfig.myTeam} × ${matchConfig.opponent} | المؤشرات الفنية والخريطة الحرارية`;
     }
 
-    // ==========================================
-    // محاكاة الرصد التجريبي (مقيدة بحدود الباقة العادية)
-    // ==========================================
+    // تحديث عداد الأكشنات المتبقية للباقة العادية (3 أو 4 حسب إعداد الأدمن)
+    function updateFreeQuotaBadge() {
+      const box = document.getElementById('freeActionsQuota');
+      if (!box) return;
+      if (!window.ZiadaPlan || ZiadaPlan.isGold()) { box.style.display = 'none'; return; }
+      const max = parseInt(ZiadaPlan.getConfig().maxIndividualEvents, 10) || 0;
+      if (max <= 0) { box.style.display = 'none'; return; }
+      const rem = Math.max(0, max - eventsData.length);
+      box.style.display = 'block';
+      box.style.borderColor = rem === 0 ? '#ef4444' : '#f59e0b';
+      box.style.color = rem === 0 ? '#fca5a5' : '#fde68a';
+      box.innerHTML = rem > 0
+        ? `🆓 الباقة العادية: متبقي <b>${rem}</b> من <b>${max}</b> أكشنات`
+        : `🔒 انتهى الحد المجاني (${max}/${max}) — <span style="text-decoration:underline; cursor:pointer;" onclick="ZiadaPlan.openUpgradeModal('وصلت للحد الأقصى في التحليل الفردي (${max} أكشنات). قم بالترقية لـ Gold لعدد غير محدود!')">ترقية للـ Gold</span>`;
+    }
+
+    function canAddNewEvent() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أكشنات تحليل فردي (باص / تصويب / استلام)')) {
+        video.pause();
+        return false;
+      }
+      return true;
+    }
+
     function openAIAutoModal() {
-      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) return;
+      if (!canAddNewEvent()) return;
       video.pause();
       document.getElementById('modalKitDot').style.backgroundColor = matchConfig.primaryKitColor;
       document.getElementById('modalPlayersCount').innerText = `${matchConfig.starters.length + matchConfig.subs.length} لاعبة`;
@@ -1367,192 +642,83 @@
       document.getElementById('btnStartAI').style.display = 'inline-block';
       aiAutoModal.style.display = 'flex';
     }
-
-    function closeAIAutoModal() {
-      aiAutoModal.style.display = 'none';
-      safePlayVideo();
-    }
+    function closeAIAutoModal() { aiAutoModal.style.display = 'none'; safePlayVideo(); }
 
     function runAIAutoAnalysis() {
-      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) {
-        aiAutoModal.style.display = 'none';
-        return;
-      }
-      const mode = document.getElementById('aiModeSelect').value;
-      const targetPlayer = (pSelect.value === '__ALL__') ? matchConfig.starters[0] : pSelect.value;
-      const progressBox = document.getElementById('aiProgressBox');
-      const progressFill = document.getElementById('aiProgressFill');
-      const statusLbl = document.getElementById('aiStatusText');
-      const btnStart = document.getElementById('btnStartAI');
-
-      btnStart.style.display = 'none';
-      progressBox.style.display = 'block';
-
-      let progress = 0;
-      const duration = Math.min(video.duration || 120, 120);
-      const steps = [
-        `تجهيز بيانات محاكاة ${matchConfig.myTeam}...`,
-        'توليد مسارات التمرير والتحركات...',
-        'حساب الالتحامات والاستخلاصات...',
-        'تحديث الخريطة الحرارية والتقييم الفني...'
-      ];
-
-      const interval = setInterval(() => {
-        progress += 5;
-        progressFill.style.width = progress + '%';
-        statusLbl.innerText = steps[Math.min(Math.floor(progress / 25), steps.length - 1)];
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            generateAIEvents(mode, targetPlayer, duration);
-            closeAIAutoModal();
-            showToast('تم توليد بيانات المحاكاة التجريبية ✓');
-          }, 300);
-        }
+      if (!canAddNewEvent()) { aiAutoModal.style.display = 'none'; return; }
+      const mode = document.getElementById('aiModeSelect').value, targetPlayer = (pSelect.value === '__ALL__') ? matchConfig.starters[0] : pSelect.value;
+      const progressBox = document.getElementById('aiProgressBox'), progressFill = document.getElementById('aiProgressFill'), statusLbl = document.getElementById('aiStatusText');
+      document.getElementById('btnStartAI').style.display = 'none'; progressBox.style.display = 'block';
+      let progress = 0; const duration = Math.min(video.duration || 120, 120);
+      const steps = [`تجهيز بيانات محاكاة ${matchConfig.myTeam}...`, 'توليد مسارات التمرير والتحركات...', 'حساب الالتحامات والاستخلاصات...', 'تحديث الخريطة الحرارية والتقييم الفني...'];
+      const iv = setInterval(() => {
+        progress += 5; progressFill.style.width = progress + '%'; statusLbl.innerText = steps[Math.min(Math.floor(progress/25), steps.length-1)];
+        if (progress >= 100) { clearInterval(iv); setTimeout(() => { generateAIEvents(mode, targetPlayer, duration); closeAIAutoModal(); showToast('تم توليد بيانات المحاكاة التجريبية ✓'); }, 300); }
       }, 70);
     }
 
     function generateAIEvents(mode, targetPlayer, maxDuration) {
       const samplePlayers = mode === 'player' ? [targetPlayer] : [...matchConfig.starters];
-      const eventTypes = [
-        'باص صحيح', 'باص صحيح', 'باص خاطئ', 'استلام صحيح',
-        'استخلاص كرة', 'مراوغة ناجحة', 'تسديدة', 'كروس صحيح',
-        'التحام هوائي فائز', 'التحام أرضي فائز'
-      ];
+      const eventTypes = ['باص صحيح','باص صحيح','باص خاطئ','استلام صحيح','استخلاص كرة','مراوغة ناجحة','تسديدة','كروس صحيح','التحام هوائي فائز','التحام أرضي فائز'];
       let numEvents = Math.floor(Math.random() * 8) + 14;
       if (window.ZiadaPlan && !ZiadaPlan.isGold()) {
         const maxAllowed = parseInt(ZiadaPlan.getConfig().maxIndividualEvents, 10) || 0;
-        if (maxAllowed > 0) {
-          numEvents = Math.max(0, Math.min(numEvents, maxAllowed - eventsData.length));
-        }
+        if (maxAllowed > 0) numEvents = Math.max(0, Math.min(numEvents, maxAllowed - eventsData.length));
       }
       for (let i = 0; i < numEvents; i++) {
-        const p = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
-        const evType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-        const time = Math.floor(Math.random() * (maxDuration * 0.9)) + 2;
-        const isLine = evType.includes('باص') || evType.includes('كروس');
-        eventsData.push({
-          id: 'evt_' + Date.now() + '_' + i + '_' + Math.floor(Math.random() * 999),
-          type: evType,
-          player: p,
-          time,
-          fromX: isLine ? Math.random() * 0.7 + 0.15 : null,
-          fromY: isLine ? Math.random() * 0.7 + 0.15 : null,
-          toX: isLine ? Math.random() * 0.7 + 0.15 : null,
-          toY: isLine ? Math.random() * 0.7 + 0.15 : null,
-          x: !isLine ? Math.random() * 0.7 + 0.15 : null,
-          y: !isLine ? Math.random() * 0.7 + 0.15 : null
-        });
+        const p = samplePlayers[Math.floor(Math.random() * samplePlayers.length)], evType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+        const time = Math.floor(Math.random() * (maxDuration * 0.9)) + 2, isLine = evType.includes('باص') || evType.includes('كروس');
+        eventsData.push({ id:'evt_'+Date.now()+'_'+i+'_'+Math.floor(Math.random()*999), type:evType, player:p, time, fromX:isLine?Math.random()*0.7+0.15:null, fromY:isLine?Math.random()*0.7+0.15:null, toX:isLine?Math.random()*0.7+0.15:null, toY:isLine?Math.random()*0.7+0.15:null, x:!isLine?Math.random()*0.7+0.15:null, y:!isLine?Math.random()*0.7+0.15:null });
       }
-      eventsData.sort((a, b) => a.time - b.time);
-      renderCurrentPlayerView();
-      scheduleAutoSave();
+      eventsData.sort((a, b) => a.time - b.time); renderCurrentPlayerView(); scheduleAutoSave();
     }
 
-    // ==========================================
-    // رسم الملعب والخريطة الحرارية
-    // ==========================================
     function drawVerticalPitch(ctx, width, height) {
-      ctx.fillStyle = '#487346';
-      ctx.fillRect(0, 0, width, height);
-
-      const stripes = 10;
-      const stripeH = height / stripes;
-      for (let i = 0; i < stripes; i += 2) {
-        ctx.fillStyle = '#41693f';
-        ctx.fillRect(0, i * stripeH, width, stripeH);
-      }
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.88)';
-      ctx.lineWidth = 1.6;
+      ctx.fillStyle = '#487346'; ctx.fillRect(0, 0, width, height);
+      const stripeH = height / 10; for (let i = 0; i < 10; i += 2) { ctx.fillStyle = '#41693f'; ctx.fillRect(0, i * stripeH, width, stripeH); }
+      ctx.strokeStyle = 'rgba(255,255,255,0.88)'; ctx.lineWidth = 1.6;
       ctx.strokeRect(10, 10, width - 20, height - 20);
-
-      ctx.beginPath(); ctx.moveTo(10, height / 2); ctx.lineTo(width - 10, height / 2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(width / 2, height / 2, width * 0.135, 0, 2 * Math.PI); ctx.stroke();
-
-      const penW = width * 0.50, penH = height * 0.155;
-      const sixW = width * 0.23, sixH = height * 0.055;
-      ctx.strokeRect((width - penW) / 2, 10, penW, penH);
-      ctx.strokeRect((width - sixW) / 2, 10, sixW, sixH);
-      ctx.strokeRect((width - penW) / 2, height - 10 - penH, penW, penH);
-      ctx.strokeRect((width - sixW) / 2, height - 10 - sixH, sixW, sixH);
-
-      ctx.save();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-      ctx.font = 'bold 10px Cairo, Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('▲ اتجاه الهجوم ▲', width / 2, 24);
-      ctx.restore();
+      ctx.beginPath(); ctx.moveTo(10, height/2); ctx.lineTo(width - 10, height/2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(width/2, height/2, width*0.135, 0, 2*Math.PI); ctx.stroke();
+      const penW = width*0.50, penH = height*0.155, sixW = width*0.23, sixH = height*0.055;
+      ctx.strokeRect((width - penW)/2, 10, penW, penH); ctx.strokeRect((width - sixW)/2, 10, sixW, sixH);
+      ctx.strokeRect((width - penW)/2, height - 10 - penH, penW, penH); ctx.strokeRect((width - sixW)/2, height - 10 - sixH, sixW, sixH);
+      ctx.save(); ctx.fillStyle = 'rgba(255,255,255,0.65)'; ctx.font = 'bold 10px Cairo, Arial'; ctx.textAlign = 'center'; ctx.fillText('▲ اتجاه الهجوم ▲', width/2, 24); ctx.restore();
     }
 
     function drawHeatmap(ctx, points, width, height) {
-      if (points.length === 0) return;
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = width;
-      offCanvas.height = height;
-      const offCtx = offCanvas.getContext('2d');
-
+      if (!points.length) return;
+      const off = document.createElement('canvas'); off.width = width; off.height = height; const oCtx = off.getContext('2d');
       points.forEach(pt => {
-        const rad = 32;
-        const grad = offCtx.createRadialGradient(pt.x, pt.y, 2, pt.x, pt.y, rad);
-        grad.addColorStop(0, 'rgba(0, 0, 0, 0.48)');
-        grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.22)');
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        offCtx.fillStyle = grad;
-        offCtx.beginPath();
-        offCtx.arc(pt.x, pt.y, rad, 0, Math.PI * 2);
-        offCtx.fill();
+        const g = oCtx.createRadialGradient(pt.x, pt.y, 2, pt.x, pt.y, 32);
+        g.addColorStop(0,'rgba(0,0,0,0.48)'); g.addColorStop(0.5,'rgba(0,0,0,0.22)'); g.addColorStop(1,'rgba(0,0,0,0)');
+        oCtx.fillStyle = g; oCtx.beginPath(); oCtx.arc(pt.x, pt.y, 32, 0, Math.PI*2); oCtx.fill();
       });
-
-      const imgData = offCtx.getImageData(0, 0, width, height);
-      const data = imgData.data;
-
-      for (let i = 3; i < data.length; i += 4) {
-        const alpha = data[i];
-        if (alpha > 0) {
-          const norm = alpha / 255;
-          let r = 0, g = 0, b = 0;
-          if (norm < 0.25) { r = 0; g = Math.floor(4 * norm * 255); b = 255; }
-          else if (norm < 0.5) { r = 0; g = 255; b = Math.floor((1 - 4 * (norm - 0.25)) * 255); }
-          else if (norm < 0.75) { r = Math.floor(4 * (norm - 0.5) * 255); g = 255; b = 0; }
-          else { r = 255; g = Math.floor((1 - 4 * (norm - 0.75)) * 255); b = 0; }
-          data[i - 3] = r; data[i - 2] = g; data[i - 1] = b;
-          data[i] = Math.min(215, alpha * 2.1);
+      const imgData = oCtx.getImageData(0, 0, width, height), d = imgData.data;
+      for (let i = 3; i < d.length; i += 4) {
+        const a = d[i];
+        if (a > 0) {
+          const n = a / 255; let r = 0, g = 0, b = 0;
+          if (n < 0.25) { g = Math.floor(4*n*255); b = 255; }
+          else if (n < 0.5) { g = 255; b = Math.floor((1 - 4*(n - 0.25))*255); }
+          else if (n < 0.75) { r = Math.floor(4*(n - 0.5)*255); g = 255; }
+          else { r = 255; g = Math.floor((1 - 4*(n - 0.75))*255); }
+          d[i-3] = r; d[i-2] = g; d[i-1] = b; d[i] = Math.min(215, a * 2.1);
         }
       }
-      offCtx.putImageData(imgData, 0, 0);
-      ctx.drawImage(offCanvas, 0, 0);
+      oCtx.putImageData(imgData, 0, 0); ctx.drawImage(off, 0, 0);
     }
 
-    // ==========================================
-    // رصد الأحداث على الملعب (مربوط بحدود الباقة العادية)
-    // ==========================================
-    function getDefaultTagPlayer() {
-      if (pSelect.value && pSelect.value !== '__ALL__') return pSelect.value;
-      return matchConfig.starters[0] || (modalPSelect.options[0] ? modalPSelect.options[0].value : '');
-    }
-
-    function canAddNewEvent() {
-      if (window.ZiadaPlan && !ZiadaPlan.checkLimit('maxIndividualEvents', eventsData.length, 'أحداث فردية')) {
-        video.pause();
-        return false;
-      }
-      return true;
-    }
-
+    function getDefaultTagPlayer() { return (pSelect.value && pSelect.value !== '__ALL__') ? pSelect.value : (matchConfig.starters[0] || (modalPSelect.options[0] ? modalPSelect.options[0].value : '')); }
     function openDribbleChoiceModal() { if (!canAddNewEvent()) return; video.pause(); dribblePSelect.value = getDefaultTagPlayer(); dribbleChoiceModal.style.display = 'flex'; }
     function closeDribbleChoiceModal() { dribbleChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startDribblePitch(isOk) { const p = dribblePSelect.value; dribbleChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'مراوغة ناجحة' : 'مراوغة فاشلة', p); }
-
     function openReceiveChoiceModal() { if (!canAddNewEvent()) return; video.pause(); receiveChoiceModal.style.display = 'flex'; }
     function closeReceiveChoiceModal() { receiveChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startReceivePitch(isOk) { receiveChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'استلام صحيح' : 'استلام خاطئ'); }
-
     function openCrossChoiceModal() { if (!canAddNewEvent()) return; video.pause(); crossChoiceModal.style.display = 'flex'; }
     function closeCrossChoiceModal() { crossChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startCrossPitch(isOk) { crossChoiceModal.style.display = 'none'; openPitchModal(isOk ? 'كروس صحيح' : 'كروس خاطئ'); }
-
     function openDuelChoiceModal() { if (!canAddNewEvent()) return; video.pause(); duelChoiceModal.style.display = 'flex'; }
     function closeDuelChoiceModal() { duelChoiceModal.style.display = 'none'; safePlayVideo(); }
     function startDuelPitch(type) { duelChoiceModal.style.display = 'none'; openPitchModal(type); }
@@ -1560,95 +726,45 @@
     function openPitchModal(type, preSelectedPlayer = null) {
       if (!canAddNewEvent()) return;
       video.pause();
-      const time = Math.floor(video.currentTime || 0);
       modalPSelect.value = preSelectedPlayer || getDefaultTagPlayer();
-
-      currentEvent = { id: 'evt_' + Date.now(), type, time, fromX: null, fromY: null, toX: null, toY: null, x: null, y: null };
+      currentEvent = { id:'evt_'+Date.now(), type, time:Math.floor(video.currentTime||0), fromX:null, fromY:null, toX:null, toY:null, x:null, y:null };
       clickStep = 0;
-
       const inst = document.getElementById('modalInstructions');
-      if (type.includes('باص') || type.includes('كروس')) {
-        inst.innerText = `[${type}] — الخطوة 1: اضغط مكان بداية الكرة`;
-        inst.style.color = type.includes('خاطئ') ? '#f87171' : '#38bdf8';
-      } else {
-        inst.innerText = `[${type}] — اضغط على مكان الحدث بالملعب`;
-        inst.style.color = '#fbbf24';
-      }
-
-      drawVerticalPitch(modalCtx, modalCanvas.width, modalCanvas.height);
-      modal.style.display = 'flex';
+      if (type.includes('باص') || type.includes('كروس')) { inst.innerText = `[${type}] — الخطوة 1: اضغط مكان بداية الكرة`; inst.style.color = type.includes('خاطئ') ? '#f87171' : '#38bdf8'; }
+      else { inst.innerText = `[${type}] — اضغط على مكان الحدث بالملعب`; inst.style.color = '#fbbf24'; }
+      drawVerticalPitch(modalCtx, modalCanvas.width, modalCanvas.height); modal.style.display = 'flex';
     }
-
-    function cancelPitchEvent() {
-      modal.style.display = 'none';
-      currentEvent = null;
-      safePlayVideo();
-    }
+    function cancelPitchEvent() { modal.style.display = 'none'; currentEvent = null; safePlayVideo(); }
 
     function handleModalPitchTap(e) {
-      if (!currentEvent) return;
-      if (e.type === 'touchstart') e.preventDefault();
-      const rect = modalCanvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-      const normX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      const normY = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
-      const drawX = normX * modalCanvas.width;
-      const drawY = normY * modalCanvas.height;
-
+      if (!currentEvent) return; if (e.type === 'touchstart') e.preventDefault();
+      const rect = modalCanvas.getBoundingClientRect(), cx = e.touches ? e.touches[0].clientX : e.clientX, cy = e.touches ? e.touches[0].clientY : e.clientY;
+      const nx = Math.max(0, Math.min(1, (cx - rect.left)/rect.width)), ny = Math.max(0, Math.min(1, (cy - rect.top)/rect.height));
       currentEvent.player = modalPSelect.value;
-
       if (currentEvent.type.includes('باص') || currentEvent.type.includes('كروس')) {
         if (clickStep === 0) {
-          currentEvent.fromX = normX;
-          currentEvent.fromY = normY;
-          clickStep = 1;
+          currentEvent.fromX = nx; currentEvent.fromY = ny; clickStep = 1;
           document.getElementById('modalInstructions').innerText = 'الخطوة 2: اضغط مكان وصول الكرة';
-          modalCtx.fillStyle = '#facc15';
-          modalCtx.beginPath(); modalCtx.arc(drawX, drawY, 6, 0, 2 * Math.PI); modalCtx.fill();
-          modalCtx.strokeStyle = '#000'; modalCtx.lineWidth = 1.5; modalCtx.stroke();
-        } else {
-          currentEvent.toX = normX;
-          currentEvent.toY = normY;
-          saveAndFinishEvent();
-        }
-      } else {
-        currentEvent.x = normX;
-        currentEvent.y = normY;
-        saveAndFinishEvent();
-      }
+          modalCtx.fillStyle = '#facc15'; modalCtx.beginPath(); modalCtx.arc(nx*modalCanvas.width, ny*modalCanvas.height, 6, 0, 2*Math.PI); modalCtx.fill(); modalCtx.strokeStyle = '#000'; modalCtx.lineWidth = 1.5; modalCtx.stroke();
+        } else { currentEvent.toX = nx; currentEvent.toY = ny; saveAndFinishEvent(); }
+      } else { currentEvent.x = nx; currentEvent.y = ny; saveAndFinishEvent(); }
     }
-
-    modalCanvas.addEventListener('click', handleModalPitchTap);
-    modalCanvas.addEventListener('touchstart', handleModalPitchTap, { passive: false });
+    modalCanvas.addEventListener('click', handleModalPitchTap); modalCanvas.addEventListener('touchstart', handleModalPitchTap, { passive: false });
 
     function saveAndFinishEvent() {
+      if (!canAddNewEvent()) { modal.style.display = 'none'; currentEvent = null; return; }
       if (pSelect.value !== '__ALL__') pSelect.value = currentEvent.player;
-      eventsData.push(currentEvent);
-      eventsData.sort((a, b) => a.time - b.time);
-      modal.style.display = 'none';
-      showToast(`تم تسجيل: ${currentEvent.type} ✓`);
-      currentEvent = null;
-      renderCurrentPlayerView();
-      scheduleAutoSave();
-      safePlayVideo();
+      eventsData.push(currentEvent); eventsData.sort((a, b) => a.time - b.time);
+      modal.style.display = 'none'; showToast(`تم تسجيل: ${currentEvent.type} ✓`);
+      currentEvent = null; renderCurrentPlayerView(); scheduleAutoSave(); safePlayVideo();
     }
 
-    // اختصارات الكيبورد للرصد السريع
     document.addEventListener('keydown', (e) => {
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-      const anyModalOpen = [modal, receiveChoiceModal, duelChoiceModal, crossChoiceModal, dribbleChoiceModal, teamSetupModal, aiAutoModal]
-        .some(m => m.style.display === 'flex');
-
-      if (e.key === 'Escape' && anyModalOpen) {
-        [modal, receiveChoiceModal, duelChoiceModal, crossChoiceModal, dribbleChoiceModal, teamSetupModal, aiAutoModal]
-          .forEach(m => m.style.display = 'none');
-        currentEvent = null;
-        return;
-      }
-      if (anyModalOpen) return;
-
+      if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+      const modals = [modal, receiveChoiceModal, duelChoiceModal, crossChoiceModal, dribbleChoiceModal, teamSetupModal, aiAutoModal];
+      const anyOpen = modals.some(m => m.style.display === 'flex');
+      if (e.key === 'Escape' && anyOpen) { modals.forEach(m => m.style.display = 'none'); currentEvent = null; return; }
+      if (anyOpen) return;
       if (e.code === 'Space' && video.src) { e.preventDefault(); togglePlayPause(); }
       else if (e.key === 'ArrowRight' && video.src) { e.preventDefault(); seekVideo(5); }
       else if (e.key === 'ArrowLeft' && video.src) { e.preventDefault(); seekVideo(-5); }
@@ -1665,468 +781,224 @@
       else if (e.key.toLowerCase() === 'z' && !e.ctrlKey) undoLastEvent();
     });
 
-    // مؤقت الاستحواذ
     function togglePossession() {
-      const btn = document.getElementById('possessionBtn');
-      isPossession = !isPossession;
+      const btn = document.getElementById('possessionBtn'); isPossession = !isPossession;
       if (isPossession) {
-        btn.innerHTML = '<span>الاستحواذ: شغال</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-        btn.style.background = '#dc2626';
-        possessionTimer = setInterval(() => {
-          possessionSeconds++;
-          document.getElementById('dispPossession').innerText = `${possessionSeconds} ثانية`;
-          if (possessionSeconds % 5 === 0) scheduleAutoSave();
-        }, 1000);
+        btn.innerHTML = '<span>الاستحواذ: شغال</span> <i class="fa-solid fa-spinner fa-spin"></i>'; btn.style.background = '#dc2626';
+        possessionTimer = setInterval(() => { possessionSeconds++; document.getElementById('dispPossession').innerText = `${possessionSeconds} ثانية`; if (possessionSeconds % 5 === 0) scheduleAutoSave(); }, 1000);
       } else {
-        btn.innerHTML = `<span>الاستحواذ: متوقف (${possessionSeconds}ث)</span> <i class="fa-solid fa-stopwatch"></i>`;
-        btn.style.background = '#16a34a';
-        clearInterval(possessionTimer);
-        scheduleAutoSave();
+        btn.innerHTML = `<span>الاستحواذ: متوقف (${possessionSeconds}ث)</span> <i class="fa-solid fa-stopwatch"></i>`; btn.style.background = '#16a34a'; clearInterval(possessionTimer); scheduleAutoSave();
       }
     }
 
-    function deleteEventById(eventId) {
-      if (confirm('هل أنت متأكد من حذف هذا الحدث من السجل؟')) {
-        eventsData = eventsData.filter(e => e.id !== eventId);
-        renderCurrentPlayerView();
-        scheduleAutoSave();
-      }
-    }
-
-    function undoLastEvent() {
-      if (eventsData.length > 0) {
-        eventsData.pop();
-        renderCurrentPlayerView();
-        scheduleAutoSave();
-        showToast('تم التراجع عن آخر حدث');
-      } else {
-        showToast('لا توجد أحداث للتراجع عنها');
-      }
-    }
-
+    function deleteEventById(id) { if (confirm('هل أنت متأكد من حذف هذا الحدث من السجل؟')) { eventsData = eventsData.filter(e => e.id !== id); renderCurrentPlayerView(); scheduleAutoSave(); } }
+    function undoLastEvent() { if (eventsData.length) { eventsData.pop(); renderCurrentPlayerView(); scheduleAutoSave(); showToast('تم التراجع عن آخر حدث'); } else showToast('لا توجد أحداث للتراجع عنها'); }
     function clearAllData() {
-      if (confirm('هل أنت متأكد من مسح جميع الأحداث وزمن الاستحواذ المسجل بالكامل؟')) {
-        eventsData = [];
-        if (isPossession) togglePossession();
-        possessionSeconds = 0;
-        document.getElementById('dispPossession').innerText = '0 ثانية';
-        document.getElementById('possessionBtn').innerHTML = '<span>استحواذ: متوقف</span> <i class="fa-solid fa-stopwatch"></i>';
-        renderCurrentPlayerView();
-        scheduleAutoSave();
-        showToast('تم مسح جميع البيانات');
-      }
+      if (!confirm('هل أنت متأكد من مسح جميع الأحداث وزمن الاستحواذ المسجل بالكامل؟')) return;
+      eventsData = []; if (isPossession) togglePossession(); possessionSeconds = 0;
+      document.getElementById('dispPossession').innerText = '0 ثانية'; document.getElementById('possessionBtn').innerHTML = '<span>استحواذ: متوقف</span> <i class="fa-solid fa-stopwatch"></i>';
+      renderCurrentPlayerView(); scheduleAutoSave(); showToast('تم مسح جميع البيانات');
     }
 
-    // ==========================================
-    // حساب الإحصائيات والتقييم الفني ورسم التقرير
-    // ==========================================
-    function drawArrow(ctx, fromX, fromY, toX, toY, color) {
-      ctx.save();
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = 2.2;
-      ctx.beginPath(); ctx.arc(fromX, fromY, 3.5, 0, 2 * Math.PI); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
-      const angle = Math.atan2(toY - fromY, toX - fromX);
-      ctx.beginPath();
-      ctx.moveTo(toX, toY);
-      ctx.lineTo(toX - 8 * Math.cos(angle - Math.PI / 6), toY - 8 * Math.sin(angle - Math.PI / 6));
-      ctx.lineTo(toX - 8 * Math.cos(angle + Math.PI / 6), toY - 8 * Math.sin(angle + Math.PI / 6));
-      ctx.closePath(); ctx.fill();
-      ctx.restore();
+    function drawArrow(ctx, x1, y1, x2, y2, color) {
+      ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.arc(x1, y1, 3.5, 0, 2*Math.PI); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      const a = Math.atan2(y2-y1, x2-x1); ctx.beginPath(); ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 8*Math.cos(a - Math.PI/6), y2 - 8*Math.sin(a - Math.PI/6));
+      ctx.lineTo(x2 - 8*Math.cos(a + Math.PI/6), y2 - 8*Math.sin(a + Math.PI/6)); ctx.closePath(); ctx.fill(); ctx.restore();
     }
 
     function computeStatsForEvents(list) {
-      const s = {
-        ok: 0, bad: 0, recOk: 0, recBad: 0, recovery: 0, loss: 0,
-        dribbleOk: 0, dribbleBad: 0, airOk: 0, airBad: 0, groundOk: 0, groundBad: 0,
-        shots: 0, goals: 0, crossOk: 0, crossBad: 0
-      };
+      const s = { ok:0, bad:0, recOk:0, recBad:0, recovery:0, loss:0, dribbleOk:0, dribbleBad:0, airOk:0, airBad:0, groundOk:0, groundBad:0, shots:0, goals:0, crossOk:0, crossBad:0 };
       list.forEach(ev => {
-        if (ev.type === 'باص صحيح') s.ok++;
-        else if (ev.type === 'باص خاطئ') s.bad++;
-        else if (ev.type === 'كروس صحيح') s.crossOk++;
-        else if (ev.type === 'كروس خاطئ') s.crossBad++;
-        else if (ev.type === 'استلام صحيح') s.recOk++;
-        else if (ev.type === 'استلام خاطئ') s.recBad++;
-        else if (ev.type === 'مراوغة ناجحة') s.dribbleOk++;
-        else if (ev.type === 'مراوغة فاشلة') s.dribbleBad++;
-        else if (ev.type === 'استخلاص كرة') s.recovery++;
-        else if (ev.type === 'فقدان كرة') s.loss++;
-        else if (ev.type === 'التحام هوائي فائز') s.airOk++;
-        else if (ev.type === 'التحام هوائي خاسر') s.airBad++;
-        else if (ev.type === 'التحام أرضي فائز') s.groundOk++;
-        else if (ev.type === 'التحام أرضي خاسر') s.groundBad++;
-        else if (ev.type === 'تسديدة') s.shots++;
-        else if (ev.type === 'هدف') s.goals++;
+        if (ev.type === 'باص صحيح') s.ok++; else if (ev.type === 'باص خاطئ') s.bad++; else if (ev.type === 'كروس صحيح') s.crossOk++; else if (ev.type === 'كروس خاطئ') s.crossBad++;
+        else if (ev.type === 'استلام صحيح') s.recOk++; else if (ev.type === 'استلام خاطئ') s.recBad++; else if (ev.type === 'مراوغة ناجحة') s.dribbleOk++; else if (ev.type === 'مراوغة فاشلة') s.dribbleBad++;
+        else if (ev.type === 'استخلاص كرة') s.recovery++; else if (ev.type === 'فقدان كرة') s.loss++; else if (ev.type === 'التحام هوائي فائز') s.airOk++; else if (ev.type === 'التحام هوائي خاسر') s.airBad++;
+        else if (ev.type === 'التحام أرضي فائز') s.groundOk++; else if (ev.type === 'التحام أرضي خاسر') s.groundBad++; else if (ev.type === 'تسديدة') s.shots++; else if (ev.type === 'هدف') s.goals++;
       });
-
       let rating = null;
       if (list.length > 0) {
-        let r = 6.0;
-        r += s.goals * 1.1;
-        r += s.shots * 0.25;
-        r += s.ok * 0.08 - s.bad * 0.12;
-        r += s.crossOk * 0.25 - s.crossBad * 0.08;
-        r += s.dribbleOk * 0.28 - s.dribbleBad * 0.15;
-        r += s.recovery * 0.25 - s.loss * 0.22;
-        r += (s.airOk + s.groundOk) * 0.18 - (s.airBad + s.groundBad) * 0.12;
-        r += s.recOk * 0.05 - s.recBad * 0.12;
+        let r = 6.0 + s.goals*1.1 + s.shots*0.25 + s.ok*0.08 - s.bad*0.12 + s.crossOk*0.25 - s.crossBad*0.08 + s.dribbleOk*0.28 - s.dribbleBad*0.15 + s.recovery*0.25 - s.loss*0.22 + (s.airOk+s.groundOk)*0.18 - (s.airBad+s.groundBad)*0.12 + s.recOk*0.05 - s.recBad*0.12;
         rating = Math.max(3.0, Math.min(10.0, r)).toFixed(1);
       }
       return { ...s, rating };
     }
 
     function renderCurrentPlayerView() {
-      const sel = pSelect.value || '__ALL__';
-      const isTeamAll = (sel === '__ALL__');
-      document.getElementById('dispPlayerTitle').innerText = isTeamAll
-        ? `التقرير الجماعي الشامل للفريق: ${matchConfig.myTeam}`
-        : `التقرير الفني والبدني للاعبة: ${sel}`;
-
+      updateFreeQuotaBadge();
+      const sel = pSelect.value || '__ALL__', isTeamAll = (sel === '__ALL__');
+      document.getElementById('dispPlayerTitle').innerText = isTeamAll ? `التقرير الجماعي الشامل للفريق: ${matchConfig.myTeam}` : `التقرير الفني والبدني للاعبة: ${sel}`;
       drawVerticalPitch(activeCtx, activeCanvas.width, activeCanvas.height);
 
       const filteredEvents = isTeamAll ? [...eventsData] : eventsData.filter(ev => ev.player === sel);
-      const stats = computeStatsForEvents(filteredEvents);
-      const heatPoints = [];
-      let totalDistanceMeters = 0;
-      const PITCH_REAL_LENGTH = 105, PITCH_REAL_WIDTH = 68;
-      let prevPt = null;
-
+      const stats = computeStatsForEvents(filteredEvents), heatPoints = [];
+      let totalDistanceMeters = 0, prevPt = null;
       filteredEvents.forEach(ev => {
         let curPt = null;
-        if (typeof ev.x === 'number' && typeof ev.y === 'number') {
-          heatPoints.push({ x: ev.x * activeCanvas.width, y: ev.y * activeCanvas.height });
-          curPt = { x: ev.x, y: ev.y };
-        } else if (typeof ev.fromX === 'number' && typeof ev.fromY === 'number') {
-          heatPoints.push({ x: ev.fromX * activeCanvas.width, y: ev.fromY * activeCanvas.height });
-          curPt = { x: ev.fromX, y: ev.fromY };
-          if (typeof ev.toX === 'number' && typeof ev.toY === 'number') {
-            heatPoints.push({ x: ev.toX * activeCanvas.width, y: ev.toY * activeCanvas.height });
-          }
+        if (typeof ev.x === 'number' && typeof ev.y === 'number') { heatPoints.push({ x:ev.x*activeCanvas.width, y:ev.y*activeCanvas.height }); curPt = { x:ev.x, y:ev.y }; }
+        else if (typeof ev.fromX === 'number' && typeof ev.fromY === 'number') {
+          heatPoints.push({ x:ev.fromX*activeCanvas.width, y:ev.fromY*activeCanvas.height }); curPt = { x:ev.fromX, y:ev.fromY };
+          if (typeof ev.toX === 'number' && typeof ev.toY === 'number') heatPoints.push({ x:ev.toX*activeCanvas.width, y:ev.toY*activeCanvas.height });
         }
-        if (curPt && prevPt && !isTeamAll) {
-          const dx = (curPt.x - prevPt.x) * PITCH_REAL_WIDTH;
-          const dy = (curPt.y - prevPt.y) * PITCH_REAL_LENGTH;
-          totalDistanceMeters += Math.hypot(dx, dy);
-        }
+        if (curPt && prevPt && !isTeamAll) totalDistanceMeters += Math.hypot((curPt.x - prevPt.x)*68, (curPt.y - prevPt.y)*105);
         if (curPt) prevPt = curPt;
       });
 
-      if (pitchViewMode === 'heatmap' || pitchViewMode === 'both') {
-        drawHeatmap(activeCtx, heatPoints, activeCanvas.width, activeCanvas.height);
-      }
-
+      if (pitchViewMode === 'heatmap' || pitchViewMode === 'both') drawHeatmap(activeCtx, heatPoints, activeCanvas.width, activeCanvas.height);
       if (pitchViewMode === 'events' || pitchViewMode === 'both') {
-        const dot = (ev, fill, radius = 5.5, stroke = '#fff', lw = 1.5) => {
+        const dot = (ev, fill, r = 5.5, st = '#fff', lw = 1.5) => {
           if (typeof ev.x !== 'number' || typeof ev.y !== 'number') return;
-          activeCtx.save();
-          activeCtx.fillStyle = fill;
-          activeCtx.beginPath();
-          activeCtx.arc(ev.x * activeCanvas.width, ev.y * activeCanvas.height, radius, 0, 2 * Math.PI);
-          activeCtx.fill();
-          activeCtx.strokeStyle = stroke;
-          activeCtx.lineWidth = lw;
-          activeCtx.stroke();
-          activeCtx.restore();
+          activeCtx.save(); activeCtx.fillStyle = fill; activeCtx.beginPath(); activeCtx.arc(ev.x*activeCanvas.width, ev.y*activeCanvas.height, r, 0, 2*Math.PI); activeCtx.fill(); activeCtx.strokeStyle = st; activeCtx.lineWidth = lw; activeCtx.stroke(); activeCtx.restore();
         };
-
         filteredEvents.forEach(ev => {
-          if (ev.type === 'باص صحيح' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX * activeCanvas.width, ev.fromY * activeCanvas.height, ev.toX * activeCanvas.width, ev.toY * activeCanvas.height, '#1f6feb');
-          else if (ev.type === 'باص خاطئ' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX * activeCanvas.width, ev.fromY * activeCanvas.height, ev.toX * activeCanvas.width, ev.toY * activeCanvas.height, '#da3633');
-          else if (ev.type === 'كروس صحيح' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX * activeCanvas.width, ev.fromY * activeCanvas.height, ev.toX * activeCanvas.width, ev.toY * activeCanvas.height, '#0969da');
-          else if (ev.type === 'كروس خاطئ' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX * activeCanvas.width, ev.fromY * activeCanvas.height, ev.toX * activeCanvas.width, ev.toY * activeCanvas.height, '#f85149');
-          else if (ev.type === 'استلام صحيح') dot(ev, '#238636', 5);
-          else if (ev.type === 'استلام خاطئ') dot(ev, '#a371f7', 5);
-          else if (ev.type === 'مراوغة ناجحة') dot(ev, '#ea580c', 6);
-          else if (ev.type === 'مراوغة فاشلة') dot(ev, '#9a3412', 6, '#fff', 1);
-          else if (ev.type === 'استخلاص كرة') dot(ev, '#0d9488', 6);
-          else if (ev.type === 'فقدان كرة') dot(ev, '#b91c1c', 6);
-          else if (ev.type === 'التحام هوائي فائز') dot(ev, '#5c6bc0', 6);
-          else if (ev.type === 'التحام هوائي خاسر') dot(ev, '#7986cb', 6, '#fff', 1);
-          else if (ev.type === 'التحام أرضي فائز') dot(ev, '#0f766e', 6);
-          else if (ev.type === 'التحام أرضي خاسر') dot(ev, '#be123c', 6, '#fff', 1);
-          else if (ev.type === 'تسديدة') dot(ev, '#d97706', 6);
-          else if (ev.type === 'هدف') dot(ev, '#eab308', 8, '#000', 2);
+          if (ev.type === 'باص صحيح' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX*activeCanvas.width, ev.fromY*activeCanvas.height, ev.toX*activeCanvas.width, ev.toY*activeCanvas.height, '#1f6feb');
+          else if (ev.type === 'باص خاطئ' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX*activeCanvas.width, ev.fromY*activeCanvas.height, ev.toX*activeCanvas.width, ev.toY*activeCanvas.height, '#da3633');
+          else if (ev.type === 'كروس صحيح' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX*activeCanvas.width, ev.fromY*activeCanvas.height, ev.toX*activeCanvas.width, ev.toY*activeCanvas.height, '#0969da');
+          else if (ev.type === 'كروس خاطئ' && typeof ev.fromX === 'number') drawArrow(activeCtx, ev.fromX*activeCanvas.width, ev.fromY*activeCanvas.height, ev.toX*activeCanvas.width, ev.toY*activeCanvas.height, '#f85149');
+          else if (ev.type === 'استلام صحيح') dot(ev, '#238636', 5); else if (ev.type === 'استلام خاطئ') dot(ev, '#a371f7', 5);
+          else if (ev.type === 'مراوغة ناجحة') dot(ev, '#ea580c', 6); else if (ev.type === 'مراوغة فاشلة') dot(ev, '#9a3412', 6, '#fff', 1);
+          else if (ev.type === 'استخلاص كرة') dot(ev, '#0d9488', 6); else if (ev.type === 'فقدان كرة') dot(ev, '#b91c1c', 6);
+          else if (ev.type === 'التحام هوائي فائز') dot(ev, '#5c6bc0', 6); else if (ev.type === 'التحام هوائي خاسر') dot(ev, '#7986cb', 6, '#fff', 1);
+          else if (ev.type === 'التحام أرضي فائز') dot(ev, '#0f766e', 6); else if (ev.type === 'التحام أرضي خاسر') dot(ev, '#be123c', 6, '#fff', 1);
+          else if (ev.type === 'تسديدة') dot(ev, '#d97706', 6); else if (ev.type === 'هدف') dot(ev, '#eab308', 8, '#000', 2);
         });
       }
 
-      const eventsCount = filteredEvents.length;
-      const estimatedTotalKm = eventsCount > 0 ? ((totalDistanceMeters / 1000) + (eventsCount * 0.24)).toFixed(2) : '0.00';
-      const topSpeedVal = eventsCount > 0 ? (24.5 + Math.min(6.5, eventsCount * 0.35)).toFixed(1) : '0.0';
-      const sprintsCount = eventsCount > 0 ? Math.floor(eventsCount * 0.85) : 0;
-      const highIntensityDist = eventsCount > 0 ? Math.floor(eventsCount * 45) : 0;
-
+      const ec = filteredEvents.length;
       document.getElementById('metricRating').innerText = stats.rating || '-';
-      document.getElementById('metricTotalDist').innerText = estimatedTotalKm;
-      document.getElementById('metricTopSpeed').innerText = topSpeedVal;
-      document.getElementById('metricSprintsCount').innerText = sprintsCount;
-      document.getElementById('metricHighIntensity').innerText = highIntensityDist;
+      document.getElementById('metricTotalDist').innerText = ec > 0 ? ((totalDistanceMeters/1000) + (ec*0.24)).toFixed(2) : '0.00';
+      document.getElementById('metricTopSpeed').innerText = ec > 0 ? (24.5 + Math.min(6.5, ec*0.35)).toFixed(1) : '0.0';
+      document.getElementById('metricSprintsCount').innerText = ec > 0 ? Math.floor(ec*0.85) : 0;
+      document.getElementById('metricHighIntensity').innerText = ec > 0 ? Math.floor(ec*45) : 0;
 
-      const pct = (part, total) => total > 0 ? Math.round((part / total) * 100) + '%' : '-';
-      const totalPass = stats.ok + stats.bad;
-      const recTotal = stats.recOk + stats.recBad;
-      const totalDribble = stats.dribbleOk + stats.dribbleBad;
-      const totalAir = stats.airOk + stats.airBad;
-      const totalGround = stats.groundOk + stats.groundBad;
-      const totalCross = stats.crossOk + stats.crossBad;
-
+      const pct = (a, b) => b > 0 ? Math.round((a/b)*100) + '%' : '-';
+      const tp = stats.ok + stats.bad, rt = stats.recOk + stats.recBad, td = stats.dribbleOk + stats.dribbleBad, ta = stats.airOk + stats.airBad, tg = stats.groundOk + stats.groundBad, tc = stats.crossOk + stats.crossBad;
       document.getElementById('activeStatsBody').innerHTML = `
-        <tr><td>إجمالي التمريرات</td><td style="text-align:center;">${totalPass}</td><td style="text-align:center;">-</td></tr>
-        <tr><td>تمريرات صحيحة ناجحة</td><td style="text-align:center; color:#1f6feb;">${stats.ok}</td><td style="text-align:center; color:#1f6feb;">${pct(stats.ok, totalPass)}</td></tr>
-        <tr><td>تمريرات خاطئة غير مكتملة</td><td style="text-align:center; color:#da3633;">${stats.bad}</td><td style="text-align:center; color:#da3633;">${pct(stats.bad, totalPass)}</td></tr>
-        <tr><td>استلام كرة صحيح</td><td style="text-align:center; color:#16a34a;">${stats.recOk}</td><td style="text-align:center; color:#16a34a;">${pct(stats.recOk, recTotal)}</td></tr>
-        <tr><td>استلام كرة خاطئ</td><td style="text-align:center; color:#9333ea;">${stats.recBad}</td><td style="text-align:center; color:#9333ea;">${pct(stats.recBad, recTotal)}</td></tr>
-        <tr><td>مراوغة ناجحة (1v1)</td><td style="text-align:center; color:#ea580c;">${stats.dribbleOk}</td><td style="text-align:center; color:#ea580c;">${pct(stats.dribbleOk, totalDribble)}</td></tr>
-        <tr><td>مراوغة فاشلة</td><td style="text-align:center; color:#9a3412;">${stats.dribbleBad}</td><td style="text-align:center; color:#9a3412;">${pct(stats.dribbleBad, totalDribble)}</td></tr>
+        <tr><td>إجمالي التمريرات</td><td style="text-align:center;">${tp}</td><td style="text-align:center;">-</td></tr>
+        <tr><td>تمريرات صحيحة ناجحة</td><td style="text-align:center; color:#1f6feb;">${stats.ok}</td><td style="text-align:center; color:#1f6feb;">${pct(stats.ok,tp)}</td></tr>
+        <tr><td>تمريرات خاطئة غير مكتملة</td><td style="text-align:center; color:#da3633;">${stats.bad}</td><td style="text-align:center; color:#da3633;">${pct(stats.bad,tp)}</td></tr>
+        <tr><td>استلام كرة صحيح</td><td style="text-align:center; color:#16a34a;">${stats.recOk}</td><td style="text-align:center; color:#16a34a;">${pct(stats.recOk,rt)}</td></tr>
+        <tr><td>استلام كرة خاطئ</td><td style="text-align:center; color:#9333ea;">${stats.recBad}</td><td style="text-align:center; color:#9333ea;">${pct(stats.recBad,rt)}</td></tr>
+        <tr><td>مراوغة ناجحة (1v1)</td><td style="text-align:center; color:#ea580c;">${stats.dribbleOk}</td><td style="text-align:center; color:#ea580c;">${pct(stats.dribbleOk,td)}</td></tr>
+        <tr><td>مراوغة فاشلة</td><td style="text-align:center; color:#9a3412;">${stats.dribbleBad}</td><td style="text-align:center; color:#9a3412;">${pct(stats.dribbleBad,td)}</td></tr>
         <tr><td>استخلاص كرة (قطع ناجح)</td><td style="text-align:center; color:#0d9488;">${stats.recovery}</td><td style="text-align:center;">-</td></tr>
         <tr><td>فقدان كرة</td><td style="text-align:center; color:#b91c1c;">${stats.loss}</td><td style="text-align:center;">-</td></tr>
-        <tr><td>التحامات هوائية فائزة</td><td style="text-align:center; color:#5c6bc0;">${stats.airOk}</td><td style="text-align:center; color:#5c6bc0;">${pct(stats.airOk, totalAir)}</td></tr>
-        <tr><td>التحامات هوائية خاسرة</td><td style="text-align:center; color:#7986cb;">${stats.airBad}</td><td style="text-align:center; color:#7986cb;">${pct(stats.airBad, totalAir)}</td></tr>
-        <tr><td>التحامات أرضية فائزة</td><td style="text-align:center; color:#0f766e;">${stats.groundOk}</td><td style="text-align:center; color:#0f766e;">${pct(stats.groundOk, totalGround)}</td></tr>
-        <tr><td>التحامات أرضية خاسرة</td><td style="text-align:center; color:#be123c;">${stats.groundBad}</td><td style="text-align:center; color:#be123c;">${pct(stats.groundBad, totalGround)}</td></tr>
-        <tr><td>عرضيات (كروس) صحيحة</td><td style="text-align:center; color:#0284c7;">${stats.crossOk}</td><td style="text-align:center; color:#0284c7;">${pct(stats.crossOk, totalCross)}</td></tr>
-        <tr><td>عرضيات (كروس) خاطئة</td><td style="text-align:center; color:#ef4444;">${stats.crossBad}</td><td style="text-align:center; color:#ef4444;">${pct(stats.crossBad, totalCross)}</td></tr>
+        <tr><td>التحامات هوائية فائزة</td><td style="text-align:center; color:#5c6bc0;">${stats.airOk}</td><td style="text-align:center; color:#5c6bc0;">${pct(stats.airOk,ta)}</td></tr>
+        <tr><td>التحامات هوائية خاسرة</td><td style="text-align:center; color:#7986cb;">${stats.airBad}</td><td style="text-align:center; color:#7986cb;">${pct(stats.airBad,ta)}</td></tr>
+        <tr><td>التحامات أرضية فائزة</td><td style="text-align:center; color:#0f766e;">${stats.groundOk}</td><td style="text-align:center; color:#0f766e;">${pct(stats.groundOk,tg)}</td></tr>
+        <tr><td>التحامات أرضية خاسرة</td><td style="text-align:center; color:#be123c;">${stats.groundBad}</td><td style="text-align:center; color:#be123c;">${pct(stats.groundBad,tg)}</td></tr>
+        <tr><td>عرضيات (كروس) صحيحة</td><td style="text-align:center; color:#0284c7;">${stats.crossOk}</td><td style="text-align:center; color:#0284c7;">${pct(stats.crossOk,tc)}</td></tr>
+        <tr><td>عرضيات (كروس) خاطئة</td><td style="text-align:center; color:#ef4444;">${stats.crossBad}</td><td style="text-align:center; color:#ef4444;">${pct(stats.crossBad,tc)}</td></tr>
         <tr><td>تسديدات على المرمى</td><td style="text-align:center; color:#d97706;">${stats.shots}</td><td style="text-align:center;">-</td></tr>
-        <tr><td>أهداف مسجلة ⚽</td><td style="text-align:center; color:#ca8a04; font-weight:900;">${stats.goals}</td><td style="text-align:center;">-</td></tr>
-      `;
+        <tr><td>أهداف مسجلة ⚽</td><td style="text-align:center; color:#ca8a04; font-weight:900;">${stats.goals}</td><td style="text-align:center;">-</td></tr>`;
 
       const tBox = document.getElementById('activeTimelineBox');
-      if (filteredEvents.length === 0) {
-        tBox.innerHTML = '<div style="color:#64748b; text-align:center; padding:18px;">لا توجد أحداث مسجلة حتى الآن.</div>';
-      } else {
-        tBox.innerHTML = filteredEvents.slice().reverse().map(e => `
-          <div class="timeline-row">
-            <div class="timeline-content" onclick="jumpToVideoTime(${e.time})">
-              <span style="color:#0284c7; font-weight:800; direction:ltr;">▶ [${formatTime(e.time)}]</span>
-              <b>${escapeHtml(e.type)}</b>
-              ${isTeamAll ? `<span style="color:#64748b; font-size:11px;">(${escapeHtml(e.player)})</span>` : ''}
-            </div>
-            <button class="btn-del-item" title="حذف الحدث" onclick="deleteEventById('${e.id}')"><i class="fa-solid fa-trash"></i></button>
-          </div>
-        `).join('');
-      }
+      tBox.innerHTML = !filteredEvents.length
+        ? '<div style="color:#64748b; text-align:center; padding:18px;">لا توجد أحداث مسجلة حتى الآن.</div>'
+        : filteredEvents.slice().reverse().map(e => `<div class="timeline-row"><div class="timeline-content" onclick="jumpToVideoTime(${e.time})"><span style="color:#0284c7; font-weight:800; direction:ltr;">▶ [${formatTime(e.time)}]</span><b>${escapeHtml(e.type)}</b>${isTeamAll ? `<span style="color:#64748b; font-size:11px;">(${escapeHtml(e.player)})</span>` : ''}</div><button class="btn-del-item" title="حذف الحدث" onclick="deleteEventById('${e.id}')"><i class="fa-solid fa-trash"></i></button></div>`).join('');
     }
 
-    // ==========================================
-    // تصدير PDF مضبوط على A4 + تصدير Excel (CSV) — مربوط بنظام الباقات
-    // ==========================================
     async function exportToPDF(scope = 'current') {
-      const label = scope === 'current' ? 'تقرير اللاعبة PDF' : 'التقرير الشامل للفريق PDF';
-      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', label)) return;
-
-      const { jsPDF } = window.jspdf;
-      const origVal = pSelect.value;
-
+      if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', scope === 'current' ? 'تقرير اللاعبة PDF' : 'التقرير الشامل للفريق PDF')) return;
+      const { jsPDF } = window.jspdf, origVal = pSelect.value;
       let targets = [];
-      if (scope === 'current') {
-        targets = [origVal];
-      } else {
-        const activePlayers = [...new Set(eventsData.map(e => e.player))];
-        if (activePlayers.length === 0) return alert('لا توجد أحداث مسجلة لأي لاعبة لتصديرها!');
-        targets = ['__ALL__', ...activePlayers];
-      }
+      if (scope === 'current') targets = [origVal];
+      else { const ap = [...new Set(eventsData.map(e => e.player))]; if (!ap.length) return alert('لا توجد أحداث مسجلة لأي لاعبة لتصديرها!'); targets = ['__ALL__', ...ap]; }
 
-      const progModal = document.getElementById('pdfProgressModal');
-      const progFill = document.getElementById('pdfProgressFill');
-      const progTxt = document.getElementById('pdfStatusText');
-      progModal.style.display = 'flex';
-      progFill.style.width = '5%';
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-
+      const progModal = document.getElementById('pdfProgressModal'), progFill = document.getElementById('pdfProgressFill'), progTxt = document.getElementById('pdfStatusText');
+      progModal.style.display = 'flex'; progFill.style.width = '5%';
+      const pdf = new jsPDF('p', 'mm', 'a4'), pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight(), margin = 10;
       try {
         for (let i = 0; i < targets.length; i++) {
-          const target = targets[i];
-          progTxt.innerText = `جاري تجهيز صفحة ${i + 1} من ${targets.length}...`;
-          progFill.style.width = `${Math.round(((i + 0.5) / targets.length) * 100)}%`;
-
-          pSelect.value = target;
-          renderCurrentPlayerView();
-          await new Promise(r => setTimeout(r, 80));
-
-          const sheet = document.getElementById('reportSheet');
-          const canvasImg = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' });
-          const imgData = canvasImg.toDataURL('image/jpeg', 0.92);
-
-          let drawW = pageW - margin * 2;
-          let drawH = (canvasImg.height * drawW) / canvasImg.width;
-          if (drawH > pageH - margin * 2) {
-            drawH = pageH - margin * 2;
-            drawW = (canvasImg.width * drawH) / canvasImg.height;
-          }
-          const offsetX = (pageW - drawW) / 2;
-
+          progTxt.innerText = `جاري تجهيز صفحة ${i+1} من ${targets.length}...`; progFill.style.width = `${Math.round(((i+0.5)/targets.length)*100)}%`;
+          pSelect.value = targets[i]; renderCurrentPlayerView(); await new Promise(r => setTimeout(r, 80));
+          const canvasImg = await html2canvas(document.getElementById('reportSheet'), { scale: 2, backgroundColor: '#ffffff' });
+          let dw = pageW - margin*2, dh = (canvasImg.height * dw) / canvasImg.width;
+          if (dh > pageH - margin*2) { dh = pageH - margin*2; dw = (canvasImg.width * dh) / canvasImg.height; }
           if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'JPEG', offsetX, margin, drawW, drawH);
+          pdf.addImage(canvasImg.toDataURL('image/jpeg', 0.92), 'JPEG', (pageW - dw)/2, margin, dw, dh);
         }
-
         progFill.style.width = '100%';
         const suffix = scope === 'current' ? (origVal === '__ALL__' ? 'الفريق_بالكامل' : origVal) : 'التقرير_الشامل';
         pdf.save(`Ziada_${matchConfig.myTeam}_${suffix.replace(/\s+/g, '_')}.pdf`);
         showToast('تم تصدير تقرير الـ PDF بنجاح ✓');
-      } catch (err) {
-        alert('حدث خطأ أثناء تصدير PDF: ' + err.message);
-      } finally {
-        pSelect.value = origVal;
-        renderCurrentPlayerView();
-        progModal.style.display = 'none';
-      }
+      } catch (err) { alert('حدث خطأ أثناء تصدير PDF: ' + err.message); }
+      finally { pSelect.value = origVal; renderCurrentPlayerView(); progModal.style.display = 'none'; }
     }
 
     function exportToCSV() {
       if (window.ZiadaPlan && !ZiadaPlan.checkExport('pdf', 'جدول الإحصائيات Excel (CSV)')) return;
-
       const allPlayers = [...matchConfig.starters, ...matchConfig.subs];
-      const headers = ['اللاعبة', 'التقييم /10', 'باص صح', 'باص خطأ', 'دقة التمرير %', 'استلام صح', 'استلام خطأ', 'مراوغة ناجحة', 'مراوغة فاشلة', 'استخلاص', 'فقدان', 'هوائي فائز', 'هوائي خاسر', 'أرضي فائز', 'أرضي خاسر', 'كروس صح', 'كروس خطأ', 'تسديدات', 'أهداف'];
+      const headers = ['اللاعبة','التقييم /10','باص صح','باص خطأ','دقة التمرير %','استلام صح','استلام خطأ','مراوغة ناجحة','مراوغة فاشلة','استخلاص','فقدان','هوائي فائز','هوائي خاسر','أرضي فائز','أرضي خاسر','كروس صح','كروس خطأ','تسديدات','أهداف'];
       const rows = [headers.join(',')];
-
       allPlayers.forEach(p => {
-        const list = eventsData.filter(e => e.player === p);
-        if (list.length === 0) return;
-        const s = computeStatsForEvents(list);
-        const tp = s.ok + s.bad;
-        const pAcc = tp > 0 ? Math.round((s.ok / tp) * 100) : 0;
-        rows.push([
-          `"${p.replace(/"/g, '""')}"`, s.rating || '-', s.ok, s.bad, pAcc,
-          s.recOk, s.recBad, s.dribbleOk, s.dribbleBad, s.recovery, s.loss,
-          s.airOk, s.airBad, s.groundOk, s.groundBad, s.crossOk, s.crossBad, s.shots, s.goals
-        ].join(','));
+        const list = eventsData.filter(e => e.player === p); if (!list.length) return;
+        const s = computeStatsForEvents(list), tp = s.ok + s.bad, pAcc = tp > 0 ? Math.round((s.ok/tp)*100) : 0;
+        rows.push([`"${p.replace(/"/g,'""')}"`, s.rating||'-', s.ok, s.bad, pAcc, s.recOk, s.recBad, s.dribbleOk, s.dribbleBad, s.recovery, s.loss, s.airOk, s.airBad, s.groundOk, s.groundBad, s.crossOk, s.crossBad, s.shots, s.goals].join(','));
       });
-
       if (rows.length === 1) return alert('لا توجد إحصائيات مسجلة لتصديرها!');
-      const bom = '\uFEFF';
-      const blob = new Blob([bom + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `Ziada_Stats_${matchConfig.myTeam}_vs_${matchConfig.opponent}.csv`;
-      a.click();
-      showToast('تم تصدير جدول الإحصائيات لـ Excel ✓');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF' + rows.join('\n')], { type:'text/csv;charset=utf-8;' }));
+      a.download = `Ziada_Stats_${matchConfig.myTeam}_vs_${matchConfig.opponent}.csv`; a.click(); showToast('تم تصدير جدول الإحصائيات لـ Excel ✓');
     }
 
-    // ==========================================
-    // نظام الحفظ التلقائي واسترجاع المشروع
-    // ==========================================
-    function collectIndividualState() {
-      return {
-        savedAt: new Date().toISOString(),
-        matchConfig,
-        eventsData,
-        possessionSeconds,
-        selectedPlayer: pSelect.value,
-        pitchViewMode,
-        videoFileName: loadedVideoName || '',
-        lastVideoTime: video.src ? video.currentTime : (pendingSeekAfterLoad || 0)
-      };
-    }
-
-    function hasMeaningfulState(s) {
-      return s && ((s.eventsData && s.eventsData.length > 0) || (s.possessionSeconds && s.possessionSeconds > 0));
-    }
-
+    // الحفظ التلقائي
+    function collectIndividualState() { return { savedAt:new Date().toISOString(), matchConfig, eventsData, possessionSeconds, selectedPlayer:pSelect.value, pitchViewMode, videoFileName:loadedVideoName||'', lastVideoTime:video.src?video.currentTime:(pendingSeekAfterLoad||0) }; }
+    function hasMeaningfulState(s) { return s && ((s.eventsData && s.eventsData.length > 0) || (s.possessionSeconds && s.possessionSeconds > 0)); }
     function saveProjectNow() {
       if (isRestoring) return;
       const badge = document.getElementById('autosaveBadge');
-      try {
-        const s = collectIndividualState();
-        if (!hasMeaningfulState(s)) localStorage.removeItem(AUTOSAVE_KEY);
-        else localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(s));
-      } catch (e) {}
-      badge.classList.remove('saving');
-      badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
+      try { const s = collectIndividualState(); if (!hasMeaningfulState(s)) localStorage.removeItem(AUTOSAVE_KEY); else localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(s)); } catch (e) {}
+      badge.classList.remove('saving'); badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> محفوظ تلقائياً';
     }
-
     function scheduleAutoSave() {
       if (isRestoring) return;
-      const badge = document.getElementById('autosaveBadge');
-      badge.classList.add('saving');
-      badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-      clearTimeout(autosaveTimer);
-      autosaveTimer = setTimeout(saveProjectNow, 450);
+      const badge = document.getElementById('autosaveBadge'); badge.classList.add('saving'); badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      clearTimeout(autosaveTimer); autosaveTimer = setTimeout(saveProjectNow, 450);
     }
-
     window.addEventListener('beforeunload', saveProjectNow);
 
     let pendingRecoveryState = null;
     function checkSavedProject() {
       try {
-        const raw = localStorage.getItem(AUTOSAVE_KEY);
-        if (!raw) return;
-        const s = JSON.parse(raw);
-        if (!hasMeaningfulState(s)) return;
-
+        const raw = localStorage.getItem(AUTOSAVE_KEY); if (!raw) return;
+        const s = JSON.parse(raw); if (!hasMeaningfulState(s)) return;
         pendingRecoveryState = s;
         const dt = s.savedAt ? new Date(s.savedAt).toLocaleString('ar-EG') : 'غير معروف';
         const matchTxt = s.matchConfig ? `${escapeHtml(s.matchConfig.myTeam)} × ${escapeHtml(s.matchConfig.opponent)}` : '';
         const vidTxt = s.videoFileName ? `<div><b>الفيديو:</b> ${escapeHtml(s.videoFileName)} (الدقيقة ${formatTime(s.lastVideoTime)})</div>` : '';
-
-        document.getElementById('recoveryMetaInfo').innerHTML = `
-          <div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div>
-          <div><i class="fa-solid fa-shirt" style="color:var(--primary);"></i> <b>المباراة:</b> ${matchTxt}</div>
-          <div><i class="fa-solid fa-list-check" style="color:#4ade80;"></i> <b>الأحداث المسجلة:</b> ${s.eventsData?.length || 0} حدث | <b>الاستحواذ:</b> ${s.possessionSeconds || 0}ث</div>
-          ${vidTxt}
-        `;
+        document.getElementById('recoveryMetaInfo').innerHTML = `<div><i class="fa-regular fa-clock" style="color:var(--accent);"></i> <b>آخر حفظ:</b> ${dt}</div><div><i class="fa-solid fa-shirt" style="color:var(--primary);"></i> <b>المباراة:</b> ${matchTxt}</div><div><i class="fa-solid fa-list-check" style="color:#4ade80;"></i> <b>الأحداث المسجلة:</b> ${s.eventsData?.length||0} حدث | <b>الاستحواذ:</b> ${s.possessionSeconds||0}ث</div>${vidTxt}`;
         document.getElementById('recoveryModal').style.display = 'flex';
-      } catch (e) {
-        localStorage.removeItem(AUTOSAVE_KEY);
-      }
+      } catch (e) { localStorage.removeItem(AUTOSAVE_KEY); }
     }
 
     function restoreSavedProject() {
-      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) {
-        ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً');
-        return;
-      }
+      if (window.ZiadaPlan && !ZiadaPlan.canAutoSave()) { ZiadaPlan.requireGold('استرجاع المشروع المحفوظ تلقائياً'); return; }
       if (!pendingRecoveryState) return;
-      isRestoring = true;
-      const s = pendingRecoveryState;
-
+      isRestoring = true; const s = pendingRecoveryState;
       if (s.matchConfig) {
         matchConfig = s.matchConfig;
-        document.getElementById('myTeamNameInput').value = matchConfig.myTeam || 'فريقنا';
-        document.getElementById('opponentNameInput').value = matchConfig.opponent || 'المنافس';
-        document.getElementById('primaryKitColor').value = matchConfig.primaryKitColor || '#1e3a8a';
-        document.getElementById('secondaryKitColor').value = matchConfig.secondaryKitColor || '#ffffff';
+        document.getElementById('myTeamNameInput').value = matchConfig.myTeam || 'فريقنا'; document.getElementById('opponentNameInput').value = matchConfig.opponent || 'المنافس';
+        document.getElementById('primaryKitColor').value = matchConfig.primaryKitColor || '#1e3a8a'; document.getElementById('secondaryKitColor').value = matchConfig.secondaryKitColor || '#ffffff';
         document.getElementById('formationInput').value = matchConfig.formation || '4-3-3';
         if (matchConfig.starters?.length) document.getElementById('startersInput').value = matchConfig.starters.join('\n');
         if (matchConfig.subs?.length) document.getElementById('subsInput').value = matchConfig.subs.join('\n');
-        applyTeamBannerUI();
-        rebuildPlayerDropdowns(s.selectedPlayer);
+        applyTeamBannerUI(); rebuildPlayerDropdowns(s.selectedPlayer);
       }
-
       eventsData = Array.isArray(s.eventsData) ? s.eventsData : [];
-      possessionSeconds = s.possessionSeconds || 0;
-      document.getElementById('dispPossession').innerText = `${possessionSeconds} ثانية`;
-      if (possessionSeconds > 0) {
-        document.getElementById('possessionBtn').innerHTML = `<span>الاستحواذ: متوقف (${possessionSeconds}ث)</span> <i class="fa-solid fa-stopwatch"></i>`;
-      }
-
+      possessionSeconds = s.possessionSeconds || 0; document.getElementById('dispPossession').innerText = `${possessionSeconds} ثانية`;
+      if (possessionSeconds > 0) document.getElementById('possessionBtn').innerHTML = `<span>الاستحواذ: متوقف (${possessionSeconds}ث)</span> <i class="fa-solid fa-stopwatch"></i>`;
       loadedVideoName = s.videoFileName || '';
       if (s.videoFileName) {
         pendingSeekAfterLoad = s.lastVideoTime || 0;
-        document.getElementById('relinkBannerText').innerHTML =
-          `<i class="fa-solid fa-link"></i> تم استرجاع كل الأحداث والإحصائيات! أعد اختيار الفيديو <b>(${escapeHtml(s.videoFileName)})</b> للعودة للدقيقة <b>${formatTime(pendingSeekAfterLoad)}</b>.`;
+        document.getElementById('relinkBannerText').innerHTML = `<i class="fa-solid fa-link"></i> تم استرجاع كل الأحداث والإحصائيات! أعد اختيار الفيديو <b>(${escapeHtml(s.videoFileName)})</b> للعودة للدقيقة <b>${formatTime(pendingSeekAfterLoad)}</b>.`;
         document.getElementById('relinkBanner').style.display = 'flex';
       }
-
-      setPitchViewMode(s.pitchViewMode || 'events');
-      document.getElementById('recoveryModal').style.display = 'none';
-      isRestoring = false;
-      renderCurrentPlayerView();
-      showToast('تم استرجاع مشروع التحليل الفردي بالكامل ✓');
+      setPitchViewMode(s.pitchViewMode || 'events'); document.getElementById('recoveryModal').style.display = 'none'; isRestoring = false;
+      renderCurrentPlayerView(); showToast('تم استرجاع مشروع التحليل الفردي بالكامل ✓');
     }
+    function startFreshProject() { localStorage.removeItem(AUTOSAVE_KEY); pendingRecoveryState = null; document.getElementById('recoveryModal').style.display = 'none'; showToast('تم بدء مشروع تحليل فردي جديد'); }
 
-    function startFreshProject() {
-      localStorage.removeItem(AUTOSAVE_KEY);
-      pendingRecoveryState = null;
-      document.getElementById('recoveryModal').style.display = 'none';
-      showToast('تم بدء مشروع تحليل فردي جديد');
-    }
-
-    // تهيئة أولية نظيفة بدون تشغيل تلقائي للفيديو
     saveTeamSetup(false);
     checkSavedProject();
   </script>

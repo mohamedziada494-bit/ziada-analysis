@@ -41,12 +41,22 @@
     .btn-source:hover { background:var(--primary); color:#070b12; border-color:var(--primary); }
     .btn-camera { background:linear-gradient(135deg,#0284c7,#2563eb); border-color:var(--primary); }
     .btn-camera.active { background:var(--danger); border-color:var(--danger); color:#fff; }
+    .btn-cameraman { background:#1e1b4b; border-color:#818cf8; color:#c7d2fe; }
+    .btn-cameraman.active { background:#6366f1; color:#fff; }
 
     .live-viewport-box { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px; }
     .video-container { position:relative; width:100%; height:56vh; min-height:250px; background:#000; border-radius:10px; overflow:hidden; display:flex; justify-content:center; align-items:center; border:1px solid #1e293b; }
     video { width:100%; height:100%; object-fit:contain; }
     .live-rec-indicator { position:absolute; top:12px; right:12px; background:rgba(220,38,38,0.9); color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:800; display:none; align-items:center; gap:6px; z-index:5; animation:pulseRed 1.4s infinite; }
     .wakelock-pill { position:absolute; top:12px; left:12px; background:rgba(15,23,42,0.85); border:1px solid rgba(16,185,129,0.5); color:#4ade80; padding:3px 10px; border-radius:16px; font-size:11px; font-weight:700; display:none; align-items:center; gap:5px; z-index:5; }
+
+    /* شريط التحكم العائم داخل شاشة الكاميرا لوضع التصوير بالعرض */
+    .cam-hud-bar { display:none; position:absolute; top:8px; left:8px; right:8px; z-index:12; justify-content:space-between; align-items:center; gap:6px; pointer-events:none; }
+    .cam-hud-group { display:flex; align-items:center; gap:6px; pointer-events:auto; flex-wrap:wrap; }
+    .hud-btn { background:rgba(7,11,18,0.78); backdrop-filter:blur(4px); color:#fff; border:1px solid rgba(255,255,255,0.28); padding:5px 10px; border-radius:20px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+    .hud-btn.rec { background:rgba(220,38,38,0.88); border-color:#fca5a5; }
+    .hud-btn.rec.recording { background:#991b1b; animation:pulseRed 1.3s infinite; }
+    .hud-timer { font-family:monospace; direction:ltr; background:rgba(7,11,18,0.82); color:#f87171; border:1px solid rgba(239,68,68,0.55); padding:4px 10px; border-radius:20px; font-size:13px; font-weight:900; }
 
     .record-control-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#0f172a; padding:12px 18px; border-radius:10px; border:1px solid rgba(239,68,68,0.5); }
     .record-timer { font-family:monospace; font-size:26px; font-weight:900; color:var(--danger); display:flex; align-items:center; gap:10px; direction:ltr; }
@@ -57,9 +67,9 @@
     @keyframes pulseRed { 0% { box-shadow:0 0 0 0 rgba(239,68,68,0.7); } 50% { box-shadow:0 0 0 10px rgba(239,68,68,0); } 100% { box-shadow:0 0 0 0 rgba(239,68,68,0); } }
 
     .live-actions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px; }
-    .btn-live-action { background:linear-gradient(135deg,#1e293b,#0f172a); border:1.5px solid var(--border-color); color:#fff; padding:13px 10px; border-radius:10px; font-size:13px; font-weight:800; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.35); }
+    .btn-live-action { background:linear-gradient(135deg,#1e293b,#0f172a); border:1.5px solid var(--border-color); color:#fff; padding:13px 10px; border-radius:10px; font-size:13px; font-weight:800; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.35); }
     .btn-live-action:hover { transform:translateY(-2px); border-color:var(--primary); filter:brightness(1.18); }
-    .btn-live-action:active { transform:scale(0.96); }
+    .btn-live-action:active { transform:scale(0.95); }
     .btn-live-action i { font-size:18px; }
     .action-att { border-color:#3b82f6; } .action-def { border-color:#ef4444; } .action-ind { border-color:#8b5cf6; }
     .action-set-att { border-color:#06b6d4; } .action-set-def { border-color:#f97316; } .action-counter { border-color:#ec4899; }
@@ -95,6 +105,50 @@
       .record-timer { font-size:21px; }
       .live-actions-grid { grid-template-columns:repeat(2,1fr); }
       .btn-live-action { padding:11px 6px; font-size:12px; }
+    }
+
+    /* ============================================================
+       وضع المصوّر اليدوي أو التصوير بالعرض على الموبايل (Landscape)
+       الكاميرا فوق + الـ 8 زراير تحتها فوراً في نفس الشاشة بدون سكرول
+       ============================================================ */
+    body.cameraman-mode { padding:4px; background:#000; }
+    body.cameraman-mode .top-nav,
+    body.cameraman-mode .scoreboard-bar,
+    body.cameraman-mode .source-control-bar,
+    body.cameraman-mode .record-control-bar { display:none !important; }
+    body.cameraman-mode .main-wrapper { max-width:100%; gap:6px; }
+    body.cameraman-mode .live-viewport-box { padding:4px; gap:6px; border:none; background:#000; border-radius:0; }
+    body.cameraman-mode .video-container { height:calc(100dvh - 102px); min-height:170px; border-radius:8px; }
+    body.cameraman-mode .cam-hud-bar { display:flex; }
+    body.cameraman-mode .live-rec-indicator,
+    body.cameraman-mode .wakelock-pill { display:none !important; }
+    body.cameraman-mode .live-actions-grid { grid-template-columns:repeat(4, 1fr); gap:6px; }
+    body.cameraman-mode .btn-live-action { flex-direction:row; padding:8px 6px; font-size:11.5px; border-radius:8px; min-height:40px; gap:5px; }
+    body.cameraman-mode .btn-live-action i { font-size:14px; }
+
+    /* التفعيل التلقائي عند لف التليفون بالعرض أثناء تشغيل الكاميرا (مع إمكانية إظهار القوائم) */
+    @media (orientation:landscape) and (max-height:560px) {
+      body.cam-active:not(.show-full-ui) { padding:4px; background:#000; }
+      body.cam-active:not(.show-full-ui) .top-nav,
+      body.cam-active:not(.show-full-ui) .scoreboard-bar,
+      body.cam-active:not(.show-full-ui) .source-control-bar,
+      body.cam-active:not(.show-full-ui) .record-control-bar { display:none !important; }
+      body.cam-active:not(.show-full-ui) .main-wrapper { max-width:100%; gap:6px; }
+      body.cam-active:not(.show-full-ui) .live-viewport-box { padding:4px; gap:6px; border:none; background:#000; border-radius:0; }
+      body.cam-active:not(.show-full-ui) .video-container { height:calc(100dvh - 96px); min-height:160px; border-radius:8px; }
+      body.cam-active:not(.show-full-ui) .cam-hud-bar { display:flex; }
+      body.cam-active:not(.show-full-ui) .live-rec-indicator,
+      body.cam-active:not(.show-full-ui) .wakelock-pill { display:none !important; }
+      body.cam-active:not(.show-full-ui) .live-actions-grid { grid-template-columns:repeat(4, 1fr); gap:5px; }
+      body.cam-active:not(.show-full-ui) .btn-live-action { flex-direction:row; padding:7px 4px; font-size:11px; border-radius:8px; min-height:38px; gap:4px; }
+      body.cam-active:not(.show-full-ui) .btn-live-action i { font-size:13px; }
+      body.cam-active:not(.show-full-ui) .toast-msg { bottom:100px; }
+
+      /* حتى قبل فتح الكاميرا: تنسيق مدمج في العرض يسهّل الوصول للكاميرا والزراير */
+      body:not(.cam-active) .video-container { height:56dvh; min-height:170px; }
+      body:not(.cam-active) .live-actions-grid { grid-template-columns:repeat(4, 1fr); gap:6px; }
+      body:not(.cam-active) .btn-live-action { flex-direction:row; padding:8px 5px; font-size:11.5px; gap:5px; }
+      body:not(.cam-active) .btn-live-action i { font-size:14px; }
     }
   </style>
 
@@ -184,6 +238,7 @@
         </select>
         <button class="btn-source btn-camera" id="btnToggleCam" onclick="toggleCamera()"><i class="fa-solid fa-video"></i> <span>فتح الكاميرا</span></button>
         <button class="btn-source" id="btnFlipCam" style="display:none;" onclick="flipCamera()" title="تبديل الكاميرا الأمامية والخلفية"><i class="fa-solid fa-camera-rotate"></i> تبديل</button>
+        <button class="btn-source btn-cameraman" id="btnCameramanMode" onclick="toggleCameramanMode()" title="ملء الشاشة للتصوير والتقطيع بالعرض"><i class="fa-solid fa-expand"></i> وضع المصوّر</button>
         <label class="btn-source" style="cursor:pointer;"><i class="fa-solid fa-folder-open"></i> فيديو محلي<input type="file" id="localVideoFile" accept="video/*" style="display:none;" onchange="loadLocalVideo(event)"></label>
       </div>
     </div>
@@ -195,6 +250,19 @@
         <video id="liveVideo" controls playsinline></video>
         <div class="live-rec-indicator" id="liveRecBadge"><i class="fa-solid fa-circle"></i> REC مباشر</div>
         <div class="wakelock-pill" id="wakeLockPill"><i class="fa-solid fa-sun"></i> الشاشة نشطة</div>
+
+        <!-- شريط التحكم السريع العائم في وضع التصوير بالعرض -->
+        <div class="cam-hud-bar" id="camHudBar">
+          <div class="cam-hud-group">
+            <button class="hud-btn rec" id="hudRecordBtn" onclick="toggleFullMatchRecord()"><i class="fa-solid fa-record-vinyl"></i> <span>تسجيل</span></button>
+            <span class="hud-timer" id="hudTimerText">00:00:00</span>
+          </div>
+          <div class="cam-hud-group">
+            <button class="hud-btn" id="hudFlipBtn" onclick="flipCamera()" title="تبديل الكاميرا"><i class="fa-solid fa-camera-rotate"></i> تبديل</button>
+            <button class="hud-btn" onclick="toggleLandscapeMenus()" title="إظهار القوائم والنتيجة"><i class="fa-solid fa-bars"></i> القوائم</button>
+            <button class="hud-btn" id="hudCloseCamBtn" onclick="toggleCamera()" style="border-color:rgba(239,68,68,0.6); color:#fca5a5;"><i class="fa-solid fa-video-slash"></i> إغلاق</button>
+          </div>
+        </div>
       </div>
 
       <div class="record-control-bar">
@@ -238,6 +306,7 @@
     const DB_NAME = 'ZiadaLiveStudioDB', STORE_NAME = 'sessions', SESSION_KEY = 'live_active_session_v1';
     const liveVideo = document.getElementById('liveVideo'), statusBanner = document.getElementById('liveStatusBanner'), statusText = document.getElementById('liveStatusText');
     const btnCam = document.getElementById('btnToggleCam'), btnFlipCam = document.getElementById('btnFlipCam'), btnRecord = document.getElementById('btnRecordMatch');
+    const hudRecordBtn = document.getElementById('hudRecordBtn'), hudTimerText = document.getElementById('hudTimerText'), hudFlipBtn = document.getElementById('hudFlipBtn'), hudCloseCamBtn = document.getElementById('hudCloseCamBtn');
     const timerText = document.getElementById('timerText'), liveRecBadge = document.getElementById('liveRecBadge'), wakeLockPill = document.getElementById('wakeLockPill');
 
     let currentStream = null, isCameraMode = false, currentFacingMode = 'environment', wakeLock = null;
@@ -246,6 +315,30 @@
 
     function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
     function showToast(msg) { const t = document.getElementById('toastMsg'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2300); }
+
+    function toggleCameramanMode() {
+      document.body.classList.remove('show-full-ui');
+      const on = document.body.classList.toggle('cameraman-mode');
+      document.getElementById('btnCameramanMode').classList.toggle('active', on);
+      hudFlipBtn.style.display = isCameraMode ? 'inline-flex' : 'none';
+      hudCloseCamBtn.style.display = isCameraMode ? 'inline-flex' : 'none';
+      if (on) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function toggleLandscapeMenus() {
+      if (document.body.classList.contains('cameraman-mode')) {
+        toggleCameramanMode();
+      } else {
+        document.body.classList.toggle('show-full-ui');
+      }
+    }
 
     async function requestWakeLock() {
       try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); wakeLockPill.style.display = 'inline-flex'; wakeLock.addEventListener('release', () => { wakeLockPill.style.display = 'none'; }); } } catch (e) {}
@@ -270,13 +363,13 @@
 
     function loadSourceLink() {
       const url = document.getElementById('videoLinkInput').value.trim(); if (!url) return alert('يرجى لصق رابط فيديو صحيح أولاً!');
-      stopAllStreams(); liveVideo.muted = false; liveVideo.crossOrigin = 'anonymous'; liveVideo.src = url; liveVideo.load();
+      stopAllStreams(); liveVideo.controls = true; liveVideo.muted = false; liveVideo.crossOrigin = 'anonymous'; liveVideo.src = url; liveVideo.load();
       liveVideo.play().catch(() => alert('تعذر تشغيل الرابط مباشرة. تأكد من أن الرابط مباشر (MP4/WebM) ويدعم CORS.'));
     }
 
     function loadLocalVideo(e) {
       const file = e.target.files[0]; if (!file) return;
-      stopAllStreams(); liveVideo.muted = false; liveVideo.src = URL.createObjectURL(file);
+      stopAllStreams(); liveVideo.controls = true; liveVideo.muted = false; liveVideo.src = URL.createObjectURL(file);
       liveVideo.play().catch(() => {}); showToast(`تم تحميل: ${file.name}`);
     }
 
@@ -287,14 +380,26 @@
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
       };
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-      isCameraMode = true; liveVideo.muted = true; liveVideo.srcObject = currentStream; await liveVideo.play();
+      isCameraMode = true;
+      liveVideo.controls = false;
+      liveVideo.muted = true;
+      liveVideo.srcObject = currentStream;
+      await liveVideo.play();
+      document.body.classList.add('cam-active');
+      document.body.classList.remove('show-full-ui');
+      hudFlipBtn.style.display = 'inline-flex';
+      hudCloseCamBtn.style.display = 'inline-flex';
       btnCam.classList.add('active'); btnCam.innerHTML = '<i class="fa-solid fa-video-slash"></i> <span>إغلاق الكاميرا</span>';
-      btnFlipCam.style.display = 'inline-flex'; requestWakeLock(); showToast(`تم تشغيل الكاميرا بدقة ${q}p ✓`);
+      btnFlipCam.style.display = 'inline-flex'; requestWakeLock();
+      showToast(`تم تشغيل الكاميرا (${q}p) — لف التليفون بالعرض للتصوير والتقطيع السريع ✓`);
     }
 
     async function toggleCamera() {
       if (isCameraMode) stopAllStreams();
-      else { try { stopAllStreams(); await startCameraStream(); } catch (err) { alert('تعذر الوصول لكاميرا الجهاز، يرجى السماح بصلاحية الكاميرا والميكروفون في المتصفح.'); } }
+      else {
+        if (window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockLiveCamera', 'فتح الكاميرا المباشرة في التحليل اللايف')) return;
+        try { stopAllStreams(); await startCameraStream(); } catch (err) { alert('تعذر الوصول لكاميرا الجهاز، يرجى السماح بصلاحية الكاميرا والميكروفون في المتصفح.'); }
+      }
     }
 
     async function flipCamera() {
@@ -308,14 +413,14 @@
     function stopAllStreams() {
       if (isFullRecording) toggleFullMatchRecord();
       if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
-      isCameraMode = false; liveVideo.srcObject = null; liveVideo.src = ''; liveVideo.muted = false;
+      isCameraMode = false;
+      document.body.classList.remove('cam-active', 'show-full-ui');
+      liveVideo.srcObject = null; liveVideo.src = ''; liveVideo.muted = false; liveVideo.controls = true;
       btnCam.classList.remove('active'); btnCam.innerHTML = '<i class="fa-solid fa-video"></i> <span>فتح الكاميرا</span>';
       btnFlipCam.style.display = 'none'; releaseWakeLock();
     }
 
-    // ==========================================
     // أولوية قصوى لـ MP4 H.264 للتشغيل المباشر في معرض التليفون وواتساب
-    // ==========================================
     function getBestRecorderConfig() {
       const q = parseInt(document.getElementById('camQualitySelect').value) || 720;
       const bitrate = q >= 1080 ? 10000000 : 6000000;
@@ -355,9 +460,6 @@
       return rec;
     }
 
-    // ==========================================
-    // تسجيل المباراة الكاملة بجودة عالية (MP4 للتليفون وواتساب)
-    // ==========================================
     function toggleFullMatchRecord() {
       if (!currentStream) {
         initializeStreamFromVideoElement();
@@ -368,6 +470,8 @@
         clearInterval(timerInterval); isFullRecording = false; liveRecBadge.style.display = 'none';
         btnRecord.classList.remove('recording');
         btnRecord.innerHTML = '<i class="fa-solid fa-record-vinyl"></i> <span>بدء تسجيل المباراة كاملة (MP4)</span>';
+        hudRecordBtn.classList.remove('recording');
+        hudRecordBtn.innerHTML = '<i class="fa-solid fa-record-vinyl"></i> <span>تسجيل</span>';
         if (!isCameraMode) releaseWakeLock();
 
         const duration = Date.now() - matchStartTime;
@@ -393,6 +497,7 @@
           mainChunks = [];
 
           statusText.innerText = `تم حفظ المباراة الكاملة بنجاح (${usedExt.toUpperCase()}) ✓`;
+          showToast(`تم حفظ المباراة الكاملة (${usedExt.toUpperCase()}) ✓`);
           setTimeout(() => { statusBanner.style.display = 'none'; }, 3500);
         };
         mainRecorder.stop();
@@ -408,18 +513,20 @@
         isFullRecording = true; matchStartTime = Date.now(); liveRecBadge.style.display = 'inline-flex';
         btnRecord.classList.add('recording');
         btnRecord.innerHTML = '<i class="fa-solid fa-stop"></i> <span>إيقاف وحفظ المباراة</span>';
-        requestWakeLock(); timerText.innerText = '00:00:00'; timerInterval = setInterval(updateTimer, 1000);
+        hudRecordBtn.classList.add('recording');
+        hudRecordBtn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>إيقاف</span>';
+        requestWakeLock(); timerText.innerText = '00:00:00'; hudTimerText.innerText = '00:00:00';
+        timerInterval = setInterval(updateTimer, 1000);
       }
     }
 
     function updateTimer() {
       const diff = Math.floor((Date.now() - matchStartTime) / 1000);
-      timerText.innerText = `${Math.floor(diff/3600).toString().padStart(2,'0')}:${Math.floor((diff%3600)/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
+      const tStr = `${Math.floor(diff/3600).toString().padStart(2,'0')}:${Math.floor((diff%3600)/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
+      timerText.innerText = tStr;
+      hudTimerText.innerText = tStr;
     }
 
-    // ==========================================
-    // التقطيع الفوري للقطات (MP4 للتليفون وواتساب)
-    // ==========================================
     function triggerInstantExport(categoryName) {
       if (!currentStream) {
         initializeStreamFromVideoElement();
@@ -434,6 +541,7 @@
 
       liveClips.push({ id: clipId, time: currentMatchTime, half, tag: categoryName, durationSec: durSec, status: 'recording' });
       renderClipsTable();
+      showToast(`🔴 جاري تقطيع: ${categoryName} (${durSec}ث)...`);
 
       const cfg = getBestRecorderConfig();
       const clipRecorder = createSafeRecorder(currentStream, cfg);
@@ -442,7 +550,6 @@
       clipRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) clipChunks.push(e.data); };
       const recStart = Date.now();
 
-      // في الـ MP4 نبدأ بدون timeslice لضمان سلامة الملف في معرض التليفون وواتساب
       if (usedExt === 'mp4') clipRecorder.start();
       else clipRecorder.start(250);
 
@@ -501,9 +608,7 @@
     function deleteLiveClip(idx) { if (!confirm('هل تريد حذف هذه اللقطة؟')) return; liveClips.splice(idx, 1); renderClipsTable(); scheduleAutoSave(); }
     function clearAllClips() { if (!liveClips.length || !confirm('هل تريد مسح جميع اللقطات المقطوعة في هذه المباراة؟')) return; liveClips = []; renderClipsTable(); scheduleAutoSave(); }
 
-    // ==========================================
-    // نظام الحفظ التلقائي واسترجاع الجلسة (IndexedDB)
-    // ==========================================
+    // الحفظ التلقائي واسترجاع الجلسة (IndexedDB)
     function openLiveDB() {
       return new Promise((res, rej) => {
         const req = indexedDB.open(DB_NAME, 1);

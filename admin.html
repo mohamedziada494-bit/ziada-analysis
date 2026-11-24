@@ -6,104 +6,101 @@
   <title>Ziada Analysis - لوحة تحكم الإدارة والباقات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <style>
-    :root { --bg-dark: #070b12; --card-bg: #111827; --border-color: #1f2937; --primary: #38bdf8; --accent: #f59e0b; --danger: #ef4444; --success: #10b981; --text: #f8fafc; --text-muted: #94a3b8; }
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text); padding: 16px; min-height: 100vh; }
+    :root { --bg-dark:#070b12; --card-bg:#111827; --border-color:#1f2937; --primary:#38bdf8; --accent:#f59e0b; --danger:#ef4444; --success:#10b981; --text:#f8fafc; --text-muted:#94a3b8; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
+    body { background-color:var(--bg-dark); color:var(--text); padding:16px; min-height:100vh; }
 
-    #adminLoader { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--primary); font-weight: 700; font-size: 15px; }
-    #adminLoader i { font-size: 36px; }
+    #adminLoader { position:fixed; inset:0; background:var(--bg-dark); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--primary); font-weight:700; font-size:15px; }
+    #adminLoader i { font-size:36px; }
 
-    .main-wrapper { max-width: 1440px; margin: auto; display: none; flex-direction: column; gap: 16px; }
-    .top-nav { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--card-bg); padding: 14px 22px; border-radius: 12px; border: 1px solid var(--border-color); }
-    .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 10px; }
-    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .btn-top { background: #1f2937; color: var(--primary); border: 1px solid var(--primary); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
-    .btn-top:hover { background: var(--primary); color: #070b12; }
-    .btn-create-user { background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); }
-    .btn-create-user:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    .btn-plan-settings { background: linear-gradient(135deg, #b45309, #f59e0b); color: #070b12; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: 900; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3); }
-    .btn-plan-settings:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    
-    .stats-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
-    .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
-    .stat-info h4 { font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
-    .stat-info span { font-size: 24px; font-weight: 800; }
-    .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    
-    .table-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; overflow-x: auto; }
-    .table-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-    .toolbar-controls { display: flex; gap: 10px; flex-wrap: wrap; }
-    .search-input, .filter-select { background: #070b12; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 13px; outline: none; transition: 0.2s; }
-    .search-input { min-width: 240px; }
-    .search-input:focus, .filter-select:focus { border-color: var(--primary); }
+    .main-wrapper { max-width:1440px; margin:auto; display:none; flex-direction:column; gap:16px; }
+    .top-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:var(--card-bg); padding:14px 22px; border-radius:12px; border:1px solid var(--border-color); }
+    .brand-title { font-size:1.25rem; font-weight:800; color:var(--accent); display:flex; align-items:center; gap:10px; }
+    .top-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .btn-top { background:#1f2937; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; text-decoration:none; display:inline-flex; align-items:center; gap:8px; font-size:13px; transition:0.2s; }
+    .btn-top:hover { background:var(--primary); color:#070b12; }
+    .btn-create-user { background:linear-gradient(135deg,#059669,#10b981); color:#fff; border:none; padding:9px 18px; border-radius:6px; cursor:pointer; font-weight:800; display:inline-flex; align-items:center; gap:8px; font-size:13px; transition:0.2s; box-shadow:0 4px 14px rgba(16,185,129,0.3); }
+    .btn-create-user:hover { filter:brightness(1.1); transform:translateY(-1px); }
+    .btn-plan-settings { background:linear-gradient(135deg,#b45309,#f59e0b); color:#070b12; border:none; padding:9px 18px; border-radius:6px; cursor:pointer; font-weight:900; display:inline-flex; align-items:center; gap:8px; font-size:13px; transition:0.2s; box-shadow:0 4px 14px rgba(245,158,11,0.3); }
+    .btn-plan-settings:hover { filter:brightness(1.1); transform:translateY(-1px); }
 
-    .users-table { width: 100%; border-collapse: collapse; text-align: right; min-width: 920px; }
-    .users-table th { background: #070b12; padding: 12px 14px; font-size: 12.5px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
-    .users-table td { padding: 13px 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-    .users-table tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .stats-overview-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+    .stat-card { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-info h4 { font-size:12.5px; color:var(--text-muted); margin-bottom:5px; }
+    .stat-info span { font-size:24px; font-weight:800; }
+    .stat-icon { width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
 
-    .plan-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; }
-    .plan-gold { background: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); }
-    .plan-free { background: rgba(148, 163, 184, 0.14); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.35); }
-    .plan-admin { background: rgba(56, 189, 248, 0.16); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); }
-    
-    .actions-cell { display: flex; flex-wrap: wrap; gap: 5px; }
-    .btn-action-mini { padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
-    .btn-status-toggle { background: #1e293b; color: #10b981; border: 1px solid #10b981; }
-    .btn-status-toggle:hover { background: #10b981; color: #fff; }
-    .btn-gold-up { background: #1e293b; color: #fbbf24; border: 1px solid #f59e0b; }
-    .btn-gold-up:hover { background: #f59e0b; color: #070b12; }
-    .btn-suspend { background: #1e293b; color: #fb923c; border: 1px solid #fb923c; }
-    .btn-suspend:hover { background: #fb923c; color: #070b12; }
-    .btn-edit-sub { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; }
-    .btn-edit-sub:hover { background: #38bdf8; color: #070b12; }
-    .btn-perm-edit { background: #1e293b; color: #ec4899; border: 1px solid #ec4899; }
-    .btn-perm-edit:hover { background: #ec4899; color: #fff; }
-    .btn-reset-dev { background: #1e293b; color: #a78bfa; border: 1px solid #a78bfa; }
-    .btn-reset-dev:hover { background: #a78bfa; color: #070b12; }
-    .btn-del { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; }
-    .btn-del:hover { background: #ef4444; color: #fff; }
+    .table-container { background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:18px; overflow-x:auto; }
+    .table-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+    .toolbar-controls { display:flex; gap:10px; flex-wrap:wrap; }
+    .search-input, .filter-select { background:#070b12; color:#fff; border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; font-size:13px; outline:none; transition:0.2s; }
+    .search-input { min-width:240px; }
+    .search-input:focus, .filter-select:focus { border-color:var(--primary); }
 
-    .error-banner { display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: #fca5a5; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; font-weight: 600; }
+    .users-table { width:100%; border-collapse:collapse; text-align:right; min-width:920px; }
+    .users-table th { background:#070b12; padding:12px 14px; font-size:12.5px; color:var(--text-muted); border-bottom:2px solid var(--border-color); }
+    .users-table td { padding:13px 14px; font-size:13px; border-bottom:1px solid var(--border-color); vertical-align:middle; }
+    .users-table tr:hover td { background:rgba(56,189,248,0.04); }
 
-    .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.82); backdrop-filter: blur(3px); z-index:1000; justify-content:center; align-items:center; padding: 16px; overflow-y: auto; }
-    .modal-box { background:var(--card-bg); padding:24px; border-radius:12px; width:100%; max-width:400px; border:1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 92vh; overflow-y: auto; }
-    .modal-box.wide { max-width: 500px; }
-    .modal-box.xl { max-width: 640px; }
-    .form-group { margin-bottom: 12px; }
+    .plan-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:800; }
+    .plan-gold { background:rgba(245,158,11,0.16); color:#fbbf24; border:1px solid rgba(245,158,11,0.5); }
+    .plan-free { background:rgba(148,163,184,0.14); color:#cbd5e1; border:1px solid rgba(148,163,184,0.35); }
+    .plan-admin { background:rgba(56,189,248,0.16); color:#38bdf8; border:1px solid rgba(56,189,248,0.5); }
+
+    .actions-cell { display:flex; flex-wrap:wrap; gap:5px; }
+    .btn-action-mini { padding:5px 10px; border-radius:6px; font-size:11.5px; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:0.2s; }
+    .btn-status-toggle { background:#1e293b; color:#10b981; border:1px solid #10b981; }
+    .btn-status-toggle:hover { background:#10b981; color:#fff; }
+    .btn-gold-up { background:#1e293b; color:#fbbf24; border:1px solid #f59e0b; }
+    .btn-gold-up:hover { background:#f59e0b; color:#070b12; }
+    .btn-suspend { background:#1e293b; color:#fb923c; border:1px solid #fb923c; }
+    .btn-suspend:hover { background:#fb923c; color:#070b12; }
+    .btn-edit-sub { background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; }
+    .btn-edit-sub:hover { background:#38bdf8; color:#070b12; }
+    .btn-perm-edit { background:#1e293b; color:#ec4899; border:1px solid #ec4899; }
+    .btn-perm-edit:hover { background:#ec4899; color:#fff; }
+    .btn-reset-dev { background:#1e293b; color:#a78bfa; border:1px solid #a78bfa; }
+    .btn-reset-dev:hover { background:#a78bfa; color:#070b12; }
+    .btn-del { background:#1e293b; color:#ef4444; border:1px solid #ef4444; }
+    .btn-del:hover { background:#ef4444; color:#fff; }
+
+    .error-banner { display:none; background:rgba(239,68,68,0.15); border:1px solid var(--danger); color:#fca5a5; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:14px; font-weight:600; }
+
+    .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.82); backdrop-filter:blur(3px); z-index:1000; justify-content:center; align-items:center; padding:16px; overflow-y:auto; }
+    .modal-box { background:var(--card-bg); padding:24px; border-radius:12px; width:100%; max-width:400px; border:1px solid var(--border-color); box-shadow:0 20px 50px rgba(0,0,0,0.7); max-height:92vh; overflow-y:auto; }
+    .modal-box.wide { max-width:500px; }
+    .modal-box.xl { max-width:670px; }
+    .form-group { margin-bottom:12px; }
     .form-group label { color:#cbd5e1; font-size:12.5px; font-weight:700; display:block; margin-bottom:5px; }
-    .form-group input[type="date"], .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="number"], .form-group select, .form-group textarea { width:100%; padding:8px 10px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color); font-size: 13px; outline: none; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .input-with-btn { display: flex; gap: 6px; }
-    .btn-gen-pass { background: #1e293b; color: var(--accent); border: 1px solid var(--accent); padding: 0 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; }
-    .btn-gen-pass:hover { background: var(--accent); color: #070b12; }
+    .form-group input[type="date"], .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="number"], .form-group select, .form-group textarea { width:100%; padding:8px 10px; border-radius:6px; background:#070b12; color:#fff; border:1px solid var(--border-color); font-size:13px; outline:none; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--primary); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-row-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .input-with-btn { display:flex; gap:6px; }
+    .btn-gen-pass { background:#1e293b; color:var(--accent); border:1px solid var(--accent); padding:0 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:700; white-space:nowrap; }
+    .btn-gen-pass:hover { background:var(--accent); color:#070b12; }
 
-    .settings-section { background: #070b12; border: 1px solid #1f2937; border-radius: 10px; padding: 13px; margin-bottom: 12px; }
-    .settings-section-title { font-size: 13px; font-weight: 800; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    
-    .perm-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; background: #070b12; padding: 13px; border-radius: 8px; border: 1px solid #1f2937; }
-    .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; background: #070b12; padding: 12px; border-radius: 8px; border: 1px solid #1f2937; }
-    .perm-item { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 12.5px; cursor: pointer; }
-    .perm-item input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
+    .settings-section { background:#070b12; border:1px solid #1f2937; border-radius:10px; padding:13px; margin-bottom:12px; }
+    .settings-section-title { font-size:13px; font-weight:800; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+    .perm-list { display:flex; flex-direction:column; gap:9px; margin-bottom:16px; background:#070b12; padding:13px; border-radius:8px; border:1px solid #1f2937; }
+    .perm-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; background:#070b12; padding:12px; border-radius:8px; border:1px solid #1f2937; }
+    .perm-item { display:flex; align-items:center; gap:8px; color:#fff; font-size:12.5px; cursor:pointer; }
+    .perm-item input { width:15px; height:15px; accent-color:var(--primary); cursor:pointer; }
+    .creds-box { background:#070b12; border:1px dashed var(--success); border-radius:8px; padding:14px; margin:14px 0; font-size:13px; line-height:1.9; white-space:pre-line; color:#e2e8f0; }
 
-    .creds-box { background: #070b12; border: 1px dashed var(--success); border-radius: 8px; padding: 14px; margin: 14px 0; font-size: 13px; line-height: 1.9; white-space: pre-line; color: #e2e8f0; }
-
-    @media (max-width: 640px) { .form-row, .form-row-3 { grid-template-columns: 1fr; } }
+    @media (max-width:640px) { .form-row, .form-row-3, .perm-grid { grid-template-columns:1fr; } }
   </style>
 
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), true);
     document.addEventListener('keydown', e => {
-      const forbiddenKeys = ['U', 'S', 'P'], devKeys = ['I', 'J', 'C'];
-      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && devKeys.includes(e.key.toUpperCase())) || (e.ctrlKey && forbiddenKeys.includes(e.key.toUpperCase()))) {
+      const f = ['U','S','P'], d = ['I','J','C'];
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && d.includes(e.key.toUpperCase())) || (e.ctrlKey && f.includes(e.key.toUpperCase()))) {
         e.preventDefault(); e.stopPropagation(); return false;
       }
     }, true);
@@ -127,16 +124,16 @@
     </header>
 
     <div class="stats-overview-grid">
-      <div class="stat-card"><div class="stat-info"><h4>إجمالي المشتركين</h4><span id="statTotalUsers" style="color: var(--primary);">0</span></div><div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);"><i class="fa-solid fa-users"></i></div></div>
-      <div class="stat-card"><div class="stat-info"><h4>مشتركي Gold (مدفوع)</h4><span id="statGoldUsers" style="color: var(--accent);">0</span></div><div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent);"><i class="fa-solid fa-crown"></i></div></div>
-      <div class="stat-card"><div class="stat-info"><h4>يوزر عادي (Free)</h4><span id="statFreeUsers" style="color: #cbd5e1;">0</span></div><div class="stat-icon" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div></div>
-      <div class="stat-card"><div class="stat-info"><h4>في الانتظار / موقوف</h4><span id="statPendingUsers" style="color: var(--danger);">0</span></div><div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>إجمالي المشتركين</h4><span id="statTotalUsers" style="color:var(--primary);">0</span></div><div class="stat-icon" style="background:rgba(56,189,248,0.15); color:var(--primary);"><i class="fa-solid fa-users"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>مشتركي Gold (مدفوع)</h4><span id="statGoldUsers" style="color:var(--accent);">0</span></div><div class="stat-icon" style="background:rgba(245,158,11,0.15); color:var(--accent);"><i class="fa-solid fa-crown"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>يوزر عادي (Free)</h4><span id="statFreeUsers" style="color:#cbd5e1;">0</span></div><div class="stat-icon" style="background:rgba(148,163,184,0.15); color:#cbd5e1;"><i class="fa-solid fa-chalkboard-user"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h4>في الانتظار / موقوف</h4><span id="statPendingUsers" style="color:var(--danger);">0</span></div><div class="stat-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i class="fa-solid fa-clock-rotate-left"></i></div></div>
     </div>
 
     <div class="table-container">
       <div id="errorBanner" class="error-banner"></div>
       <div class="table-toolbar">
-        <h3 style="color: #fff; font-size: 15px;"><i class="fa-solid fa-list-check"></i> قائمة المشتركين وإدارة الحسابات:</h3>
+        <h3 style="color:#fff; font-size:15px;"><i class="fa-solid fa-list-check"></i> قائمة المشتركين وإدارة الحسابات:</h3>
         <div class="toolbar-controls">
           <input type="text" id="searchInput" class="search-input" placeholder="ابحث بالاسم أو البريد الإلكتروني..." oninput="renderUsersTable()">
           <select id="statusFilter" class="filter-select" onchange="renderUsersTable()">
@@ -150,17 +147,7 @@
       </div>
 
       <table class="users-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>اسم الكابتن</th>
-            <th>البريد الإلكتروني</th>
-            <th>الباقة</th>
-            <th>حالة الحساب</th>
-            <th>المدة المتبقية (Gold)</th>
-            <th>إجراءات الإدارة</th>
-          </tr>
-        </thead>
+        <thead><tr><th>#</th><th>اسم الكابتن</th><th>البريد الإلكتروني</th><th>الباقة</th><th>حالة الحساب</th><th>المدة المتبقية (Gold)</th><th>إجراءات الإدارة</th></tr></thead>
         <tbody id="usersTableBody"></tbody>
       </table>
     </div>
@@ -222,13 +209,11 @@
   <div id="createUserModal" class="modal-overlay" onclick="if(event.target === this) closeModals()">
     <div class="modal-box wide">
       <h3 style="color:var(--success); margin-bottom:14px;"><i class="fa-solid fa-user-plus"></i> إنشاء حساب مشترك جديد وتفعيله فوراً</h3>
-      
       <div id="createUserFormArea">
         <div class="form-row">
           <div class="form-group"><label>اسم الكابتن:</label><input type="text" id="newUserName" placeholder="مثال: كابتن أحمد محمد"></div>
           <div class="form-group"><label>نوع الباقة:</label><select id="newUserPlan" onchange="toggleNewUserGoldFields()"><option value="gold">⭐ باقة Gold (مدفوع)</option><option value="free">🆓 يوزر عادي (Free)</option></select></div>
         </div>
-
         <div class="form-row">
           <div class="form-group"><label>البريد الإلكتروني:</label><input type="email" id="newUserEmail" dir="ltr" placeholder="coach@ziada.com"></div>
           <div class="form-group">
@@ -239,7 +224,6 @@
             </div>
           </div>
         </div>
-
         <div class="form-group">
           <label>قالب التخصص السريع (يحدد الأدوات تلقائياً):</label>
           <select id="newUserPreset" onchange="applySpecialtyPreset()">
@@ -252,7 +236,6 @@
             <option value="referee">حكم / خبير تحكيمي (تحليل الحكام)</option>
           </select>
         </div>
-
         <div class="perm-grid">
           <label class="perm-item"><input type="checkbox" id="new-perm-headCoach"> 👔 المدير الفني</label>
           <label class="perm-item"><input type="checkbox" id="new-perm-performanceDev"> ⚡ مطور الأداء</label>
@@ -263,7 +246,6 @@
           <label class="perm-item"><input type="checkbox" id="new-perm-referee"> ⚖️ الحكام</label>
           <label class="perm-item"><input type="checkbox" id="new-perm-goalkeeper"> 🧤 الحراس</label>
         </div>
-
         <div id="newUserGoldDatesBox">
           <div class="form-row">
             <div class="form-group"><label>بداية الاشتراك:</label><input type="date" id="newStartDate"></div>
@@ -274,13 +256,11 @@
             <label class="perm-item"><input type="checkbox" id="newMultiDevice"> السماح بأكثر من جهاز</label>
           </div>
         </div>
-
         <div style="display:flex; gap:10px;">
           <button id="btnConfirmCreateUser" onclick="createNewUserByAdmin()" style="flex:1; background:var(--success); color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:800;">إنشاء وتفعيل الحساب الآن</button>
           <button onclick="closeModals()" style="flex:0.6; background:#374151; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">إلغاء</button>
         </div>
       </div>
-
       <div id="createUserSuccessArea" style="display:none;">
         <p style="color:#4ade80; font-weight:700; font-size:14px;"><i class="fa-solid fa-circle-check"></i> تم إنشاء وتفعيل الحساب بنجاح! انسخ البيانات وأرسلها للكابتن:</p>
         <div id="createdCredsText" class="creds-box"></div>
@@ -313,6 +293,10 @@
           <label class="perm-item"><input type="checkbox" id="cfg-freeBlockPdfExport"> قفل تقارير (PDF و Excel)</label>
           <label class="perm-item"><input type="checkbox" id="cfg-freeBlockImageExport"> قفل حفظ الصور HD</label>
           <label class="perm-item"><input type="checkbox" id="cfg-freeBlockAutoSave"> قفل استرجاع الحفظ التلقائي</label>
+          <label class="perm-item"><input type="checkbox" id="cfg-freeBlockMentalTraining"> ⚡ قفل التدريب الذهني (مطور الأداء)</label>
+          <label class="perm-item"><input type="checkbox" id="cfg-freeBlockNeuroTrack"> 🧠 قفل النيرو تراك والتدريب العقلي (المعد النفسي)</label>
+          <label class="perm-item"><input type="checkbox" id="cfg-freeBlockQrRooms"> 📱 قفل إنشاء غرف الـ QR</label>
+          <label class="perm-item"><input type="checkbox" id="cfg-freeBlockLiveCamera"> 🎥 قفل فتح الكاميرا المباشرة (اللايف)</label>
         </div>
       </div>
 
@@ -320,7 +304,7 @@
         <div class="settings-section-title"><i class="fa-solid fa-gauge"></i> 3. الحد الأقصى للتجربة في كل أداة لليوزر العادي (0 = غير محدود)</div>
         <div class="form-row-3">
           <div class="form-group"><label>لقطات التكتيكي:</label><input type="number" min="0" max="50" id="cfg-maxTacticalClips"></div>
-          <div class="form-group"><label>أحداث الفردي:</label><input type="number" min="0" max="100" id="cfg-maxIndividualEvents"></div>
+          <div class="form-group"><label>أكشنات التحليل الفردي (3 أو 4):</label><input type="number" min="0" max="100" id="cfg-maxIndividualEvents"></div>
           <div class="form-group"><label>إطارات الحركة:</label><input type="number" min="0" max="50" id="cfg-maxAnimFrames"></div>
           <div class="form-group"><label>حالات التحكيم VAR:</label><input type="number" min="0" max="50" id="cfg-maxRefCases"></div>
           <div class="form-group"><label>لقطات اللايف والحراس:</label><input type="number" min="0" max="50" id="cfg-maxLiveClips"></div>
@@ -355,9 +339,10 @@
     const DEFAULT_PLAN_CONFIG = {
       autoApproveFree: true, skipEmailVerifyForFree: true, freeUnlockAllTools: true,
       freeBlockVideoExport: true, freeBlockPdfExport: true, freeBlockImageExport: false, freeBlockAutoSave: false,
-      maxTacticalClips: 3, maxIndividualEvents: 5, maxAnimFrames: 2, maxRefCases: 2, maxLiveClips: 2,
+      freeBlockMentalTraining: true, freeBlockNeuroTrack: true, freeBlockQrRooms: true, freeBlockLiveCamera: true,
+      maxTacticalClips: 3, maxIndividualEvents: 3, maxAnimFrames: 2, maxRefCases: 2, maxLiveClips: 2,
       whatsappNumber: '201027482686',
-      goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، وعدد غير محدود من اللقطات والحالات.'
+      goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، والتدريب الذهني والـ QR والكاميرا المباشرة بلا حدود.'
     };
 
     let currentPlanConfig = Object.assign({}, DEFAULT_PLAN_CONFIG);
@@ -407,8 +392,12 @@
       document.getElementById('cfg-freeBlockPdfExport').checked = !!c.freeBlockPdfExport;
       document.getElementById('cfg-freeBlockImageExport').checked = !!c.freeBlockImageExport;
       document.getElementById('cfg-freeBlockAutoSave').checked = !!c.freeBlockAutoSave;
+      document.getElementById('cfg-freeBlockMentalTraining').checked = c.freeBlockMentalTraining !== false;
+      document.getElementById('cfg-freeBlockNeuroTrack').checked = c.freeBlockNeuroTrack !== false;
+      document.getElementById('cfg-freeBlockQrRooms').checked = c.freeBlockQrRooms !== false;
+      document.getElementById('cfg-freeBlockLiveCamera').checked = c.freeBlockLiveCamera !== false;
       document.getElementById('cfg-maxTacticalClips').value = c.maxTacticalClips ?? 3;
-      document.getElementById('cfg-maxIndividualEvents').value = c.maxIndividualEvents ?? 5;
+      document.getElementById('cfg-maxIndividualEvents').value = c.maxIndividualEvents ?? 3;
       document.getElementById('cfg-maxAnimFrames').value = c.maxAnimFrames ?? 2;
       document.getElementById('cfg-maxRefCases').value = c.maxRefCases ?? 2;
       document.getElementById('cfg-maxLiveClips').value = c.maxLiveClips ?? 2;
@@ -428,6 +417,10 @@
         freeBlockPdfExport: document.getElementById('cfg-freeBlockPdfExport').checked,
         freeBlockImageExport: document.getElementById('cfg-freeBlockImageExport').checked,
         freeBlockAutoSave: document.getElementById('cfg-freeBlockAutoSave').checked,
+        freeBlockMentalTraining: document.getElementById('cfg-freeBlockMentalTraining').checked,
+        freeBlockNeuroTrack: document.getElementById('cfg-freeBlockNeuroTrack').checked,
+        freeBlockQrRooms: document.getElementById('cfg-freeBlockQrRooms').checked,
+        freeBlockLiveCamera: document.getElementById('cfg-freeBlockLiveCamera').checked,
         maxTacticalClips: Math.max(0, parseInt(document.getElementById('cfg-maxTacticalClips').value) || 0),
         maxIndividualEvents: Math.max(0, parseInt(document.getElementById('cfg-maxIndividualEvents').value) || 0),
         maxAnimFrames: Math.max(0, parseInt(document.getElementById('cfg-maxAnimFrames').value) || 0),
@@ -503,13 +496,13 @@
         let remainingText = '-';
         if (u.role !== 'admin' && isApproved) {
           if (u._plan === 'free') remainingText = '<span style="color:#94a3b8;">باقة مجانية</span>';
-          else if (u.subscriptionEnd === 'unlimited') remainingText = '<span style="color: #38bdf8; font-weight:bold;">مفتوح (مدى الحياة)</span>';
+          else if (u.subscriptionEnd === 'unlimited') remainingText = '<span style="color:#38bdf8; font-weight:bold;">مفتوح (مدى الحياة)</span>';
           else if (u.subscriptionEnd) {
             const diffDays = getDaysRemaining(u.subscriptionEnd);
-            if (diffDays < 0) remainingText = `<span style="color: #ef4444; font-weight:bold;">منتهي منذ ${Math.abs(diffDays)} يوم</span>`;
-            else if (diffDays === 0) remainingText = `<span style="color: #fbbf24; font-weight:bold;">ينتهي اليوم</span>`;
-            else remainingText = `<span style="color: #10b981; font-weight:bold;">متبقي ${diffDays} يوم</span>`;
-          } else remainingText = '<span style="color: #94a3b8;">غير محدد</span>';
+            if (diffDays < 0) remainingText = `<span style="color:#ef4444; font-weight:bold;">منتهي منذ ${Math.abs(diffDays)} يوم</span>`;
+            else if (diffDays === 0) remainingText = `<span style="color:#fbbf24; font-weight:bold;">ينتهي اليوم</span>`;
+            else remainingText = `<span style="color:#10b981; font-weight:bold;">متبقي ${diffDays} يوم</span>`;
+          } else remainingText = '<span style="color:#94a3b8;">غير محدد</span>';
         }
         return `
           <tr>
@@ -531,7 +524,7 @@
                   <button onclick="resetUserDevice('${u._id}')" class="btn-action-mini btn-reset-dev" title="السماح بتسجيل الدخول من جهاز جديد"><i class="fa-solid fa-laptop"></i> فك الجهاز</button>
                   <button onclick="deleteUser('${u._id}')" class="btn-action-mini btn-del"><i class="fa-solid fa-trash"></i> حذف</button>
                 </div>
-              ` : '<span style="color:#94a3b8; font-size: 11px;">صلاحيات كاملة</span>'}
+              ` : '<span style="color:#94a3b8; font-size:11px;">صلاحيات كاملة</span>'}
             </td>
           </tr>
         `;

@@ -587,9 +587,7 @@
       } catch (err) { alert('تعذر الإرسال: ' + err.message); }
     }
 
-    // ==========================================
-    // التاب 1: التحليل النفسي للفيديو وتقطيع الحالات (MP4 H.264 للموبايل وواتساب)
-    // ==========================================
+    // التاب 1: التحليل النفسي للفيديو وتقطيع الحالات (MP4 H.264)
     const pVideo = document.getElementById('psychVideo');
     let psychLogs = [];
     let psychAutoBusy = false, psychManRec = null, psychManChunks = [], psychManTag = null, psychManBtn = null, psychManSent = 'neg', psychManStart = 0;
@@ -603,32 +601,16 @@
     function setPsychSpeed(r) { pVideo.playbackRate = r; showToast(`السرعة: ${r}x`); }
 
     function getVidMime() {
-      const m = [
-        'video/mp4;codecs=avc1.42E01E',
-        'video/mp4;codecs=avc1.4d002a',
-        'video/mp4;codecs=h264',
-        'video/mp4',
-        'video/webm;codecs=vp8',
-        'video/webm;codecs=vp9',
-        'video/webm'
-      ];
+      const m = ['video/mp4;codecs=avc1.42E01E','video/mp4;codecs=avc1.4d002a','video/mp4;codecs=h264','video/mp4','video/webm;codecs=vp8','video/webm;codecs=vp9','video/webm'];
       return m.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
     }
 
     function createSafePsychRecorder(stream, bitrate = 4000000) {
-      const mime = getVidMime();
-      let rec;
-      try {
-        rec = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: bitrate }) : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
-      } catch (e) {
-        try { rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); }
-        catch (e2) { rec = new MediaRecorder(stream); }
-      }
-      const actualMime = rec.mimeType || mime || 'video/webm';
-      const isMp4 = actualMime.includes('mp4');
-      rec._isMp4 = isMp4;
-      rec._usedMime = isMp4 ? 'video/mp4' : 'video/webm';
-      rec._usedExt = isMp4 ? 'mp4' : 'webm';
+      const mime = getVidMime(); let rec;
+      try { rec = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: bitrate }) : new MediaRecorder(stream, { videoBitsPerSecond: bitrate }); }
+      catch (e) { try { rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); } catch (e2) { rec = new MediaRecorder(stream); } }
+      const actualMime = rec.mimeType || mime || 'video/webm', isMp4 = actualMime.includes('mp4');
+      rec._isMp4 = isMp4; rec._usedMime = isMp4 ? 'video/mp4' : 'video/webm'; rec._usedExt = isMp4 ? 'mp4' : 'webm';
       return rec;
     }
 
@@ -669,25 +651,19 @@
       const origT = pVideo.currentTime, startT = Math.max(0, origT - 5), endT = Math.min(pVideo.duration||(origT+5), origT + 5);
       const banner = document.getElementById('psychClipBanner');
       banner.style.display = 'flex'; document.getElementById('psychClipBannerText').textContent = `جاري تقطيع حالة (${tagName}) — 5ث قبل و 5ث بعد...`;
-
       try {
-        const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720;
-        const sc = vw > 1280 ? 1280/vw : 1;
+        const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720, sc = vw > 1280 ? 1280/vw : 1;
         let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
-        hc.width = cw; hc.height = ch;
-        const hCtx = hc.getContext('2d');
-        const rec = createSafePsychRecorder(hc.captureStream(30), 4000000);
-        const chunks = []; rec.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
-
+        hc.width = cw; hc.height = ch; const hCtx = hc.getContext('2d');
+        const rec = createSafePsychRecorder(hc.captureStream(30), 4000000), chunks = [];
+        rec.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
         pVideo.currentTime = startT; await new Promise(r => { pVideo.onseeked = r; });
         const t0 = Date.now(); rec.start(); await pVideo.play();
-
         function loop() {
           if (pVideo.currentTime >= endT || pVideo.paused || pVideo.ended) { pVideo.pause(); rec.stop(); pVideo.currentTime = origT; return; }
           hCtx.drawImage(pVideo, 0, 0, hc.width, hc.height); requestAnimationFrame(loop);
         }
         requestAnimationFrame(loop);
-
         rec.onstop = () => {
           const raw = new Blob(chunks, { type: rec._usedMime }), dur = Date.now() - t0;
           const finish = b => {
@@ -705,11 +681,9 @@
       psychManStart = pVideo.currentTime;
       const banner = document.getElementById('psychClipBanner');
       banner.style.display = 'flex'; document.getElementById('psychClipBannerText').textContent = 'جاري التسجيل اليدوي للحالة النفسية... اضغط إيقاف عند الانتهاء.';
-      const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720;
-      const sc = vw > 1280 ? 1280/vw : 1;
+      const hc = document.getElementById('psychRenderCanvas'), vw = pVideo.videoWidth||1280, vh = pVideo.videoHeight||720, sc = vw > 1280 ? 1280/vw : 1;
       let cw = Math.round(vw*sc), ch = Math.round(vh*sc); if (cw%2!==0) cw++; if (ch%2!==0) ch++;
-      hc.width = cw; hc.height = ch;
-      const hCtx = hc.getContext('2d');
+      hc.width = cw; hc.height = ch; const hCtx = hc.getContext('2d');
       psychManRec = createSafePsychRecorder(hc.captureStream(30), 4000000);
       psychManRec._t0 = Date.now(); psychManChunks = [];
       psychManRec.ondataavailable = e => { if (e.data?.size) psychManChunks.push(e.data); };
@@ -814,6 +788,7 @@
     }
 
     function startMotTrial() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockNeuroTrack', 'تدريب التتبع البصري Neuro-Track 3D')) return;
       cancelAnimationFrame(motRaf);
       const total = parseInt(document.getElementById('motTotalBalls').value)||8, targets = Math.min(total - 1, parseInt(document.getElementById('motTargetBalls').value)||3), moveSec = parseInt(document.getElementById('motDurationSec').value)||8;
       motBalls = [];
@@ -876,6 +851,7 @@
       penalty: [{t:'شهيق قوي',s:3,sc:1.35,c:'#38bdf8'},{t:'ثبات وتركيز',s:2,sc:1.35,c:'#facc15'},{t:'زفير وإرخاء الأكتاف',s:5,sc:0.86,c:'#10b981'}]
     };
     function toggleBreathing() {
+      if (!breathRunning && window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockNeuroTrack', 'غرفة التنفس والتهدئة الذهنية')) return;
       const btn = document.getElementById('btnBreathToggle'), cir = document.getElementById('breathCircle');
       if (breathRunning) { clearInterval(breathTimer); breathRunning = false; btn.innerHTML = '<i class="fa-solid fa-play"></i> بدء'; cir.style.transform = 'scale(1)'; document.getElementById('breathPhaseText').textContent = 'جاهز'; document.getElementById('breathCountText').textContent = ''; return; }
       const steps = BREATH_PROTOS[document.getElementById('breathProtocol').value]; let si = 0, sec = steps[0].s; breathRunning = true; btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف';
@@ -901,6 +877,7 @@
     // التاب 3: فحص الجاهزية بالـ QR
     let mRoomId = null, mRoomUnsub = null, qrResponsesList = [];
     async function createMentalQRRoom() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockQrRooms', 'إنشاء غرفة فحص الجاهزية بالـ QR')) return;
       mRoomId = 'MNT-' + Math.floor(1000 + Math.random()*9000);
       try {
         await db.collection('reaction_rooms').doc(mRoomId).set({ type:'mental_checkin', createdAt: Date.now(), responses: {} });

@@ -1343,7 +1343,7 @@
       recorder.stop();
     }
 
-    // محرك التدريب الذهني + مزامنة الـ QR
+    // محرك التدريب الذهني + مزامنة الـ QR (مربوط بإعدادات باقة Gold)
     let soActiveMode = 'colors', soRunningSingle = false, soTimerId = null, soCurrentRep = 0, soTargetReps = 20, soStimulusShownAt = 0, soReactionTimes = [];
     function setSoMode(mode, btn) { soActiveMode = mode; document.querySelectorAll('#soModesGrid .so-mode-btn').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); }
     function toggleSoColor(btn) { if (btn.classList.contains('active') && document.querySelectorAll('#soColorsRow .so-color-toggle.active').length <= 2) return showToast('اترك لونين على الأقل'); btn.classList.toggle('active'); }
@@ -1399,6 +1399,7 @@
     }
 
     function startSwitchedOnSingle() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockMentalTraining', 'التدريب الذهني وسرعة رد الفعل')) return;
       soRunningSingle = true; soCurrentRep = 0; soTargetReps = Math.max(3, parseInt(document.getElementById('soTotalReps').value)||20); soReactionTimes = [];
       acquireWakeLock();
       const fs = document.getElementById('soFullscreen'); fs.style.display = 'flex'; fs.style.background = '#020617';
@@ -1475,6 +1476,7 @@
     let multiSessionRunning = false, multiRepCounter = 0, multiLastCmdId = null, multiLastHandledResp = null, multiTimerId = null;
 
     async function createQRReactionRoom() {
+      if (window.ZiadaPlan && !ZiadaPlan.checkFeature('freeBlockQrRooms', 'إنشاء غرفة وربط التليفونات بالـ QR')) return;
       masterRoomId = 'ZD-' + Math.floor(1000 + Math.random()*9000); connectedStations = {};
       try {
         await db.collection('reaction_rooms').doc(masterRoomId).set({ createdAt: Date.now(), stations: {}, activeCommand: null, lastResponse: null });

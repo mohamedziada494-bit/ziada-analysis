@@ -8,13 +8,17 @@
     freeBlockPdfExport: true,
     freeBlockImageExport: false,
     freeBlockAutoSave: false,
+    freeBlockMentalTraining: true,
+    freeBlockNeuroTrack: true,
+    freeBlockQrRooms: true,
+    freeBlockLiveCamera: true,
     maxTacticalClips: 3,
-    maxIndividualEvents: 5,
+    maxIndividualEvents: 3,
     maxAnimFrames: 2,
     maxRefCases: 2,
     maxLiveClips: 2,
     whatsappNumber: '201027482686',
-    goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، وعدد غير محدود من اللقطات والحالات.'
+    goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، والتدريب الذهني والـ QR والكاميرا المباشرة بلا حدود.'
   };
 
   function getActiveUser() {
@@ -147,6 +151,16 @@
     return false;
   }
 
+  function checkFeature(configKey, featureLabel) {
+    if (isGold()) return true;
+    const cfg = getConfig();
+    if (cfg[configKey]) {
+      openUpgradeModal(`ميزة (${featureLabel}) متاحة لمشتركي باقة Gold فقط.`);
+      return false;
+    }
+    return true;
+  }
+
   function checkExport(type, featureLabel) {
     if (isGold()) return true;
     const cfg = getConfig();
@@ -210,6 +224,7 @@
     getConfig,
     isGold,
     requireGold,
+    checkFeature,
     checkExport,
     checkLimit,
     canAutoSave,
