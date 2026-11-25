@@ -21,10 +21,55 @@
     goldOfferText: 'افتح التصدير بجودة Full HD، وتقارير PDF و Excel، والتدريب الذهني والـ QR والكاميرا المباشرة بلا حدود.'
   };
 
-  // العروض والأسعار الخاصة بكل أداة (مفعّل حالياً للمدير الفني فقط)
+  // باقة محلل الأداء (التكتيكي + الفردي + اللايف)
+  const ANALYST_BUNDLE_PROMO = {
+    toolName: 'باقة محلل الأداء (التكتيكي + الفردي + اللايف)',
+    discountLabel: 'خصم 50%',
+    oldPriceShort: '2000 ج',
+    newPriceShort: '1000 ج',
+    oldPriceFull: '2000 جنيه',
+    newPriceFull: '1000 جنيه'
+  };
+
+  // العروض والأسعار الخاصة بكل أداة
   const PAGE_PROMOS = {
     head_coach: {
       toolName: 'استوديو المدير الفني',
+      discountLabel: 'خصم 50%',
+      oldPriceShort: '500 ج',
+      newPriceShort: '250 ج',
+      oldPriceFull: '500 جنيه',
+      newPriceFull: '250 جنيه'
+    },
+    performance_dev: {
+      toolName: 'أداة مطور الأداء',
+      discountLabel: 'خصم 50%',
+      oldPriceShort: '1500 ج',
+      newPriceShort: '750 ج',
+      oldPriceFull: '1500 جنيه',
+      newPriceFull: '750 جنيه'
+    },
+    mental_coach: {
+      toolName: 'استوديو المعد النفسي',
+      discountLabel: 'خصم 50%',
+      oldPriceShort: '500 ج',
+      newPriceShort: '250 ج',
+      oldPriceFull: '500 جنيه',
+      newPriceFull: '250 جنيه'
+    },
+    tactical: ANALYST_BUNDLE_PROMO,
+    individual: ANALYST_BUNDLE_PROMO,
+    live: ANALYST_BUNDLE_PROMO,
+    referee: {
+      toolName: 'استوديو التحكيم والـ VAR',
+      discountLabel: 'خصم 50%',
+      oldPriceShort: '1500 ج',
+      newPriceShort: '750 ج',
+      oldPriceFull: '1500 جنيه',
+      newPriceFull: '750 جنيه'
+    },
+    goalkeeper: {
+      toolName: 'استوديو حراس المرمى',
       discountLabel: 'خصم 50%',
       oldPriceShort: '500 ج',
       newPriceShort: '250 ج',
@@ -35,11 +80,18 @@
 
   function getPagePromo() {
     if (window.ZIADA_PAGE_PROMO) return window.ZIADA_PAGE_PROMO;
-    const url = ((window.location.pathname || '') + ' ' + (window.location.href || '')).toLowerCase();
-    for (const key in PAGE_PROMOS) {
-      if (url.includes(key)) return PAGE_PROMOS[key];
+    const path = (window.location.pathname || '').toLowerCase();
+    const keys = ['head_coach', 'performance_dev', 'mental_coach', 'tactical', 'individual', 'live', 'referee', 'goalkeeper'];
+    for (const key of keys) {
+      if (path.includes(key)) return PAGE_PROMOS[key];
     }
-    if ((document.title || '').includes('المدير الفني')) return PAGE_PROMOS.head_coach;
+    const title = document.title || '';
+    if (title.includes('المدير الفني')) return PAGE_PROMOS.head_coach;
+    if (title.includes('مطور الأداء')) return PAGE_PROMOS.performance_dev;
+    if (title.includes('المعد النفسي')) return PAGE_PROMOS.mental_coach;
+    if (title.includes('التكتيكي') || title.includes('الفردي') || title.includes('اللايف') || title.includes('المباشر')) return ANALYST_BUNDLE_PROMO;
+    if (title.includes('التحكيم') || title.includes('VAR')) return PAGE_PROMOS.referee;
+    if (title.includes('حراس المرمى')) return PAGE_PROMOS.goalkeeper;
     return null;
   }
 
